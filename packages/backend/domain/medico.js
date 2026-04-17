@@ -1,4 +1,6 @@
 import { randomUUID } from "crypto";
+import { Usuario } from "../domain/usuario"
+import { ErrorDatosObligatorios } from "./errores";
 
 export class Medico {
     id;
@@ -12,7 +14,13 @@ export class Medico {
 
     constructor({ usuario, matricula, nombre }) {
         if (!usuario || !matricula || !nombre) {
-            throw new Error("Faltan datos obligatorios");
+            throw new ErrorDatosObligatorios();
+        }
+        if(!(usuario instanceof Usuario)) {
+            throw new Error("No es un Usuario")
+        }
+        if(matricula > 10){
+            throw new ErrorMatriculaCorta("Matricula Demasiado larga")
         }
         this.id = randomUUID();
         this.usuario = usuario;

@@ -1,3 +1,5 @@
+import { EstadoTurno } from "../turno.js";
+import {CambioEstadoTurno} from "./cambioEstadoTurno.js";
 export class Turno {
     id;
     medico;
@@ -6,7 +8,7 @@ export class Turno {
     sede;
     practica;
     estado;
-    historialEstado = [];
+    historialEstado;
     costo;
 
     constructor({ medico, paciente, fechaHora, sede, practica }) {
@@ -20,6 +22,7 @@ export class Turno {
         if (!(paciente instanceof Paciente)) {
             throw new Error("Paciente inválido");
         }
+        this.id = randomUUID();
         this.medico = medico;
         this.paciente = paciente;
         this.fechaHora = fechaHora;
@@ -27,15 +30,22 @@ export class Turno {
         this.practica = practica;
 
         this.estado = EstadoTurno.DISPONIBLE;
-        this.historialEstado = [EstadoTurno.DISPONIBLE];
+        this.historialEstado = [];
     }
 
-    cambiarEstado(estadoTurno) {
-        if (!(estadoTurno instanceof EstadoTurno)) {
-            throw new Error("No existe ese estado")
+    actualizarEstadoTurno({nuevoEstado, quien, motivo}) {
+        if (!Object.values(EstadoTurno).includes(nuevoEstado)) {
+            throw new Error("No existe ese estado");
         }
-        this.estado = estadoTurno;
-        this.historialEstado.push(estadoTurno);
+        if(!(quien instanceof Usuario)) {
+            throw new Error("Usuario inválido");
+        }
+        if(!(motivo instanceof String)) {
+            throw new Error("Motivo inválido");
+        }
+        this.estado = nuevoEstado;
+        cambioEstado = new CambioEstadoTurno({estado: estadoTurno, usuario: quien, turno: this ,motivo: motivo});
+        this.historialEstado.push(cambioEstado);    
+        
     }
-
 }
