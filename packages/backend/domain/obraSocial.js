@@ -1,13 +1,27 @@
+import { randomUUID } from "crypto";
+import { Plan } from "./plan";
+
 export class ObraSocial {
     id;
     nombre;
-    planes;
+    planes = [];
 
-    constructor({nombre,planes}){
-        if(!(planes instanceof Plan)){
-            throw new Error("Plan invalido")
+    constructor({ nombre, planes = [] }) {
+        if (!nombre) {
+            throw new Error("Faltan datos obligatorios");
         }
-        this.nombre=nombre;
-        this.planes.push(planes);
+        if (!Array.isArray(planes) || !planes.every(p => p instanceof Plan)) {
+            throw new Error("Planes inválidos");
+        }
+        this.id = randomUUID();
+        this.nombre = nombre;
+        this.planes = planes;
+    }
+
+    agregarPlan(plan) {
+        if (!(plan instanceof Plan)) {
+            throw new Error("Plan inválido");
+        }
+        this.planes.push(plan);
     }
 }

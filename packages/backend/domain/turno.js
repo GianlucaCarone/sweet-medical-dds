@@ -1,3 +1,13 @@
+import { randomUUID } from "crypto";
+
+export const EstadoTurno = Object.freeze({
+    DISPONIBLE: "DISPONIBLE",
+    RESERVADO: "RESERVADO",
+    CONFIRMADO: "CONFIRMADO",
+    CANCELADO: "CANCELADO",
+    REALIZADO: "REALIZADO",
+});
+
 export class Turno {
     id;
     medico;
@@ -6,7 +16,7 @@ export class Turno {
     sede;
     practica;
     estado;
-    historialEstado = [];
+    historialEstado;
     costo;
 
     constructor({ medico, paciente, fechaHora, sede, practica }) {
@@ -14,25 +24,20 @@ export class Turno {
         if (!medico || !paciente || !sede || !practica) {
             throw new Error("Faltan datos obligatorios")
         }
-        if (!(medico instanceof Medico)) {
-            throw new Error("Medico inválido");
-        }
-        if (!(paciente instanceof Paciente)) {
-            throw new Error("Paciente inválido");
-        }
+        this.id = randomUUID();
         this.medico = medico;
         this.paciente = paciente;
         this.fechaHora = fechaHora;
         this.sede = sede;
         this.practica = practica;
-
         this.estado = EstadoTurno.DISPONIBLE;
         this.historialEstado = [EstadoTurno.DISPONIBLE];
+        this.costo = 0;
     }
 
     cambiarEstado(estadoTurno) {
-        if (!(estadoTurno instanceof EstadoTurno)) {
-            throw new Error("No existe ese estado")
+        if (!Object.values(EstadoTurno).includes(estadoTurno)) {
+            throw new Error("No existe ese estado");
         }
         this.estado = estadoTurno;
         this.historialEstado.push(estadoTurno);
