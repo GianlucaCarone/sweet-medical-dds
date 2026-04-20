@@ -13,7 +13,6 @@ export class ObraSocial {
         if (!Array.isArray(planes) || !planes.every(p => p instanceof Plan)) {
             throw new Error("Planes inválidos");
         }
-        this.id = randomUUID();
         this.nombre = nombre;
         this.planes = planes;
     }

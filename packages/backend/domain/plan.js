@@ -1,4 +1,3 @@
-import { randomUUID } from "crypto";
 import { CoberturaEspecialidad } from "./coberturas/coberturaEspecialidad";
 import { CoberturaPractica } from "./coberturas/coberturaPractica";
 
@@ -18,7 +17,6 @@ export class Plan {
         if (!Array.isArray(coberturasPractica) || !coberturasPractica.every(c => c instanceof CoberturaPractica)) { //Se verifica que sea array y que ademas todos los elemenos sean instancia de la clase CoberturaPractica
             throw new Error("Cobertura de práctica inválida");
         }
-        this.id = randomUUID();
         this.nombre = nombre;
         this.coberturasEspecialidad = coberturasEspecialidad;
         this.coberturasPractica = coberturasPractica;

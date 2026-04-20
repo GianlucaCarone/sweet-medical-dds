@@ -1,4 +1,3 @@
-import { randomUUID } from "crypto";
 
 export class Sede {
     id;
@@ -9,7 +8,6 @@ export class Sede {
         if (!nombre || !direccion) {
             throw new Error("Faltan datos obligatorios");
         }
-        this.id = randomUUID();
         this.nombre = nombre;
         this.direccion = direccion;
     }
