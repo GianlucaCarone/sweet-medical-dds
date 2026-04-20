@@ -7,10 +7,14 @@ export class Especialidad {
 
     constructor({ nombre, duracionTurnoEnMins, costoConsulta }) {
         if (!nombre || !duracionTurnoEnMins || !costoConsulta) {
-            throw new Error("Faltan datos obligatorios");
+            throw new ErrorDatosObligatorios();
         }
         this.nombre = nombre;
         this.duracionTurnoEnMins = duracionTurnoEnMins;
         this.costoConsulta = costoConsulta;
+    }
+
+    get costo() {
+        return this.costoConsulta;
     }
 }

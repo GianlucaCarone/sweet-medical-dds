@@ -1,4 +1,4 @@
-export const EstadoTurno = Object.freeze({
+export const EstadoTurnoEnum= Object.freeze({
   DISPONIBLE:  "DISPONIBLE",
   RESERVADO:   "RESERVADO",
   CONFIRMADO:  "CONFIRMADO",

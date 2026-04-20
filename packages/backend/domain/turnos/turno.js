@@ -3,18 +3,18 @@ import {CambioEstadoTurno} from "./cambioEstadoTurno.js";
 export class Turno {
     id;
     medico;
+    servicio;
     paciente;
     fechaHora;
     sede;
-    practica;
     estado;
     historialEstado;
     costo;
 
-    constructor({ medico, paciente, fechaHora, sede, practica }) {
+    constructor({ medico, servicio, paciente, fechaHora, sede }) {
 
-        if (!medico || !paciente || !sede || !practica) {
-            throw new Error("Faltan datos obligatorios")
+        if (!medico || !servicio || !paciente || !sede ) {
+            throw new ErrorDatosObligatorios()
         }
         if (!(medico instanceof Medico)) {
             throw new Error("Medico inválido");
@@ -24,10 +24,10 @@ export class Turno {
         }
         this.id = randomUUID();
         this.medico = medico;
+        this.servicio = servicio;
         this.paciente = paciente;
         this.fechaHora = fechaHora;
         this.sede = sede;
-        this.practica = practica;
 
         this.estado = EstadoTurno.DISPONIBLE;
         this.historialEstado = [];

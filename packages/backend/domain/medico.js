@@ -33,4 +33,25 @@ export class Medico {
         }
         this.disponibilidades.push(disponibilidad);
     }
+
+    agregarServicio(servicio){
+        if(!servicio) {throw new Error("Servicio invalido");}
+        if(servicio instanceof Especialidad) 
+        {
+            this.especialidades.push(servicio);
+        }
+        else if (servicio instanceof Practica)
+        {
+            this.practicas.push(servicio);
+        }
+        else
+        {
+            throw new Error("Tipo de Servicio invalido")
+        }
+    }
+
+    agregarSede(sede){
+        if(!sede) {throw new Error("Sede invalida");}
+        this.sedes.push(sede);
+    }
 }

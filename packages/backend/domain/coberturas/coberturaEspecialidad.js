@@ -7,7 +7,7 @@ export class CoberturaEspecialidad {
 
     constructor({ especialidad, nivel }) {
         if (!especialidad || !nivel) {
-            throw new Error("Faltan datos obligatorios");
+            throw new ErrorDatosObligatorios();
         }
         if (!(especialidad instanceof Especialidad)) {
             throw new Error("Especialidad inválida");

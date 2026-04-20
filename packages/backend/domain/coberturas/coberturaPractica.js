@@ -7,7 +7,7 @@ export class CoberturaPractica {
 
     constructor({ practica, nivel }) {
         if (!practica || !nivel) {
-            throw new Error("Faltan datos obligatorios");
+            throw new ErrorDatosObligatorios();
         }
         if (!(practica instanceof Practica)) {
             throw new Error("Practica inválida");
