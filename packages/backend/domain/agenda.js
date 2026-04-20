@@ -1,3 +1,5 @@
+import { Turno } from "./turnos/turno.js";
+
 export class Agenda {
     generarTurnosParaEspecialidad({ especialidad, medico }) {
         return new Turno();

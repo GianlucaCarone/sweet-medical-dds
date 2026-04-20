@@ -6,7 +6,7 @@ export class Sede {
 
     constructor({ nombre, direccion }) {
         if (!nombre || !direccion) {
-            throw new Error("Faltan datos obligatorios");
+            throw new ErrorDatosObligatorios();
         }
         this.nombre = nombre;
         this.direccion = direccion;
