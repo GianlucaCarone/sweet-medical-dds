@@ -7,7 +7,7 @@ export class DisponibilidadHoraria {
 
     constructor({ diaSemana, horaDesde, horaHasta }) {
         if (!diaSemana || !horaDesde || !horaHasta) {
-            throw new Error("Datos obligatorios faltantes");
+            throw new ErrorDatosObligatorios();
         }
         if (!Object.values(DiaSemana).includes(diaSemana)) {
             throw new Error("El día de semana no es válido");

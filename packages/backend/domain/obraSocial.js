@@ -8,7 +8,7 @@ export class ObraSocial {
 
     constructor({ nombre, planes = [] }) {
         if (!nombre) {
-            throw new Error("Faltan datos obligatorios");
+            throw new ErrorDatosObligatorios("Faltan datos obligatorios");
         }
         if (!Array.isArray(planes) || !planes.every(p => p instanceof Plan)) {
             throw new Error("Planes inválidos");

@@ -9,7 +9,7 @@ export class Paciente {
 
     constructor({ usuario, dni, nombre, obraSocial, plan }) {
         if (!usuario || !dni || !nombre || !obraSocial || !plan) {
-            throw new Error("Faltan datos obligatorios");
+            throw new ErrorDatosObligatorios();
         }
         if (!(obraSocial instanceof ObraSocial)) {
             throw new Error("Obra social inválida");
