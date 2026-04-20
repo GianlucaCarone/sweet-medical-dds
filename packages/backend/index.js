@@ -1,6 +1,6 @@
-import "dotenv/config";
-import express from "express";
-import cors from "cors";
+import "dotenv/config"; // tiene todas las configuracione como: SERVER_PORT, ALLOWED_ORIGINS, etc. que se encuentran en el archivo .env
+import express from "express"; // framework para crear el servidor y manejar las rutas
+import cors from "cors"; // middleware para permitir solicitudes desde diferentes orígenes (CORS)
 
 const app = express();
 app.use(express.json());
