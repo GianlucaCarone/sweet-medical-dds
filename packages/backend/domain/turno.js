@@ -1,4 +1,3 @@
-import { randomUUID } from "crypto";
 
 export const EstadoTurno = Object.freeze({
     DISPONIBLE: "DISPONIBLE",
@@ -24,7 +23,6 @@ export class Turno {
         if (!medico || !paciente || !sede || !practica) {
             throw new Error("Faltan datos obligatorios")
         }
-        this.id = randomUUID();
         this.medico = medico;
         this.paciente = paciente;
         this.fechaHora = fechaHora;

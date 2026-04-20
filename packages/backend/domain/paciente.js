@@ -1,4 +1,3 @@
-import { randomUUID } from "crypto";
 
 export class Paciente {
     id;
@@ -18,7 +17,6 @@ export class Paciente {
         if (!(plan instanceof Plan)) {
             throw new Error("Plan inválido");
         }
-        this.id = randomUUID();
         this.usuario = usuario;
         this.dni = dni;
         this.nombre = nombre;

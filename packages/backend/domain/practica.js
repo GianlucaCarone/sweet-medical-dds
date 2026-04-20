@@ -1,4 +1,3 @@
-import { randomUUID } from "crypto";
 
 export class Practica {
     id;
@@ -11,7 +10,6 @@ export class Practica {
         if (!codigo || !nombre || !duracionTurnoEnMins || !costo) {
             throw new Error("Faltan datos obligatorios");
         }
-        this.id = randomUUID();
         this.codigo = codigo;
         this.nombre = nombre;
         this.duracionTurnoEnMins = duracionTurnoEnMins;
