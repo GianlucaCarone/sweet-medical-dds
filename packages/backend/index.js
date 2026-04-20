@@ -13,7 +13,10 @@ app.use(
 );
 
 app.get("/health", (req, res) => {
-  res.json({ status: "ok" });
+  res.status(200).json({
+    status: "ok",
+    message: "El servicio está funcionando correctamente",
+  });
 });
 
 app.listen(process.env.SERVER_PORT, () => {
