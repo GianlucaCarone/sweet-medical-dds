@@ -1,6 +1,7 @@
 import { Usuario } from "../domain/usuario"
 import { ErrorDatosObligatorios } from "./errores";
 import { DisponibilidadHoraria } from "./disponibilidadHoraria";
+import { randomUUID } from "crypto";
 
 export class Medico {
     id;
@@ -22,6 +23,7 @@ export class Medico {
         if (matricula.length > 10) {
             throw new Error("Matricula Demasiado larga")
         }
+        this.id = randomUUID();
         this.usuario = usuario;
         this.matricula = matricula;
         this.nombre = nombre;
@@ -31,27 +33,58 @@ export class Medico {
         if (!(disponibilidad instanceof DisponibilidadHoraria)) {
             throw new Error("No es una DisponibilidadHoraria valida");
         }
+
+        this.disponibilidades.forEach(horarioExistente => {
+            if (disponibilidad.seSuperponeConOtroHorario(horarioExistente)) {
+                throw new Error("Este horario se superpone con otro horario existente");
+            }
+        });
+
         this.disponibilidades.push(disponibilidad);
     }
 
-    agregarServicio(servicio){
-        if(!servicio) {throw new Error("Servicio invalido");}
-        if(servicio instanceof Especialidad) 
-        {
+    eliminarDisponibilidad(disponibilidadAEliminar) {
+        if (!disponibilidadAEliminar instanceof DisponibilidadHoraria) {
+            throw new Error("No es una DisponibilidadHoraria valida");
+        }
+        this.disponibilidades = this.disponibilidades.filter(disponibilidad => disponibilidad.diaSemana !== disponibilidadAEliminar.diaSemana || disponibilidad.horaDesde !== disponibilidadAEliminar.horaDesde || disponibilidad.horaHasta !== disponibilidadAEliminar.horaHasta);
+    }
+
+    agregarServicio(servicio) {
+        if (!servicio) { throw new Error("Servicio invalido"); }
+        if (servicio instanceof Especialidad) {
             this.especialidades.push(servicio);
         }
-        else if (servicio instanceof Practica)
-        {
+        else if (servicio instanceof Practica) {
             this.practicas.push(servicio);
         }
-        else
-        {
+        else {
             throw new Error("Tipo de Servicio invalido")
         }
     }
 
-    agregarSede(sede){
-        if(!sede) {throw new Error("Sede invalida");}
+    eliminarServicio(servicioAEliminar) {
+        if (!servicioAEliminar) { throw new Error("Servicio invalido"); }
+        if (servicioAEliminar instanceof Especialidad) {
+            this.especialidades = this.especialidades.filter(especialidad => especialidad.id !== servicioAEliminar.id);
+        }
+        else if (servicioAEliminar instanceof Practica) {
+            this.practicas = this.practicas.filter(practica => practica.id !== servicioAEliminar.id);
+        }
+        else {
+            throw new Error("Tipo de Servicio invalido")
+        }
+    }
+
+    agregarSede(sede) {
+        if (!sede) { throw new Error("Sede invalida"); }
         this.sedes.push(sede);
     }
+
+    eliminarSede(sedeAEliminar) {
+        if (!sedeAEliminar) { throw new Error("Sede invalida"); }
+        this.sedes = this.sedes.filter(sede => sede.id !== sedeAEliminar.id);
+    }
+
 }
+

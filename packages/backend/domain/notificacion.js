@@ -1,4 +1,5 @@
 import { ErrorDatosObligatorios } from "./errores";
+import { randomUUID } from "crypto";
 
 export class Notificacion {
     id;
@@ -9,13 +10,14 @@ export class Notificacion {
     fechaHoraLeida;
     leida = false;
 
-    constructor({ destinatario, remitente = null, mensaje }) { //remitente = null significa que default es null, si lo pasamos en el constructor se aplica
+    constructor({ destinatario, remitente, mensaje }) {
         if (!destinatario || !mensaje) {
             throw new ErrorDatosObligatorios();
         }
         if (!(destinatario instanceof Usuario) || !(remitente instanceof Usuario)) {
             throw new Error("Los destinatarios deben ser usuarios");
         }
+        this.id = randomUUID();
         this.destinatario = destinatario;
         this.remitente = remitente;
         this.mensaje = mensaje;

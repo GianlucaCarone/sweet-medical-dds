@@ -11,7 +11,7 @@ class FactoryNotificacion {
         return new Notificacion({
           destinatario: turno.medico,
           remitente: turno.paciente,
-          mensaje: 
+          mensaje:
             `El turno fue reservado por el paciente ${turno.paciente.nombre} 
             ${turno.servicio instanceof Especialidad ? 'para la especialidad' : 'con la practica'} ${turno.servicio.nombre} 
             en la sede ${turno.sede.nombre}`
@@ -20,16 +20,16 @@ class FactoryNotificacion {
         return new Notificacion({
           destinatario: turno.medico,
           remitente: turno.paciente,
-          mensaje: 
+          mensaje:
             `El turno fue cancelado por el paciente ${turno.paciente.nombre} 
             ${turno.servicio instanceof Especialidad ? 'para la especialidad' : 'con la practica'} ${turno.servicio.nombre} 
             en la sede ${turno.sede.nombre}`
         });
       case EstadoTurno.CONFIRMADO:
-        return new Notificacion({ 
-          destinatario: turno.paciente, 
-          remitente: turno.medico, 
-          mensaje: 
+        return new Notificacion({
+          destinatario: turno.paciente,
+          remitente: turno.medico,
+          mensaje:
             `El turno fue confirmado por el medico ${turno.medico.nombre}
             ${turno.servicio instanceof Especialidad ? 'para la especialidad' : 'con la practica'} ${turno.servicio.nombre} 
             en la sede ${turno.sede.nombre}`

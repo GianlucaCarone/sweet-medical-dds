@@ -1,3 +1,4 @@
+import { randomUUID } from "crypto";
 
 export class Sede {
     id;
@@ -8,6 +9,7 @@ export class Sede {
         if (!nombre || !direccion) {
             throw new ErrorDatosObligatorios();
         }
+        this.id = randomUUID();
         this.nombre = nombre;
         this.direccion = direccion;
     }
