@@ -20,7 +20,7 @@ export class DisponibilidadHoraria {
         this.horaHasta = horaHasta;
     }
 
-    seSuperponeConOtroHorario(otroHorario) {
+    seSuperponeCon(otroHorario) {
         if (!(otroHorario instanceof DisponibilidadHoraria)) {
             throw new Error("Se debe comparar con otra DisponibilidadHoraria");
         }
