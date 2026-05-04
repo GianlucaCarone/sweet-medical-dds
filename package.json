@@ -26,6 +26,7 @@
     "prettier": "3.6.2"
   },
   "dependencies": {
+    "i18next": "^26.0.8",
     "zod": "^4.3.6"
   }
 }

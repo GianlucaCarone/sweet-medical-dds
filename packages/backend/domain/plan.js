@@ -1,5 +1,6 @@
 import { CoberturaEspecialidad } from "./coberturas/coberturaEspecialidad";
 import { CoberturaPractica } from "./coberturas/coberturaPractica";
+import { randomUUID } from "crypto";
 
 export class Plan {
   id;
@@ -7,31 +8,12 @@ export class Plan {
   coberturasEspecialidad = [];
   coberturasPractica = [];
 
-  constructor({
-    nombre,
-    coberturasEspecialidad = [],
-    coberturasPractica = [],
-  }) {
+  constructor({ nombre }) {
     if (!nombre) {
       throw new ErrorDatosObligatorios();
     }
-    if (
-      !Array.isArray(coberturasEspecialidad) ||
-      !coberturasEspecialidad.every((c) => c instanceof CoberturaEspecialidad)
-    ) {
-      //Se verifica que sea array y que ademas todos los elemenos sean instancia de la clase CoberturaEspecialidad
-      throw new Error("Cobertura de especialidad inválida");
-    }
-    if (
-      !Array.isArray(coberturasPractica) ||
-      !coberturasPractica.every((c) => c instanceof CoberturaPractica)
-    ) {
-      //Se verifica que sea array y que ademas todos los elemenos sean instancia de la clase CoberturaPractica
-      throw new Error("Cobertura de práctica inválida");
-    }
+    this.id = randomUUID();
     this.nombre = nombre;
-    this.coberturasEspecialidad = coberturasEspecialidad;
-    this.coberturasPractica = coberturasPractica;
   }
 
   agregarCoberturaEspecialidad(coberturaEspecialidad) {
@@ -46,6 +28,15 @@ export class Plan {
       throw new Error("Cobertura de práctica inválida");
     }
     this.coberturasPractica.push(coberturaPractica);
+  }
+
+  eliminarCoberturaEspecialidad(coberturaEspecialidadAEliminar) {
+    if (!coberturaEspecialidadAEliminar) { throw new Error("Cobertura de especialidad invalida"); }
+    this.coberturasEspecialidad = this.coberturasEspecialidad.filter(cobertura => cobertura.id !== coberturaEspecialidadAEliminar.id);
+  }
+  eliminarCoberturaPractica(coberturaPracticaAEliminar) {
+    if (!coberturaPracticaAEliminar) { throw new Error("Cobertura de practica invalida"); }
+    this.coberturasPractica = this.coberturasPractica.filter(cobertura => cobertura.id !== coberturaPracticaAEliminar.id);
   }
 
   // TODO se podria usar polimorfismo segun el tipo de cobertura.
