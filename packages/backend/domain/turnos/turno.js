@@ -2,7 +2,7 @@ import { Medico } from "../medico.js";
 import { ObraSocial } from "../obraSocial.js";
 import { Paciente } from "../paciente.js";
 import { Plan } from "../plan.js";
-import { EstadoTurno } from "../turno.js";
+import { EstadoTurnoEnum } from "./estadoTurnoEnum.js";
 import { CambioEstadoTurno } from "./cambioEstadoTurno.js";
 export class Turno {
     id;
@@ -30,12 +30,12 @@ export class Turno {
         this.fechaHora = fechaHora;
         this.sede = sede;
 
-        this.estado = EstadoTurno.DISPONIBLE;
+        this.estado = EstadoTurnoEnum.DISPONIBLE;
         this.historialEstado = [];
     }
 
     actualizarEstadoTurno({ nuevoEstado, quien, motivo }) {
-        if (!Object.values(EstadoTurno).includes(nuevoEstado)) {
+        if (!Object.values(EstadoTurnoEnum).includes(nuevoEstado)) {
             throw new Error("No existe ese estado");
         }
 
@@ -44,7 +44,7 @@ export class Turno {
             [EstadoTurno.DISPONIBLE]: [EstadoTurno.RESERVADO, EstadoTurno.CANCELADO],
             [EstadoTurno.RESERVADO]: [EstadoTurno.CONFIRMADO, EstadoTurno.CANCELADO, EstadoTurno.DISPONIBLE],
             [EstadoTurno.CONFIRMADO]: [EstadoTurno.REALIZADO, EstadoTurno.CANCELADO],
-            [EstadoTurno.CANCELADO]: [], // Estado final 
+            [EstadoTurno.CANCELADO]: [EstadoTurno.DISPONIBLE], //Solo con mucha anticipacion
             [EstadoTurno.REALIZADO]: []  // Estado final 
         };
         const transicionesPermitidas = transicionesValidas[this.estado] || [];
