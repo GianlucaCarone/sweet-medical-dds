@@ -1,9 +1,23 @@
 import { MedicoRepository } from "../repositories/MedicoRepository.js";
 import { DisponibilidadHoraria } from "../domain/disponibilidadHoraria.js";
+import { Medico } from "../domain/medico.js";
+import { Usuario } from "../domain/usuario.js";
 
 export class MedicoService {
   constructor({ medicoRepository = new MedicoRepository() } = {}) {
     this.medicoRepository = medicoRepository;
+  }
+
+  create(medicoData) {
+    const usuario = new Usuario(medicoData.usuario);
+
+    const medico = new Medico({
+      nombre: medicoData.nombre,
+      matricula: medicoData.matricula,
+      usuario
+    });
+
+    return this.medicoRepository.save(medico);
   }
 
   getById(id) {
@@ -24,11 +38,7 @@ export class MedicoService {
   }
 
   crearMedicos(listaMedicos) {
-    listaMedicos.forEach(medicoData => {
-      const medico = new Medico(medicoData);
-      this.validarMedico(medico);
-      this.medicoRepository.save(medico);
-    });
+    return listaMedicos.map((medicoData) => this.create(medicoData));
   }
 
   validarMedico(medico) {

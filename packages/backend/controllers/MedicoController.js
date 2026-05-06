@@ -62,7 +62,6 @@ export class MedicoController {
         try {
           const MEDICOS_INICIALES =  [
             {
-              id: "1",
               nombre: "Dr. Juan Pérez",
               usuario: {
                 id: "1",
@@ -70,10 +69,8 @@ export class MedicoController {
                 password: "password123"
               },
               matricula: "1234567890",
-              disponibilidad: []
             },
             {
-              id: "2",
               nombre: "Dra. María Gómez",
               usuario: {
                 id: "2",
@@ -81,7 +78,6 @@ export class MedicoController {
                 password: "password456"
               },
               matricula: "0987654321",
-              disponibilidad: []
             }
           ];
 
