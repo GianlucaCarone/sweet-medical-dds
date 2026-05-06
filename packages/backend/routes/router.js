@@ -1,7 +1,7 @@
 // TODO Completar con los routers cuando este hecho el controller
 import express from 'express';
-import { SedeController } from '../controllers/SedeController.js';
 import sedeRouter from './sedeRoutes.js';
+import medicoRouter from './medicoRoutes.js';
 
 const router = express.Router();
 
@@ -13,6 +13,7 @@ router.get("/health", (req, res) => {
 })
 
 router.use('/sede', sedeRouter);
+router.use('/medico', medicoRouter);
 
 
 export default router
