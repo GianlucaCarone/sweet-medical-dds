@@ -1,0 +1,81 @@
+import { TurnoRepository } from "../repositories/TurnoRepository.js";
+import { BadRequestError } from "../errors/AppError.js";
+import { filtrosTurnoSchema } from "../schemas/turnoSchema.js";
+
+
+export class TurnoService {
+    constructor({ turnoRepository = new TurnoRepository() } = {}) {
+        this.turnoRepository = turnoRepository;
+        this.obraSocialRepository = obraSocialRepository;
+        this.planRepository = planRepository;
+    }
+
+    // Numero y limite, si no están 1 o 10 respectivamente y si se pasa undefined {}
+    obtenerTodos({ numeroPagina = 1, limitePorPagina = 10, filtros = {} } = {}) {
+        this.validarPaginacion(numeroPagina, limitePorPagina)
+        this.validarFiltros(filtros)
+
+        const { productos, totalProductos } = this.productoRepository.obtenerPaginados(
+            numeroPagina,
+            limitePorPagina,
+            filtros
+        )
+
+        const totalPaginas = totalProductos === 0 ? 0 : Math.ceil(totalProductos / limitePorPagina)
+
+        return {
+            productos,
+            numeroPagina,
+            limitePorPagina,
+            totalPaginas,
+            totalProductos
+        }
+    }
+
+
+    obtenerTodos(numeroPagina = 1, limitePorPagina = Number(process.env.ITEMS_PER_PAGE) || 10, filtros = {}) {
+        this.validarPaginacion(numeroPagina, limitePorPagina);
+        const filtrosValidados = this.validarFiltros(filtros);
+
+        const { turnos, totalTurnos } = this.turnoRepository.obtenerPaginados(numeroPagina, limitePorPagina, filtrosValidados);
+
+        const totalPaginas = totalTurnos === 0 ? 0 : Math.ceil(totalTurnos / limitePorPagina)
+
+        // TODO Por cada turno calcular el precio que tiene que pagar el paciente, si la obra social y el plan del paciente cubren la prestacion, el paciente no tiene que pagar nada,
+        // si la obra social cubre la prestacion pero el plan del paciente no, el paciente tiene que pagar un porcentaje de la prestacion,
+        // si la obra social no cubre la prestacion, el paciente tiene que pagar el 100% de la prestacion.
+        // TODO Si el paciente no tiene obra social ni plan, el paciente tiene que pagar el 100% de la prestacion.
+
+        return {
+            turnos,
+            numeroPagina,
+            limitePorPagina,
+            totalPaginas,
+            totalTurnos
+        }
+
+
+    }
+
+
+    validarFiltros(filtrosRecibidos) {
+        const validacion = filtrosTurnoSchema.safeParse(filtrosRecibidos); //Analiza y devuelve un objeto con success y data entonces lo que hacemos es usar ese obkjecto para manejar el estado de la respuesta de success
+        if (!validacion.success) {
+            const mensajesError = validacion.error.issues.map(issue => issue.message).join(', ');
+            throw new BadRequestError(`Filtros inválidos: ${mensajesError}`);
+        }
+        return validacion.data;
+    }
+
+
+    validarPaginacion(numeroPagina, limitePorPagina) {
+        this.validarEnteroPositivo(numeroPagina, "Numero de página")
+        this.validarEnteroPositivo(limitePorPagina, "Límite por página")
+    }
+
+    validarEnteroPositivo(numero, parametro) {
+        if (!Number.isInteger(numero) || numero <= 0) {
+            throw new BadRequestError(`${parametro} debe ser un entero positivo`)
+        }
+    }
+}
