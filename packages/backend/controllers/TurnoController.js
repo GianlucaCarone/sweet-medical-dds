@@ -5,6 +5,7 @@ export class TurnoController {
         this.turnoService = turnoService;
     }
 
+
     findAll = async (req, res) => {
         try {
             const paginacion = this.extraerPaginacion(req.query)
