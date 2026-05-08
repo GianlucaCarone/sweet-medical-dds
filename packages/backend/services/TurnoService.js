@@ -1,6 +1,7 @@
 import { TurnoRepository } from "../repositories/TurnoRepository.js";
 import { BadRequestError } from "../errors/AppError.js";
 import { filtrosTurnoSchema } from "../schemas/turnoSchema.js";
+import { success } from "zod";
 
 
 export class TurnoService {
@@ -10,30 +11,9 @@ export class TurnoService {
         this.planRepository = planRepository;
     }
 
-    // Numero y limite, si no están 1 o 10 respectivamente y si se pasa undefined {}
-    obtenerTodos({ numeroPagina = 1, limitePorPagina = 10, filtros = {} } = {}) {
-        this.validarPaginacion(numeroPagina, limitePorPagina)
-        this.validarFiltros(filtros)
-
-        const { productos, totalProductos } = this.productoRepository.obtenerPaginados(
-            numeroPagina,
-            limitePorPagina,
-            filtros
-        )
-
-        const totalPaginas = totalProductos === 0 ? 0 : Math.ceil(totalProductos / limitePorPagina)
-
-        return {
-            productos,
-            numeroPagina,
-            limitePorPagina,
-            totalPaginas,
-            totalProductos
-        }
-    }
 
 
-    obtenerTodos(numeroPagina = 1, limitePorPagina = Number(process.env.ITEMS_PER_PAGE) || 10, filtros = {}) {
+    obtenerTodosPaginados(numeroPagina = 1, limitePorPagina = Number(process.env.ITEMS_PER_PAGE) || 10, filtros = {}) {
         this.validarPaginacion(numeroPagina, limitePorPagina);
         const filtrosValidados = this.validarFiltros(filtros);
 
@@ -45,6 +25,11 @@ export class TurnoService {
         // si la obra social cubre la prestacion pero el plan del paciente no, el paciente tiene que pagar un porcentaje de la prestacion,
         // si la obra social no cubre la prestacion, el paciente tiene que pagar el 100% de la prestacion.
         // TODO Si el paciente no tiene obra social ni plan, el paciente tiene que pagar el 100% de la prestacion.
+        // SOLUCION:
+        // 1) MODO FACIL: QUERY PARAM Y QUE CARGUE LA OBRA SOCIAL Y EL PLAN CADA VEZ QUE SOLICITE UNA BUSQUEDA DE TURNOS
+        // 2) REALISTA: http::.../turnos?pacienteId={id} --> De aca obtenemos datos del paciente, su obra social, plan y de ahi podemos obtener  cuanto cubre su plan con esa obra social,
+        // hay que chequear si tiene obra social, si existe esa practica o especialidad en el plan que tiene, luego si existe, cuanto es el porcentaje que le cubre y ahi calcular el cobro.
+
 
         return {
             turnos,
@@ -56,7 +41,6 @@ export class TurnoService {
 
 
     }
-
 
     validarFiltros(filtrosRecibidos) {
         const validacion = filtrosTurnoSchema.safeParse(filtrosRecibidos); //Analiza y devuelve un objeto con success y data entonces lo que hacemos es usar ese obkjecto para manejar el estado de la respuesta de success

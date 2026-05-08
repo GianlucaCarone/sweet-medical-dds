@@ -14,5 +14,7 @@ router.get("/health", (req, res) => {
 
 router.use('/sede', sedeRouter);
 
+router.use('/turno', turnoRouter);
+
 
 export default router

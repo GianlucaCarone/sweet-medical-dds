@@ -17,7 +17,7 @@ export class Turno {
 
     constructor({ medico, servicio, fechaHora, sede }) {
 
-        if (!medico || !servicio || !sede) {
+        if (!medico || !servicio || !sede || !fechaHora) {
             throw new ErrorDatosObligatorios()
         }
         if (!(medico instanceof Medico)) {

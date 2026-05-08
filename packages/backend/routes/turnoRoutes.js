@@ -6,7 +6,7 @@ const router = express.Router();
 
 
 router.route('/')
-    .get((req, res, next) => turnoController.findAll(req, res, next))
+    .get((req, res, next) => turnoController.findAllPaginated(req, res, next))
     .post((req, res, next) => turnoController.create(req, res, next));
 
 export default router;
