@@ -1,5 +1,6 @@
-import { Turno } from "../domain/Turno.js";
 import { EstadoTurnoEnum } from "../domain/turnos/estadoTurnoEnum.js";
+import { NotFoundError } from "../errors/AppError.js";
+import { Turno } from "../domain/turnos/turno.js";
 
 export class TurnoRepository {
     constructor() {
@@ -14,6 +15,14 @@ export class TurnoRepository {
     findByEstado(estado) {
         this.validarEstado(estado);
         return Object.values(this.turnos).filter(turno => turno.estado === estado);
+    }
+
+    findById(id) {
+        const turno = this.turnos[id];
+        if (!turno) {
+            throw new NotFoundError("No se encontro el turno con el id " + id)
+        }
+        return turno;
     }
 
     save(turno) {

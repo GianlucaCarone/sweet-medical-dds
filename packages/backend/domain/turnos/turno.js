@@ -34,7 +34,8 @@ export class Turno {
         this.historialEstado = [];
     }
 
-    actualizarEstadoTurno({ nuevoEstado, quien, motivo }) {
+    //motivo opcional
+    actualizarEstadoTurno({ nuevoEstado, quien, motivo = undefined }) {
         if (!Object.values(EstadoTurnoEnum).includes(nuevoEstado)) {
             throw new Error("No existe ese estado");
         }
@@ -64,48 +65,6 @@ export class Turno {
         this.historialEstado.push(cambioEstado);
     }
 
-    /* TODO: consultar que hacemos si aplicamos la logica de cambios de estados CON FUNCIONESA   
-        AsignarTurno(paciente, motivo) {
-            if (!(paciente instanceof Paciente)) {
-                throw new Error("Paciente inválido");
-            }
-            if (!(motivo instanceof String)) {
-                throw new Error("Motivo inválido");
-            }
-            this.paciente = paciente;
-            this.actualizarEstadoTurno({nuevoEstado: EstadoTurno.RESERVADO, quien: paciente, motivo: motivo});
-        }
-    
-        cancelarTurno(quien, motivo) {
-            if (!(quien instanceof Usuario)) {
-                throw new Error("Usuario inválido");
-            }
-            if (!(motivo instanceof String)) {
-                throw new Error("Motivo inválido");
-            }
-            this.actualizarEstadoTurno({nuevoEstado: EstadoTurno.CANCELADO, quien: quien, motivo: motivo});
-        }
-    
-        confirmarTurno(quien, motivo) {
-            if (!(quien instanceof Usuario)) {
-                throw new Error("Usuario inválido");
-            }
-            if (!(motivo instanceof String)) {
-                throw new Error("Motivo inválido");
-            }
-            this.actualizarEstadoTurno({nuevoEstado: EstadoTurno.CONFIRMADO, quien: quien, motivo:motivo});
-        }
-        finalizarTurno(quien, motivo) {
-            if (!(quien instanceof Usuario)) {
-                throw new Error("Usuario inválido");
-            }
-            if (!(motivo instanceof String)) {
-                throw new Error("Motivo inválido");
-            }
-            this.actualizarEstadoTurno({nuevoEstado: EstadoTurno.FINALIZADO, quien: quien, motivo:motivo});
-        }
-        
-        */
 
     //TODO: hacer logica costo de turnos
     calcularCosto() {
