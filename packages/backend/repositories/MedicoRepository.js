@@ -5,6 +5,10 @@ export class MedicoRepository {
     this.nextId = 1;
   }
 
+  findAll() {
+    return Object.values(this.medicos);
+  }
+
   findById(id) {
     return this.medicos[id] ?? null;
   }

@@ -19,6 +19,16 @@ export class MedicoController {
     }
   }
 
+  findAll = async (req, res, next) => {
+    try {
+        const medicos = await this.medicoService.findAll();
+        res.status(200).json(medicos);
+    }
+      catch (error) {
+        next(error);
+      }
+  }
+
   findById = async (req, res, next) => {
     try {
         const { id } = idParamNumberSchema.parse(req.params);

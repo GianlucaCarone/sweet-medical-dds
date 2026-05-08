@@ -12,8 +12,8 @@ router.get("/health", (req, res) => {
   });
 })
 
-router.use('/sede', sedeRouter);
-router.use('/medico', medicoRouter);
+router.use('/sedes', sedeRouter);
+router.use('/medicos', medicoRouter);
 
 
 export default router

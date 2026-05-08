@@ -30,6 +30,10 @@ export class MedicoService {
     return medico;
   }
 
+  findAll() {
+    return this.medicoRepository.findAll();
+  }
+
   definirDisponibilidadPara(disponibilidadData, id) {
     const medico = this.getById(id);
     const disponibilidad = new DisponibilidadHoraria(disponibilidadData);
