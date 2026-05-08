@@ -1,6 +1,6 @@
 import { TurnoService } from '../services/TurnoService.js';
 import { BadRequestError } from "../errors/AppError.js";
-
+import { idParamsSchema, bodyCambioEstadoSchema, bodyAsignarTurnoSchema } from "../schemas/turnoSchema.js";
 
 
 export class TurnoController {
@@ -8,37 +8,27 @@ export class TurnoController {
         this.turnoService = turnoService;
     }
 
-    create = async (req, res, next) => {
+    cambiarEstadoTurno = async (req, res, next) => {
         try {
-            const datosTurno = this.extraerYValidarBodyTurno(req.body);
-            const turno = await this.turnoService.create(datosTurno);
-            res.status(201).json({
-                status: 'success',
-                data: turno
-            });
-        } catch (error) {
-            next(error);
-        }
-    }
+            const idTurno = idParamsSchema.parse(req.params);
+            const cambioTurnoData = bodyCambioEstadoSchema.parse(req.body);
 
-    delete = async (req, res, next) => {
-        try {
-            const id = this.parsearId(req.params.id)
-            const turnoEliminado = this.turnoService.eliminar(id)
+            const turnoActualizado = this.turnoService.cambiarEstadoTurno(id, nuevoEstado, quien, motivo);
 
-            return res.status(200).json({ status: "success", data: turnoEliminado })
+            return res.status(200).json({ status: "success", data: turnoActualizado })
         } catch (error) {
             return next(error)
         }
     }
 
-    update = async (req, res, next) => {
+    asignarTurno = async (req, res, next) => {
         try {
-            const id = this.parsearId(req.params.id)
-            const datosTurno = this.extraerYValidarBodyTurno(req.body)
-            const turnoActualizado = this.turnoService.actualizar(id, datosTurno)
+            const idTurno = idParamsSchema.parse(req.params);
+            const turnoData = bodyAsignarTurnoSchema.parse(req.body);
 
-            return res.status(200).json({ status: "success", data: productoActualizado })
+            const turnoAsignado = this.turnoService.asignarTurno(idTurno, turnoData.pacienteId, turnoData.costoTurno);
+
+            return res.status(200).json({ status: "success", data: turnoAsignado })
         } catch (error) {
             return next(error)
         }
@@ -66,37 +56,12 @@ export class TurnoController {
         }
     }
 
-
-    extraerYValidarBodyTurno(body) {
-        if (!body || typeof body !== "object" || Array.isArray(body)) {
-            throw new BadRequestError("El cuerpo de la request es inválido")
-        }
-
-        const camposPermitidos = ["medico", "servicio", "fechaHora", "sede"]
-        const camposBody = Object.keys(body)
-        const camposNoPermitidos = camposBody.filter((campo) => !camposPermitidos.includes(campo))
-        if (camposNoPermitidos.length > 0) {
-            throw new BadRequestError(`Campos no permitidos en la request: ${camposNoPermitidos.join(", ")}`)
-        }
-
-        const camposFaltantes = camposPermitidos.filter((campo) => body[campo] === undefined)
-        if (camposFaltantes.length > 0) {
-            throw new BadRequestError(`Faltan campos obligatorios en la request: ${camposFaltantes.join(", ")}`)
-        }
-
-        return {
-            medico: body.medico,
-            servicio: body.servicio,
-            sede: body.sede,
-            fechaHora: body.fechaHora
-        }
-
-    }
-
-
-
     extraerFiltros(query) {
         const filtros = {}
+
+        if (query.pacienteId != undefined) {
+            filtros.pacienteId = query.pacienteId;
+        }
 
         if (query.estado != undefined) {
             filtros.estado = query.estado;
