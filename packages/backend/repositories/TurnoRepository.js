@@ -41,29 +41,31 @@ disponible:
 ● El monto que el paciente deberá abonar en caso de reservar dicho turno.
     */
 
+
+
     obtenerPaginados(numeroPagina, limitePorPagina, filtros = {}) {
         let turnos = this.findAll();
 
         if (filtros.estado !== undefined) {
             turnos = this.findByEstado(filtros.estado)
         }
-        if (filtros.profesional?.id !== undefined) {
-            turnos = turnos.filter((t) => t.medico.id === filtros.profesional.id)
+        if (filtros.medicoId !== undefined) {
+            turnos = turnos.filter((t) => t.medico.id === filtros.medicoId)
         }
-        if (filtros.especialidad?.id !== undefined) {
-            turnos = turnos.filter((t) => t.medico.especialidad.id === filtros.especialidad.id)
+        if (filtros.especialidadId !== undefined) {
+            turnos = turnos.filter((t) => t.medico.especialidad.id === filtros.especialidadId)
         }
-        if (filtros.practica?.id !== undefined) {
+        if (filtros.practicaId !== undefined) {
             turnos = turnos.filter((t) => t.servicio.practica.id === filtros.practica.id)
         }
-        if (filtros.sede?.id !== undefined) {
+        if (filtros.sedeId !== undefined) {
             turnos = turnos.filter((t) => t.sede.id === filtros.sede.id)
         }
-        if (filtros.fechaHora?.inicio !== undefined) {
-            turnos = turnos.filter((t) => t.fechaHora >= filtros.fechaHora.inicio)
+        if (filtros.fechaHoraInicio !== undefined) {
+            turnos = turnos.filter((t) => t.fechaHora >= filtros.fechaHoraInicio)
         }
-        if (filtros.fechaHora?.fin !== undefined) {
-            turnos = turnos.filter((t) => t.fechaHora <= filtros.fechaHora.fin)
+        if (filtros.fechaHoraFin !== undefined) {
+            turnos = turnos.filter((t) => t.fechaHora <= filtros.fechaHoraFin)
         }
         // TODO se puede mejorar esto?
 
