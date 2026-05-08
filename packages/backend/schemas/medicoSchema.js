@@ -7,7 +7,7 @@ const MaxLengthMatricula = 10;
 
 export const medicoSchema = z.object({
   nombre: z.string().min(1, "El nombre es obligatorio"),
-  usuario: usuarioSchema,
+  idUsuario: z.string().uuid("El id del usuario debe ser un UUID válido"),
   matricula: z.string().max(MaxLengthMatricula),
 });
 

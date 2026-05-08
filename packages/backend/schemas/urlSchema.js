@@ -10,3 +10,7 @@ export const idParamNumberSchema = z.object({
     message: "El id debe ser un número positivo"
   })
 });
+
+export const idParamUUIDSchema = z.object({
+  id: z.uuid("El id debe ser un UUID válido")
+});

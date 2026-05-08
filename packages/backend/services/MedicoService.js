@@ -1,20 +1,22 @@
 import { MedicoRepository } from "../repositories/MedicoRepository.js";
+import { UsuarioService } from "./UsuarioService.js";
 import { DisponibilidadHoraria } from "../domain/disponibilidadHoraria.js";
 import { Medico } from "../domain/medico.js";
 import { Usuario } from "../domain/usuario.js";
 
 export class MedicoService {
-  constructor({ medicoRepository = new MedicoRepository() } = {}) {
+  constructor({ medicoRepository = new MedicoRepository(), usuarioService = new UsuarioService() } = {}) {
     this.medicoRepository = medicoRepository;
+    this.usuarioService = usuarioService;
   }
 
   create(medicoData) {
-    const usuario = new Usuario(medicoData.usuario);
+    const usuario = this.usuarioService.findById(medicoData.idUsuario);
 
     const medico = new Medico({
       nombre: medicoData.nombre,
       matricula: medicoData.matricula,
-      usuario
+      usuario,
     });
 
     return this.medicoRepository.save(medico);
@@ -49,7 +51,6 @@ export class MedicoService {
     // TODO: Implementar validaciones necesarias para el médico
     this.validarUsuario(medico.usuario);
     this.validarMatricula(medico.matricula);
-    
   }
 
   validarUsuario(usuario) {

@@ -2,6 +2,7 @@
 import express from 'express';
 import sedeRouter from './sedeRoutes.js';
 import medicoRouter from './medicoRoutes.js';
+import usuarioRouter from './usuarioRoutes.js';
 
 const router = express.Router();
 
@@ -14,6 +15,7 @@ router.get("/health", (req, res) => {
 
 router.use('/sedes', sedeRouter);
 router.use('/medicos', medicoRouter);
+router.use('/usuarios', usuarioRouter);
 
 
 export default router
