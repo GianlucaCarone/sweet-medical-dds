@@ -9,6 +9,7 @@ export class Server {
         this.#app = app;
         this.port = port || 3000;
         this.#routes = [];
+        this.#controllers = [];
         this.#app.use(express.json());
     }
 

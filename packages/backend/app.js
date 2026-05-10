@@ -5,6 +5,9 @@ import { errorLogger } from "./middlewares/errorLogger.js";
 import { errorHandler } from "./middlewares/errorHandler.js";
 import { Server } from "./server.js";
 import routes from "./routes/router.js";
+import { SedeRepository } from "./repositories/SedeRepository.js";
+import { SedeService } from "./services/SedeService.js";
+import { SedeController } from "./controllers/SedeController.js";
 
 const app = express();
 
@@ -31,8 +34,14 @@ app.listen(process.env.SERVER_PORT, () => {
 const server = new Server(app);
 
 /* -------------------------------------------------------------------------- */
-/*                 Aca van los controllers y repos por feature                */
+/*                                    Sede                                    */
 /* -------------------------------------------------------------------------- */
+
+const sedeRepository = new SedeRepository();
+const sedeService = new SedeService(sedeRepository);
+const sedeController = new SedeController(sedeService);
+
+server.setController(SedeController, sedeController);
 
 /* -------------------------------------------------------------------------- */
 /*                                    RUTAS                                   */
