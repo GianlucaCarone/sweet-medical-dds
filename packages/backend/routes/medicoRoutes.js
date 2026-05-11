@@ -11,6 +11,11 @@ router.route('/')
 router.route('/:id/disponibilidad')
     .post((req, res, next) => medicoController.definirDisponibilidad(req, res, next));
 
+router.route("/:id/sedes")
+  .post((req, res, next) => medicoController.agregarSede(req, res, next));
+
+router.route("/:id/sedes/:sedeId")
+  .delete((req, res, next) => medicoController.eliminarSede(req, res, next));
 
 router.route('/seed')
     .get((req, res, next) => medicoController.seed(req, res, next));

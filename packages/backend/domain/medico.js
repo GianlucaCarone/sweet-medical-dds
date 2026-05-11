@@ -77,7 +77,16 @@ export class Medico {
     }
 
     agregarSede(sede) {
-        if (!sede) { throw new Error("Sede invalida"); }
+        if (!(sede instanceof Sede)) {
+          throw new Error("Sede inválida");
+        }
+    
+        const yaTieneSede = this.sedes.some(s => s.id === sede.id);
+    
+        if (yaTieneSede) {
+          throw new Error("El médico ya trabaja en esa sede");
+        }
+    
         this.sedes.push(sede);
     }
 

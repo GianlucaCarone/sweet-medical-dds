@@ -1,6 +1,7 @@
 import {MedicoService} from '../services/MedicoService.js';
 import { medicoSchema, disponibilidadSchema, medicoIdParamsSchema } from '../schemas/medicoSchema.js';
 import { idParamNumberSchema } from '../schemas/urlSchema.js';
+import { asociarSedeSchema, eliminarSedeParamsSchema } from "../schemas/sedeSchema.js";
 
 
 export class MedicoController {
@@ -61,41 +62,72 @@ export class MedicoController {
     }
   }
 
-    parsearId(idParam) {
-        if (typeof idParam !== "string" || idParam.trim().length === 0) {
-            throw new Error("id inválido");
-        }
-        return idParam;
+  agregarSede = async (req, res, next) => {
+    try {
+      const { id } = medicoIdParamsSchema.parse(req.params);
+      const { sedeId } = asociarSedeSchema.parse(req.body);
+
+      const medicoActualizado = await this.medicoService.agregarSede(id, sedeId);
+
+      return res.status(200).json({
+        status: "success",
+        data: medicoActualizado
+      });
+    } catch (error) {
+      return next(error);
     }
+  };
 
-    seed = async (req, res, next) => {
-        try {
-          const MEDICOS_INICIALES =  [
-            {
-              nombre: "Dr. Juan Pérez",
-              usuario: {
-                id: "1",
-                nombreUsuario: "juanperez",
-                password: "password123"
-              },
-              matricula: "1234567890",
-            },
-            {
-              nombre: "Dra. María Gómez",
-              usuario: {
-                id: "2",
-                nombreUsuario: "mariagomez",
-                password: "password456"
-              },
-              matricula: "0987654321",
-            }
-          ];
+  eliminarSede = async (req, res, next) => {
+    try {
+      const { id } = medicoIdParamsSchema.parse(req.params);
+      const { sedeId } = eliminarSedeParamsSchema.parse(req.params);
 
-          this.medicoService.crearMedicos(MEDICOS_INICIALES);
+      const medicoActualizado = await this.medicoService.eliminarSede(id, sedeId);
 
-          res.status(201).json(MEDICOS_INICIALES);
-        } catch (error) {
-          next(error);
-        }
+      return res.status(200).json({
+        status: "success",
+        data: medicoActualizado
+      });
+
+    } catch (error) {
+      return next(error);
+    }
+  };
+
+  parsearId(idParam) {
+      if (typeof idParam !== "string" || idParam.trim().length === 0) {
+          throw new Error("id inválido");
       }
+      return idParam;
+  }
+
+  seed = async (req, res, next) => {
+      try {
+        const MEDICOS_INICIALES =  [
+          {
+            nombre: "Dr. Juan Pérez",
+            usuario: {
+              id: "1",
+              nombreUsuario: "juanperez",
+              password: "password123"
+            },
+            matricula: "1234567890",
+          },
+          {
+            nombre: "Dra. María Gómez",
+            usuario: {
+              id: "2",
+              nombreUsuario: "mariagomez",
+              password: "password456"
+            },
+            matricula: "0987654321",
+          }
+        ];
+        this.medicoService.crearMedicos(MEDICOS_INICIALES);
+        res.status(201).json(MEDICOS_INICIALES);
+      } catch (error) {
+        next(error);
+      }
+    }
 }

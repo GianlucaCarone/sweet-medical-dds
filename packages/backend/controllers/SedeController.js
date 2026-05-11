@@ -1,4 +1,5 @@
 import {SedeService} from '../services/SedeService.js';
+import { sedeSchema } from "../schemas/sedeSchema.js";
 
 export class SedeController {
     constructor({ sedeService = new SedeService() } = {}) {
@@ -19,7 +20,8 @@ export class SedeController {
 
     create = async (req, res, next) => {
         try {
-            const sede = await this.sedeService.create(req.body);
+            const sedeData = sedeSchema.parse(req.body)
+            const sede = await this.sedeService.create(sedeData);
             res.status(201).json( {
                 status: 'success',
                 data: sede

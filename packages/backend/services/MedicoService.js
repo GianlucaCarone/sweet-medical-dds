@@ -3,15 +3,18 @@ import { UsuarioService } from "./UsuarioService.js";
 import { DisponibilidadHoraria } from "../domain/disponibilidadHoraria.js";
 import { Medico } from "../domain/medico.js";
 import { Usuario } from "../domain/usuario.js";
+import { Sede } from "../domain/sede.js";
+import { SedeService } from "./SedeService.js";
 
 export class MedicoService {
-  constructor({ medicoRepository = new MedicoRepository(), usuarioService = new UsuarioService() } = {}) {
+  constructor({ medicoRepository = new MedicoRepository(), usuarioService = new UsuarioService(), sedeService = new SedeService() } = {}) {
     this.medicoRepository = medicoRepository;
     this.usuarioService = usuarioService;
+    this.sedeService = sedeService;
   }
 
   create(medicoData) {
-    const usuario = this.usuarioService.findById(medicoData.idUsuario);
+    const usuario = this.usuarioService.findById(medicoData.usuario);
 
     const medico = new Medico({
       nombre: medicoData.nombre,
@@ -56,4 +59,26 @@ export class MedicoService {
   validarUsuario(usuario) {
     // TODO: Implementar validaciones necesarias para el usuario
   }
+
+  agregarSede(medicoId, sedeId) {
+    const medico = this.getById(medicoId);
+
+    const sede = this.sedeService.getById(sedeId);
+
+    medico.agregarSede(sede);
+
+    return this.medicoRepository.save(medico);
+  }
+
+  eliminarSede(medicoId, sedeId) {
+    const medico = this.getById(medicoId);
+
+    //const sede = this.sedeService.getById(sedeId);
+
+    // TODO: revisar si elimino por id o sede completa
+    medico.eliminarSede(sedeId);
+
+    return this.medicoRepository.save(medico);
+  }
+
 }
