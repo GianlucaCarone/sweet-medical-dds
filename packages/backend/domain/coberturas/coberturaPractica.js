@@ -4,9 +4,10 @@ import { NivelCobertura } from "../nivelCobertura";
 export class CoberturaPractica {
     practica;
     nivel;
+    porcentajeCobertura;
 
-    constructor({ practica, nivel }) {
-        if (!practica || !nivel) {
+    constructor({ practica, nivel, porcentajeCobertura }) {
+        if (!practica || !nivel || !porcentajeCobertura) {
             throw new ErrorDatosObligatorios();
         }
         if (!(practica instanceof Practica)) {

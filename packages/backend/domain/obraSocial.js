@@ -18,6 +18,17 @@ export class ObraSocial {
         this.planes = planes;
     }
 
+    obtenerPlanPorId(planId) {
+        if (!planId) {
+            throw new Error("Id invalido");
+        }
+        const plan = this.planes.find(plan => plan.id === planId);
+        if (!plan) {
+            throw new Error("No se encontro el plan con el id " + planId)
+        }
+        return plan;
+    }
+
     agregarPlan(plan) {
         if (!(plan instanceof Plan)) {
             throw new Error("Plan inválido");
