@@ -1,7 +1,9 @@
 import { TurnoRepository } from "../repositories/TurnoRepository.js";
 import { BadRequestError } from "../errors/AppError.js";
 import { filtrosTurnoSchema } from "../schemas/turnoSchema.js";
-import { Turno } from "../domain/turnos/turno.js";
+import { Turnos } from "../domain/turnos/turno.js";
+import { NivelCobertura } from "../domain/coberturas/nivelCoberturaEnum.js";
+
 
 
 export class TurnoService {
@@ -9,7 +11,6 @@ export class TurnoService {
         this.turnoRepository = turnoRepository;
         this.pacienteRepository = pacienteRepository;
         this.obraSocialRepository = obraSocialRepository;
-        this.planRepository = planRepository;
     }
 
     cambiarEstadoTurno(id, nuevoEstado, quien, motivo) {
@@ -66,9 +67,47 @@ export class TurnoService {
             totalPaginas,
             totalTurnos
         }
-
-
     }
+
+    calcularCostoTurno(obraSocial, plan, servicio) {
+        let precioInicial = servicio.precio;
+
+        if (!obraSocial || !plan) {
+            return precioInicial;
+        }
+
+        let { nivel, porcentaje } = plan.obtenerCoberturaServicio(servicio)
+
+        switch (nivel) {
+            case NivelCobertura.TOTAL:
+                return 0;
+            case NivelCobertura.PARCIAL:
+                return precioInicial * porcentaje; // TODO: NO ESTA DEFINIDO EL PORCENTAJE DE DESCUENTO SI ES PARCIAL -> Implemente porcentajeCobertura en coberturaEspecialidad y coberturaPractica para no hardcodearlo y que cada obrasocial lo defina en su plan
+            case NivelCobertura.NO_CUBIERTA:
+                return precioInicial;
+            default:
+                return precioInicial;
+        }
+    }
+
+    obtenerObraSocialYPlanPorPaciente(pacienteId) {
+        const paciente = this.pacienteRepository.findById(pacienteId);
+
+        if (!paciente.obraSocialId) {
+            return { obraSocial: null, plan: null }
+        }
+
+        const obraSocial = this.obraSocialRepository.findById(paciente.obraSocialId);
+        if (!obraSocial) {
+            throw new BadRequestError("No se encontro la obra social con el id " + paciente.obraSocialId)
+        }
+        const plan = obraSocial.obtenerPlanPorId(paciente.planId);
+        return {
+            obraSocial,
+            plan
+        }
+    }
+
 
     validarFiltros(filtrosRecibidos) {
         const validacion = filtrosTurnoSchema.safeParse(filtrosRecibidos); //Analiza y devuelve un objeto con success y data entonces lo que hacemos es usar ese obkjecto para manejar el estado de la respuesta de success

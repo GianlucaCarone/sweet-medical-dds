@@ -23,11 +23,15 @@
     "eslint": "^9.39.4",
     "eslint-plugin-react": "^7.37.5",
     "globals": "^16.3.0",
-    "prettier": "3.6.2"
+    "jest": "^30.4.2",
+    "prettier": "3.6.2",
+    "supertest": "^7.2.2"
   },
   "dependencies": {
     "i18next": "^26.0.8",
     "mongoose": "^8.23.1",
-    "zod": "^4.3.6"
+    "zod": "^4.3.6",
+    "jest": "^30.4.2",
+    "supertest": "^7.2.2"
   }
 }
