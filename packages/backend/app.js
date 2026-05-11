@@ -6,6 +6,7 @@ import { errorHandler } from "./middlewares/errorHandler.js";
 import { Server } from "./server.js";
 import routes from "./routes/router.js";
 import { SedeController } from "./controllers/SedeController.js";
+import { TurnoController } from "./controllers/TurnoController.js";
 
 const app = express();
 
@@ -28,6 +29,9 @@ const server = new Server(app);
 
 const sedeController = new SedeController();
 server.setController(SedeController, sedeController);
+
+const turnoController = new TurnoController();
+server.setController(TurnoController, turnoController);
 
 /* -------------------------------------------------------------------------- */
 /*                                    RUTAS                                   */
