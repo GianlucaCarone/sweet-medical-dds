@@ -1,0 +1,60 @@
+import express from "express"; // framework para crear el servidor y manejar las rutas
+import cors from "cors"; // middleware para permitir solicitudes desde diferentes orígenes (CORS)
+import { notFoundHandler } from "./middlewares/notFoundHandler.js";
+import { errorLogger } from "./middlewares/errorLogger.js";
+import { errorHandler } from "./middlewares/errorHandler.js";
+
+export class Server {
+    #controllers;
+    #app;
+    #routes;
+
+    constructor(app, port) {
+        this.#app = app;
+        this.port = port || 3000;
+        this.#routes = [];
+        this.#controllers = [];
+        this.#app.use(express.json());
+    }
+
+    get app() {
+        return this.#app;
+    }
+
+    setController(controllerClass, controller) {
+        this.#controllers[controllerClass.name] = controller;
+    }
+    
+    getController(controllerClass) {
+        const controller = this.#controllers[controllerClass.name];
+        if (!controller) throw new Error("El controller no está definido para la ruta dada");
+        return controller;
+    }
+
+    addRoute(route) {
+        this.#routes.push(route);
+    }
+
+    configurarRutas() {
+        this.#routes.forEach( ({path, handler}) => this.app.use(path, handler(this.getController.bind(this))));
+
+        this.#app.use(notFoundHandler);
+        this.#app.use(errorLogger);
+        this.#app.use(errorHandler);
+
+        this.#app.use(
+            cors({
+                origin: process.env.ALLOWED_ORIGINS
+                ? process.env.ALLOWED_ORIGINS.split(",").map((o) => o.trim())
+                : true,
+            }),
+        );
+        
+    }
+
+    start() {
+        this.#app.listen(process.env.SERVER_PORT, () => {
+            console.warn(`Backend escuchando en puerto ${process.env.SERVER_PORT}`);
+        });
+    }
+}
