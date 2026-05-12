@@ -2,6 +2,9 @@ import { Usuario } from "./usuario.js"
 import { ErrorDatosObligatorios } from "./errores.js";
 import { DisponibilidadHoraria } from "./disponibilidadHoraria.js";
 import { randomUUID } from "crypto";
+import { Practica } from "./servicios/practica.js";
+import { Especialidad } from "./servicios/especialidad.js";
+import { Sede } from "./sede.js";
 
 export class Medico {
     id;
@@ -76,6 +79,10 @@ export class Medico {
         }
     }
 
+    ofrecePractica(practicaId) {
+        return this.practicas.some(practica => practica.id === practicaId);
+    }
+
     agregarSede(sede) {
         if (!(sede instanceof Sede)) {
           throw new Error("Sede inválida");
@@ -90,9 +97,14 @@ export class Medico {
         this.sedes.push(sede);
     }
 
-    eliminarSede(sedeAEliminar) {
-        if (!sedeAEliminar) { throw new Error("Sede invalida"); }
-        this.sedes = this.sedes.filter(sede => sede.id !== sedeAEliminar.id);
+    eliminarSede(sedeId) {
+        const cantidadAntes = this.sedes.length;
+
+        this.sedes = this.sedes.filter(sede => sede.id !== sedeId);
+
+        if (cantidadAntes === this.sedes.length) {
+          throw new Error("La sede no estaba asociada al médico");
+        }
     }
 
 }

@@ -75,10 +75,20 @@ export class MedicoService {
 
     //const sede = this.sedeService.getById(sedeId);
 
-    // TODO: revisar si elimino por id o sede completa
     medico.eliminarSede(sedeId);
 
     return this.medicoRepository.save(medico);
+  }
+
+  consultarDisponibilidad(medicoId, practicaId) {
+    const medico = this.getById(medicoId);
+
+    if (!medico.ofrecePractica(practicaId)) {
+      throw new Error("El médico no ofrece esa práctica");
+    }
+
+    // TODO: Falta relacionarlo bien con turnos, por ahora solo valida que el medico tenga la practica. (Capaz haya que cambiarlo)
+    return medico.disponibilidades;
   }
 
 }

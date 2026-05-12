@@ -1,5 +1,5 @@
 import {MedicoService} from '../services/MedicoService.js';
-import { medicoSchema, disponibilidadSchema, medicoIdParamsSchema } from '../schemas/medicoSchema.js';
+import { medicoSchema, disponibilidadSchema, medicoIdParamsSchema, disponibilidadConsultaSchema } from '../schemas/medicoSchema.js';
 import { idParamNumberSchema } from '../schemas/urlSchema.js';
 import { asociarSedeSchema, eliminarSedeParamsSchema } from "../schemas/sedeSchema.js";
 
@@ -95,12 +95,31 @@ export class MedicoController {
     }
   };
 
+  consultarDisponibilidad = async (req, res, next) => {
+    try {
+      const { id } = medicoIdParamsSchema.parse(req.params);
+    
+      const { idPractica } = disponibilidadConsultaSchema.parse(req.query);
+
+      const disponibilidades = await this.medicoService.consultarDisponibilidad(id, idPractica);
+
+      return res.status(200).json({
+        status: "success",
+        data: disponibilidades
+      });
+    } catch (error) {
+      return next(error);
+    }
+  };
+
+  /*
   parsearId(idParam) {
       if (typeof idParam !== "string" || idParam.trim().length === 0) {
           throw new Error("id inválido");
       }
       return idParam;
   }
+  */
 
   seed = async (req, res, next) => {
       try {

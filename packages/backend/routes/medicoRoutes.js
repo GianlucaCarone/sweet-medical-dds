@@ -9,6 +9,7 @@ router.route('/')
     .post((req, res, next) => medicoController.create(req, res, next));
 
 router.route('/:id/disponibilidad')
+    .get((req, res, next) => medicoController.consultarDisponibilidad(req, res, next)) // Puede ser que no vaya asi esto.
     .post((req, res, next) => medicoController.definirDisponibilidad(req, res, next));
 
 router.route("/:id/sedes")

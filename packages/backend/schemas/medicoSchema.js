@@ -30,3 +30,9 @@ export const disponibilidadSchema = z.object({
         message: "La hora debe estar en formato HH:mm y ser una hora válida"
     }),
 });
+
+export const disponibilidadConsultaSchema = z.object({
+  practicaId: z.string().uuid(
+    "El id de la práctica debe ser un UUID válido"
+  )
+});
