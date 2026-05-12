@@ -2,6 +2,7 @@ import { DiaSemana } from "./diaSemanaEnum.js";
 import { ErrorDatosObligatorios } from "./errores.js";
 
 export class DisponibilidadHoraria {
+    // TODO: Planteo uso de ID para poder modificar/eliminar 
     diaSemana;
     horaDesde;
     horaHasta;
@@ -34,4 +35,6 @@ export class DisponibilidadHoraria {
         //Entonces se superponen
         return this.horaDesde < otroHorario.horaHasta && this.horaHasta > otroHorario.horaDesde;
     }
+
+    // Consultar como administrar la disponibilidad, si manejarla con ID y sacar el mergeo. No tengo manera de modificar una disponiblidad cambiando el horario completamente, solo sumo horarios.
 }

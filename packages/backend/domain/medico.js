@@ -37,6 +37,7 @@ export class Medico {
             throw new Error("No es una DisponibilidadHoraria valida");
         }
 
+        // TODO: Revisar si el mergeo lo sacamos
         this.disponibilidades.forEach(horarioExistente => {
             if (disponibilidad.seSuperponeCon(horarioExistente)) {
                 throw new Error("Este horario se superpone con otro horario existente");
@@ -45,6 +46,8 @@ export class Medico {
 
         this.disponibilidades.push(disponibilidad);
     }
+
+    // TODO: Crear metodos eliminarDisponibilidad y modificarDisponibilidad
 
     eliminarDisponibilidad(disponibilidadAEliminar) {
         if (!disponibilidadAEliminar instanceof DisponibilidadHoraria) {

@@ -62,6 +62,22 @@ export class MedicoController {
     }
   }
 
+  modificarDisponibilidad = async (req, res, next) => {
+    try{
+      // TODO: Ver como modificar la disponibilidad
+    }catch(error){
+        return next(error)
+    }
+  }
+
+  eliminarDisponibilidad = async (req, res, next) => {
+    try{
+      // TODO: Ver como eliminar la disponibilidad
+    }catch(error){
+        return next(error)
+    }
+  }
+
   agregarSede = async (req, res, next) => {
     try {
       const { id } = medicoIdParamsSchema.parse(req.params);
