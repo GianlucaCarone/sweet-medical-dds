@@ -21,4 +21,8 @@ export class Practica {
     get costo() {
         return this.costo;
     }
+
+    get codigo() {
+        return this.codigo;
+    }
 }

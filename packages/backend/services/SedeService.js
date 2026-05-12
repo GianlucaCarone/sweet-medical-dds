@@ -1,4 +1,4 @@
-import { SedeRepository } from "../repositories/SedeRepository.js";
+import { SedeRepository } from "../repositories/sedeRepository.js";
 
 export class SedeService {
   constructor({ sedeRepository = new SedeRepository() } = {}) {

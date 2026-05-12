@@ -7,6 +7,16 @@ export class ServiciosService {
         this.serviciosRepository = serviciosRepository
     }
 
+    toDTO (servicio) {
+        return {
+            id: servicio.id,
+            nombre: servicio.nombre,
+            duracion: servicio.duracionTurnoEnMins,
+            costo: servicio.costo(),
+            codigo: servicio.codigo()
+        }
+    }
+
     create (datosServicio) {
         this.validarDatosServicio(datosServicio)
         const servicio = this.crearEntidad(datosServicio)

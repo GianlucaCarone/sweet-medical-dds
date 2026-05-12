@@ -1,4 +1,4 @@
-import {SedeService} from "../services/SedeService.js";
+import {SedeService} from "../services/sedeService.js";
 
 export class SedeController {
     constructor({ sedeService = new SedeService() } = {}) {

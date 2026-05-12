@@ -1,12 +1,18 @@
-import {Especialidad} from "../domain/servicios/especialidad.js"
-import {Practica} from "../domain/servicios/practica.js"
+import { ServicioSchema } from "../schemas/database/servicioSchema.js";
 
 export class ServiciosRepository {
-    constructor () {} //TODO: integrar con ODM
+    constructor () {this.model = ServicioSchema;}
 
-    save () {}
+    async save (servicio) {
+        const nuevoServicio = new this.model(servicio);
+        return await nuevoServicio.save();
+    }
 
-    getById (id) {}
+    async getById (id) {
+        return await this.model.findById(idServicio);
+    }
 
-    deleteById (id) {}
+    async deleteById (id) {
+        return await this.model.findByIdAndDelete(id);
+    }
 }

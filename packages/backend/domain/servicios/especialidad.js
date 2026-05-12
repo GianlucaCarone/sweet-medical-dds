@@ -19,4 +19,7 @@ export class Especialidad {
     get costo() {
         return this.costoConsulta;
     }
+    get codigo() {
+        return null;
+    }
 }

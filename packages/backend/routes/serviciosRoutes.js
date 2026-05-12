@@ -2,7 +2,7 @@ import express from 'express';
 import { ServiciosController } from '../controllers/serviciosController';
 
 const router = express.Router();
-const sedeController = new serviciosController();
+const servicioController = new serviciosController();
 
 router.route('/servicios')
     .post((req, res, next) => serviciosController.create(req, res, next));
