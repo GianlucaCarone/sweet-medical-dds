@@ -3,7 +3,8 @@ import { BadRequestError } from "../errors/AppError.js";
 import { filtrosTurnoSchema } from "../schemas/turnoSchema.js";
 import { Turnos } from "../domain/turnos/turno.js";
 import { NivelCobertura } from "../domain/coberturas/nivelCoberturaEnum.js";
-
+import { EstadoTurnoEnum } from "../domain/turnos/estadoTurnoEnum.js";
+import { Plan } from "../domain/plan.js";
 
 
 export class TurnoService {
@@ -36,9 +37,9 @@ export class TurnoService {
         turno.paciente = paciente;
         turno.costoTurno = costoTurno;
 
-        turno.actualizarEstadoTurno({ nuevoEstado, paciente })
+        turno.actualizarEstadoTurno({nuevoEstado: EstadoTurnoEnum.RESERVADO, paciente });
 
-        return this.turnoRepository.save(turno)
+        return this.turnoRepository.save(turno);
     }
 
     obtenerTodosPaginados(numeroPagina = 1, limitePorPagina = Number(process.env.ITEMS_PER_PAGE) || 10, filtros = {}) {
@@ -60,23 +61,33 @@ export class TurnoService {
          hay que chequear si tiene obra social, si existe esa practica o especialidad en el plan que tiene, luego si existe, cuanto es el porcentaje que le cubre y ahi calcular el cobro.
         */
 
+         const {obraSocial, plan } = this.obtenerObraSocialYPlanPorPaciente(filtrosValidados.pacienteId);
+
+         const turnosConCosto = turnos.map( t => {
+            const costo = this.calcularCostoTurno(obraSocial, plan, t.servicio);
+            t.costoTurno = costo;
+            return t;
+         }); // TODO ANALIZAR SI QUEREMOS TODOS LOS TURNOS QUE EXISTEN SI HACER OTRA FUNCION
+
+
+
         return {
-            turnos,
+            turnosConCosto,
             numeroPagina,
             limitePorPagina,
             totalPaginas,
             totalTurnos
-        }
+        };
     }
 
     calcularCostoTurno(obraSocial, plan, servicio) {
-        let precioInicial = servicio.precio;
+        const precioInicial = servicio.precio;
 
         if (!obraSocial || !plan) {
             return precioInicial;
         }
 
-        let { nivel, porcentaje } = plan.obtenerCoberturaServicio(servicio)
+        const { nivel, porcentaje } = plan.obtenerCoberturaServicio(servicio);
 
         switch (nivel) {
             case NivelCobertura.TOTAL:
@@ -94,18 +105,19 @@ export class TurnoService {
         const paciente = this.pacienteRepository.findById(pacienteId);
 
         if (!paciente.obraSocialId) {
-            return { obraSocial: null, plan: null }
+            return { obraSocial: null, plan: null };
         }
 
+        // TODO revisar si hacerlo embebida o referencia
         const obraSocial = this.obraSocialRepository.findById(paciente.obraSocialId);
         if (!obraSocial) {
-            throw new BadRequestError("No se encontro la obra social con el id " + paciente.obraSocialId)
+            throw new BadRequestError("No se encontro la obra social con el id " + paciente.obraSocialId);
         }
         const plan = obraSocial.obtenerPlanPorId(paciente.planId);
         return {
             obraSocial,
             plan
-        }
+        };
     }
 
 

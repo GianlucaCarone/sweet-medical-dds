@@ -1,5 +1,6 @@
 import { Practica } from "../practica";
 import { NivelCobertura } from "../nivelCobertura";
+import { ErrorDatosObligatorios } from "../errors/errorDatosObligatorios";
 
 export class CoberturaPractica {
     practica;
@@ -18,5 +19,6 @@ export class CoberturaPractica {
         }
         this.practica = practica;
         this.nivel = nivel;
+        this.porcentajeCobertura = porcentajeCobertura;
     }
 }
