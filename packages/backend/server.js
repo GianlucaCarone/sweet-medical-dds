@@ -1,4 +1,8 @@
 import express from "express"; // framework para crear el servidor y manejar las rutas
+import cors from "cors"; // middleware para permitir solicitudes desde diferentes orígenes (CORS)
+import { notFoundHandler } from "./middlewares/notFoundHandler.js";
+import { errorLogger } from "./middlewares/errorLogger.js";
+import { errorHandler } from "./middlewares/errorHandler.js";
 
 export class Server {
     #controllers;
@@ -32,15 +36,19 @@ export class Server {
     }
 
     configurarRutas() {
-        this.#routes.forEach( route => this.app.use(route(this.getController.bind(this))));
+        this.#routes.forEach( ({path, handler}) => this.app.use(path, handler(this.getController.bind(this))));
 
-        // Middleware para manejar rutas no encontradas
-        this.#app.use((req, res, _next) => {
-            res.status(404).json({
-                status: "fail",
-                message: "La ruta solicitada no existe"
-            });
-        });
+        this.#app.use(notFoundHandler);
+        this.#app.use(errorLogger);
+        this.#app.use(errorHandler);
+
+        this.#app.use(
+            cors({
+                origin: process.env.ALLOWED_ORIGINS
+                ? process.env.ALLOWED_ORIGINS.split(",").map((o) => o.trim())
+                : true,
+            }),
+        );
         
     }
 
