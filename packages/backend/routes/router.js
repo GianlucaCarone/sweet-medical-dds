@@ -1,9 +1,8 @@
-// TODO Completar con los routers cuando este hecho el controller
 import sedeRoutes from "./sedeRoutes.js";
 import healthRoutes from "./healthRoutes.js";
 
 const routes = [
-  sedeRoutes,
-  healthRoutes
+  { path: "/sede", handler: sedeRoutes },
+  { path: "/health", handler: healthRoutes },
 ];
 export default routes;
