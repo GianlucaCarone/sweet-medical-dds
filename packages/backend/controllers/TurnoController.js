@@ -13,7 +13,12 @@ export class TurnoController {
             const idTurno = idParamsSchema.parse(req.params);
             const cambioTurnoData = bodyCambioEstadoSchema.parse(req.body);
 
-            const turnoActualizado = this.turnoService.cambiarEstadoTurno(id, nuevoEstado, quien, motivo);
+            const turnoActualizado = await this.turnoService.cambiarEstadoTurno(
+                idTurno,
+                cambioTurnoData.nuevoEstado,
+                cambioTurnoData.quien,
+                cambioTurnoData.motivo
+            );
 
             return res.status(200).json({ status: "success", data: turnoActualizado })
         } catch (error) {
@@ -26,7 +31,7 @@ export class TurnoController {
             const idTurno = idParamsSchema.parse(req.params);
             const turnoData = bodyAsignarTurnoSchema.parse(req.body);
 
-            const turnoAsignado = this.turnoService.asignarTurno(idTurno, turnoData.pacienteId, turnoData.costoTurno);
+            const turnoAsignado = await this.turnoService.asignarTurno(idTurno, turnoData.pacienteId, turnoData.costoTurno);
 
             return res.status(200).json({ status: "success", data: turnoAsignado })
         } catch (error) {
@@ -40,7 +45,11 @@ export class TurnoController {
             const paginacion = this.extraerPaginacion(req.query)
             const filtros = this.extraerFiltros(req.query)
 
-            const resultado = this.turnoService.obtenerTodosPaginados({ ...paginacion, filtros });
+            const resultado = await this.turnoService.obtenerTodosPaginados(
+                paginacion.numeroPagina,
+                paginacion.limitePorPagina,
+                filtros
+            );
             res.status(200).json({
                 status: 'success',
                 data: resultado.turnos,

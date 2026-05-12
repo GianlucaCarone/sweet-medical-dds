@@ -9,7 +9,9 @@ import { randomUUID } from "crypto";
 export class Turno {
     id;
     medico;
-    servicio;
+    //servicio;
+    practica;
+    especialidad;
     paciente;
     fechaHora;
     sede;
@@ -17,9 +19,9 @@ export class Turno {
     historialEstado;
     costo;
 
-    constructor({ medico, servicio, fechaHora, sede }) {
+    constructor({ medico, fechaHora, sede }) {
 
-        if (!medico || !servicio || !sede || !fechaHora) {
+        if (!medico || !sede || !fechaHora) {
             throw new ErrorDatosObligatorios()
         }
         if (!(medico instanceof Medico)) {
@@ -28,7 +30,6 @@ export class Turno {
 
         this.id = randomUUID();
         this.medico = medico;
-        this.servicio = servicio;
         this.fechaHora = fechaHora;
         this.sede = sede;
 
@@ -67,6 +68,6 @@ export class Turno {
         this.historialEstado.push(cambioEstado);
     }
 
-    
+
 
 }
