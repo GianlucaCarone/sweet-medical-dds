@@ -1,6 +1,9 @@
 import { CoberturaEspecialidad } from "./coberturas/coberturaEspecialidad";
 import { CoberturaPractica } from "./coberturas/coberturaPractica";
 import { randomUUID } from "crypto";
+import { Especialidad } from "./especialidad";
+import { Practica } from "./practica";
+import { ErrorDatosObligatorios } from "../errors/errorDatosObligatorios";
 
 export class Plan {
   id;

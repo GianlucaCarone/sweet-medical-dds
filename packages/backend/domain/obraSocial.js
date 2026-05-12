@@ -1,5 +1,6 @@
 import { randomUUID } from "crypto";
 import { Plan } from "./plan";
+import { ErrorDatosObligatorios } from "../errors/errorDatosObligatorios";
 
 export class ObraSocial {
     id;
@@ -23,10 +24,8 @@ export class ObraSocial {
             throw new Error("Id invalido");
         }
         const plan = this.planes.find(plan => plan.id === planId);
-        if (!plan) {
-            throw new Error("No se encontro el plan con el id " + planId)
-        }
-        return plan;
+        
+        return plan ?? null;
     }
 
     agregarPlan(plan) {

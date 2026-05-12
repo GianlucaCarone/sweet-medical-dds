@@ -4,6 +4,8 @@ import { Paciente } from "../paciente.js";
 import { Plan } from "../plan.js";
 import { EstadoTurnoEnum } from "./estadoTurnoEnum.js";
 import { CambioEstadoTurno } from "./cambioEstadoTurno.js";
+import { randomUUID } from "crypto";
+
 export class Turno {
     id;
     medico;
@@ -61,14 +63,10 @@ export class Turno {
             throw new Error("Motivo inválido");
         }
         this.estado = nuevoEstado;
-        cambioEstado = new CambioEstadoTurno({ estado: nuevoEstado, usuario: quien, turno: this, motivo: motivo });
+        const cambioEstado = new CambioEstadoTurno({ estado: nuevoEstado, usuario: quien, turno: this, motivo: motivo });
         this.historialEstado.push(cambioEstado);
     }
 
-
-    //TODO: hacer logica costo de turnos
-    calcularCosto() {
-        return 0;
-    }
+    
 
 }
