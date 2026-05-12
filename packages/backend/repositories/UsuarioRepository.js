@@ -1,42 +1,42 @@
 import { Usuario } from "../domain/usuario.js";
 import { BadRequestError } from "../errors/AppError.js";
+import { UsuarioModel } from "../schemas/mongoose/usuarioSchema.js";
 
 export class UsuarioRepository {
   constructor() {
-        this.usuarios = {}
-        this.nextId = 1
+        this.model = UsuarioModel;
     }
 
-    save (usuario) {
+    async save (usuario) {
         if (!(usuario instanceof Usuario)) {
             throw new Error("No es un Usuario valido");
         }
-        this.usuarios[usuario.id] = usuario;
-        return usuario;
+        const usuarioGuardado = new this.model(usuario);
+        return await usuarioGuardado.save();
     }
 
-    findById(id) {
-        const usuario = this.usuarios[id];
+    async findById(id) {
+        const usuario = await this.model.findById(id);
         if(!usuario) {
             throw new BadRequestError("Usuario no encontrado");
         }
         return usuario;
     }
 
-    findAll() {
-        return Object.values(this.usuarios);
+    async findAll() {
+        return await this.model.find();
     }
 
-    delete(id) {
-        delete this.usuarios[id];
+    async delete(id) {
+        await this.model.findByIdAndDelete(id);
     }
 
-    update(usuario) {
-        const usuarioExistente = this.findById(usuario.id); // Verificar que el usuario existe, si no lanza un error
+    async update(usuario) {
+        const usuarioExistente = await this.findById(usuario.id); // Verificar que el usuario existe, si no lanza un error
         if (!usuarioExistente) {
             throw new BadRequestError("Usuario no encontrado");
         }
-        this.usuarios[usuario.id] = usuario;
-        return usuario;
+        const usuarioActualizado = await this.model.findByIdAndUpdate(usuario.id, usuario, { new: true });
+        return usuarioActualizado;
     }
 }
