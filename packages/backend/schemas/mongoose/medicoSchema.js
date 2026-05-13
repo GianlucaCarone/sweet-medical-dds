@@ -5,7 +5,7 @@ import { disponibilidadHorariaSchema } from "./disponibilidadHorariaSchema.js";
 const MedicoSchema = new mongoose.Schema(
   {
     nombre: { type: String, required: true, trim: true, minlength: 1 },
-    usuario: {
+    idUsuario: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Usuario",
       required: true,
@@ -17,6 +17,7 @@ const MedicoSchema = new mongoose.Schema(
       maxlength: 10,
       minlength: 1,
     },
+    //disponibilidades: [disponibilidadHorariaSchema], // embebido
 
     // TODO
     // disponibilidades: [disponibilidadHorariaSchema], // embebido
@@ -28,5 +29,10 @@ const MedicoSchema = new mongoose.Schema(
 );
 
 MedicoSchema.loadClass(Medico);
+
+MedicoSchema.pre(/^find/, function (next) {
+  this.lean();
+  next();
+});
 
 export const MedicoModel = mongoose.model("Medico", MedicoSchema);

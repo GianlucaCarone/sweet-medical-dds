@@ -14,7 +14,7 @@ export class UsuarioService {
     }
 
     const usuario = new Usuario(usuarioData);
-    const nuevoUsuario = await this.usuarioRepository.create(usuario);
+    const nuevoUsuario = await this.usuarioRepository.save(usuario);
     return this.toDto(nuevoUsuario);
   }
 
@@ -26,6 +26,7 @@ export class UsuarioService {
     }
     return this.toDto(usuario);
   }
+
 
   async findAll() {
     const usuarios = await this.usuarioRepository.findAll();
@@ -58,7 +59,7 @@ export class UsuarioService {
   toDto(usuario) {
         return {
             id: usuario.id || usuario._id,
-            username: usuario.nombreUsuario,
+            nombreUsuario: usuario.nombreUsuario,
             password: usuario.password
         }
     }

@@ -1,22 +1,23 @@
-
+import { MedicoModel } from "../schemas/mongoose/medicoSchema.js";
+import { Medico } from "../domain/medico.js";
 export class MedicoRepository {
   constructor() {
-    this.medicos = {};
-    this.nextId = 1;
+    this.model = MedicoModel;
   }
 
-  findAll() {
-    return Object.values(this.medicos);
+  async findAll() {
+    return await this.model.find();
   }
 
-  findById(id) {
-    return this.medicos[id] ?? null;
+  async findById(id) {
+    return await this.model.findById(id);
   }
 
-  save(medico) {
-    const id = medico.id ?? this.nextId++
-    medico.id = id;
-    this.medicos[id] = medico;
-    return medico;
+  async save(medico) {
+    return await new this.model(medico).save();
+  }
+
+  async findByIdUsuario(idUsuario) {
+    return await this.model.findOne({ "idUsuario": idUsuario });
   }
 }

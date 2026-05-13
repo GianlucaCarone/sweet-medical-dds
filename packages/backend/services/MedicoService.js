@@ -5,6 +5,7 @@ import { Medico } from "../domain/medico.js";
 import { Usuario } from "../domain/usuario.js";
 import { Sede } from "../domain/sede.js";
 import { SedeService } from "./SedeService.js";
+import { ConflictError } from "../errors/AppError.js";
 
 export class MedicoService {
   constructor({ medicoRepository = new MedicoRepository(), usuarioService = new UsuarioService(), sedeService = new SedeService() } = {}) {
@@ -13,20 +14,28 @@ export class MedicoService {
     this.sedeService = sedeService;
   }
 
-  create(medicoData) {
-    const usuario = this.usuarioService.findById(medicoData.usuarioId);
+  async create(medicoData) {
+    const usuarioDTO = await this.usuarioService.findById(medicoData.idUsuario);
 
-    const medico = new Medico({
+    if(!usuarioDTO) {
+      throw new Error("Usuario no encontrado");
+    }
+
+    const medicoExistente = await this.medicoRepository.findByIdUsuario(usuarioDTO.id); // Verificar que no exista otro médico con el mismo nombre de usuario
+    if(medicoExistente) {
+      throw new ConflictError("Ya existe un médico con ese nombre de usuario");
+    }
+
+    const medico = {
       nombre: medicoData.nombre,
       matricula: medicoData.matricula,
-      usuario,
-    });
-
+      idUsuario: medicoData.idUsuario,
+    }; 
     return this.medicoRepository.save(medico);
   }
 
-  getById(id) {
-    const medico = this.medicoRepository.findById(id);
+  async findById(id) {
+    const medico = await this.medicoRepository.findById(id);
 
     if (!medico) {
       throw new Error("Médico no encontrado");
@@ -45,16 +54,16 @@ export class MedicoService {
 
   validarMedico(medico) {
     // TODO: Implementar validaciones necesarias para el médico
-    this.validarUsuario(medico.usuario);
+    this.validarUsuario(medico.idUsuario);
     this.validarMatricula(medico.matricula);
   }
 
-  validarUsuario(usuario) {
+  validarUsuario(idUsuario) {
     // TODO: Implementar validaciones necesarias para el usuario
   }
 
   agregarSede(medicoId, sedeId) {
-    const medico = this.getById(medicoId);
+    const medico = this.findById(medicoId);
 
     const sede = this.sedeService.getById(sedeId);
 
@@ -64,7 +73,7 @@ export class MedicoService {
   }
 
   eliminarSede(medicoId, sedeId) {
-    const medico = this.getById(medicoId);
+    const medico = this.findById(medicoId);
 
     //const sede = this.sedeService.getById(sedeId);
 
@@ -74,14 +83,14 @@ export class MedicoService {
   }
 
   definirDisponibilidadPara(disponibilidadData, id) {
-    const medico = this.getById(id);
+    const medico = this.findById(id);
     const disponibilidad = new DisponibilidadHoraria(disponibilidadData);
     medico.definirDisponibilidad(disponibilidad);
     return this.medicoRepository.save(medico);
   }
 
   modificarDisponibilidadPara(disponibilidadData, medicoId) {
-    const medico = this.getById(medicoId);
+    const medico = this.findById(medicoId);
     const disponibilidad = new DisponibilidadHoraria(disponibilidadData);
 
     medico.modificarDisponibilidad(disponibilidad);
@@ -90,7 +99,7 @@ export class MedicoService {
   }
 
   eliminarDisponibilidadPara(medicoId, diaSemana) {
-    const medico = this.getById(medicoId);
+    const medico = this.findById(medicoId);
 
     medico.eliminarDisponibilidad(diaSemana);
 
@@ -98,7 +107,7 @@ export class MedicoService {
   }
 
   consultarDisponibilidad(medicoId, practicaId) {
-    const medico = this.getById(medicoId);
+    const medico = this.findById(medicoId);
 
     if (!medico.ofrecePractica(practicaId)) {
       throw new Error("El médico no ofrece esa práctica");

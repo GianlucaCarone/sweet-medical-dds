@@ -7,7 +7,13 @@ const MaxLengthMatricula = 10;
 
 export const medicoSchema = z.object({
   nombre: z.string().min(1, "El nombre es obligatorio"),
-  idUsuario: z.string().uuid("El id del usuario debe ser un UUID válido"),
+  //idUsuario: z.string().uuid("El id del usuario debe ser un UUID válido"),
+  idUsuario: z.string().refine((id) => {
+    // Verificar que el id sea un ObjectId válido (24 caracteres hexadecimales)
+    return /^[a-fA-F0-9]{24}$/.test(id);
+  }, {
+    message: "El id del usuario debe ser un ObjectId válido (24 caracteres hexadecimales)"
+  }),
   matricula: z.string().max(MaxLengthMatricula),
 });
 
