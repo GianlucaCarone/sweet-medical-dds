@@ -40,6 +40,7 @@ export class Server {
 
         this.#app.use(notFoundHandler);
         this.#app.use(errorLogger);
+        this.#app.use(zodErrorHandler);
         this.#app.use(errorHandler);
 
         this.#app.use(

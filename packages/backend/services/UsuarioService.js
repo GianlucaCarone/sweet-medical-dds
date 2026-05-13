@@ -6,15 +6,15 @@ export class UsuarioService {
     this.usuarioRepository = usuarioRepository;
   }
 
-  create(usuarioData) {
-    const usuarioExistente = this.findByUsername(usuarioData.nombreUsuario); // Verificar que no exista otro usuario con el mismo nombre de usuario
+  async create(usuarioData) {
+    const usuarioExistente = await this.findByUsername(usuarioData.nombreUsuario); // Verificar que no exista otro usuario con el mismo nombre de usuario
 
     if (usuarioExistente) {
       throw new ConflictError(`Ya existe un usuario con el nombre de usuario ${usuarioData.nombreUsuario}`);
     }
     
     const usuario = new Usuario(usuarioData);
-    const nuevoUsuario = this.usuarioRepository.create(usuario);
+    const nuevoUsuario = await this.usuarioRepository.create(usuario);
     return this.toDto(nuevoUsuario);
   }
 
