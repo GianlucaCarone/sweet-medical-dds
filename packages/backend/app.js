@@ -8,6 +8,7 @@ import { Server } from "./server.js";
 import routes from "./routes/router.js";
 import { SedeController } from "./controllers/SedeController.js";
 import { UsuarioController } from "./controllers/UsuarioController.js";
+import { MedicoController } from "./controllers/MedicoController.js";
 
 const app = express();
 
@@ -18,6 +19,9 @@ server.setController(SedeController, sedeController);
 
 const usuarioController = new UsuarioController();
 server.setController(UsuarioController, usuarioController);
+
+const medicoController = new MedicoController();
+server.setController(MedicoController, medicoController);
 
 
 

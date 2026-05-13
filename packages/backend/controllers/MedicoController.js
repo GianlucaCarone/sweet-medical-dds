@@ -1,5 +1,5 @@
 import {MedicoService} from '../services/MedicoService.js';
-import { medicoSchema, disponibilidadSchema, medicoIdParamsSchema, disponibilidadConsultaSchema } from '../schemas/medicoSchema.js';
+import { medicoSchema, disponibilidadSchema, medicoIdParamsSchema, disponibilidadConsultaSchema, eliminarDisponibilidadSchema } from '../schemas/medicoSchema.js';
 import { idParamNumberSchema } from '../schemas/urlSchema.js';
 import { asociarSedeSchema, eliminarSedeParamsSchema } from "../schemas/sedeSchema.js";
 
@@ -63,20 +63,38 @@ export class MedicoController {
   }
 
   modificarDisponibilidad = async (req, res, next) => {
-    try{
-      // TODO: Ver como modificar la disponibilidad
-    }catch(error){
-        return next(error)
+    try {
+      const { id } = medicoIdParamsSchema.parse(req.params);
+      const disponibilidadData = disponibilidadSchema.parse(req.body);
+
+      const medicoActualizado =
+        await this.medicoService.modificarDisponibilidadPara(disponibilidadData, id);
+
+      return res.status(200).json({
+        status: "success",
+        data: medicoActualizado
+      });
+    } catch (error) {
+      return next(error);
     }
   }
 
   eliminarDisponibilidad = async (req, res, next) => {
-    try{
-      // TODO: Ver como eliminar la disponibilidad
-    }catch(error){
-        return next(error)
+    try {
+      const { id } = medicoIdParamsSchema.parse(req.params);
+      const { diaSemana } = eliminarDisponibilidadSchema.parse(req.body);
+
+      const medicoActualizado =
+        await this.medicoService.eliminarDisponibilidadPara(id, diaSemana);
+
+      return res.status(200).json({
+        status: "success",
+        data: medicoActualizado
+      });
+    } catch (error) {
+      return next(error);
     }
-  }
+  };
 
   agregarSede = async (req, res, next) => {
     try {
@@ -137,6 +155,7 @@ export class MedicoController {
   }
   */
 
+  /*
   seed = async (req, res, next) => {
       try {
         const MEDICOS_INICIALES =  [
@@ -165,4 +184,51 @@ export class MedicoController {
         next(error);
       }
     }
+      */
+
+    seed = async (req, res, next) => { // Esta seed crea el usuario primero y despues al medico con el usuarioId, falta implementar toda la parte de usuario
+      try {
+      
+        // 1. Crear usuarios
+        const usuarios = [
+          {
+            nombreUsuario: "juanperez",
+            password: "password123"
+          },
+          {
+            nombreUsuario: "mariagomez",
+            password: "password456"
+          }
+        ];
+      
+        const usuariosCreados = usuarios.map(usuarioData =>
+          this.medicoService.usuarioService.create(usuarioData)
+        );
+      
+        // 2. Crear médicos usando usuarioId
+        const medicos = [
+          {
+            nombre: "Dr. Juan Pérez",
+            usuarioId: usuariosCreados[0].id,
+            matricula: "1234567890"
+          },
+          {
+            nombre: "Dra. María Gómez",
+            usuarioId: usuariosCreados[1].id,
+            matricula: "0987654321"
+          }
+        ];
+      
+        const medicosCreados =
+          this.medicoService.crearMedicos(medicos);
+      
+        return res.status(201).json({
+          status: "success",
+          data: medicosCreados
+        });
+      
+      } catch (error) {
+        next(error);
+      }
+    };
 }

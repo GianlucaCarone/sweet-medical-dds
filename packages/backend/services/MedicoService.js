@@ -14,7 +14,7 @@ export class MedicoService {
   }
 
   create(medicoData) {
-    const usuario = this.usuarioService.findById(medicoData.usuario);
+    const usuario = this.usuarioService.findById(medicoData.usuarioId);
 
     const medico = new Medico({
       nombre: medicoData.nombre,
@@ -37,13 +37,6 @@ export class MedicoService {
 
   findAll() {
     return this.medicoRepository.findAll();
-  }
-
-  definirDisponibilidadPara(disponibilidadData, id) {
-    const medico = this.getById(id);
-    const disponibilidad = new DisponibilidadHoraria(disponibilidadData);
-    medico.definirDisponibilidad(disponibilidad);
-    return this.medicoRepository.save(medico);
   }
 
   crearMedicos(listaMedicos) {
@@ -76,6 +69,30 @@ export class MedicoService {
     //const sede = this.sedeService.getById(sedeId);
 
     medico.eliminarSede(sedeId);
+
+    return this.medicoRepository.save(medico);
+  }
+
+  definirDisponibilidadPara(disponibilidadData, id) {
+    const medico = this.getById(id);
+    const disponibilidad = new DisponibilidadHoraria(disponibilidadData);
+    medico.definirDisponibilidad(disponibilidad);
+    return this.medicoRepository.save(medico);
+  }
+
+  modificarDisponibilidadPara(disponibilidadData, medicoId) {
+    const medico = this.getById(medicoId);
+    const disponibilidad = new DisponibilidadHoraria(disponibilidadData);
+
+    medico.modificarDisponibilidad(disponibilidad);
+
+    return this.medicoRepository.save(medico);
+  }
+
+  eliminarDisponibilidadPara(medicoId, diaSemana) {
+    const medico = this.getById(medicoId);
+
+    medico.eliminarDisponibilidad(diaSemana);
 
     return this.medicoRepository.save(medico);
   }
