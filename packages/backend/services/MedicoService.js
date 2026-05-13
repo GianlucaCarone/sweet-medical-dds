@@ -14,7 +14,7 @@ export class MedicoService {
   }
 
   create(medicoData) {
-    const usuario = this.usuarioService.findById(medicoData.usuario);
+    const usuario = this.usuarioService.findById(medicoData.usuarioId);
 
     const medico = new Medico({
       nombre: medicoData.nombre,

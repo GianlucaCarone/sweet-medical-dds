@@ -12,7 +12,7 @@ export class UsuarioService {
     if (usuarioExistente) {
       throw new ConflictError(`Ya existe un usuario con el nombre de usuario ${usuarioData.nombreUsuario}`);
     }
-    
+
     const usuario = new Usuario(usuarioData);
     const nuevoUsuario = this.usuarioRepository.create(usuario);
     return this.toDto(nuevoUsuario);

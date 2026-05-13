@@ -155,6 +155,7 @@ export class MedicoController {
   }
   */
 
+  /*
   seed = async (req, res, next) => {
       try {
         const MEDICOS_INICIALES =  [
@@ -183,4 +184,51 @@ export class MedicoController {
         next(error);
       }
     }
+      */
+
+    seed = async (req, res, next) => { // Esta seed crea el usuario primero y despues al medico con el usuarioId, falta implementar toda la parte de usuario
+      try {
+      
+        // 1. Crear usuarios
+        const usuarios = [
+          {
+            nombreUsuario: "juanperez",
+            password: "password123"
+          },
+          {
+            nombreUsuario: "mariagomez",
+            password: "password456"
+          }
+        ];
+      
+        const usuariosCreados = usuarios.map(usuarioData =>
+          this.medicoService.usuarioService.create(usuarioData)
+        );
+      
+        // 2. Crear médicos usando usuarioId
+        const medicos = [
+          {
+            nombre: "Dr. Juan Pérez",
+            usuarioId: usuariosCreados[0].id,
+            matricula: "1234567890"
+          },
+          {
+            nombre: "Dra. María Gómez",
+            usuarioId: usuariosCreados[1].id,
+            matricula: "0987654321"
+          }
+        ];
+      
+        const medicosCreados =
+          this.medicoService.crearMedicos(medicos);
+      
+        return res.status(201).json({
+          status: "success",
+          data: medicosCreados
+        });
+      
+      } catch (error) {
+        next(error);
+      }
+    };
 }
