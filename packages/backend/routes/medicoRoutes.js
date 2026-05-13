@@ -10,12 +10,10 @@ router.route('/')
 
 router.route('/:id/disponibilidad')
     .get((req, res, next) => medicoController.consultarDisponibilidad(req, res, next)) // Puede ser que no vaya asi esto.
-    .post((req, res, next) => medicoController.definirDisponibilidad(req, res, next)); // agrego una disponibilidad al medico
-
-router.route("/:id/disponibilidad/:disponibilidadId")
-  .put((req, res, next) => medicoController.modificarDisponibilidad(req, res, next)) // Reemplazar disponibilidad existente del medico
-  .delete((req, res, next) =>medicoController.eliminarDisponibilidad(req, res, next)); // Eliminar disponibilidad existente del medico
-
+    .post((req, res, next) => medicoController.definirDisponibilidad(req, res, next)) // agrego una disponibilidad al medico
+    .put((req, res, next) => medicoController.modificarDisponibilidad(req, res, next)) // Reemplazar disponibilidad existente del medico
+    .delete((req, res, next) =>medicoController.eliminarDisponibilidad(req, res, next)); // Eliminar disponibilidad existente del medico
+  
 router.route("/:id/sedes")
   .post((req, res, next) => medicoController.agregarSede(req, res, next));
 

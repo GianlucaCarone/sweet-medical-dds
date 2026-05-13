@@ -31,6 +31,10 @@ export const disponibilidadSchema = z.object({
     }),
 });
 
+export const eliminarDisponibilidadSchema = z.object({
+  diaSemana: z.enum(Object.values(DiaSemana))
+});
+
 export const disponibilidadConsultaSchema = z.object({
   practicaId: z.string().uuid(
     "El id de la práctica debe ser un UUID válido"

@@ -1,5 +1,5 @@
 import {MedicoService} from '../services/MedicoService.js';
-import { medicoSchema, disponibilidadSchema, medicoIdParamsSchema, disponibilidadConsultaSchema } from '../schemas/medicoSchema.js';
+import { medicoSchema, disponibilidadSchema, medicoIdParamsSchema, disponibilidadConsultaSchema, eliminarDisponibilidadSchema } from '../schemas/medicoSchema.js';
 import { idParamNumberSchema } from '../schemas/urlSchema.js';
 import { asociarSedeSchema, eliminarSedeParamsSchema } from "../schemas/sedeSchema.js";
 
@@ -63,20 +63,38 @@ export class MedicoController {
   }
 
   modificarDisponibilidad = async (req, res, next) => {
-    try{
-      // TODO: Ver como modificar la disponibilidad
-    }catch(error){
-        return next(error)
+    try {
+      const { id } = medicoIdParamsSchema.parse(req.params);
+      const disponibilidadData = disponibilidadSchema.parse(req.body);
+
+      const medicoActualizado =
+        await this.medicoService.modificarDisponibilidadPara(disponibilidadData, id);
+
+      return res.status(200).json({
+        status: "success",
+        data: medicoActualizado
+      });
+    } catch (error) {
+      return next(error);
     }
   }
 
   eliminarDisponibilidad = async (req, res, next) => {
-    try{
-      // TODO: Ver como eliminar la disponibilidad
-    }catch(error){
-        return next(error)
+    try {
+      const { id } = medicoIdParamsSchema.parse(req.params);
+      const { diaSemana } = eliminarDisponibilidadSchema.parse(req.body);
+
+      const medicoActualizado =
+        await this.medicoService.eliminarDisponibilidadPara(id, diaSemana);
+
+      return res.status(200).json({
+        status: "success",
+        data: medicoActualizado
+      });
+    } catch (error) {
+      return next(error);
     }
-  }
+  };
 
   agregarSede = async (req, res, next) => {
     try {

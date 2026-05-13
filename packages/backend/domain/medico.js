@@ -47,7 +47,25 @@ export class Medico {
         this.disponibilidades.push(disponibilidad);
     }
 
-    // TODO: Crear metodos eliminarDisponibilidad y modificarDisponibilidad
+    modificarDisponibilidad(nuevaDisponibilidad) {
+        if (!(nuevaDisponibilidad instanceof DisponibilidadHoraria)) {
+          throw new Error("No es una DisponibilidadHoraria válida");
+        }
+    
+        const existeDisponibilidadEseDia = this.disponibilidades.some(
+          disponibilidad => disponibilidad.diaSemana === nuevaDisponibilidad.diaSemana
+        );
+    
+        if (!existeDisponibilidadEseDia) {
+          throw new Error("No existe disponibilidad para ese día");
+        }
+    
+        this.disponibilidades = this.disponibilidades.filter(
+          disponibilidad => disponibilidad.diaSemana !== nuevaDisponibilidad.diaSemana
+        );
+    
+        this.disponibilidades.push(nuevaDisponibilidad);
+    }
 
     eliminarDisponibilidad(disponibilidadAEliminar) {
         if (!disponibilidadAEliminar instanceof DisponibilidadHoraria) {
