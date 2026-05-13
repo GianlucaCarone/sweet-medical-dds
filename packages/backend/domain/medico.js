@@ -67,11 +67,16 @@ export class Medico {
         this.disponibilidades.push(nuevaDisponibilidad);
     }
 
-    eliminarDisponibilidad(disponibilidadAEliminar) {
-        if (!disponibilidadAEliminar instanceof DisponibilidadHoraria) {
-            throw new Error("No es una DisponibilidadHoraria valida");
+    eliminarDisponibilidad(diaSemana) {
+        const cantidadAntes = this.disponibilidades.length;
+
+        this.disponibilidades = this.disponibilidades.filter(
+          disponibilidad => disponibilidad.diaSemana !== diaSemana
+        );
+    
+        if (this.disponibilidades.length === cantidadAntes) {
+          throw new Error("No existe disponibilidad para ese día");
         }
-        this.disponibilidades = this.disponibilidades.filter(disponibilidad => disponibilidad.diaSemana !== disponibilidadAEliminar.diaSemana || disponibilidad.horaDesde !== disponibilidadAEliminar.horaDesde || disponibilidad.horaHasta !== disponibilidadAEliminar.horaHasta);
     }
 
     agregarServicio(servicio) {
