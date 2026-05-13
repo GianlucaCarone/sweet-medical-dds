@@ -9,6 +9,9 @@ export default function medicoRoutes(getController) {
   router.route('/')
       .get((req, res, next) => medicoController.findAll(req, res, next))
       .post((req, res, next) => medicoController.create(req, res, next));
+      
+  router.route('/seed')
+      .get((req, res, next) => medicoController.seed(req, res, next));
 
   router.route('/:id/disponibilidad')
       .get((req, res, next) => medicoController.consultarDisponibilidad(req, res, next)) // Puede ser que no vaya asi esto.
@@ -25,8 +28,6 @@ export default function medicoRoutes(getController) {
   router.route("/:id/sedes/:sedeId")
     .delete((req, res, next) => medicoController.eliminarSede(req, res, next));
 
-  router.route('/seed')
-      .get((req, res, next) => medicoController.seed(req, res, next));
 
   return router;
 }
