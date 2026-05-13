@@ -28,5 +28,5 @@ export default function medicoRoutes(getController) {
   router.route('/seed')
       .get((req, res, next) => medicoController.seed(req, res, next));
 
-  export default router;
+  return router;
 }

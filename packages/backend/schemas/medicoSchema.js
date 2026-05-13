@@ -32,7 +32,7 @@ export const disponibilidadSchema = z.object({
 });
 
 export const eliminarDisponibilidadSchema = z.object({
-  diaSemana: z.enum(Object.values(DiaSemana))
+  diaSemana: z.enum(Object.values(diaSemanaEnum))
 });
 
 export const disponibilidadConsultaSchema = z.object({
