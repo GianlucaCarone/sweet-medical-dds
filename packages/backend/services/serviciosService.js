@@ -12,8 +12,8 @@ export class ServiciosService {
             id: servicio.id,
             nombre: servicio.nombre,
             duracion: servicio.duracionTurnoEnMins,
-            costo: servicio.costo(),
-            codigo: servicio.codigo()
+            costo: servicio.getCosto(),
+            codigo: servicio.getCodigo()
         };
     }
 
@@ -21,7 +21,7 @@ export class ServiciosService {
         this.validarDatosServicio(datosServicio);
         const servicio = this.crearEntidad(datosServicio);
 
-        return this.serviciosRepository.save(servicio);
+        return this.serviciosRepository.save(servicio).toDTO();
     }
 
     async update (id, datosServicio) {
@@ -31,7 +31,7 @@ export class ServiciosService {
         const servicioActualizado = this.crearEntidad(datosServicio);
         servicioActualizado.setId(servicio.id);
 
-        return this.serviciosRepository.save(servicioActualizado);
+        return this.serviciosRepository.save(servicioActualizado).toDTO();
     }
 
     async delete (id) {

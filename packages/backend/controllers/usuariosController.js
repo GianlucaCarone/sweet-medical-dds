@@ -15,7 +15,7 @@ export class UsuarioController {
         } catch (error) {
             next(error);
         }
-    }
+    };
 
     findById = async (req, res, next) => {
         try {
@@ -28,7 +28,7 @@ export class UsuarioController {
         } catch (error) {
             return next(error);
         }   
-    }
+    };
 
     findAll = async (req, res, next) => {
         try {
@@ -37,7 +37,7 @@ export class UsuarioController {
         } catch (error) {
             next(error);
         } 
-    }
+    };
 
     delete = async (req, res, next) => {
         try {
@@ -47,7 +47,7 @@ export class UsuarioController {
         } catch (error) {
             next(error);
         }
-    }
+    };
 
     // solo actualiza el nombre de usuario y la contraseña, no el id
     update = async (req, res, next) => {
@@ -59,5 +59,21 @@ export class UsuarioController {
         } catch (error) {
             next(error);
         }
+    };
+
+    //1. El primer seed. Crea los usuarios
+    async seed() {
+        const usuarios = [
+          {
+            nombreUsuario: "System",
+            password: "system"
+          },
+          {
+            nombreUsuario: "mariagomez",
+            password: "1234"
+          }
+        ];
+      
+        return usuarios.map(usuarioData => this.medicoService.usuarioService.create(usuarioData));
     }
 }

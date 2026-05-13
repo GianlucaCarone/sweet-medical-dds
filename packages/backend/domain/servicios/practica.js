@@ -1,4 +1,5 @@
 import { randomUUID } from "crypto";
+import { ErrorDatosObligatorios } from "../errores";
 
 export class Practica {
     id;
@@ -18,11 +19,11 @@ export class Practica {
         this.costo = costo;
     }
 
-    get costo() {
+    getCosto() {
         return this.costo;
     }
 
-    get codigo() {
+    getCodigo() {
         return this.codigo;
     }
 }

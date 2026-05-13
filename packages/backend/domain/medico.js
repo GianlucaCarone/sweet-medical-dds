@@ -1,7 +1,9 @@
-import { Usuario } from "../domain/usuario"
+import { Usuario } from "../domain/usuario";
 import { ErrorDatosObligatorios } from "./errores";
 import { DisponibilidadHoraria } from "./disponibilidadHoraria";
 import { randomUUID } from "crypto";
+import { Especialidad } from "./servicios/especialidad";
+import { Practica } from "./servicios/practica";
 
 export class Medico {
     id;
@@ -18,10 +20,10 @@ export class Medico {
             throw new ErrorDatosObligatorios();
         }
         if (!(usuario instanceof Usuario)) {
-            throw new Error("No es un Usuario")
+            throw new Error("No es un Usuario");
         }
         if (matricula.length > 10) {
-            throw new Error("Matricula Demasiado larga")
+            throw new Error("Matricula Demasiado larga");
         }
         this.id = randomUUID();
         this.usuario = usuario;
@@ -44,7 +46,7 @@ export class Medico {
     }
 
     eliminarDisponibilidad(disponibilidadAEliminar) {
-        if (!disponibilidadAEliminar instanceof DisponibilidadHoraria) {
+        if (!(disponibilidadAEliminar instanceof DisponibilidadHoraria)) {
             throw new Error("No es una DisponibilidadHoraria valida");
         }
         this.disponibilidades = this.disponibilidades.filter(disponibilidad => disponibilidad.diaSemana !== disponibilidadAEliminar.diaSemana || disponibilidad.horaDesde !== disponibilidadAEliminar.horaDesde || disponibilidad.horaHasta !== disponibilidadAEliminar.horaHasta);
@@ -59,7 +61,7 @@ export class Medico {
             this.practicas.push(servicio);
         }
         else {
-            throw new Error("Tipo de Servicio invalido")
+            throw new Error("Tipo de Servicio invalido");
         }
     }
 
@@ -72,7 +74,7 @@ export class Medico {
             this.practicas = this.practicas.filter(practica => practica.id !== servicioAEliminar.id);
         }
         else {
-            throw new Error("Tipo de Servicio invalido")
+            throw new Error("Tipo de Servicio invalido");
         }
     }
 

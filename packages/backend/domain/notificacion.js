@@ -1,5 +1,6 @@
 import { ErrorDatosObligatorios } from "./errores";
 import { randomUUID } from "crypto";
+import { Usuario } from "./usuario.js";
 
 export class Notificacion {
     id;
