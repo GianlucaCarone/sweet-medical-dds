@@ -1,17 +1,16 @@
-import { TurnoRepository } from "../models/repositories/TurnoRepository.js";
-import { BadRequestError } from "../errors/AppError.js";
+import { BadRequestError, ConflictError, UnprocessableEntityError } from "../errors/AppError.js";
 import { filtrosTurnoSchema } from "../schemas/turnoSchema.js";
 import { Turno } from "../domain/turnos/turno.js";
 import { NivelCobertura } from "../domain/coberturas/nivelCoberturaEnum.js";
 import { EstadoTurnoEnum } from "../domain/turnos/estadoTurnoEnum.js";
-import { Plan } from "../domain/plan.js";
 
 
 export class TurnoService {
-    constructor({ turnoRepository = new TurnoRepository(), pacienteRepository, obraSocialRepository, planRepository } = {}) {
+    constructor({ turnoRepository, pacienteRepository, obraSocialRepository, medicoRepository} = {}) {
         this.turnoRepository = turnoRepository;
         this.pacienteRepository = pacienteRepository;
         this.obraSocialRepository = obraSocialRepository;
+        this.medicoRepository = medicoRepository;
     }
 
     /*
@@ -53,29 +52,12 @@ export class TurnoService {
         return await this.turnoRepository.save(turno)
     }
 
-    /*async create(data) {
-        const { nombre, precioPorNoche } = data;
-
-        if (!nombre || !precioPorNoche) {
-            throw new ValidationError('Nombre y precioPorNoche son requeridos');
-        }
-
-        const existente = await this.alojamientoRepository.findByName(nombre);
-        if (existente) {
-            throw new ConflictError(`Ya existe un alojamiento con el nombre ${nombre}`);
-        }
-
-        const nuevo = new Alojamiento(nombre, precioPorNoche);
-        const alojamientoGuardado = await this.alojamientoRepository.save(nuevo);
-
-        return this.toDTO(alojamientoGuardado);
-    }*/
 
     async create(data) {
         const { fechaHora, medicoId, sedeId } = data
 
         if (!medicoId || !sedeId || !fechaHora) {
-            throw new ValidationError("Datos incompletos para crear el turno")
+            throw new UnprocessableEntityError("Datos incompletos para crear el turno")
         }
 
         const yaExiste = await this.turnoRepository.existeTurno(medicoId, fechaHora);
@@ -159,6 +141,14 @@ export class TurnoService {
             totalPaginas,
             totalTurnos
         };
+    }
+
+    async findById(id) {
+        const turno = await this.turnoRepository.findById(id);
+        if (!turno) {
+            throw new BadRequestError("No se encontro el turno con el id " + id)
+        }
+        return this.toDTO(turno);
     }
 
     calcularCostoTurno(obraSocial, plan, servicio) {
