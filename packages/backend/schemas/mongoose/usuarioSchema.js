@@ -5,6 +5,7 @@ const UsuarioSchema = new mongoose.Schema(
   {
     nombreUsuario: {
       type: String,
+      //alias: "username", // TODO @matuaponte: y si le ponemos este alias?
       required: true,
       unique: true, // asegura a nivel DB que no haya duplicados
       trim: true, // Limpia espacios en blanco al principio y al final

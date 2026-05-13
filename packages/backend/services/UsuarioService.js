@@ -7,29 +7,43 @@ export class UsuarioService {
   }
 
   create(usuarioData) {
+    const usuarioExistente = this.findByUsername(usuarioData.nombreUsuario); // Verificar que no exista otro usuario con el mismo nombre de usuario
+
+    if (usuarioExistente) {
+      throw new ConflictError(`Ya existe un usuario con el nombre de usuario ${usuarioData.nombreUsuario}`);
+    }
+    
     const usuario = new Usuario(usuarioData);
-    return this.usuarioRepository.save(usuario);
+    const nuevoUsuario = this.usuarioRepository.create(usuario);
+    return this.toDto(nuevoUsuario);
   }
 
-  findById(id) {
-    const usuario = this.usuarioRepository.findById(id);
+  async findById(id) {
+    const usuario = await this.usuarioRepository.findById(id);
 
     if (!usuario) {
       throw new Error("Usuario no encontrado");
     }
-    return usuario;
+    return this.toDto(usuario);
   }
 
-  findAll() {
-    return this.usuarioRepository.findAll();
+  async findAll() {
+    const usuarios = await this.usuarioRepository.findAll();
+    return usuarios.map(usuario => this.toDto(usuario));
   }
 
-  delete(id) {
-    return this.usuarioRepository.delete(id);
+  async delete(id) {
+    const usuarioExistente = await this.findById(id);
+
+    if (!usuarioExistente) {
+      throw new Error("Usuario no encontrado");
+    }
+    await this.usuarioRepository.delete(id);
+    return this.toDto(usuarioExistente);
   }
 
-  update(id, usuario) {
-    const usuarioExistente = this.findById(id);
+  async update(id, usuario) {
+    const usuarioExistente = await this.findById(id);
 
     if (!usuarioExistente) {
       throw new Error("Usuario no encontrado");
@@ -37,6 +51,15 @@ export class UsuarioService {
     usuarioExistente.nombreUsuario = usuario.nombreUsuario || usuarioExistente.nombreUsuario;
     usuarioExistente.password = usuario.password || usuarioExistente.password;
 
-    return this.usuarioRepository.update(usuarioExistente);
+    const usuarioActualizado = await this.usuarioRepository.update(usuarioExistente);
+    return this.toDto(usuarioActualizado);
   }
+
+  toDto(usuario) {
+        return {
+            id: usuario.id || usuario._id,
+            username: usuario.nombreUsuario,
+            password: usuario.password
+        }
+    }
 }

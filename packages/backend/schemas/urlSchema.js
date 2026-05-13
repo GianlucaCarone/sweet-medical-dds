@@ -14,3 +14,12 @@ export const idParamNumberSchema = z.object({
 export const idParamUUIDSchema = z.object({
   id: z.uuid("El id debe ser un UUID válido")
 });
+
+export const idParamObjectIdSchema = z.object({
+  id: z.string().regex(/^[0-9a-fA-F]{24}$/).refine(id => {
+    // Verificar que el ID tenga exactamente 24 caracteres hexadecimales
+    return /^[0-9a-fA-F]{24}$/.test(id);
+  }, {
+    message: "El id debe ser un ObjectId de MongoDB válido"
+  })
+});
