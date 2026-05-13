@@ -68,29 +68,29 @@ export class TurnoController {
     extraerFiltros(query) {
         const filtros = {}
 
-        if (query.pacienteId != undefined) {
+        if (query.pacienteId !== undefined) {
             filtros.pacienteId = query.pacienteId;
         }
 
-        if (query.estado != undefined) {
+        if (query.estado !== undefined) {
             filtros.estado = query.estado;
         }
-        if (query.medicoId != undefined) {
+        if (query.medicoId !== undefined) {
             filtros.medicoId = query.medicoId;
         }
-        if (query.especialidadId != undefined) {
+        if (query.especialidadId !== undefined) {
             filtros.especialidadId = query.especialidadId;
         }
-        if (query.practicaId != undefined) {
+        if (query.practicaId !== undefined) {
             filtros.practicaId = query.practicaId;
         }
-        if (query.sedeId != undefined) {
+        if (query.sedeId !== undefined) {
             filtros.sedeId = query.sedeId;
         }
-        if (query.fechaHoraInicio != undefined) {
+        if (query.fechaHoraInicio !== undefined) {
             filtros.fechaHoraInicio = query.fechaHoraInicio;
         }
-        if (query.fechaHoraFin != undefined) {
+        if (query.fechaHoraFin !== undefined) {
             filtros.fechaHoraFin = query.fechaHoraFin;
         }
 

@@ -46,15 +46,21 @@ const turnoSchema = new mongoose.Schema({
     costo: {
         type: Number,
         required: false,
-    },/* ver si lo usamos o no
+    },
     eliminado: {
         type: Boolean,
         required: true,
         default: false,
-    },*/
+    },
 });
 
 
 turnoSchema.loadClass(Turno);
+
+//indices para la busqueda de los turnos mas eficiente
+turnoSchema.index({ medico: 1, fechaHora: 1 });
+turnoSchema.index({ estado: 1 });
+turnoSchema.index({ paciente: 1 });
+turnoSchema.index({ sede: 1 });
 
 export const TurnoModel = mongoose.model('Turno', turnoSchema)

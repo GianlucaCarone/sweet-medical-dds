@@ -1,27 +1,23 @@
 import { EstadoTurnoEnum } from "../domain/turnos/estadoTurnoEnum.js";
-import { NotFoundError } from "../errors/AppError.js";
 import { TurnoModel } from "../schemas/dataBase/turnoSchemaDB.js";
 
 export class TurnoRepository {
-    constructor({ model = TurnoModel } = {}) {
-        this.model = model;
+    constructor(medicoRepository) {
+        this.model = TurnoModel;
+        this.medicoRepository = medicoRepository;
     }
 
     async findAll() {
-        return await this.model.find().exec();  // no es necesariamente obligatorio pero mejora el Stack Traces y devuelve una promesa de js 
+        return await this.model.find().lean().exec();  // no es necesariamente obligatorio pero mejora el Stack Traces y devuelve una promesa de js 
     }
 
     async findByEstado(estado) {
         this.validarEstado(estado);
-        return await this.model.find({ estado }).exec();
+        return await this.model.find({ estado }).lean().exec();
     }
 
     async findById(id) {
-        const turno = await this.model.findById(id).exec();
-        if (!turno) {
-            throw new NotFoundError("No se encontro el turno con el id " + id);
-        }
-        return turno;
+        return await this.model.findById(id).lean().exec();
     }
 
     async save(turno) {
@@ -34,9 +30,12 @@ export class TurnoRepository {
     }
 
     async existeTurno(medicoId, fechaHora) {
+        const fechaNormalizada = new Date(fechaHora);
+        fechaNormalizada.setSeconds(0, 0);
+
         const turnoExistente = await this.model.findOne({
             medico: medicoId,
-            fechaHora: fechaHora
+            fechaHora: fechaNormalizada
         }).exec();
 
         return turnoExistente !== null;
@@ -92,13 +91,13 @@ disponible:
 
         if (filtros.especialidadId !== undefined) {
             // Buscamos medicos que tengan esa especialidad
-            const medicos = await MedicoModel.find({ especialidad: filtros.especialidadId }).select('_id').lean();
+            const medicos = await this.medicoRepository.findByEspecialidadId(filtros.especialidadId);
             medicosQueCumplen = medicos.map(m => m._id.toString());
         }
 
         if (filtros.practicaId !== undefined) {
             // Buscamos medicos que tengan esa practica
-            const medicos = await MedicoModel.find({ practicas: filtros.practicaId }).select('_id').lean();
+            const medicos = await this.medicoRepository.findByPracticaId(filtros.practicaId);
             const idsConPractica = medicos.map(m => m._id.toString());
 
             if (medicosQueCumplen !== null) {
@@ -125,7 +124,12 @@ disponible:
 
         // Ejecutar la consulta y el conteo en paralelo
         const [turnos, totalTurnos] = await Promise.all([
-            this.model.find(query).populate('medico').populate('paciente').populate('practica').populate('especialidad').populate('sede').skip(inicio).limit(limitePorPagina).exec(),
+            this.model.find(query)
+                .populate('medico paciente practica especialidad sede')
+                .skip(inicio)
+                .limit(limitePorPagina)
+                .lean()
+                .exec(),
             this.model.countDocuments(query).exec()
         ]);
 
