@@ -87,7 +87,6 @@ export class MedicoService {
       throw new Error("El médico no ofrece esa práctica");
     }
 
-    // TODO: Falta relacionarlo bien con turnos, por ahora solo valida que el medico tenga la practica. (Capaz haya que cambiarlo)
     return medico.disponibilidades;
   }
 

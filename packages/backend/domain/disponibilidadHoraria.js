@@ -2,7 +2,6 @@ import { DiaSemana } from "./diaSemanaEnum.js";
 import { ErrorDatosObligatorios } from "./errores.js";
 
 export class DisponibilidadHoraria {
-    // TODO: Planteo uso de ID para poder modificar/eliminar 
     diaSemana;
     horaDesde;
     horaHasta;
