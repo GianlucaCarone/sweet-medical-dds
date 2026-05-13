@@ -8,7 +8,7 @@ export class ServiciosRepository {
         return await nuevoServicio.save();
     }
 
-    async getById (id) {
+    async getById (idServicio) {
         return await this.model.findById(idServicio);
     }
 

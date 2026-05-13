@@ -3,8 +3,8 @@ import { BadRequestError } from "../errors/AppError.js";
 
 export class UsuarioRepository {
   constructor() {
-        this.usuarios = {}
-        this.nextId = 1
+        this.usuarios = {};
+        this.nextId = 1;
     }
 
     save (usuario) {

@@ -1,16 +1,16 @@
-import express from 'express';
-import { NotificacionesController } from '../controllers/NotificacionesController'; 
+import express from "express";
+import { NotificacionesController } from "../controllers/NotificacionesController"; 
 
 const router = express.Router();
 const notificacionesController = new NotificacionesController();
 
-router.route('/users/:idUsuario/notificaciones/:idNotificacion')
+router.route("/users/:idUsuario/notificaciones/:idNotificacion")
     .patch((req, res, next) => notificacionesController.leer(req, res, next));
 
-router.route('/users/:idUsuario/notificaciones/leidos')
+router.route("/users/:idUsuario/notificaciones/leidos")
     .get((req, res, next) => notificacionesController.getLeidos(req, res, next));
 
-router.route('/users/:idUsuario/notificaciones/no-leidos')
+router.route("/users/:idUsuario/notificaciones/no-leidos")
     .get((req, res, next) => notificacionesController.getNoLeidos(req, res, next));
 
 export default router;

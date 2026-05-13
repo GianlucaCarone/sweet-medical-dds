@@ -1,7 +1,7 @@
 import sedeRoutes from "./sedeRoutes.js";
 import healthRoutes from "./healthRoutes.js";
-import notificacionesRoutes from "./notificacionesRoutes.js"
-import serviciosRoutes from "./healthRoutes.js"
+import notificacionesRoutes from "./notificacionesRoutes.js";
+import serviciosRoutes from "./serviciosRoutes.js";
 
 const routes = [
   { path: "/sede", handler: sedeRoutes },

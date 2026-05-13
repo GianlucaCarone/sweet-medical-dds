@@ -1,4 +1,3 @@
-import { notificacion } from "../domain/notificacion.js"
 import { NotificacionesRepository } from "../repositories/notificacionesRepository.js";
 import { BadRequestError } from "../errors/AppError.js";
 
@@ -7,13 +6,13 @@ export class NotificacionesService {
         this.notificacionesRepository = notificacionesRepository;
     }
 
-    getLeidosNoLeidos (idDestinatario, leido) {
+    async getLeidosNoLeidos (idDestinatario, leido) {
        return this.notificacionesRepository.getLeidos(idDestinatario, leido); //leido es un booleano
     }
 
-    leer (idNotificacion) {
+    async leer (idNotificacion) {
         const notificacion = this.notificacionesRepository.getById(idNotificacion);
-        if (!notificacion) throw new BadRequestError("No se encontro el turno con el id " + id)
+        if (!notificacion) throw new BadRequestError("No se encontro la notificacion con el id " + idNotificacion);
         notificacion.marcarComoLeida();
         return this.notificacionesRepository.save(notificacion);
     }

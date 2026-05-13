@@ -1,32 +1,31 @@
-import mongoose from 'mongoose';
-import { Notificacion } from '../../domain/notificacion.js';
+import mongoose from "mongoose";
+import { Notificacion } from "../../domain/notificacion.js";
 
 const notificacionSchema = new mongoose.Schema({
-    destinatiario:{
+    destinatario: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Usuario',
+        ref: "Usuario",
         required: true,
         index: true
     },
-    remitente:{
+    remitente: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Usuario',
+        ref: "Usuario",
         required: true
     },
-    mensaje:{
+    mensaje: {
         type: String,
         required: true,
         trim: true
     },
-    fechaHoraCreacion:{
+    fechaHoraCreacion: {
         type: Date,
         required: true
     },
-    fechaHoraLeida:{
-        type: Date,
-        required: false
+    fechaHoraLeida: {
+        type: Date
     },
-    leida:{
+    leida: {
         type: Boolean,
         required: true,
         default: false
@@ -39,12 +38,9 @@ const notificacionSchema = new mongoose.Schema({
     },*/
 },{
     timestamps: true,
-    //versionKey: false,
-    collection: 'alojamientos'
+    collection: "notificaciones"
 });
 
-//CARGAMOS EL ESQUEMA NOTIFICACION (MONGOOSE) A LA ENTIDAD NOTIFICACION (NUESTRO DOMINIO)
 notificacionSchema.loadClass(Notificacion);
 
-//EXPORTAMOS EL MODELO MONGOOSE QUE SE USARA CORRESPONDIENTE AL ESQUEMA
-export const NotificacionModel = mongoose.model('Notificacion', notificacionSchema);
+export const NotificacionModel = mongoose.model("Notificacion", notificacionSchema);
