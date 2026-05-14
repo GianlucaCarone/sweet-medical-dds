@@ -20,4 +20,8 @@ export class MedicoRepository {
   async findByIdUsuario(idUsuario) {
     return await this.model.findOne({ "idUsuario": idUsuario });
   }
+
+  async delete(id) {
+    return await this.model.findByIdAndDelete(id);
+  }
 }

@@ -1,3 +1,4 @@
+import { ConflictError, NotFoundError } from "../errors/AppError.js";
 import { Usuario } from "../domain/usuario.js";
 import { UsuarioRepository } from "../repositories/UsuarioRepository.js";
 
@@ -22,7 +23,7 @@ export class UsuarioService {
     const usuario = await this.usuarioRepository.findById(id);
 
     if (!usuario) {
-      throw new Error("Usuario no encontrado");
+      throw new NotFoundError("Usuario no encontrado");
     }
     return this.toDto(usuario);
   }
@@ -37,7 +38,7 @@ export class UsuarioService {
     const usuarioExistente = await this.findById(id);
 
     if (!usuarioExistente) {
-      throw new Error("Usuario no encontrado");
+      throw new NotFoundError("Usuario no encontrado");
     }
     await this.usuarioRepository.delete(id);
     return this.toDto(usuarioExistente);
@@ -47,7 +48,7 @@ export class UsuarioService {
     const usuarioExistente = await this.findById(id);
 
     if (!usuarioExistente) {
-      throw new Error("Usuario no encontrado");
+      throw new NotFoundError("Usuario no encontrado");
     }
     usuarioExistente.nombreUsuario = usuario.nombreUsuario || usuarioExistente.nombreUsuario;
     usuarioExistente.password = usuario.password || usuarioExistente.password;

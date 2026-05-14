@@ -28,6 +28,7 @@
   "dependencies": {
     "i18next": "^26.0.8",
     "mongoose": "^8.23.1",
+    "winston": "^3.19.0",
     "zod": "^4.3.6"
   }
 }

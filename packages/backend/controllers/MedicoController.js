@@ -45,6 +45,20 @@ export class MedicoController {
         }
     }
 
+    delete = async (req, res, next) => {
+      try {
+          const { id } = idParamObjectIdSchema.parse(req.params);
+          const medicoEliminado = await this.medicoService.delete(id);
+          if (!medicoEliminado) {
+              return res.status(404).json({ message: "Médico no encontrado" });
+          }
+          console.log("Médico eliminado:", medicoEliminado);
+          res.status(200).json(medicoEliminado);
+      } catch (error) {
+          return next(error);
+      }
+    }
+
   definirDisponibilidad = async (req, res, next) => {
     try{
         const { id } = idParamObjectIdSchema.parse(req.params);

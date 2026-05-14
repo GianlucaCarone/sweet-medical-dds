@@ -20,7 +20,9 @@ export default function medicoRoutes(getController) {
       .delete((req, res, next) =>medicoController.eliminarDisponibilidad(req, res, next)); // Eliminar disponibilidad existente del medico
 
   router.route("/:id")
-    .get((req, res, next) => medicoController.findById(req, res, next));
+    .get((req, res, next) => medicoController.findById(req, res, next))
+    .delete((req, res, next) => medicoController.delete(req, res, next))
+    .put((req, res, next) => medicoController.update(req, res, next));
 
   router.route("/:id/sedes")
     .post((req, res, next) => medicoController.agregarSede(req, res, next));
