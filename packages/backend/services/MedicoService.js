@@ -15,14 +15,17 @@ export class MedicoService {
   }
 
   async create(medicoData) {
+    logger.info("Iniciando creación de médico con los datos: ", medicoData);
     const usuarioDTO = await this.usuarioService.findById(medicoData.idUsuario);
 
     if(!usuarioDTO) {
+      logger.error("Usuario no encontrado para el ID: ", medicoData.idUsuario);
       throw new Error("Usuario no encontrado");
     }
 
     const medicoExistente = await this.medicoRepository.findByIdUsuario(usuarioDTO.id); // Verificar que no exista otro médico con el mismo nombre de usuario
     if(medicoExistente) {
+      logger.error("Ya existe un médico con ese nombre de usuario: ", medicoData.nombre);
       throw new ConflictError("Ya existe un médico con ese nombre de usuario");
     }
 
@@ -31,21 +34,36 @@ export class MedicoService {
       matricula: medicoData.matricula,
       idUsuario: medicoData.idUsuario,
     }; 
-    return this.medicoRepository.save(medico);
+    const nuevoMedico = await this.medicoRepository.save(medico);
+    logger.info("Médico creado exitosamente: ", nuevoMedico);
+    return this.toDto(nuevoMedico);
   }
 
   async findById(id) {
     const medico = await this.medicoRepository.findById(id);
 
     if (!medico) {
-      throw new Error("Médico no encontrado");
+      throw new NotFoundError("Médico no encontrado");
     }
 
-    return medico;
+    return this.toDto(medico);
   }
 
-  findAll() {
-    return this.medicoRepository.findAll();
+  async findAll() {
+    logger.info("Consultando todos los médicos");
+    return this.medicoRepository.findAll().then(medicos => medicos.map(medico => this.toDto(medico)));
+  }
+
+  async delete(id) {
+    logger.info(`Eliminando médico con ID: ${id}`);
+    const medicoEliminado = await this.medicoRepository.delete(id);
+
+    if (!medicoEliminado) {
+      throw new NotFoundError("Médico no encontrado");
+    }
+
+    logger.info(`Médico eliminado con ID: ${id}`);
+    return  this.toDto(medicoEliminado);
   }
 
   crearMedicos(listaMedicos) {
@@ -114,6 +132,17 @@ export class MedicoService {
     }
 
     return medico.disponibilidades;
+  }
+  
+  toDto(medico) {
+    return {
+      id: medico._id,
+      nombre: medico.nombre,
+      matricula: medico.matricula,
+      idUsuario: medico.idUsuario,
+      sedes: medico.sedes,
+      disponibilidades: medico.disponibilidades
+    };
   }
 
 }
