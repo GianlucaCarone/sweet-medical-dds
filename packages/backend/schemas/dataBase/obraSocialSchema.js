@@ -1,6 +1,6 @@
 import { mongoose } from 'mongoose';
-import { ObraSocial } from '../../domain/obraSocial';
-import { planSchema } from './planSchema';
+import { ObraSocial } from '../../domain/obraSocial.js';
+import { planSchema } from './planSchema.js';
 
 const obraSocialSchema = new mongoose.Schema({
     _id: {

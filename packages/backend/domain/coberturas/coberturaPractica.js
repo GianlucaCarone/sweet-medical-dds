@@ -1,6 +1,6 @@
-import { Practica } from "../practica";
-import { NivelCobertura } from "../nivelCobertura";
-import { ErrorDatosObligatorios } from "../errors/errorDatosObligatorios";
+import { Practica } from "../servicios/practica.js";
+import { NivelCobertura } from "../coberturas/nivelCoberturaEnum.js";
+import { ErrorDatosObligatorios } from "../../domain/errores.js";
 
 export class CoberturaPractica {
     practica;

@@ -1,5 +1,5 @@
 import { mongoose } from "mongoose";
-import { coberturaPractica } from "../../domain/coberturas/coberturaPractica.js";
+import { CoberturaPractica } from "../../domain/coberturas/coberturaPractica.js";
 
 export const coberturaPracticaSchema = new mongoose.Schema({
     practica: {
@@ -17,4 +17,4 @@ export const coberturaPracticaSchema = new mongoose.Schema({
     },
 })
 
-coberturaPracticaSchema.loadClass(coberturaPractica)
+coberturaPracticaSchema.loadClass(CoberturaPractica)

@@ -1,6 +1,6 @@
 import { TurnoService } from '../services/TurnoService.js';
 import { BadRequestError } from "../errors/AppError.js";
-import { idParamsSchema, bodyCambioEstadoSchema, bodyAsignarTurnoSchema } from "../schemas/turnoSchema.js";
+import { idParamsSchema, bodyCambioEstadoTurnoSchema, bodyAsignarTurnoSchema } from "../schemas/zod/turnoSchema.js";
 
 
 export class TurnoController {
@@ -11,7 +11,7 @@ export class TurnoController {
     cambiarEstadoTurno = async (req, res, next) => {
         try {
             const idTurno = idParamsSchema.parse(req.params);
-            const cambioTurnoData = bodyCambioEstadoSchema.parse(req.body);
+            const cambioTurnoData = bodyCambioEstadoTurnoSchema.parse(req.body);
 
             const turnoActualizado = await this.turnoService.cambiarEstadoTurno(
                 idTurno,
@@ -42,8 +42,8 @@ export class TurnoController {
 
     findAllPaginated = async (req, res, next) => {
         try {
-            const paginacion = this.extraerPaginacion(req.query)
-            const filtros = this.extraerFiltros(req.query)
+            const paginacion = this.turnoService.extraerPaginacion(req.query)
+            const filtros = this.turnoService.extraerFiltros(req.query)
 
             const resultado = await this.turnoService.obtenerTodosPaginados(
                 paginacion.numeroPagina,
@@ -101,8 +101,8 @@ export class TurnoController {
         const numeroPagina = query?.page === undefined ? 1 : Number(query.page)
         const limitePorPagina = query?.limit === undefined ? 10 : Number(query.limit)
 
-        this.validarEnteroPositivo(numeroPagina, "page")
-        this.validarEnteroPositivo(limitePorPagina, "limit")
+        this.turnoService.validarEnteroPositivo(numeroPagina, "page")
+        this.turnoService.validarEnteroPositivo(limitePorPagina, "limit")
 
         return { numeroPagina, limitePorPagina }
     }

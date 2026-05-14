@@ -1,6 +1,6 @@
 import { mongoose } from 'mongoose';
 
-const historialEstadoTurnoSchema = new mongoose.Schema({
+export const historialEstadoTurnoSchema = new mongoose.Schema({
     fechaHoraIngreso: {
         type: Date,
         required: true,

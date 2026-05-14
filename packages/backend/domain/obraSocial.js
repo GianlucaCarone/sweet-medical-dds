@@ -1,6 +1,6 @@
 import { randomUUID } from "crypto";
-import { Plan } from "./plan";
-import { ErrorDatosObligatorios } from "../errors/errorDatosObligatorios";
+import { Plan } from "./plan.js";
+import { ErrorDatosObligatorios } from "../domain/errores.js";
 
 export class ObraSocial {
     id;

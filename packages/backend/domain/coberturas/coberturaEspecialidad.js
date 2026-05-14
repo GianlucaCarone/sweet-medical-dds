@@ -1,6 +1,6 @@
-import { Especialidad } from "../especialidad";
-import { NivelCobertura } from "../nivelCobertura";
-import { ErrorDatosObligatorios } from "../errors/errorDatosObligatorios";
+import { Especialidad } from "../servicios/especialidad.js";
+import { NivelCobertura } from "../coberturas/nivelCoberturaEnum.js";
+import { ErrorDatosObligatorios } from "../../domain/errores.js";
 
 export class CoberturaEspecialidad {
     especialidad;

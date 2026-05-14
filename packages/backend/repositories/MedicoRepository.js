@@ -1,4 +1,4 @@
-import {MedicoModel} from "../schemas/dataBase/medicoSchema"
+import {MedicoModel} from "../schemas/dataBase/medicoSchema.js"
 
 
 

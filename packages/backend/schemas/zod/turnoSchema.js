@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { EstadoTurnoEnum } from "../domain/turnos/estadoTurnoEnum.js";
+import { EstadoTurnoEnum } from "../../domain/turnos/estadoTurnoEnum.js";
 
 
 export const idParamsSchema = z.object({
