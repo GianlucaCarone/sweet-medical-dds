@@ -42,8 +42,8 @@ export class TurnoController {
 
     findAllPaginated = async (req, res, next) => {
         try {
-            const paginacion = this.turnoService.extraerPaginacion(req.query)
-            const filtros = this.turnoService.extraerFiltros(req.query)
+            const paginacion = this.extraerPaginacion(req.query)
+            const filtros = this.extraerFiltros(req.query)
 
             const resultado = await this.turnoService.obtenerTodosPaginados(
                 paginacion.numeroPagina,
