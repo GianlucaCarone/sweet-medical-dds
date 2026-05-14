@@ -1,4 +1,4 @@
-import { Usuario } from "./usuario.js"
+import { Usuario } from "./usuario.js";
 import { ErrorDatosObligatorios } from "./errores.js";
 import { DisponibilidadHoraria } from "./disponibilidadHoraria.js";
 import { randomUUID } from "crypto";
@@ -21,10 +21,10 @@ export class Medico {
             throw new ErrorDatosObligatorios();
         }
         if (!(usuario instanceof Usuario)) {
-            throw new Error("No es un Usuario")
+            throw new Error("No es un Usuario");
         }
         if (matricula.length > 10) {
-            throw new Error("Matricula Demasiado larga")
+            throw new Error("Matricula Demasiado larga");
         }
         //this.id = randomUUID();
         this.usuario = usuario;
@@ -88,7 +88,7 @@ export class Medico {
             this.practicas.push(servicio);
         }
         else {
-            throw new Error("Tipo de Servicio invalido")
+            throw new Error("Tipo de Servicio invalido");
         }
     }
 
@@ -101,7 +101,7 @@ export class Medico {
             this.practicas = this.practicas.filter(practica => practica.id !== servicioAEliminar.id);
         }
         else {
-            throw new Error("Tipo de Servicio invalido")
+            throw new Error("Tipo de Servicio invalido");
         }
     }
 

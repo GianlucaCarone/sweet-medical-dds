@@ -17,7 +17,7 @@ const MedicoSchema = new mongoose.Schema(
       maxlength: 10,
       minlength: 1,
     },
-    //disponibilidades: [disponibilidadHorariaSchema], // embebido
+    disponibilidades: [disponibilidadHorariaSchema], // embebido
 
     // TODO
     // disponibilidades: [disponibilidadHorariaSchema], // embebido
@@ -31,7 +31,7 @@ const MedicoSchema = new mongoose.Schema(
 MedicoSchema.loadClass(Medico);
 
 MedicoSchema.pre(/^find/, function (next) {
-  this.lean();
+  //this.lean();
   next();
 });
 

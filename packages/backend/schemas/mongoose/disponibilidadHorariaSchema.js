@@ -18,5 +18,3 @@ export const disponibilidadHorariaSchema = new mongoose.Schema({
 { _id: false }); // No necesitamos un _id para cada disponibilidad horaria, ya que estarán embebidas en el médico
 
 disponibilidadHorariaSchema.loadClass(DisponibilidadHoraria);
-
-export const DisponibilidadHorariaModel = mongoose.model("DisponibilidadHoraria", disponibilidadHorariaSchema);

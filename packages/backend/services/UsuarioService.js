@@ -62,6 +62,6 @@ export class UsuarioService {
             id: usuario.id || usuario._id,
             nombreUsuario: usuario.nombreUsuario,
             password: usuario.password
-        }
+        };
     }
 }

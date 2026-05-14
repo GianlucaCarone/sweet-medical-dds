@@ -1,14 +1,17 @@
+import { NotFoundError, ConflictError } from "../errors/AppError.js";
 import { MedicoRepository } from "../repositories/MedicoRepository.js";
 import { UsuarioService } from "./UsuarioService.js";
 import { DisponibilidadHoraria } from "../domain/disponibilidadHoraria.js";
-import { Medico } from "../domain/medico.js";
-import { Usuario } from "../domain/usuario.js";
-import { Sede } from "../domain/sede.js";
 import { SedeService } from "./SedeService.js";
-import { ConflictError } from "../errors/AppError.js";
+import { MedicoMapper } from "../mappers/MedicoMapper.js";
+import { logger } from "../config/logger.js";
 
 export class MedicoService {
-  constructor({ medicoRepository = new MedicoRepository(), usuarioService = new UsuarioService(), sedeService = new SedeService() } = {}) {
+  constructor({
+    medicoRepository = new MedicoRepository(),
+    usuarioService = new UsuarioService(),
+    sedeService = new SedeService(),
+  } = {}) {
     this.medicoRepository = medicoRepository;
     this.usuarioService = usuarioService;
     this.sedeService = sedeService;
@@ -18,14 +21,19 @@ export class MedicoService {
     logger.info("Iniciando creación de médico con los datos: ", medicoData);
     const usuarioDTO = await this.usuarioService.findById(medicoData.idUsuario);
 
-    if(!usuarioDTO) {
+    if (!usuarioDTO) {
       logger.error("Usuario no encontrado para el ID: ", medicoData.idUsuario);
       throw new Error("Usuario no encontrado");
     }
 
-    const medicoExistente = await this.medicoRepository.findByIdUsuario(usuarioDTO.id); // Verificar que no exista otro médico con el mismo nombre de usuario
-    if(medicoExistente) {
-      logger.error("Ya existe un médico con ese nombre de usuario: ", medicoData.nombre);
+    const medicoExistente = await this.medicoRepository.findByIdUsuario(
+      usuarioDTO.id,
+    ); // Verificar que no exista otro médico con el mismo nombre de usuario
+    if (medicoExistente) {
+      logger.error(
+        "Ya existe un médico con ese nombre de usuario: ",
+        medicoData.nombre,
+      );
       throw new ConflictError("Ya existe un médico con ese nombre de usuario");
     }
 
@@ -33,7 +41,7 @@ export class MedicoService {
       nombre: medicoData.nombre,
       matricula: medicoData.matricula,
       idUsuario: medicoData.idUsuario,
-    }; 
+    };
     const nuevoMedico = await this.medicoRepository.save(medico);
     logger.info("Médico creado exitosamente: ", nuevoMedico);
     return this.toDto(nuevoMedico);
@@ -63,7 +71,7 @@ export class MedicoService {
     }
 
     logger.info(`Médico eliminado con ID: ${id}`);
-    return  this.toDto(medicoEliminado);
+    return this.toDto(medicoEliminado);
   }
 
   crearMedicos(listaMedicos) {
@@ -80,35 +88,71 @@ export class MedicoService {
     // TODO: Implementar validaciones necesarias para el usuario
   }
 
-  agregarSede(medicoId, sedeId) {
-    const medico = this.findById(medicoId);
+  async agregarSede(medicoId, sedeId) {
+    logger.info(`Agregando sede ${sedeId} al médico ${medicoId}`);
+    const medico = await this.medicoRepository.findById(medicoId);
+    if (!medico) {
+      throw new NotFoundError("Médico no encontrado");
+    }
 
-    const sede = this.sedeService.getById(sedeId);
+    const sede = await this.sedeService.getById(sedeId);
 
-    medico.agregarSede(sede);
+    const medicoDomain = MedicoMapper.toDomain(medico);
+    medicoDomain.agregarSede(sede);
 
-    return this.medicoRepository.save(medico);
+    const medicoActualizado = await this.medicoRepository.save(medicoDomain);
+    return this.toDto(medicoActualizado);
   }
 
-  eliminarSede(medicoId, sedeId) {
-    const medico = this.findById(medicoId);
+  async eliminarSede(medicoId, sedeId) {
+    logger.info(`Eliminando sede ${sedeId} del médico ${medicoId}`);
+    const medico = await this.medicoRepository.findById(medicoId);
+
+    if (!medico) {
+      throw new NotFoundError("Médico no encontrado");
+    }
 
     //const sede = this.sedeService.getById(sedeId);
 
     medico.eliminarSede(sedeId);
 
-    return this.medicoRepository.save(medico);
+    const medicoActualizado = await this.medicoRepository.save(medico);
+    return this.toDto(medicoActualizado);
   }
 
-  definirDisponibilidadPara(disponibilidadData, id) {
-    const medico = this.findById(id);
+  async definirDisponibilidadPara(disponibilidadData, id) {
+    logger.info(`Definiendo disponibilidad para el médico ${id}`);
+    const medico = await this.medicoRepository.findById(id);
     const disponibilidad = new DisponibilidadHoraria(disponibilidadData);
+
+    // Normalizar disponibilidades antes de procesarlas
+    if (!medico.disponibilidades) {
+      medico.disponibilidades = [];
+    }
+    medico.disponibilidades = medico.disponibilidades.map(d => 
+      d instanceof DisponibilidadHoraria ? d : new DisponibilidadHoraria(d)
+    );
+
+    // TODO arreglar: se compara la dispo entrante con disponibilidades embebidas
     medico.definirDisponibilidad(disponibilidad);
+    logger.info(`Disponibilidad definida para el médico ${id}: `, disponibilidad);
     return this.medicoRepository.save(medico);
   }
 
-  modificarDisponibilidadPara(disponibilidadData, medicoId) {
-    const medico = this.findById(medicoId);
+  async modificarDisponibilidadPara(disponibilidadData, medicoId) {
+    const medico= await this.medicoRepository.findById(medicoId);
+    if (!medico) {
+      throw new NotFoundError("Médico no encontrado");
+    }
+
+/*     // Normalizar disponibilidades antes de procesarlas
+    if (!medicoRaw.disponibilidades) {
+      medicoRaw.disponibilidades = [];
+    }
+    medicoRaw.disponibilidades = medicoRaw.disponibilidades.map(d => 
+      d instanceof DisponibilidadHoraria ? d : new DisponibilidadHoraria(d)
+    ); */
+
     const disponibilidad = new DisponibilidadHoraria(disponibilidadData);
 
     medico.modificarDisponibilidad(disponibilidad);
@@ -116,16 +160,16 @@ export class MedicoService {
     return this.medicoRepository.save(medico);
   }
 
-  eliminarDisponibilidadPara(medicoId, diaSemana) {
-    const medico = this.findById(medicoId);
+  async eliminarDisponibilidadPara(medicoId, diaSemana) {
+    const medico = await this.findById(medicoId);
 
     medico.eliminarDisponibilidad(diaSemana);
 
     return this.medicoRepository.save(medico);
   }
 
-  consultarDisponibilidad(medicoId, practicaId) {
-    const medico = this.findById(medicoId);
+  async consultarDisponibilidad(medicoId, practicaId) {
+    const medico = await this.findById(medicoId);
 
     if (!medico.ofrecePractica(practicaId)) {
       throw new Error("El médico no ofrece esa práctica");
@@ -133,7 +177,7 @@ export class MedicoService {
 
     return medico.disponibilidades;
   }
-  
+
   toDto(medico) {
     return {
       id: medico._id,
@@ -141,8 +185,7 @@ export class MedicoService {
       matricula: medico.matricula,
       idUsuario: medico.idUsuario,
       sedes: medico.sedes,
-      disponibilidades: medico.disponibilidades
+      disponibilidades: medico.disponibilidades,
     };
   }
-
 }

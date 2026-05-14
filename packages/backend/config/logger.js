@@ -1,8 +1,8 @@
-import winston from 'winston';
+import winston from "winston";
 
 // Definimos el formato personalizado
 const logFormat = winston.format.combine(
-  winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
+  winston.format.timestamp({ format: "YYYY-MM-DD HH:mm:ss" }),
   // winston.format.colorize(), // Podés descomentar esto para ver colores en la consola
   winston.format.printf(({ timestamp, level, message }) => {
     return `[${timestamp}] ${level.toUpperCase()}: ${message}`;
@@ -10,7 +10,7 @@ const logFormat = winston.format.combine(
 );
 
 export const logger = winston.createLogger({
-  level: process.env.NODE_ENV === 'production' ? 'info' : 'debug', // Nivel mínimo a registrar
+  level: process.env.NODE_ENV === "production" ? "info" : "debug", // Nivel mínimo a registrar
   format: logFormat,
   transports: [
     // 1. Siempre mostramos en consola
