@@ -136,6 +136,10 @@ export class MedicoService {
     // TODO arreglar: se compara la dispo entrante con disponibilidades embebidas
     medico.definirDisponibilidad(disponibilidad);
     logger.info(`Disponibilidad definida para el médico ${id}: `, disponibilidad);
+
+    // TODO avisar al turno service que genere los turnos.
+    //await this.turnoService.regenerarTurnosDisponiblesDelMedico(medico.id);
+
     return this.medicoRepository.save(medico);
   }
 
@@ -157,6 +161,9 @@ export class MedicoService {
 
     medico.modificarDisponibilidad(disponibilidad);
 
+    // TODO avisar al turno service que genere los turnos.
+    //await this.turnoService.regenerarTurnosDisponiblesDelMedico(medico.id);
+
     return this.medicoRepository.save(medico);
   }
 
@@ -164,6 +171,9 @@ export class MedicoService {
     const medico = await this.findById(medicoId);
 
     medico.eliminarDisponibilidad(diaSemana);
+
+    // TODO avisar al turno service que genere los turnos.
+    //await this.turnoService.regenerarTurnosDisponiblesDelMedico(medico.id);
 
     return this.medicoRepository.save(medico);
   }
