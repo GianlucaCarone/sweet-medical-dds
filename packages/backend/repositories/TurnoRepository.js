@@ -1,8 +1,9 @@
 import { EstadoTurnoEnum } from "../domain/turnos/estadoTurnoEnum.js";
 import { TurnoModel } from "../schemas/dataBase/turnoSchemaDB.js";
+import { MedicoRepository } from "../repositories/MedicoRepository.js"
 
 export class TurnoRepository {
-    constructor(medicoRepository) {
+    constructor(medicoRepository = new MedicoRepository()) {
         this.model = TurnoModel;
         this.medicoRepository = medicoRepository;
     }
