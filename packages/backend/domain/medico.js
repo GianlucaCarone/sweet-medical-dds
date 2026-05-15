@@ -1,7 +1,9 @@
-import { Usuario } from "../domain/usuario"
-import { ErrorDatosObligatorios } from "./errores";
-import { DisponibilidadHoraria } from "./disponibilidadHoraria";
+import { Usuario } from "../domain/usuario.js"
+import { ErrorDatosObligatorios } from "./errores.js";
+import { DisponibilidadHoraria } from "./disponibilidadHoraria.js";
 import { randomUUID } from "crypto";
+import { Especialidad } from "./servicios/especialidad.js";
+import { Practica } from "./servicios/practica.js";
 
 export class Medico {
     id;
@@ -44,7 +46,7 @@ export class Medico {
     }
 
     eliminarDisponibilidad(disponibilidadAEliminar) {
-        if (!disponibilidadAEliminar instanceof DisponibilidadHoraria) {
+        if (!(disponibilidadAEliminar instanceof DisponibilidadHoraria)) {
             throw new Error("No es una DisponibilidadHoraria valida");
         }
         this.disponibilidades = this.disponibilidades.filter(disponibilidad => disponibilidad.diaSemana !== disponibilidadAEliminar.diaSemana || disponibilidad.horaDesde !== disponibilidadAEliminar.horaDesde || disponibilidad.horaHasta !== disponibilidadAEliminar.horaHasta);

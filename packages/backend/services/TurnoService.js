@@ -1,12 +1,21 @@
 import { BadRequestError, ConflictError, UnprocessableEntityError } from "../errors/AppError.js";
-import { filtrosTurnoSchema } from "../schemas/turnoSchema.js";
+import { filtrosTurnoSchema } from "../schemas/zod/turnoSchema.js";
 import { Turno } from "../domain/turnos/turno.js";
 import { NivelCobertura } from "../domain/coberturas/nivelCoberturaEnum.js";
 import { EstadoTurnoEnum } from "../domain/turnos/estadoTurnoEnum.js";
+import { TurnoRepository } from "../repositories/TurnoRepository.js";
+import { ObraSocialRepository } from "../repositories/ObraSocialRepository.js";
+import { MedicoRepository } from "../repositories/MedicoRepository.js";
+import { PacienteRepository } from "../repositories/PacienteRepository.js";
 
 
 export class TurnoService {
-    constructor({ turnoRepository, pacienteRepository, obraSocialRepository, medicoRepository} = {}) {
+    constructor({ 
+        turnoRepository = new TurnoRepository(),
+        pacienteRepository = new PacienteRepository(),
+        obraSocialRepository = new ObraSocialRepository(),
+        medicoRepository = new MedicoRepository()
+    } = { }) {
         this.turnoRepository = turnoRepository;
         this.pacienteRepository = pacienteRepository;
         this.obraSocialRepository = obraSocialRepository;

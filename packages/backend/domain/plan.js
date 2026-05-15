@@ -1,9 +1,9 @@
-import { CoberturaEspecialidad } from "./coberturas/coberturaEspecialidad";
-import { CoberturaPractica } from "./coberturas/coberturaPractica";
+import { CoberturaEspecialidad } from "./coberturas/coberturaEspecialidad.js";
+import { CoberturaPractica } from "./coberturas/coberturaPractica.js";
 import { randomUUID } from "crypto";
-import { Especialidad } from "./especialidad";
-import { Practica } from "./practica";
-import { ErrorDatosObligatorios } from "../errors/errorDatosObligatorios";
+import { Especialidad } from "./servicios/especialidad.js";
+import { Practica } from "./servicios/practica.js";
+import { ErrorDatosObligatorios } from "../domain/errores.js";
 
 export class Plan {
   id;

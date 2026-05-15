@@ -1,20 +1,20 @@
 import { mongoose } from "mongoose";
-import { coberturaPractica } from "../../domain/coberturas/coberturaPractica.js";
+import { CoberturaPractica } from "../../domain/coberturas/coberturaPractica.js";
 
 export const coberturaPracticaSchema = new mongoose.Schema({
-    practica: {
-        type: String,
-        ref: 'Practica',
-        required: true
-    },
-    nivel: {
-        type: String,
-        required: true
-    },
-    porcentajeCobertura: {
-        type: Number,
-        required: true
-    },
-})
+  practica: {
+    type: String,
+    ref: "Practica",
+    required: true,
+  },
+  nivel: {
+    type: String,
+    required: true,
+  },
+  porcentajeCobertura: {
+    type: Number,
+    required: true,
+  },
+});
 
-coberturaPracticaSchema.loadClass(coberturaPractica)
+coberturaPracticaSchema.loadClass(CoberturaPractica);

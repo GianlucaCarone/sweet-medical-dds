@@ -1,11 +1,19 @@
 import { ObraSocialModel } from "../schemas/dataBase/obraSocialSchema.js";
+// eslint-disable-next-line no-unused-vars
+import { Model } from "mongoose";
 
 export class ObraSocialRepository {
+    /**@type {typeof Model} */
+    model
     constructor() {
         this.model = ObraSocialModel;
     }
 
     //crud obras sociales
+    async crear(obraSocialDto) {
+        return await this.model.create(obraSocialDto);
+    }
+
     async findAll() {
         return await this.model.find({eliminado: false}).lean().exec();
     }

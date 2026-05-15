@@ -1,10 +1,18 @@
 import { EstadoTurnoEnum } from "../domain/turnos/estadoTurnoEnum.js";
 import { TurnoModel } from "../schemas/dataBase/turnoSchemaDB.js";
+import { MedicoRepository } from "../repositories/MedicoRepository.js"
 
 export class TurnoRepository {
-    constructor(medicoRepository) {
+    constructor(medicoRepository = new MedicoRepository()) {
         this.model = TurnoModel;
         this.medicoRepository = medicoRepository;
+    }
+
+    // Si bien la creación de turnos será por un cronjob
+    // se agrega el método dentro de turno repository para llamarlo
+    // y no declararlos dos veces
+    async crear(turnoDto) {
+        return await this.model.create(turnoDto);
     }
 
     async findAll() {
