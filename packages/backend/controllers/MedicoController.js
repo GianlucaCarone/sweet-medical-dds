@@ -1,5 +1,5 @@
 import { MedicoService } from "../services/MedicoService.js";
-import { medicoSchema, disponibilidadSchema, medicoIdParamsSchema, disponibilidadConsultaSchema, eliminarDisponibilidadSchema } from "../schemas/medicoSchema.js";
+import { medicoSchema, disponibilidadSchema, disponibilidadConsultaSchema, eliminarDisponibilidadSchema } from "../schemas/medicoSchema.js";
 import { idParamNumberSchema, idParamObjectIdSchema } from "../schemas/urlSchema.js";
 import { asociarSedeSchema, eliminarSedeParamsSchema } from "../schemas/sedeSchema.js";
 import { logger } from "../config/logger.js";
@@ -76,6 +76,23 @@ export class MedicoController {
     }
   };
 
+  consultarDisponibilidad = async (req, res, next) => {
+    try {
+      const { id } = idParamObjectIdSchema.parse(req.params);
+
+      const { idPractica } = disponibilidadConsultaSchema.parse(req.query);
+
+      const disponibilidades = await this.medicoService.consultarDisponibilidad(id, idPractica);
+
+      return res.status(200).json({
+        status: "success",
+        data: disponibilidades
+      });
+    } catch (error) {
+      return next(error);
+    }
+  };
+
   modificarDisponibilidad = async (req, res, next) => {
     try {
       const { id } = idParamObjectIdSchema.parse(req.params);
@@ -143,22 +160,7 @@ export class MedicoController {
     }
   };
 
-  consultarDisponibilidad = async (req, res, next) => {
-    try {
-      const { id } = idParamObjectIdSchema.parse(req.params);
-
-      const { idPractica } = disponibilidadConsultaSchema.parse(req.query);
-
-      const disponibilidades = await this.medicoService.consultarDisponibilidad(id, idPractica);
-
-      return res.status(200).json({
-        status: "success",
-        data: disponibilidades
-      });
-    } catch (error) {
-      return next(error);
-    }
-  };
+  
 
   /*
   parsearId(idParam) {
