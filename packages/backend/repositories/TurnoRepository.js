@@ -8,6 +8,13 @@ export class TurnoRepository {
         this.medicoRepository = medicoRepository;
     }
 
+    // Si bien la creación de turnos será por un cronjob
+    // se agrega el método dentro de turno repository para llamarlo
+    // y no declararlos dos veces
+    async crear(turnoDto) {
+        return await this.model.create(turnoDto);
+    }
+
     async findAll() {
         return await this.model.find().lean().exec();  // no es necesariamente obligatorio pero mejora el Stack Traces y devuelve una promesa de js 
     }
