@@ -1,19 +1,19 @@
-import express from 'express';
-import { MedicoController } from '../controllers/MedicoController.js';
+import express from "express";
+import { MedicoController } from "../controllers/MedicoController.js";
 
 
 export default function medicoRoutes(getController) {
   const router = express.Router();
   const medicoController = getController(MedicoController);
 
-  router.route('/')
+  router.route("/")
       .get((req, res, next) => medicoController.findAll(req, res, next))
       .post((req, res, next) => medicoController.create(req, res, next));
       
-  router.route('/seed')
+  router.route("/seed")
       .get((req, res, next) => medicoController.seed(req, res, next));
 
-  router.route('/:id/disponibilidad')
+  router.route("/:id/disponibilidades")
       .get((req, res, next) => medicoController.consultarDisponibilidad(req, res, next)) // Puede ser que no vaya asi esto.
       .post((req, res, next) => medicoController.definirDisponibilidad(req, res, next)) // agrego una disponibilidad al medico
       .put((req, res, next) => medicoController.modificarDisponibilidad(req, res, next)) // Reemplazar disponibilidad existente del medico
