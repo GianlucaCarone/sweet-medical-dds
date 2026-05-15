@@ -1,11 +1,20 @@
 import { TurnoService } from '../services/TurnoService.js';
-import { BadRequestError } from "../errors/AppError.js";
-import { idParamsSchema, bodyCambioEstadoTurnoSchema, bodyAsignarTurnoSchema } from "../schemas/zod/turnoSchema.js";
+import { idParamsSchema, bodyCambioEstadoTurnoSchema, bodyAsignarTurnoSchema, bodyUpdateTurnoSchema, turnoBaseSchema } from "../schemas/zod/turnoSchema.js";
 
 
 export class TurnoController {
     constructor({ turnoService = new TurnoService() } = {}) {
         this.turnoService = turnoService;
+    }
+
+    create = async (req, res, next) => {
+        try {
+            const turnoData = turnoBaseSchema.parse(req.body);
+            const nuevoTurno = await this.turnoService.create(turnoData);
+            return res.status(201).json({ status: "success", data: nuevoTurno });
+        } catch (error) {
+            return next(error);
+        }
     }
 
     cambiarEstadoTurno = async (req, res, next) => {
@@ -62,6 +71,44 @@ export class TurnoController {
             });
         } catch (error) {
             return next(error);
+        }
+    }
+
+    findById = async (req, res, next) => {
+        try {
+            const turno = await this.turnoService.findById(req.params.id);
+            res.status(200).json( {
+                status: "success",
+                data: turno
+            });
+        } catch (error) {
+            next(error);
+        }
+    };
+
+    findByEstado = async (req, res, next) => {
+        try {
+            const estado = req.params.estado;
+            const turnos = await this.turnoService.findByEstado(estado);
+            res.status(200).json( {
+                status: "success",
+                data: turnos
+            });
+        } catch (error) {
+            next(error);
+        }
+    };
+
+    update = async (req,res,next) => {
+        try {
+            const idTurno = idParamsSchema.parse(req.params)
+            const turnoData = bodyUpdateTurnoSchema.parse(req.body)
+
+            const turnoActualizado = await this.turnoService.update(idTurno, turnoData);
+
+            return res.status(200).json({ status: "success", data: turnoActualizado });
+        } catch (error) {
+            return next(error)
         }
     }
 

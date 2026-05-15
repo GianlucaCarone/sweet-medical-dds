@@ -1,4 +1,5 @@
-import { ObraSocialRepository } from "../repositories/ObraSocialRepository";
+import { ObraSocial } from "../domain/obraSocial.js";
+import { ObraSocialRepository } from "../repositories/ObraSocialRepository.js";
 
 export class ObraSocialService {
     #obraSocialRepository;
@@ -9,12 +10,14 @@ export class ObraSocialService {
     buscarTodos() {
         return this.#obraSocialRepository.findAll();
     }
-    crear(obraSocialDto = {}) {
-        const nuevaObraSocial = this.#obraSocialRepository.crear(obraSocialDto);
+    crear(data) {
+        const { nombre } = data
+        const obraSocial = new ObraSocial({ nombre });
+        const nuevaObraSocial = this.#obraSocialRepository.crear(obraSocial);
         return nuevaObraSocial;
     }
     buscar(obraSocialId) {
-        this.#obraSocialRepository.findById(obraSocialId);
+        return this.#obraSocialRepository.findById(obraSocialId);
     }
     actualizar(obraSocialId, obraSocialDto = {}) {
         this.#obraSocialRepository.update(obraSocialId, obraSocialDto);

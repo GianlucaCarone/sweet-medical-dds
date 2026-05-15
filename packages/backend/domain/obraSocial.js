@@ -3,40 +3,38 @@ import { Plan } from "./plan.js";
 import { ErrorDatosObligatorios } from "../domain/errores.js";
 
 export class ObraSocial {
-    id;
-    nombre;
-    planes = [];
+  id;
+  nombre;
+  planes = [];
 
-    constructor({ nombre, planes = [] }) {
-        if (!nombre) {
-            throw new ErrorDatosObligatorios("Faltan datos obligatorios");
-        }
-        if (!Array.isArray(planes) || !planes.every(p => p instanceof Plan)) {
-            throw new Error("Planes inválidos");
-        }
-        this.id = randomUUID();
-        this.nombre = nombre;
-        this.planes = planes;
+  constructor({ nombre }) {
+    if (!nombre) {
+      throw new ErrorDatosObligatorios("Faltan datos obligatorios");
     }
+    this.id = randomUUID();
+    this.nombre = nombre;
+  }
 
-    obtenerPlanPorId(planId) {
-        if (!planId) {
-            throw new Error("Id invalido");
-        }
-        const plan = this.planes.find(plan => plan.id === planId);
-        
-        return plan ?? null;
+  obtenerPlanPorId(planId) {
+    if (!planId) {
+      throw new Error("Id invalido");
     }
+    const plan = this.planes.find((plan) => plan.id === planId);
 
-    agregarPlan(plan) {
-        if (!(plan instanceof Plan)) {
-            throw new Error("Plan inválido");
-        }
-        this.planes.push(plan);
-    }
+    return plan ?? null;
+  }
 
-    eliminarPlan(planAEliminar) {
-        if (!planAEliminar) { throw new Error("Plan invalido"); }
-        this.planes = this.planes.filter(plan => plan.id !== planAEliminar.id);
+  agregarPlan(plan) {
+    if (!(plan instanceof Plan)) {
+      throw new Error("Plan inválido");
     }
+    this.planes.push(plan);
+  }
+
+  eliminarPlan(planAEliminar) {
+    if (!planAEliminar) {
+      throw new Error("Plan invalido");
+    }
+    this.planes = this.planes.filter((plan) => plan.id !== planAEliminar.id);
+  }
 }

@@ -14,6 +14,13 @@ export default function turnoRoutes(getController) {
 
     router.route("/:id/cambiar-estado")
         .patch((req, res, next) => turnoController.cambiarEstadoTurno(req, res, next));
-    
+
+    router.route("/:estado")
+        .get((req, res, next) => turnoController.findByEstado(req, res, next));
+
+    router.route("/:id")
+        .get((req, res, next) => turnoController.findById(req, res, next))
+        .patch((req, res, next) => turnoController.update(req, res, next));
+
     return router;
 }

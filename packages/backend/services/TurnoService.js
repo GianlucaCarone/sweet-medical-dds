@@ -1,4 +1,4 @@
-import { BadRequestError, ConflictError, UnprocessableEntityError } from "../errors/AppError.js";
+import { BadRequestError, ConflictError, NotFoundError, UnprocessableEntityError } from "../errors/AppError.js";
 import { filtrosTurnoSchema } from "../schemas/zod/turnoSchema.js";
 import { Turno } from "../domain/turnos/turno.js";
 import { NivelCobertura } from "../domain/coberturas/nivelCoberturaEnum.js";
@@ -21,16 +21,6 @@ export class TurnoService {
         this.obraSocialRepository = obraSocialRepository;
         this.medicoRepository = medicoRepository;
     }
-
-    /*
-    //Aca como mas nos guste podemos transformar el objeto a un DTO
-    toDTO(alojamiento) {
-        return {
-            id: alojamiento.id || alojamiento._id, //validacion de if default de mongo
-            nombre: alojamiento.nombre,
-            //precioPorNoche: alojamiento.precioPorNoche,
-        };
-    }*/
 
     toDTO(turno) {
         return {
@@ -58,7 +48,7 @@ export class TurnoService {
             throw new BadRequestError("No se encontro el turno con el id " + id)
         }
         turno.actualizarEstadoTurno({ nuevoEstado, quien, motivo })
-        return await this.turnoRepository.save(turno)
+        return this.toDTO(await this.turnoRepository.update(id, turno));
     }
 
 
@@ -76,12 +66,12 @@ export class TurnoService {
 
         const medico = await this.medicoRepository.findById(medicoId);
         if (!medico) {
-            throw new BadRequestError("No se encontro el medico con el id " + medicoId)
+            throw new NotFoundError("No se encontro el medico con el id " + medicoId)
         }
 
         const sede = await this.sedeRepository.findById(sedeId);
         if (!sede) {
-            throw new BadRequestError("No se encontro la sede con el id " + sedeId)
+            throw new NotFoundError("No se encontro la sede con el id " + sedeId)
         }
 
         const turno = new Turno({ medico, sede, fechaHora });
@@ -94,11 +84,11 @@ export class TurnoService {
 
         const turno = await this.turnoRepository.findById(idTurno);
         if (!turno) {
-            throw new BadRequestError("No se encontro el turno con el id " + idTurno)
+            throw new NotFoundError("No se encontro el turno con el id " + idTurno)
         }
         const paciente = await this.pacienteRepository.findById(pacienteId);
         if (!paciente) {
-            throw new BadRequestError("No se encontro el paciente con el id " + pacienteId)
+            throw new NotFoundError("No se encontro el paciente con el id " + pacienteId)
         }
 
         if (practicaId) {
@@ -107,13 +97,15 @@ export class TurnoService {
             turno.especialidad = especialidadId;
         }
         turno.paciente = paciente;
-        turno.costoTurno = costoTurno;
+        turno.costo = costoTurno;
 
         turno.actualizarEstadoTurno({ nuevoEstado: EstadoTurnoEnum.RESERVADO, paciente });
 
-        return this.toDTO(await this.turnoRepository.update(turno));
+        return this.toDTO(await this.turnoRepository.update(idTurno,turno));
     }
 
+
+    // TODO:● Ordenamiento por costo y fecha ascendente/descendente FALTA
     async obtenerTodosPaginados(numeroPagina = 1, limitePorPagina = Number(process.env.ITEMS_PER_PAGE) || 10, filtros = {}) {
         this.validarPaginacion(numeroPagina, limitePorPagina);
         const filtrosValidados = this.validarFiltros(filtros);
@@ -135,16 +127,18 @@ export class TurnoService {
 
         const { obraSocial, plan } = await this.obtenerObraSocialYPlanPorPaciente(filtrosValidados.pacienteId);
 
-        const turnosConCosto = turnos.map(t => {
-            const costo = this.calcularCostoTurno(obraSocial, plan, t.servicio);
-            t.costoTurno = costo;
-            return t;
+        const turnosConCobertura = turnos.map(t => {
+            const cobertura = this.calcularCostoTurno(obraSocial, plan, t.servicio);
+            const turnoDto = this.toDTO(t);
+
+            turnoDto.costo = cobertura.costoFinal;
+            turnoDto.estadoCobertura = cobertura.estadoCobertura;
+
+            return turnoDto;
         }); // TODO ANALIZAR SI QUEREMOS TODOS LOS TURNOS QUE EXISTEN SI HACER OTRA FUNCION
 
-
-
         return {
-            turnosConCosto,
+            turnosConCobertura,
             numeroPagina,
             limitePorPagina,
             totalPaginas,
@@ -155,10 +149,29 @@ export class TurnoService {
     async findById(id) {
         const turno = await this.turnoRepository.findById(id);
         if (!turno) {
-            throw new BadRequestError("No se encontro el turno con el id " + id)
+            throw new NotFoundError("No se encontro el turno con el id " + id)
         }
         return this.toDTO(turno);
     }
+
+    async findByEstado(estado) {
+        const turnos = await this.turnoRepository.findByEstado(estado);
+        if (turnos.length === 0) {
+            throw new NotFoundError(`No se encontró ningún turno con el estado ${estado}`);
+        }
+        return turnos.map(t => this.toDTO(t));
+    }
+
+    async update(idTurno, turno) {
+        const turnoActualizado = await this.turnoRepository.update(idTurno, turno);
+        if (!turnoActualizado) {
+            throw new NotFoundError("No se encontro el turno con el id " + idTurno);
+        }
+        return this.toDTO(turnoActualizado);
+    }
+
+
+    //-------Funciones aux----------
 
     calcularCostoTurno(obraSocial, plan, servicio) {
         const precioInicial = servicio.precio;
@@ -171,13 +184,13 @@ export class TurnoService {
 
         switch (nivel) {
             case NivelCobertura.TOTAL:
-                return 0;
+                return { costoFinal: 0, estadoCobertura: "TOTAL" };
             case NivelCobertura.PARCIAL:
-                return precioInicial * porcentaje; // TODO: NO ESTA DEFINIDO EL PORCENTAJE DE DESCUENTO SI ES PARCIAL -> Implemente porcentajeCobertura en coberturaEspecialidad y coberturaPractica para no hardcodearlo y que cada obrasocial lo defina en su plan
+                return { costoFinal: precioInicial * porcentaje, estadoCobertura: "PARCIAL" };
             case NivelCobertura.NO_CUBIERTA:
-                return precioInicial;
+                return { costoFinal: precioInicial, estadoCobertura: "NO_CUBIERTA" };
             default:
-                return precioInicial;
+                return { costoFinal: precioInicial, estadoCobertura: "NO_CUBIERTA" };
         }
     }
 
@@ -188,10 +201,9 @@ export class TurnoService {
             return { obraSocial: null, plan: null };
         }
 
-        // TODO revisar si hacerlo embebida o referencia
         const obraSocial = await this.obraSocialRepository.findById(paciente.obraSocialId);
         if (!obraSocial) {
-            throw new BadRequestError("No se encontro la obra social con el id " + paciente.obraSocialId);
+            throw new NotFoundError("No se encontro la obra social con el id " + paciente.obraSocialId);
         }
         const plan = obraSocial.obtenerPlanPorId(paciente.planId);
         return {
@@ -199,7 +211,6 @@ export class TurnoService {
             plan
         };
     }
-
 
     validarFiltros(filtrosRecibidos) {
         const validacion = filtrosTurnoSchema.safeParse(filtrosRecibidos); //Analiza y devuelve un objeto con success y data entonces lo que hacemos es usar ese obkjecto para manejar el estado de la respuesta de success

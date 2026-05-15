@@ -1,7 +1,7 @@
 export class PacienteRepository {
     constructor() {}
 
-    findById() {
+    async findById() {
         return {id: "123abc", nombre: "Luca"}
     }
 }

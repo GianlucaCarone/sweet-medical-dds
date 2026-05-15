@@ -1,11 +1,10 @@
 import { EstadoTurnoEnum } from "../domain/turnos/estadoTurnoEnum.js";
+import { BadRequestError } from "../errors/AppError.js";
 import { TurnoModel } from "../schemas/dataBase/turnoSchemaDB.js";
-import { MedicoRepository } from "../repositories/MedicoRepository.js"
 
 export class TurnoRepository {
-    constructor(medicoRepository = new MedicoRepository()) {
+    constructor() {
         this.model = TurnoModel;
-        this.medicoRepository = medicoRepository;
     }
 
     // Si bien la creación de turnos será por un cronjob
@@ -33,8 +32,8 @@ export class TurnoRepository {
         return await nuevoTurno.save();
     }
 
-    async update(turno) {
-        return await turno.save()
+    async update(id, turno) {
+        return await this.model.findByIdAndUpdate(id, turno, { new: true }).exec();
     }
 
     async existeTurno(medicoId, fechaHora) {
@@ -149,7 +148,7 @@ disponible:
 
     validarEstado(estado) {
         if (!Object.values(EstadoTurnoEnum).includes(estado)) {
-            throw new Error("Estado de turno inválido");
+            throw new BadRequestError("Estado de turno inválido");
         }
     }
 }

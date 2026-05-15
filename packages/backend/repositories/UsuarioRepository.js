@@ -1,3 +1,5 @@
+import { NotFoundError } from "../errors/AppError.js";
+
 export class UsuarioRepository {
     constructor() {
         this.usuarios = {}

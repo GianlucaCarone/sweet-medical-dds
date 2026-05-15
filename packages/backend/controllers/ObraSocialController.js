@@ -1,4 +1,4 @@
-import { ObraSocialService } from "../services/ObraSocialService";
+import { ObraSocialService } from "../services/ObraSocialService.js";
 
 export class ObraSocialController {
     #obraSocialService;

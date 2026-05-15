@@ -37,3 +37,15 @@ export const filtrosTurnoSchema = z.object({
         });
     }
 });
+
+export const turnoBaseSchema = z.object({
+    pacienteId: z.uuid("El ID del paciente no es válido"),
+    medicoId: z.uuid("El ID del medico no es válido"),
+    sedeId: z.uuid("El ID de la sede no es válido"),
+    especialidadId: z.uuid("El ID de la especialidad no es válido"),
+    practicaId: z.uuid("El ID de la practica no es válido"),
+    estado: z.enum(EstadoTurnoEnum, { error: "El estado del turno no es válido" }),
+    fechaHora: z.coerce.date({ invalid_type_error: "Fecha inválida" })
+});
+
+export const bodyUpdateTurnoSchema = turnoBaseSchema.partial();

@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { ObraSocialController } from "../controllers/ObraSocialController";
+import { ObraSocialController } from "../controllers/ObraSocialController.js";
 
 export default function obraSocialRoutes(getController) {
     const router = new Router();
@@ -23,4 +23,6 @@ export default function obraSocialRoutes(getController) {
         .get((req, res, next) => obraSocialController.buscarPlan(req, res, next))
         .put((req, res, next) => obraSocialController.actualizarPlan(req, res, next))
         .delete((req, res, next) => obraSocialController.eliminarPlan(req, res, next))
+
+    return router;
 }
