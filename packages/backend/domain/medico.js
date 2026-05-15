@@ -1,9 +1,9 @@
-import { Usuario } from "../domain/usuario";
-import { ErrorDatosObligatorios } from "./errores";
-import { DisponibilidadHoraria } from "./disponibilidadHoraria";
+import { Usuario } from "../domain/usuario.js";
+import { ErrorDatosObligatorios } from "./errores.js";
+import { DisponibilidadHoraria } from "./disponibilidadHoraria.js";
 import { randomUUID } from "crypto";
-import { Especialidad } from "./servicios/especialidad";
-import { Practica } from "./servicios/practica";
+import { Especialidad } from "./servicios/especialidad.js";
+import { Practica } from "./servicios/practica.js";
 
 export class Medico {
     id;

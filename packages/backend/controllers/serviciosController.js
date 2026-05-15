@@ -1,36 +1,43 @@
-import { ServiciosService } from "../services/serviciosService";
-import { servicioSchema, servicioIdParamsSchema } from "../schemas/dto/servicioSchema";
+import { ServiciosService } from "../services/serviciosService.js";
+import { servicioSchema, servicioIdParamsSchema } from "../schemas/dto/servicioSchema.js";
+import { logger } from '../config/logger.js'; 
 
 export class ServiciosController {
     constructor ({ 
         serviciosService = new ServiciosService () 
-        } = {}) {
+    } = {}) {
         this.serviciosService = serviciosService;
     }
 
-    create = async (req, res, next) => { //servicioSchema
+    create = async (req, res, next) => {
         try {
             const datosServicio = servicioSchema.parse(req.body);
+            logger.info("[SERVICIOS CONTROLLER]: Creando servicio: ", datosServicio);
             const servicio = await this.serviciosService.create(datosServicio);
+            logger.info("[SERVICIOS CONTROLLER]: Servicio creado:", servicio);
             res.status(201).json( {
                 status: "success",
                 data: servicio
             });
         } catch (error) {
+            logger.error("No se pudo crear el servicio.");
             next(error);
         }
     };
 
-    update = async (req, res, next) => { //idSchema y servicioSchema
+    update = async (req, res, next) => {
         try {
             const { idServicio } = servicioIdParamsSchema.parse(req.params);
             const datosServicio = servicioSchema.parse(req.body);
+            logger.info("[SERVICIOS CONTROLLER]: Actualizando servicio: ", datosServicio);
             const servicio = await this.serviciosService.update(idServicio, datosServicio);
+            logger.info("[SERVICIOS CONTROLLER]: Servicio actualizado: ", servicio);
             res.status(200).json( {
                 status: "success",
                 data: servicio
             });
         } catch (error) {
+            logger.error("Servicio no encontrado para el id: ", idServicio);
             next(error);
         }
     };
@@ -38,7 +45,9 @@ export class ServiciosController {
     delete = async (req, res, next) => { //idSchema
         try {
             const { idServicio } = servicioIdParamsSchema.parse(req.params);
+            logger.info("[SERVICIOS CONTROLLER]: Eliminando servicio: ", idServicio)
             this.serviciosService.delete(idServicio);
+            logger.info("[SERVICIOS CONTROLLER]: Servicio eliminado");
             res.status(204).json( {
                 status: "success"
             });

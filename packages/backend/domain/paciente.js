@@ -1,5 +1,5 @@
-import { Plan } from "./plan";
-import { ObraSocial } from "./obraSocial"
+import { Plan } from "./plan.js";
+import { ObraSocial } from "./obraSocial.js"
 import { randomUUID } from "crypto";
 
 export class Paciente {

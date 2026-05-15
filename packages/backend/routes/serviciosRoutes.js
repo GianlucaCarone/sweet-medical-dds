@@ -1,14 +1,13 @@
 import express from "express";
-import { ServiciosController } from "../controllers/serviciosController";
+import { ServiciosController } from "../controllers/serviciosController.js";
 
-const router = express.Router();
-const serviciosController = new ServiciosController();
+export default function serviciosRoutes(getController) {
+    const router = express.Router();
+    const serviciosController = getController(ServiciosController);
 
-router.route("/servicios")
-    .post((req, res, next) => serviciosController.create(req, res, next));
+    router.route("/").post((req, res, next) => serviciosController.create(req, res, next));
+    router.route("/:id").put((req, res, next) => serviciosController.update(req, res, next))
+            .delete((req, res, next) => serviciosController.delete(req, res, next));
 
-router.route("/servicios/:id")
-    .put((req, res, next) => serviciosController.update(req, res, next))
-    .delete((req, res, next) => serviciosController.delete(req, res, next));
-
-export default router;
+    return router;
+}

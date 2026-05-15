@@ -1,5 +1,5 @@
 import { randomUUID } from "crypto";
-import { ErrorDatosObligatorios } from "../errores";
+import { ErrorDatosObligatorios } from "../errores.js";
 
 export class Especialidad {
     id;

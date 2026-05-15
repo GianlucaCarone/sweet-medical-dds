@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-const servicioSchema = new mongoose.Schema(
+export const servicioSchema = new mongoose.Schema(
   {
     nombre: {
       type: String,

@@ -1,19 +1,16 @@
 import express from "express";
-import { NotificacionesController } from "../controllers/NotificacionesController"; 
+import { NotificacionesController } from "../controllers/notificacionesController.js";
 
-const router = express.Router();
-const notificacionesController = new NotificacionesController();
+export default function notificacionesRoutes(getController) {
+    const router = express.Router();
+    const notificacionesController = getController(NotificacionesController);
 
-router.route("notificaciones/leidos")
-    .get((req, res, next) => notificacionesController.getLeidos(req, res, next));
+    router.route("/leidas").get((req, res, next) => notificacionesController.getLeidas(req, res, next));
+    router.route("/leidas-paginadas").get((req, res, next) => notificacionesController.getLeidasPaginadas(req, res, next));
+    router.route("/no-leidas").get((req, res, next) => notificacionesController.getNoLeidas(req, res, next));
+    router.route("/no-leidas-paginadas").get((req, res, next) => notificacionesController.getNoLeidasPaginadas(req, res, next));
+    router.route("/").post((req, res, next) => notificacionesController.crearNotificacion(req, res, next));
+    router.route("/:idNotificacion").patch((req, res, next) => notificacionesController.leer(req, res, next));
 
-router.route("notificaciones/no-leidos")
-    .get((req, res, next) => notificacionesController.getNoLeidos(req, res, next));
-
-router.route("notificaciones")
-    .post((req, res, next) => notificacionesController.crearNotificacion(req, res, next));
-
-router.route("notificaciones/:idNotificacion")
-    .patch((req, res, next) => notificacionesController.leer(req, res, next));
-
-export default router;
+    return router;
+}

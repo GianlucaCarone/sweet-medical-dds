@@ -1,5 +1,6 @@
-import { MedicoService } from "../services/MedicoService";
-import { medicoIdParamsSchema, servicioIdSchema } from "../schemas/dto/medicoSchema";
+import { MedicoService } from "../services/MedicoService.js";
+import { medicoIdParamsSchema, servicioIdSchema } from "../schemas/dto/medicoSchema.js";
+import { logger } from '../config/logger.js';
 
 export class MedicoController {
     constructor({ 
@@ -7,12 +8,14 @@ export class MedicoController {
         } = {}) {
         this.medicoService = medicoService;
     }
-
+    
     agregarServicio = async (req, res, next) => {
         try {
             const idMedico = medicoIdParamsSchema.parse(req.params);
             const idServicio = servicioIdSchema.parse(req.body);
+            logger.info("[MEDICO CONTROLLER]: Agregando servicio " + idServicio + " al medico " + idMedico);
             const medico = this.medicoService.agregarServicioPara(idMedico, idServicio);
+            logger.info("[MEDICO CONTROLLER]: Servicio agregado al medico: ", medico);
             res.status(200).json( {
                 status: "success",
                 data: medico
@@ -26,7 +29,9 @@ export class MedicoController {
         try {
             const idMedico = medicoIdParamsSchema.parse(req.params);
             const idServicio = servicioIdSchema.parse(req.body);
+            logger.info("[MEDICO CONTROLLER]: Eliminando servicio " + idServicio + " al medico " + idMedico);
             const medico = this.medicoService.eliminarServicioPara(idMedico, idServicio);
+            logger.info("[MEDICO CONTROLLER]: Servicio eliminado al medico: ", medico);
             res.status(200).json( {
                 status: "success",
                 data: medico

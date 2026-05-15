@@ -18,7 +18,7 @@ export class UsuarioRepository {
     findById(id) {
         const usuario = this.usuarios[id];
         if(!usuario) {
-            throw new BadRequestError("Usuario no encontrado");
+            throw new NotFoundError("Usuario no encontrado");
         }
         return usuario;
     }
@@ -34,7 +34,7 @@ export class UsuarioRepository {
     update(usuario) {
         const usuarioExistente = this.findById(usuario.id); // Verificar que el usuario existe, si no lanza un error
         if (!usuarioExistente) {
-            throw new BadRequestError("Usuario no encontrado");
+            throw new NotFoundError("Usuario no encontrado");
         }
         this.usuarios[usuario.id] = usuario;
         return usuario;

@@ -4,26 +4,33 @@ import { MedicoController } from "../controllers/MedicoController.js";
 import { ServiciosController } from "../controllers/serviciosController.js";
 import { NotificacionesController } from "../controllers/notificacionesController.js";
 
-const router = express.Router();
-const usuariosController = new UsuarioController();
-const medicosController = new MedicoController();
-const serviciosController = new ServiciosController();
-const notificacionesController = new NotificacionesController();
+export default function seedRoute(getController) {
+    const router = express.Router();
 
-router.get("/seed", async (req, res, next) => {
-    try {
-        const usuarios  = await usuariosController.seed(); // 1ro, otros dependen de esto
-        const medicos   = await medicosController.seed(usuarios); // 2do, recibe lo anterior
-        const notificaciones = await notificacionesController.seed(usuarios); // 3ro, lo mismo
-        const servicios = await serviciosController.seed(); // 4to
+    const usuariosController = getController(UsuarioController);
+    const medicosController = getController(MedicoController);
+    const serviciosController = getController(ServiciosController);
+    const notificacionesController = getController(NotificacionesController);
 
-        res.json({
-            mensaje: "Seed ejecutado correctamente",
-            resultados: { usuarios, medicos, notificaciones, servicios }
-        });
-    } catch (error) {
-        next(error);
-    }
-});
+    router.get("/", async (req, res, next) => {
+        try {
+            const usuarios = await usuariosController.seed();
+            const medicos = await medicosController.seed(usuarios);
+            const notificaciones = await notificacionesController.seed(usuarios);
+            const servicios = await serviciosController.seed();
 
-export default router;
+            res.json({
+                mensaje: "Seed ejecutado correctamente",
+                resultados: {
+                    usuarios,
+                    medicos,
+                    notificaciones,
+                    servicios
+                }
+            });
+        } catch (error) {
+            next(error);
+        }
+    });
+    return router;
+}
