@@ -1,5 +1,6 @@
 import { Usuario } from "./usuario.js";
 import { ErrorDatosObligatorios } from "./errores.js";
+import { ConflictError } from "../errors/AppError.js";
 import { DisponibilidadHoraria } from "./disponibilidadHoraria.js";
 import { randomUUID } from "crypto";
 import { Practica } from "./servicios/practica.js";
@@ -40,7 +41,7 @@ export class Medico {
         // TODO: Revisar si el mergeo lo sacamos
         this.disponibilidades.forEach(horarioExistente => {
             if (disponibilidad.seSuperponeCon(horarioExistente)) {
-                throw new Error("Este horario se superpone con otro horario existente");
+                throw new ConflictError("Este horario se superpone con otro horario existente");
             }
         });
 

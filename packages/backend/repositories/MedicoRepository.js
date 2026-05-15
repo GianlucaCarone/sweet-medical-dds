@@ -1,5 +1,4 @@
 import { MedicoModel } from "../schemas/mongoose/medicoSchema.js";
-import { Medico } from "../domain/medico.js";
 export class MedicoRepository {
   constructor() {
     this.model = MedicoModel;
