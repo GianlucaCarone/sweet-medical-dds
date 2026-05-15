@@ -28,7 +28,7 @@ export class MedicoService {
 
     if (!usuarioDTO) {
       logger.error("Usuario no encontrado para el ID: ", medicoData.idUsuario);
-      throw new Error("Usuario no encontrado");
+      throw new NotFoundError("Usuario no encontrado");
     }
 
     const medicoExistente = await this.medicoRepository.findByIdUsuario(
@@ -42,11 +42,13 @@ export class MedicoService {
       throw new ConflictError("Ya existe un médico con ese nombre de usuario");
     }
 
-    const medico = {
+    const medicoEntityData = {
       nombre: medicoData.nombre,
       matricula: medicoData.matricula,
       idUsuario: medicoData.idUsuario,
     };
+    const medico = new Medico(medicoEntityData);
+
     const nuevoMedico = await this.medicoRepository.save(medico);
     logger.info("Médico creado exitosamente: ", nuevoMedico);
     return this.toDto(nuevoMedico);
@@ -59,7 +61,7 @@ export class MedicoService {
       throw new NotFoundError("Médico no encontrado");
     }
 
-    return this.toDto(medico);
+    return MedicoMapper.toDto(medico);
   }
 
   async findAll() {
@@ -132,7 +134,7 @@ export class MedicoService {
     const medicoDoc = await this.medicoRepository.findById(id);
     const usuarioDoc = await this.usuarioService.findById(medicoDoc.idUsuario);
     // docs pasados a dominio
-    const medico = MedicoMapper.toDomain(medicoDoc, usuarioDoc);
+    const medico = MedicoMapper.toDomain(medicoDoc);
 
     const disponibilidad = new DisponibilidadHoraria(disponibilidadData);
 
@@ -140,10 +142,7 @@ export class MedicoService {
 
     logger.info(`Disponibilidad definida para el médico ${id}: `, disponibilidad);
 
-    return this.medicoRepository.save(
-      MedicoMapper.toPersistence(medico),
-      medico.id
-    );
+    return this.medicoRepository.save(medico);
   }
 
   async modificarDisponibilidadPara(disponibilidadData, medicoId) {
@@ -189,12 +188,12 @@ export class MedicoService {
     );
   }
 
-  async consultarDisponibilidad(medicoId, practicaId) {
+  async consultarDisponibilidad(medicoId) {
     const medico = await this.findById(medicoId);
 
-    if (!medico.ofrecePractica(practicaId)) {
+    /* if (!medico.ofrecePractica(practicaId)) {
       throw new Error("El médico no ofrece esa práctica");
-    }
+    } */
 
     return medico.disponibilidades;
   }

@@ -1,6 +1,5 @@
 import { Medico } from "../domain/medico.js";
 import { UsuarioMapper } from "./usuarioMapper.js";
-import { DisponibilidadMapper } from "./disponibilidadMapper.js";
 
 export class MedicoMapper {
   static toDomain(medicoDoc, usuarioDoc) {
@@ -11,22 +10,30 @@ export class MedicoMapper {
     });
 
     medico.id = medicoDoc._id?.toString() ?? medicoDoc.id;
-
-    medico.disponibilidades = (medicoDoc.disponibilidades ?? []).map(
-      DisponibilidadMapper.toDomain
-    );
+    //medico.disponibilidades = (medicoDoc.disponibilidades ?? []).map(DisponibilidadMapper.toDomain);
 
     return medico;
   }
 
   static toPersistence(medico) {
     return {
+        nombre: medico.nombre,
+        matricula: medico.matricula,
+        idUsuario: medico.usuario.id,
+        disponibilidades: medico.disponibilidades.map(d => d.id),
+        especialidades: medico.especialidades.map(e => e.id),
+        practicas: medico.practicas.map(p => p.id)
+    };
+  }
+
+  static toDto(medico) {
+    return {
+      id: medico._id,
       nombre: medico.nombre,
       matricula: medico.matricula,
-      idUsuario: medico.usuario.id,
-      disponibilidades: medico.disponibilidades.map(
-        DisponibilidadMapper.toPersistence
-      ),
+      idUsuario: medico.idUsuario,
+      //sedes: medico.sedes,
+      //disponibilidades: medico.disponibilidades,
     };
   }
 }
