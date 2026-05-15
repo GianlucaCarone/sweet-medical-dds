@@ -3,6 +3,8 @@ import { BadRequestError } from "../errors/AppError.js";
 import { Notificacion } from "../domain/notificacion.js";
 import { UsuarioService } from "./UsuarioService.js";
 import { logger } from '../config/logger.js';
+import { Usuario } from "../domain/usuario.js";
+import { NotificacionMapper } from "../mappers/notificacionMapper.js";
 
 export class NotificacionesService {
     constructor({ notificacionesRepository = new NotificacionesRepository(), usuariosService = new UsuarioService() } = {}) {
@@ -10,23 +12,13 @@ export class NotificacionesService {
         this.usuariosService = usuariosService;
     }
 
-    toDTO (notificacion) {
-        return {
-            id: notificacion.id,
-            destinatario: notificacion.destinatario.nombre,
-            remitente: notificacion.remitente.nombre,
-            mensaje: notificacion.mensaje,
-            fechaHoraCreacion: notificacion.fechaHoraCreacion,
-            fechaHoraLeida: notificacion.fechaHoraLeida,
-            leida: notificacion.leida
-        };
-    }
-
-    async crearNotificacion (notificacionData) {
+    async crearNotificacion (notificacionData) { //funciona
         logger.info("[NOTIFICACIONES SERVICE]: Obteniendo datos necesarios para crear la notificacion")
-        const destinatario = await this.usuariosService.findById(notificacionData.destinatario);
+        const destinatarioObtenido = await this.usuariosService.findById(notificacionData.destinatario);
+        const destinatario = new Usuario(destinatarioObtenido); destinatario.id = destinatarioObtenido.id;
         notificacionData.destinatario = destinatario;
-        const remitente = await this.usuariosService.findById(notificacionData.remitente);
+        const remitenteObtenido = await this.usuariosService.findById(notificacionData.remitente);
+        const remitente = new Usuario(remitenteObtenido); remitente.id = remitenteObtenido.id;
         notificacionData.remitente = remitente;
 
         const notificacion = new Notificacion(notificacionData);
@@ -34,28 +26,30 @@ export class NotificacionesService {
         logger.info("[NOTIFICACIONES SERVICE]: Creando notificacion con id: ", notificacionData.id);
         const guardado = await this.notificacionesRepository.save(notificacion);  
         logger.info("[NOTIFICACIONES SERVICE]: Notificacion creada: ", guardado);
-        return this.toDTO(guardado);
+        return NotificacionMapper.toDTO(guardado);
     }
 
-    async getLeidosNoLeidos (idDestinatario, leido) {
+    async getLeidosNoLeidos (idDestinatario, leido) { //TODO: VER QUE FUNCIONE
         logger.info("[NOTIFICACIONES SERVICE]: Obteniendo notificaciones " + ((leido) ? "leidas":"no leidas") + " del usuario " + idDestinatario);
         const notificaciones = await this.notificacionesRepository.getByDestinatarioIdAndLeido(idDestinatario, leido);
         logger.info("[NOTIFICACIONES SERVICE]: Se obtuvieron las notificaciones: ", notificaciones);
         return notificaciones.map(n => this.toDTO(n));
     }
     
-    async getLeidosNoLeidosPaginado(idDestinatario, leido, page = 1, limit = 10) {
+    async getLeidosNoLeidosPaginado(idDestinatario, leido, page = 1, limit = 10) { //TODO: VER QUE FUNCIONE
         logger.info("[NOTIFICACIONES SERVICE]: Obteniendo notificaciones " + (leido ? "leidas" : "no leidas") + " del usuario " + idDestinatario);
         const resultado = await this.notificacionesRepository.getByDestinatarioIdAndLeidoPaginado(idDestinatario, leido, page, limit);
 
+        const notificaciones = resultado.data.map(n => NotificacionMapper.toDTO(n));
         logger.info("[NOTIFICACIONES SERVICE]: Se obtuvieron las notificaciones:", resultado.data);
-
         return {
             ...resultado,
-            data: resultado.data.map(n => this.toDTO(n))
+            data: notificaciones
         };
+        
     }
     
+    /*
     async obtenerPaginadas(numeroPagina = 1, limitePorPagina = 10, filtros = {}) {
         logger.info("[NOTIFICACIONES SERVICE]: Obteniendo notificaciones paginadas");
 
@@ -68,13 +62,13 @@ export class NotificacionesService {
             numeroPagina,
             limitePorPagina,
             totalPaginas: Math.ceil(resultado.totalNotificaciones / limitePorPagina),
-            notificaciones: resultado.notificaciones.map(n => this.toDTO(n))
+            notificaciones: resultado.notificaciones.map(n => NotificacionMapper.toDTO(n))
         };
-    }
+    }*/
     
     
 
-    async leer (idNotificacion) {
+    async leer (idNotificacion) { //TODO: VER QUE FUNCIONE
         logger.info("[NOTIFICACIONES SERVICE]: Obteniendo los datos necesarios para leer la notificacion");
         const notificacion = await this.notificacionesRepository.getById(idNotificacion);
 
@@ -84,6 +78,6 @@ export class NotificacionesService {
         const notificacionGuardada = await this.notificacionesRepository.save(notificacion);
         logger.info("[NOTIFICACIONES SERVICE]: Notificacion leida: ", notificacionGuardada);
         
-        return this.toDTO(notificacionGuardada);
+        return NotificacionMapper.toDTO(notificacionGuardada);
     }
 }

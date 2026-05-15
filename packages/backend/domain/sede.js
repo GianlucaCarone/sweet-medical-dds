@@ -1,4 +1,5 @@
 import { randomUUID } from "crypto";
+import { ErrorDatosObligatorios } from "./errores";
 
 export class Sede {
     id;

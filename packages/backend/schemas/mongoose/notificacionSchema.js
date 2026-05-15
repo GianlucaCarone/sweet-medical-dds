@@ -2,16 +2,17 @@ import mongoose from "mongoose";
 import { Notificacion } from "../../domain/notificacion.js";
 
 const notificacionSchema = new mongoose.Schema({
-    destinatario: {
+    destinatarioId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Usuario",
         required: true,
         index: true
     },
-    remitente: {
+    remitenteId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Usuario",
-        required: true
+        required: true,
+        index: true
     },
     mensaje: {
         type: String,
@@ -28,7 +29,8 @@ const notificacionSchema = new mongoose.Schema({
     leida: {
         type: Boolean,
         required: true,
-        default: false
+        default: false,
+        index: true
     }
     /* ver si lo usamos o no
     eliminado: {

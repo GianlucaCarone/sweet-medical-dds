@@ -25,7 +25,7 @@ export class Medico {
         if (matricula.length > 10) {
             throw new Error("Matricula Demasiado larga");
         }
-        this.id = randomUUID();
+        //this.id = randomUUID();
         this.usuario = usuario;
         this.matricula = matricula;
         this.nombre = nombre;

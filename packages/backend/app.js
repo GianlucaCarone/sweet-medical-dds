@@ -1,7 +1,6 @@
 import express from "express"; // framework para crear el servidor y manejar las rutas
 import { Server } from "./server.js";
 import routes from "./routes/router.js";
-import { SedeController } from "./controllers/SedeController.js";
 
 import { ServiciosController } from "./controllers/serviciosController.js";
 import { NotificacionesController } from "./controllers/notificacionesController.js";
@@ -11,9 +10,6 @@ import { MedicoController } from "./controllers/MedicoController.js";
 const app = express();
 
 const server = new Server(app);
-
-const sedeController = new SedeController();
-server.setController(SedeController, sedeController);
 
 server.setController(
     ServiciosController,

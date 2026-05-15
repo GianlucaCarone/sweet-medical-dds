@@ -5,5 +5,5 @@ export const medicoIdParamsSchema = z.object({
 });
 
 export const servicioIdSchema = z.object({
-  idServicio: z.string().uuid("El id de la práctica debe ser un UUID válido")
+  idServicio: z.string().uuid("El id del servicio debe ser un UUID válido")
 });

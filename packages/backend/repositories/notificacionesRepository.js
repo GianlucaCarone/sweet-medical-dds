@@ -1,5 +1,6 @@
-import { NotificacionModel } from "../schemas/database/notificacionSchema.js";
+import { NotificacionModel } from "../schemas/mongoose/notificacionSchema.js";
 import { logger } from '../config/logger.js';
+import { NotificacionMapper } from "../mappers/notificacionMapper.js";
 
 export class NotificacionesRepository {
     //Este es el modelo que creamos en el esquema, es el modelo de mongoose que nos ayudara con todas las consultas a la base
@@ -8,28 +9,28 @@ export class NotificacionesRepository {
     
     async getByDestinatarioIdAndLeido(idDestinatario, leido) {
         logger.info("[NOTIFICACIONES REPOSITORY]: Obteniendo notificaciones " + ((leido) ? "leidas":"no leidas") + " del destinatario " + idDestinatario);
-        const notificaciones = await this.model.findAll({ 
-            destinatario: idDestinatario, 
-            leido: leido }).populate("remitente");
+        const notificaciones = await this.model.find({ destinatario: idDestinatario, leido: leido })
+                    .populate(["destinatarioId", "remitenteId"]);
         logger.info("[NOTIFICACIONES REPOSITORY]: Notificaciones obtenidas: ", notificaciones.length(), notificaciones);
+        return notificaciones.map(n => NotificacionMapper.toDomain(n, n.destinatarioId, n.remitenteId));
     }
     
     async getByDestinatarioIdAndLeidoPaginado(idDestinatario, leido, page, limit) {
         logger.info("[NOTIFICACIONES REPOSITORY]: Obteniendo notificaciones " + (leido ? "leidas" : "no leidas") + " del destinatario " + idDestinatario);
         const skip = (page - 1) * limit;
 
-        const notificaciones = await this.model.find({destinatario: idDestinatario, leido: leido}).populate("remitente").skip(skip).limit(limit);
+        const notificaciones = await this.model.find({destinatario: idDestinatario, leido: leido})
+                    .populate(["destinatarioId", "remitenteId"])
+                    .skip(skip)
+                    .limit(limit);
 
         const total = await this.model.countDocuments({
             destinatario: idDestinatario,
             leido: leido
         });
-
-        logger.info(
-            "[NOTIFICACIONES REPOSITORY]: Notificaciones obtenidas:",
-            notificaciones.length,
-            notificaciones
-        );
+        
+        notificaciones.map(n => NotificacionMapper.toDomain(n, n.destinatarioId, n.remitenteId));
+        logger.info("[NOTIFICACIONES REPOSITORY]: Notificaciones obtenidas:", notificaciones.length, notificaciones);
 
         return {
             total,
@@ -40,26 +41,23 @@ export class NotificacionesRepository {
         };
     }
 
-//    async getByDestinatarioAndLeido(destinatario, leido) {
-//        return await this.model.find({ 
-//            destinatario: destinatario._id, 
-//            leido: leido }).populate('remitente')
-//        
-//    }
-
     async save (notificacion) {
         logger.info("[NOTIFICACIONES REPOSITORY]: Guardando notificacion: ", notificacion);
-        const nuevaNotificacion = new this.model(notificacion);
+        const nuevaNotificacion = new this.model(NotificacionMapper.toPersistence(notificacion));
         const notificacionGuardada = await nuevaNotificacion.save();
+        
         logger.info("[NOTIFICACIONES REPOSITORY]: Notificacion guardada: ", notificacionGuardada);
-        return notificacionGuardada;
+        await notificacionGuardada.populate(["destinatarioId", "remitenteId"]);
+
+        return NotificacionMapper.toDomain(notificacionGuardada, notificacionGuardada.destinatarioId, notificacionGuardada.remitenteId);
     }
 
     async getById (idNotificacion) {
         logger.info("[NOTIFICACIONES REPOSITORY]: Obteniendo notificacion por id: ", idNotificacion);
-        const notificacion = await this.model.findById(idNotificacion).populate("remitente");
+        const notificacion = await this.model.findById(idNotificacion).populate(["destinatarioId", "remitenteId"]);
         logger.info("[NOTIFICACIONES REPOSITORY]: Notificacion obtenida: ", notificacion);
-        return notificacion;
+
+        return NotificacionMapper.toDomain(notificacion, notificacion.destinatarioId, notificacion.remitenteId);
     }
 
     //para el futuro

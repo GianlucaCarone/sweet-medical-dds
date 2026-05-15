@@ -1,6 +1,8 @@
 import { NotificacionesService } from "../services/notificacionesService.js";
-import { notificacionIdSchema, notificacionSchema, usuarioIdSchema, filtrosNotificacionSchema } from "../schemas/dto/notificacionSchema.js";
+import { notificacionIdSchema, notificacionSchema, filtrosNotificacionSchema } from "../schemas/notificacionSchema.js";
+import { usuarioIdSchema } from "../schemas/usuarioSchema.js";
 import { logger } from '../config/logger.js';
+import { BadRequestError } from "../errors/AppError.js";
 
 export class NotificacionesController {
     constructor ({ 

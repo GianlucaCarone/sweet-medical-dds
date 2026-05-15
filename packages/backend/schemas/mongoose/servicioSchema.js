@@ -18,9 +18,9 @@ export const servicioSchema = new mongoose.Schema(
   }
 );
 
-const Servicio = mongoose.model("Servicio", servicioSchema);
+const ServicioModel = mongoose.model("Servicio", servicioSchema);
 
-const EspecialidadModel = Servicio.discriminator(
+const EspecialidadModel = ServicioModel.discriminator(
   "Especialidad",
   new mongoose.Schema({
     costoConsulta: {
@@ -30,7 +30,7 @@ const EspecialidadModel = Servicio.discriminator(
   })
 );
 
-const PracticaModel = Servicio.discriminator(
+const PracticaModel = ServicioModel.discriminator(
   "Practica",
   new mongoose.Schema({
     costo: {
@@ -45,4 +45,4 @@ const PracticaModel = Servicio.discriminator(
   })
 );
 
-export { Servicio, EspecialidadModel, PracticaModel };
+export { ServicioModel, EspecialidadModel, PracticaModel };

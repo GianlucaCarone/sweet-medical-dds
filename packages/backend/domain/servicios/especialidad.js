@@ -11,7 +11,7 @@ export class Especialidad {
         if (!nombre || !duracionTurnoEnMins || !costoConsulta) {
             throw new ErrorDatosObligatorios();
         }
-        this.id = randomUUID;
+        this.id = randomUUID();
         this.nombre = nombre;
         this.duracionTurnoEnMins = duracionTurnoEnMins;
         this.costoConsulta = costoConsulta;

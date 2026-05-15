@@ -1,6 +1,6 @@
 import { UsuarioService } from "../services/UsuarioService.js";
-import { usuarioSchema } from "../schemas/dto/usuarioSchema.js";
-import { idParamNumberSchema, idParamUUIDSchema } from "../schemas/dto/urlSchemas.js";
+import { usuarioSchema } from "../schemas/usuarioSchema.js";
+import { idParamNumberSchema, idParamUUIDSchema } from "../schemas/urlSchemas.js";
 import { logger } from '../config/logger.js';
 
 export class UsuarioController {
@@ -87,6 +87,10 @@ export class UsuarioController {
           }
         ];
       
-        return usuarios.map(usuarioData => this.usuarioService.create(usuarioData));
+        //return usuarios.map(usuarioData => this.usuarioService.create(usuarioData));
+
+        return await Promise.all(
+        usuarios.map(usuarioData => this.usuarioService.create(usuarioData))
+    );
     }
 }

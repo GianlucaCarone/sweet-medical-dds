@@ -1,5 +1,5 @@
 import { MedicoService } from "../services/MedicoService.js";
-import { medicoIdParamsSchema, servicioIdSchema } from "../schemas/dto/medicoSchema.js";
+import { medicoIdParamsSchema, servicioIdSchema } from "../schemas/medicoSchema.js";
 import { logger } from '../config/logger.js';
 
 export class MedicoController {

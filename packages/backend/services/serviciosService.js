@@ -1,61 +1,73 @@
 import { Especialidad } from "../domain/servicios/especialidad.js";
 import { Practica } from "../domain/servicios/practica.js";
 import { ServiciosRepository } from "../repositories/serviciosRepository.js";
+import { NotFoundError, ConflictError } from "../errors/AppError.js";
 import { logger } from '../config/logger.js';
+import { ServicioMapper } from "../mappers/servicioMapper.js";
 
 export class ServiciosService {
     constructor ({ serviciosRepository = new ServiciosRepository() } = {}) {
         this.serviciosRepository = serviciosRepository;
     }
 
-    toDTO (servicio) {
-        return {
-            id: servicio.id,
-            nombre: servicio.nombre,
-            duracion: servicio.duracionTurnoEnMins,
-            costo: servicio.getCosto(),
-            codigo: servicio.getCodigo()
-        };
+    async getById(idServicio) { //TODO: VER QUE FUNCIONE
+        logger.info("[SERVICIO SERVICE]: Obteniendo servicio: ", idServicio);
+        const servicio = await this.serviciosRepository.findById(idServicio);
+        if (!servicio) throw new NotFoundError("No se encontro el servicio con el id " + idServicio);
+        logger.info("[SERVICIO SERVICE]: Servicio encontrado: ", servicioGuardado);
+        return ServicioMapper.toDTO(servicio);
     }
 
-    async create (datosServicio) {
+    async create (datosServicio) { //funciona
         logger.info("[SERVICIO SERVICE]: Creando servicio: ", datosServicio);
-        //TODO: ver que no haya otro servicio en la db con ese mismo nombre
-        const servicio = this.crearEntidad(datosServicio);
-        const servicioGuardado = await this.serviciosRepository.save(servicio);
-        logger("[SERVICIO SERVICE]: Servicio creado:", servicioGuardado);
 
-        return this.toDTO(servicioGuardado);
+        // TODO if (this.serviciosRepository.findByNombre(datosServicio.nombre)) throw new ConflictError("Ya existe un servicio con ese nombre");
+        
+        const servicio = await this.crearEntidad(datosServicio);
+        const servicioGuardado = await this.serviciosRepository.save(servicio);
+        logger.info("[SERVICIO SERVICE]: Servicio creado:", servicioGuardado);
+        return ServicioMapper.toDTO(servicioGuardado);
     }
 
-    async update (idServicio, datosServicio) {
+    async update (idServicio, datosServicio) { //TODO: VER QUE FUNCIONE
         logger.info("[SERVICIO SERVICE]: Actualizando servicio.");
-        const servicio = await this.serviciosRepository.getById(idServicio);
-        if (!servicio) throw new BadRequestError("No se encontro el servicio con el id " + idServicio);
+        const servicio = await this.serviciosRepository.findById(idServicio);
+        if (!servicio) throw new NotFoundError("No se encontro el servicio con el id " + idServicio);
 
         const servicioActualizado = this.crearEntidad(datosServicio);
         servicioActualizado.setId(servicio.idServicio);
         logger.info("[SERVICIO SERVICE]: Servicio actualizado: ", servicioActualizado);
         const servicioGuardado = await this.serviciosRepository.save(servicioActualizado);
         logger.info("[SERVICIO SERVICE]: Servicio guardado luego de actualizarse: ", servicioGuardado);
-        return this.toDTO(servicioActualizado);
+        return ServicioMapper.toDTO(servicioActualizado);
     }
 
-    async delete (id) {
+    async delete (id) { //TODO: VER QUE FUNCIONE
         logger.info("[SERVICIO SERVICE]:Eliminando servicio con el id: ", id);
         this.serviciosRepository.deleteById(id);
         logger.info("[SERVICIO SERVICE]:Servicio eliminado.");
     }
 
-    crearEntidad (datosServicio) {
+    async crearEntidad (datosServicio) { //funciona
         if (!datosServicio.codigo) {
-            logger.info("[SERVICIO SERVICE]:Creando especialidad.");
-            const especialidad = new Especialidad (datosServicio.nombre, datosServicio.duracion, datosServicio.costo);
+            logger.info("[SERVICIO SERVICE]: Creando especialidad.");
+            const especialidadData = {
+                nombre: datosServicio.nombre, 
+                duracionTurnoEnMins: datosServicio.duracionEnMin, 
+                costoConsulta: datosServicio.costo
+            }
+            const especialidad = new Especialidad (especialidadData);
             logger.info("[SERVICIO SERVICE]: Especialidad creada: ", especialidad);
             return especialidad;
         } else {
             logger.info("[SERVICIO SERVICE]: Creando practica.");
-            const practica = new Practica (datosServicio.codigo, datosServicio.nombre, datosServicio.duracion, datosServicio.costo);
+            const practicaData = {
+                codigo: datosServicio.codigo,
+                nombre: datosServicio.nombre,
+                duracionTurnoEnMins: datosServicio.duracionEnMin,
+                costo: datosServicio.costo
+            }   
+            const practica = new Practica (practicaData);
             logger.info("[SERVICIO SERVICE]: Practica creada: ", practica);
             return practica;
         }

@@ -1,5 +1,5 @@
 import { ServiciosService } from "../services/serviciosService.js";
-import { servicioSchema, servicioIdParamsSchema } from "../schemas/dto/servicioSchema.js";
+import { servicioSchema, servicioIdParamsSchema } from "../schemas/servicioSchema.js";
 import { logger } from '../config/logger.js'; 
 
 export class ServiciosController {
@@ -37,7 +37,6 @@ export class ServiciosController {
                 data: servicio
             });
         } catch (error) {
-            logger.error("Servicio no encontrado para el id: ", idServicio);
             next(error);
         }
     };
@@ -66,7 +65,7 @@ export class ServiciosController {
             },
             {
                 nombre: "Biopsia endomiocárdica",
-                duracacionEnMin: 60,
+                duracionEnMin: 60,
                 costo: 700,
                 codigo: "#be347" //ni idea que es el codigo la verdad
             },
@@ -78,6 +77,6 @@ export class ServiciosController {
             }
         ];
 
-        return servicios.map(s => this.serviciosService.crearEntidad(s));
+        return servicios.map(s => this.serviciosService.create(s));
     }
 }
