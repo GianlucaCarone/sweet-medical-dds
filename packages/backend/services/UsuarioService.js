@@ -8,11 +8,11 @@ export class UsuarioService {
   }
 
   async create(usuarioData) {
-    const usuarioExistente = await this.findByUsername(usuarioData.nombreUsuario); // Verificar que no exista otro usuario con el mismo nombre de usuario
-
-    if (usuarioExistente) {
-      throw new ConflictError(`Ya existe un usuario con el nombre de usuario ${usuarioData.nombreUsuario}`);
-    }
+    //const usuarioExistente = await this.findByUsername(usuarioData.nombreUsuario); // Verificar que no exista otro usuario con el mismo nombre de usuario
+//
+    //if (usuarioExistente) {
+    //  throw new ConflictError(`Ya existe un usuario con el nombre de usuario ${usuarioData.nombreUsuario}`);
+    //}
 
     const usuario = new Usuario(usuarioData);
     const nuevoUsuario = await this.usuarioRepository.save(usuario);

@@ -13,7 +13,10 @@ export class MedicoRepository {
     return await this.model.findById(id);
   }
 
-  async save(medico) {
+  async save(medico, id = null) {
+    if (id) {
+      return await this.model.findByIdAndUpdate(id,medico,{new: true, runValidators: true});
+    }
     return await new this.model(medico).save();
   }
 

@@ -2,9 +2,14 @@ import { NotFoundError, ConflictError } from "../errors/AppError.js";
 import { MedicoRepository } from "../repositories/MedicoRepository.js";
 import { UsuarioService } from "./UsuarioService.js";
 import { DisponibilidadHoraria } from "../domain/disponibilidadHoraria.js";
+import { Medico } from "../domain/medico.js";
+import { Usuario } from "../domain/usuario.js";
 import { SedeService } from "./SedeService.js";
-import { MedicoMapper } from "../mappers/MedicoMapper.js";
 import { logger } from "../config/logger.js";
+import { UsuarioMapper } from "../mappers/usuarioMapper.js";
+import { MedicoMapper } from "../mappers/medicoMapper.js";
+import { DisponibilidadMapper } from "../mappers/disponibilidadMapper.js";
+
 
 export class MedicoService {
   constructor({
@@ -122,40 +127,33 @@ export class MedicoService {
 
   async definirDisponibilidadPara(disponibilidadData, id) {
     logger.info(`Definiendo disponibilidad para el médico ${id}`);
-    const medico = await this.medicoRepository.findById(id);
+
+    // Docs de mongoose
+    const medicoDoc = await this.medicoRepository.findById(id);
+    const usuarioDoc = await this.usuarioService.findById(medicoDoc.idUsuario);
+    // docs pasados a dominio
+    const medico = MedicoMapper.toDomain(medicoDoc, usuarioDoc);
+
     const disponibilidad = new DisponibilidadHoraria(disponibilidadData);
 
-    // Normalizar disponibilidades antes de procesarlas
-    if (!medico.disponibilidades) {
-      medico.disponibilidades = [];
-    }
-    medico.disponibilidades = medico.disponibilidades.map(d => 
-      d instanceof DisponibilidadHoraria ? d : new DisponibilidadHoraria(d)
-    );
-
-    // TODO arreglar: se compara la dispo entrante con disponibilidades embebidas
     medico.definirDisponibilidad(disponibilidad);
+
     logger.info(`Disponibilidad definida para el médico ${id}: `, disponibilidad);
 
-    // TODO avisar al turno service que genere los turnos.
-    //await this.turnoService.regenerarTurnosDisponiblesDelMedico(medico.id);
-
-    return this.medicoRepository.save(medico);
+    return this.medicoRepository.save(
+      MedicoMapper.toPersistence(medico),
+      medico.id
+    );
   }
 
   async modificarDisponibilidadPara(disponibilidadData, medicoId) {
-    const medico= await this.medicoRepository.findById(medicoId);
-    if (!medico) {
+    const medicoDoc = await this.medicoRepository.findById(medicoId);
+    if (!medicoDoc) {
       throw new NotFoundError("Médico no encontrado");
     }
+    const usuarioDoc = await this.usuarioService.findById(medicoDoc.idUsuario);
 
-/*     // Normalizar disponibilidades antes de procesarlas
-    if (!medicoRaw.disponibilidades) {
-      medicoRaw.disponibilidades = [];
-    }
-    medicoRaw.disponibilidades = medicoRaw.disponibilidades.map(d => 
-      d instanceof DisponibilidadHoraria ? d : new DisponibilidadHoraria(d)
-    ); */
+    const medico = MedicoMapper.toDomain(medicoDoc, usuarioDoc);
 
     const disponibilidad = new DisponibilidadHoraria(disponibilidadData);
 
@@ -164,18 +162,31 @@ export class MedicoService {
     // TODO avisar al turno service que genere los turnos.
     //await this.turnoService.regenerarTurnosDisponiblesDelMedico(medico.id);
 
-    return this.medicoRepository.save(medico);
+    return this.medicoRepository.save(
+      MedicoMapper.toPersistence(medico),
+      medico.id
+    );
   }
 
   async eliminarDisponibilidadPara(medicoId, diaSemana) {
-    const medico = await this.findById(medicoId);
+    const medicoDoc = await this.medicoRepository.findById(medicoId);
+    if (!medicoDoc) {
+      throw new NotFoundError("Médico no encontrado");
+    }
+
+    const usuarioDoc = await this.usuarioService.findById(medicoDoc.idUsuario);
+
+    const medico = MedicoMapper.toDomain(medicoDoc, usuarioDoc);
 
     medico.eliminarDisponibilidad(diaSemana);
 
     // TODO avisar al turno service que genere los turnos.
     //await this.turnoService.regenerarTurnosDisponiblesDelMedico(medico.id);
 
-    return this.medicoRepository.save(medico);
+    return this.medicoRepository.save(
+      MedicoMapper.toPersistence(medico),
+      medico.id
+    );
   }
 
   async consultarDisponibilidad(medicoId, practicaId) {
