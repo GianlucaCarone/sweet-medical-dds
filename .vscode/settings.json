@@ -1,0 +1,15 @@
+{
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit"
+  },
+  "eslint.validate": [
+    "javascript",
+    "javascriptreact"
+  ],
+  "eslint.workingDirectories": [
+    "./packages/backend",
+    "./packages/frontend"
+  ],
+  "eslint.experimental.useFlatConfig": true,
+  "editor.formatOnSave": true
+}

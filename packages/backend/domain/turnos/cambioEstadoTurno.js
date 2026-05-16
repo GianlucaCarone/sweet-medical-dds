@@ -1,6 +1,7 @@
-import { ErrorDatosObligatorios } from "../errores";
-import { Usuario } from "../usuario";
-import { Turno } from "./turno";
+import { ErrorDatosObligatorios } from "../../domain/errores.js";
+import { Usuario } from "../usuario.js";
+import { Turno } from "./turno.js";
+import { EstadoTurnoEnum } from "./estadoTurnoEnum.js";
 
 //@ts-check
 export class CambioEstadoTurno{
@@ -20,7 +21,7 @@ export class CambioEstadoTurno{
         if(!(motivo instanceof String)) {
             throw new Error("Motivo inválido");
         }
-        if (!Object.values(EstadoTurno).includes(estado)) {
+        if (!Object.values(EstadoTurnoEnum).includes(estado)) {
             throw new Error("No existe ese estado");
         }
         if (!(turno instanceof Turno)){
