@@ -3,6 +3,7 @@ import cors from "cors"; // middleware para permitir solicitudes desde diferente
 import { notFoundHandler } from "./middlewares/notFoundHandler.js";
 import { errorLogger } from "./middlewares/errorLogger.js";
 import { errorHandler } from "./middlewares/errorHandler.js";
+import { zodErrorHandler } from "./middlewares/zodErrorHandler.js";
 
 export class Server {
     #controllers;
@@ -40,6 +41,7 @@ export class Server {
 
         this.#app.use(notFoundHandler);
         this.#app.use(errorLogger);
+        this.#app.use(zodErrorHandler);
         this.#app.use(errorHandler);
 
         this.#app.use(

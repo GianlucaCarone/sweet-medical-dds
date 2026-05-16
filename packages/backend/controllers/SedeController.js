@@ -1,4 +1,4 @@
-import {SedeService} from "../services/SedeService.js";
+import { SedeService } from "../services/SedeService.js";
 import { bodyCrearSedeSchema, bodyUpdateSedeSchema } from "../schemas/zod/sedeSchema.js";
 
 export class SedeController {
@@ -9,7 +9,7 @@ export class SedeController {
     findAll = async (req, res, next) => {
         try {
             const sedes = await this.sedeService.findAll();
-            res.status(200).json( {
+            res.status(200).json({
                 status: "success",
                 data: sedes
             });
@@ -22,7 +22,7 @@ export class SedeController {
         try {
             const validatedBody = bodyCrearSedeSchema.parse(req.body);
             const sede = await this.sedeService.create(validatedBody);
-            res.status(201).json( {
+            res.status(201).json({
                 status: "success",
                 data: sede
             });
@@ -34,7 +34,7 @@ export class SedeController {
     findById = async (req, res, next) => {
         try {
             const sede = await this.sedeService.findById(req.params.id);
-            res.status(200).json( {
+            res.status(200).json({
                 status: "success",
                 data: sede
             });
@@ -46,7 +46,7 @@ export class SedeController {
     findByName = async (req, res, next) => {
         try {
             const sede = await this.sedeService.findByName(req.params.nombre);
-            res.status(200).json( {
+            res.status(200).json({
                 status: "success",
                 data: sede
             });
@@ -59,7 +59,7 @@ export class SedeController {
         try {
             const validatedBody = bodyUpdateSedeSchema.parse(req.body);
             const sede = await this.sedeService.update(req.params.id, validatedBody);
-            res.status(200).json( {
+            res.status(200).json({
                 status: "success",
                 data: sede
             });
@@ -71,7 +71,7 @@ export class SedeController {
     delete = async (req, res, next) => {
         try {
             const sede = await this.sedeService.delete(req.params.id);
-            res.status(200).json( {
+            res.status(200).json({
                 status: "success",
                 data: sede
             });
