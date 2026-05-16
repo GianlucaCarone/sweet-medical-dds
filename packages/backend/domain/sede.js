@@ -1,6 +1,6 @@
 import { randomUUID } from "crypto";
 import { BadRequestError } from "../errors/AppError.js";
-import { ErrorDatosObligatorios } from "./errores";
+import { ErrorDatosObligatorios } from "./errores.js";
 
 export class Sede {
     id;

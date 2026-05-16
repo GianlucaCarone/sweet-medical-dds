@@ -43,9 +43,3 @@ export class ForbiddenError extends AppError {
         super(message, 403)
     }
 }
-
-export class ZodError extends AppError {
-    constructor(message) {
-        super(message, 400);
-    }
-}

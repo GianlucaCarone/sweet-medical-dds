@@ -1,13 +1,13 @@
-import { NotificacionesService } from "../services/notificacionesService.js";
+import { NotificacionService } from "../services/NotificacionService.js";
 import { notificacionIdParamsSchema, notificacionSchema, filtrosNotificacionSchema } from "../schemas/notificacionSchema.js";
 import { usuarioIdSchema } from "../schemas/usuarioSchema.js";
 import { logger } from '../config/logger.js';
 
-export class NotificacionesController {
-    constructor ({ 
-        notificacionesService = new NotificacionesService () 
+export class NotificacionController {
+    constructor({
+        notificacionService = new NotificacionService()
     } = {}) {
-        this.notificacionesService = notificacionesService;
+        this.notificacionService = notificacionService;
     }
 
     //este endpoint en la siguiente entrega vuela (es por logica del sistema que se crean)
@@ -15,9 +15,9 @@ export class NotificacionesController {
         try {
             const notificacionData = notificacionSchema.parse(req.body);
             logger.info("[NOTIFICACIONES CONTROLLER]: Creando notificacion: ", notificacionData);
-            const notificacion = await this.notificacionesService.crearNotificacion(notificacionData);
+            const notificacion = await this.notificacionService.crearNotificacion(notificacionData);
             logger.info("[NOTIFICACIONES CONTROLLER]: Notificacion creada: ", notificacion);
-            res.status(201).json( {
+            res.status(201).json({
                 status: "success",
                 data: notificacion
             });
@@ -30,7 +30,7 @@ export class NotificacionesController {
         try {
             const { idUsuario } = usuarioIdSchema.parse(req.query);
             logger.info("[NOTIFICACIONES CONTROLLER]: Obteniendo notificaciones leidas del usuario:", idUsuario);
-            const notificaciones = await this.notificacionesService.getLeidosNoLeidos(idUsuario, true);
+            const notificaciones = await this.notificacionService.getLeidosNoLeidos(idUsuario, true);
             res.status(200).json({
                 status: "success",
                 data: notificaciones
@@ -39,13 +39,13 @@ export class NotificacionesController {
             next(error);
         }
     };
-    
+
     getLeidasPaginadas = async (req, res, next) => {
         try {
             const { idUsuario } = usuarioIdSchema.parse(req.body);
             const paginacion = this.extraerPaginacion(req.query);
             logger.info("[NOTIFICACIONES CONTROLLER]: Obteniendo notificaciones leidas del usuario:", idUsuario);
-            const notificaciones = await this.notificacionesService.getLeidosNoLeidosPaginado(idUsuario, true, paginacion.numeroPagina, paginacion.limitePorPagina);
+            const notificaciones = await this.notificacionService.getLeidosNoLeidosPaginado(idUsuario, true, paginacion.numeroPagina, paginacion.limitePorPagina);
             logger.info("[NOTIFICACIONES CONTROLLER]: Notificaciones leidas obtenidas:", notificaciones);
             res.status(200).json({
                 status: "success",
@@ -55,14 +55,14 @@ export class NotificacionesController {
             next(error);
         }
     };
-    
+
     getNoLeidas = async (req, res, next) => {
         try {
             const { idUsuario } = usuarioIdSchema.parse(req.body);
             logger.info("[NOTIFICACIONES CONTROLLER]: Obteniendo notificaciones no leidas del usuario: ", idUsuario);
-            const notificaciones = await this.notificacionesService.getLeidosNoLeidos(idUsuario, false);
+            const notificaciones = await this.notificacionService.getLeidosNoLeidos(idUsuario, false);
             logger.info("[NOTIFICACIONES CONTROLLER]: Notificaciones no leidas obtenidas: ", notificaciones);
-            res.status(200).json( {
+            res.status(200).json({
                 status: "success",
                 data: notificaciones
             });
@@ -70,13 +70,13 @@ export class NotificacionesController {
             next(error);
         }
     };
-    
+
     getNoLeidasPaginadas = async (req, res, next) => {
         try {
             const { idUsuario } = usuarioIdSchema.parse(req.body);
             const paginacion = this.extraerPaginacion(req.query);
             logger.info("[NOTIFICACIONES CONTROLLER]: Obteniendo notificaciones no leidas del usuario:", idUsuario);
-            const notificaciones = await this.notificacionesService.getLeidosNoLeidosPaginado(idUsuario, false, paginacion.numeroPagina, paginacion.limitePorPagina);
+            const notificaciones = await this.notificacionService.getLeidosNoLeidosPaginado(idUsuario, false, paginacion.numeroPagina, paginacion.limitePorPagina);
             logger.info("[NOTIFICACIONES CONTROLLER]: Notificaciones no leidas obtenidas:", notificaciones);
             res.status(200).json({
                 status: "success",
@@ -92,9 +92,9 @@ export class NotificacionesController {
         try {
             const { idNotificacion } = notificacionIdParamsSchema.parse(req.params);
             logger.info("[NOTIFICACIONES CONTROLLER]: Leyendo notificacion: ", idNotificacion);
-            const notificacion = await this.notificacionesService.leer(idNotificacion);
+            const notificacion = await this.notificacionService.leer(idNotificacion);
             logger.info("[NOTIFICACIONES CONTROLLER]: Notificacion leida: ", notificacion);
-            res.status(200).json( {
+            res.status(200).json({
                 status: "success",
                 data: notificacion
             });
@@ -146,7 +146,7 @@ export class NotificacionesController {
         return { numeroPagina, limitePorPagina }
     }
 
-    async seed (usuarios) {
+    async seed(usuarios) {
         const notificaciones = [
             {
                 destinatario: usuarios[1].id,
@@ -170,6 +170,6 @@ export class NotificacionesController {
             }
         ];
 
-        return notificaciones.map(n => this.notificacionesService.crearNotificacion(n));
+        return notificaciones.map(n => this.notificacionService.crearNotificacion(n));
     }
 }

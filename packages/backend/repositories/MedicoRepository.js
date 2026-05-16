@@ -4,7 +4,7 @@ import { Medico } from "../domain/medico.js";
 import { logger } from '../config/logger.js';
 
 export class MedicoRepository {
-  constructor() {this.model = MedicoModel;}
+  constructor() { this.model = MedicoModel; }
 
   async findById(idMedico) {
     logger.info("[MEDICO REPOSTIRORY]: Buscando medico: por id", idMedico);
@@ -19,8 +19,8 @@ export class MedicoRepository {
   async save(medico) {
     logger.info("[MEDICO REPOSTIRORY]: Guardando medico: ", medico);
     var medicoGuardado = null;
-    if(medico.id) {
-      medicoGuardado = await this.model.findByIdAndUpdate(medico.id, MedicoMapper.toPersistence(medico), {new: true, runValidators: true});
+    if (medico.id) {
+      medicoGuardado = await this.model.findByIdAndUpdate(medico.id, MedicoMapper.toPersistence(medico), { new: true, runValidators: true });
     } else {
       const nuevoMedico = new this.model(MedicoMapper.toPersistence(medico));//
       medicoGuardado = await nuevoMedico.save();
@@ -41,8 +41,9 @@ export class MedicoRepository {
     if (!medico) return;
     return MedicoMapper.toDomain(medico, medico.idUsuario);
   }
-}import { MedicoModel } from "../schemas/mongoose/medicoSchema.js";
-export class MedicoRepository2{
+}
+
+export class MedicoRepository2 {
   constructor() {
     this.model = MedicoModel;
   }

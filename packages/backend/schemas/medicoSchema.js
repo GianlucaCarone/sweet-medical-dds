@@ -1,12 +1,4 @@
 import { z } from "zod";
-
-export const medicoIdParamsSchema = z.object({
-  id: z.string().uuid("El id del médico debe ser un UUID válido")
-});
-
-export const servicioIdSchema = z.object({
-  idServicio: z.string().uuid("El id del servicio debe ser un UUID válido")
-});import { z } from "zod";
 import diaSemanaEnum from "../domain/diaSemanaEnum.js";
 import { objectIdSchema } from "./objectIdSchema.js";
 import { timeHH_MMSchema } from "./timeSchema.js";
@@ -42,4 +34,12 @@ export const eliminarDisponibilidadSchema = z.object({
 
 export const disponibilidadConsultaSchema = z.object({
   practicaId: z.string().uuid("El id de la práctica debe ser un UUID válido"),
+});
+
+export const medicoIdParamsSchema = z.object({
+  id: z.string().uuid("El id del médico debe ser un UUID válido")
+});
+
+export const servicioIdSchema = z.object({
+  idServicio: z.string().uuid("El id del servicio debe ser un UUID válido")
 });

@@ -5,8 +5,6 @@ import { DisponibilidadHoraria } from "./disponibilidadHoraria.js";
 import { randomUUID } from "crypto";
 import { Especialidad } from "./servicios/especialidad.js";
 import { Practica } from "./servicios/practica.js";
-import { Practica } from "./servicios/practica.js";
-import { Especialidad } from "./servicios/especialidad.js";
 import { Sede } from "./sede.js";
 
 export class Medico {

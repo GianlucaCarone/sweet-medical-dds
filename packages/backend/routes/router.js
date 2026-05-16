@@ -1,24 +1,24 @@
 import healthRoutes from "./healthRoutes.js";
-import notificacionesRoutes from "./notificacionesRoutes.js";
-import serviciosRoutes from "./serviciosRoutes.js";
-import seedRoute from "./seedRoute.js";
 import medicoRoutes from "./medicoRoutes.js";
-import usuarioRoutes from "./usuarioRoutes.js";
-import medicoRoutes from "./medicoRoutes.js";
-import turnoRoutes from "./turnoRoutes.js";
+import notificacionRoutes from "./notificacionRoutes.js";
 import obraSocialRoutes from "./obraSocialRoutes.js";
+import sedeRoutes from "./sedeRoutes.js"
+import seedRoute from "./seedRoute.js";
+import servicioRoutes from "./servicioRoutes.js";
+import turnoRoutes from "./turnoRoutes.js";
+import usuarioRoutes from "./usuarioRoutes.js";
 
 const routes = [
-  { path: "/sedes", handler: sedeRoutes },
   { path: "/health", handler: healthRoutes },
-  { path: "/usuarios", handler: usuarioRoutes },
-  { path: "/medicos", handler: medicoRoutes }
-  { path: "/turno", handler: turnoRoutes },
-  { path: "/obra-social", handler: obraSocialRoutes }
-  { path: "/medico", handler: medicoRoutes },
-  { path: "/notificaciones", handler: notificacionesRoutes },
+  { path: "/medicos", handler: medicoRoutes },
+  { path: "/notificaciones", handler: notificacionRoutes },
+  { path: "/obra-social", handler: obraSocialRoutes },
+  { path: "/sedes", handler: sedeRoutes },
   { path: "/seed", handler: seedRoute },
-  { path: "/servicios", handler: serviciosRoutes }
+  { path: "/servicios", handler: servicioRoutes },
+  { path: "/turno", handler: turnoRoutes },
+  { path: "/usuarios", handler: usuarioRoutes },
+  //{ path: "/usuarios/:idUsuario/notificaciones", handler: notificacionesRoutes },
 ];
 
 export default routes;

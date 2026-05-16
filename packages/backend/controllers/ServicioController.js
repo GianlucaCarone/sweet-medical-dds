@@ -1,21 +1,21 @@
-import { ServiciosService } from "../services/serviciosService.js";
+import { ServicioService } from "../services/ServicioService.js";
 import { servicioSchema, servicioIdParamsSchema } from "../schemas/servicioSchema.js";
-import { logger } from '../config/logger.js'; 
+import { logger } from '../config/logger.js';
 
-export class ServiciosController {
-    constructor ({ 
-        serviciosService = new ServiciosService () 
+export class ServicioController {
+    constructor({
+        servicioService = new ServicioService()
     } = {}) {
-        this.serviciosService = serviciosService;
+        this.servicioService = servicioService;
     }
 
     create = async (req, res, next) => {
         try {
             const datosServicio = servicioSchema.parse(req.body);
             logger.info("[SERVICIOS CONTROLLER]: Creando servicio: ", datosServicio);
-            const servicio = await this.serviciosService.create(datosServicio);
+            const servicio = await this.servicioService.create(datosServicio);
             logger.info("[SERVICIOS CONTROLLER]: Servicio creado:", servicio);
-            res.status(201).json( {
+            res.status(201).json({
                 status: "success",
                 data: servicio
             });
@@ -30,9 +30,9 @@ export class ServiciosController {
             const { idServicio } = servicioIdParamsSchema.parse(req.params);
             const datosServicio = servicioSchema.parse(req.body);
             logger.info("[SERVICIOS CONTROLLER]: Actualizando servicio: ", datosServicio);
-            const servicio = await this.serviciosService.update(idServicio, datosServicio);
+            const servicio = await this.servicioService.update(idServicio, datosServicio);
             logger.info("[SERVICIOS CONTROLLER]: Servicio actualizado: ", servicio);
-            res.status(200).json( {
+            res.status(200).json({
                 status: "success",
                 data: servicio
             });
@@ -45,9 +45,9 @@ export class ServiciosController {
         try {
             const { idServicio } = servicioIdParamsSchema.parse(req.params);
             logger.info("[SERVICIOS CONTROLLER]: Eliminando servicio: ", idServicio)
-            this.serviciosService.delete(idServicio);
+            this.servicioService.delete(idServicio);
             logger.info("[SERVICIOS CONTROLLER]: Servicio eliminado");
-            res.status(204).json( {
+            res.status(204).json({
                 status: "success"
             });
         } catch (error) {
@@ -55,7 +55,7 @@ export class ServiciosController {
         }
     };
 
-    async seed () {
+    async seed() {
         const servicios = [
             {
                 nombre: "Cardiologia",
@@ -77,6 +77,6 @@ export class ServiciosController {
             }
         ];
 
-        return servicios.map(s => this.serviciosService.create(s));
+        return servicios.map(s => this.servicioService.create(s));
     }
 }

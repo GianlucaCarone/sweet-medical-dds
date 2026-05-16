@@ -18,7 +18,7 @@ export class Notificacion {
         if (!(destinatario instanceof Usuario) || !(remitente instanceof Usuario)) {
             throw new Error("Los destinatarios deben ser usuarios");
         }
-        this.id = randomUUID();
+        //this.id = randomUUID();
         this.destinatario = destinatario;
         this.remitente = remitente;
         this.mensaje = mensaje;

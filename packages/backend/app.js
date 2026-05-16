@@ -7,25 +7,26 @@ import { zodErrorHandler } from "./middlewares/zodErrorHandler.js";
 import { Server } from "./server.js";
 import routes from "./routes/router.js";
 
-import { ServiciosController } from "./controllers/serviciosController.js";
-import { NotificacionesController } from "./controllers/notificacionesController.js";
-import { UsuarioController } from "./controllers/usuariosController.js";
+import { ServicioController } from "./controllers/ServicioController.js";
+import { NotificacionController } from "./controllers/NotificacionController.js";
 import { TurnoController } from "./controllers/TurnoController.js";
-import { ObraSocialController } from "./controllers/ObraSocialController.js"; import { UsuarioController } from "./controllers/UsuarioController.js";
+import { ObraSocialController } from "./controllers/ObraSocialController.js";
+import { UsuarioController } from "./controllers/UsuarioController.js";
 import { MedicoController } from "./controllers/MedicoController.js";
+import { SedeController } from "./controllers/SedeController.js";
 
 const app = express();
 
 const server = new Server(app);
 
 server.setController(
-    ServiciosController,
-    new ServiciosController()
+    ServicioController,
+    new ServicioController()
 );
 
 server.setController(
-    NotificacionesController,
-    new NotificacionesController()
+    NotificacionController,
+    new NotificacionController()
 );
 
 server.setController(
@@ -37,6 +38,11 @@ server.setController(
     MedicoController,
     new MedicoController()
 );
+
+server.setController(
+    SedeController,
+    new SedeController()
+)
 
 const turnoController = new TurnoController();
 server.setController(TurnoController, turnoController);

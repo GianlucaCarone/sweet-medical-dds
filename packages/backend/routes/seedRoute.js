@@ -1,24 +1,24 @@
 import express from "express";
-import { UsuarioController } from "../controllers/usuariosController.js";
+import { UsuarioController } from "../controllers/UsuarioController.js";
 import { MedicoController } from "../controllers/MedicoController.js";
-import { ServiciosController } from "../controllers/serviciosController.js";
-import { NotificacionesController } from "../controllers/notificacionesController.js";
+import { ServicioController } from "../controllers/ServicioController.js";
+import { NotificacionController } from "../controllers/NotificacionController.js";
 import { logger } from '../config/logger.js';
 
 export default function seedRoute(getController) {
     const router = express.Router();
 
-    const usuariosController = getController(UsuarioController);
-    const medicosController = getController(MedicoController);
-    const serviciosController = getController(ServiciosController);
-    const notificacionesController = getController(NotificacionesController);
+    const usuarioController = getController(UsuarioController);
+    const medicoController = getController(MedicoController);
+    const servicioController = getController(ServicioController);
+    const notificacionController = getController(NotificacionController);
 
     router.get("/", async (req, res, next) => {
         try {
-            const usuarios = await usuariosController.seed();
-            const medicos = await medicosController.seed(usuarios);
-            const notificaciones = await notificacionesController.seed(usuarios);
-            const servicios = await serviciosController.seed();
+            const usuarios = await usuarioController.seed();
+            const medicos = await medicoController.seed(usuarios);
+            const notificaciones = await notificacionController.seed(usuarios);
+            const servicios = await servicioController.seed();
 
             res.json({
                 mensaje: "Seed ejecutado correctamente",

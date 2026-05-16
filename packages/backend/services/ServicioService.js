@@ -1,12 +1,12 @@
 import { Especialidad } from "../domain/servicios/especialidad.js";
 import { Practica } from "../domain/servicios/practica.js";
-import { ServiciosRepository } from "../repositories/serviciosRepository.js";
+import { ServicioRepository } from "../repositories/ServicioRepository.js";
 import { NotFoundError, ConflictError } from "../errors/AppError.js";
 import { logger } from '../config/logger.js';
 import { ServicioMapper } from "../mappers/servicioMapper.js";
 
-export class ServiciosService {
-    constructor ({ serviciosRepository = new ServiciosRepository() } = {}) {
+export class ServicioService {
+    constructor({ serviciosRepository = new ServicioRepository() } = {}) {
         this.serviciosRepository = serviciosRepository;
     }
 
@@ -18,18 +18,18 @@ export class ServiciosService {
         return ServicioMapper.toDTO(servicio);
     }
 
-    async create (datosServicio) { //funciona
+    async create(datosServicio) { //funciona
         logger.info("[SERVICIO SERVICE]: Creando servicio: ", datosServicio);
 
         // TODO if (this.serviciosRepository.findByNombre(datosServicio.nombre)) throw new ConflictError("Ya existe un servicio con ese nombre");
-        
+
         const servicio = await this.crearEntidad(datosServicio);
         const servicioGuardado = await this.serviciosRepository.save(servicio);
         logger.info("[SERVICIO SERVICE]: Servicio creado:", servicioGuardado);
         return ServicioMapper.toDTO(servicioGuardado);
     }
 
-    async update (idServicio, datosServicio) { //TODO: VER QUE FUNCIONE
+    async update(idServicio, datosServicio) { //TODO: VER QUE FUNCIONE
         logger.info("[SERVICIO SERVICE]: Actualizando servicio.");
         const servicio = await this.serviciosRepository.findById(idServicio);
         if (!servicio) throw new NotFoundError("No se encontro el servicio con el id " + idServicio);
@@ -42,21 +42,21 @@ export class ServiciosService {
         return ServicioMapper.toDTO(servicioActualizado);
     }
 
-    async delete (id) { //TODO: VER QUE FUNCIONE
+    async delete(id) { //TODO: VER QUE FUNCIONE
         logger.info("[SERVICIO SERVICE]:Eliminando servicio con el id: ", id);
         this.serviciosRepository.deleteById(id);
         logger.info("[SERVICIO SERVICE]:Servicio eliminado.");
     }
 
-    async crearEntidad (datosServicio) { //funciona
+    async crearEntidad(datosServicio) { //funciona
         if (!datosServicio.codigo) {
             logger.info("[SERVICIO SERVICE]: Creando especialidad.");
             const especialidadData = {
-                nombre: datosServicio.nombre, 
-                duracionTurnoEnMins: datosServicio.duracionEnMin, 
+                nombre: datosServicio.nombre,
+                duracionTurnoEnMins: datosServicio.duracionEnMin,
                 costoConsulta: datosServicio.costo
             }
-            const especialidad = new Especialidad (especialidadData);
+            const especialidad = new Especialidad(especialidadData);
             logger.info("[SERVICIO SERVICE]: Especialidad creada: ", especialidad);
             return especialidad;
         } else {
@@ -66,8 +66,8 @@ export class ServiciosService {
                 nombre: datosServicio.nombre,
                 duracionTurnoEnMins: datosServicio.duracionEnMin,
                 costo: datosServicio.costo
-            }   
-            const practica = new Practica (practicaData);
+            }
+            const practica = new Practica(practicaData);
             logger.info("[SERVICIO SERVICE]: Practica creada: ", practica);
             return practica;
         }
