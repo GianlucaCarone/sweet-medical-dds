@@ -6,6 +6,7 @@ import { Medico } from "../domain/medico.js";
 import { SedeService } from "./SedeService.js";
 import { logger } from "../config/logger.js";
 import { MedicoMapper } from "../mappers/medicoMapper.js";
+import { UsuarioMapper } from "../mappers/usuarioMapper.js";
 
 
 
@@ -40,14 +41,16 @@ export class MedicoService {
       throw new ConflictError("Ya existe un médico con ese nombre de usuario");
     }
 
+    const usuario = UsuarioMapper.toDomain(usuarioDTO);
+
     const medicoEntityData = {
       nombre: medicoData.nombre,
       matricula: medicoData.matricula,
-      idUsuario: medicoData.idUsuario,
+      usuario
     };
     const medico = new Medico(medicoEntityData);
-
-    const nuevoMedico = await this.medicoRepository.save(medico);
+    const medicoPersistencia = MedicoMapper.toPersistence(medico);
+    const nuevoMedico = await this.medicoRepository.save(medicoPersistencia);
     logger.info("Médico creado exitosamente: ", nuevoMedico);
     return this.toDto(nuevoMedico);
   }
@@ -158,10 +161,7 @@ export class MedicoService {
     // TODO avisar al turno service que genere los turnos.
     //await this.turnoService.regenerarTurnosDisponiblesDelMedico(medico.id);
 
-    return this.medicoRepository.save(
-      MedicoMapper.toPersistence(medico),
-      medico.id
-    );
+    return MedicoMapper.toDto(await this.medicoRepository.save(medico));
   }
 
   async eliminarDisponibilidadPara(medicoId, diaSemana) {
@@ -179,10 +179,7 @@ export class MedicoService {
     // TODO avisar al turno service que genere los turnos.
     //await this.turnoService.regenerarTurnosDisponiblesDelMedico(medico.id);
 
-    return this.medicoRepository.save(
-      MedicoMapper.toPersistence(medico),
-      medico.id
-    );
+    return MedicoMapper.toDto(await this.medicoRepository.save(medico));
   }
 
   async consultarDisponibilidad(medicoId) {
