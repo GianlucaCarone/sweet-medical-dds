@@ -1,6 +1,6 @@
 import { UsuarioService } from "../services/UsuarioService.js";
-import { usuarioSchema } from "../schemas/usuarioSchema.js";
-import { idParamObjectIdSchema } from "../schemas/urlSchema.js";
+import { usuarioSchema } from "../schemas/zod/usuarioSchema.js";
+import { idParamObjectIdSchema } from "../schemas/zod/urlSchema.js";
 
 export class UsuarioController {
     constructor({ usuarioService = new UsuarioService() } = {}) {
