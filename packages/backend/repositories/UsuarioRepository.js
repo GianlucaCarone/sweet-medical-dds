@@ -3,11 +3,11 @@ import { BadRequestError } from "../errors/AppError.js";
 import { UsuarioModel } from "../schemas/mongoose/usuarioSchema.js";
 
 export class UsuarioRepository {
-  constructor() {
+    constructor() {
         this.model = UsuarioModel;
     }
 
-    async save (usuario) {
+    async save(usuario) {
         if (!(usuario instanceof Usuario)) {
             throw new Error("No es un Usuario valido");
         }
@@ -17,7 +17,7 @@ export class UsuarioRepository {
 
     async findById(id) {
         const usuario = await this.model.findById(id);
-        if(!usuario) {
+        if (!usuario) {
             throw new BadRequestError("Usuario no encontrado");
         }
         return usuario;

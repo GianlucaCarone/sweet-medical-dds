@@ -1,12 +1,14 @@
-import { Practica } from "../practica";
-import { NivelCobertura } from "../nivelCobertura";
+import { Practica } from "../servicios/practica.js";
+import { NivelCobertura } from "../coberturas/nivelCoberturaEnum.js";
+import { ErrorDatosObligatorios } from "../../domain/errores.js";
 
 export class CoberturaPractica {
     practica;
     nivel;
+    porcentajeCobertura;
 
-    constructor({ practica, nivel }) {
-        if (!practica || !nivel) {
+    constructor({ practica, nivel, porcentajeCobertura }) {
+        if (!practica || !nivel || !porcentajeCobertura) {
             throw new ErrorDatosObligatorios();
         }
         if (!(practica instanceof Practica)) {
@@ -17,5 +19,6 @@ export class CoberturaPractica {
         }
         this.practica = practica;
         this.nivel = nivel;
+        this.porcentajeCobertura = porcentajeCobertura;
     }
 }

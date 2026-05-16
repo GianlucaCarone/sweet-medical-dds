@@ -1,12 +1,26 @@
-import express from 'express';
-import { TurnoController } from '../controllers/TurnoController.js';
+import express from "express";
+import { TurnoController } from "../controllers/TurnoController.js";
 
-const turnoController = new TurnoController();
-const router = express.Router();
+export default function turnoRoutes(getController) {
+    const router = express.Router();
+    const turnoController = getController(TurnoController);
+    
+    router.route("/")
+        .get((req, res, next) => turnoController.findAllPaginated(req, res, next))
+        .post((req, res, next) => turnoController.create(req, res, next));
+    
+    router.route("/:id/asignar")
+        .put((req, res, next) => turnoController.asignarTurno(req, res, next));
 
+    router.route("/:id/cambiar-estado")
+        .patch((req, res, next) => turnoController.cambiarEstadoTurno(req, res, next));
 
-router.route('/')
-    .get((req, res, next) => turnoController.findAll(req, res, next))
-    .post((req, res, next) => turnoController.create(req, res, next));
+    router.route("/:estado")
+        .get((req, res, next) => turnoController.findByEstado(req, res, next));
 
-export default router;
+    router.route("/:id")
+        .get((req, res, next) => turnoController.findById(req, res, next))
+        .patch((req, res, next) => turnoController.update(req, res, next));
+
+    return router;
+}

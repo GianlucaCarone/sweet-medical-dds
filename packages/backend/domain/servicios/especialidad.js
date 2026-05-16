@@ -1,4 +1,4 @@
-
+import { BadRequestError } from "../../errors/AppError.js";
 export class Especialidad {
     id;
     nombre;
@@ -7,7 +7,7 @@ export class Especialidad {
 
     constructor({ nombre, duracionTurnoEnMins, costoConsulta }) {
         if (!nombre || !duracionTurnoEnMins || !costoConsulta) {
-            throw new ErrorDatosObligatorios();
+            throw new BadRequestError();
         }
         this.nombre = nombre;
         this.duracionTurnoEnMins = duracionTurnoEnMins;

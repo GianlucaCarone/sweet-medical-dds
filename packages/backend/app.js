@@ -7,7 +7,8 @@ import { zodErrorHandler } from "./middlewares/zodErrorHandler.js";
 import { Server } from "./server.js";
 import routes from "./routes/router.js";
 import { SedeController } from "./controllers/SedeController.js";
-import { UsuarioController } from "./controllers/UsuarioController.js";
+import { TurnoController } from "./controllers/TurnoController.js";
+import { ObraSocialController } from "./controllers/ObraSocialController.js"; import { UsuarioController } from "./controllers/UsuarioController.js";
 import { MedicoController } from "./controllers/MedicoController.js";
 
 const app = express();
@@ -17,13 +18,11 @@ const server = new Server(app);
 const sedeController = new SedeController();
 server.setController(SedeController, sedeController);
 
-const usuarioController = new UsuarioController();
-server.setController(UsuarioController, usuarioController);
+const turnoController = new TurnoController();
+server.setController(TurnoController, turnoController);
 
-const medicoController = new MedicoController();
-server.setController(MedicoController, medicoController);
-
-
+const obraSocialController = new ObraSocialController();
+server.setController(ObraSocialController, obraSocialController);
 
 /* -------------------------------------------------------------------------- */
 /*                                    RUTAS                                   */

@@ -1,8 +1,10 @@
-import { Usuario } from "./usuario.js";
+import { Usuario } from "./usuario.js.js";
 import { ErrorDatosObligatorios } from "./errores.js";
-import { ConflictError } from "../errors/AppError.js";
-import { DisponibilidadHoraria } from "./disponibilidadHoraria.js";
+import { ConflictError } from "../errors/AppError.js.js";
+import { DisponibilidadHoraria } from "./disponibilidadHoraria.js.js";
 import { randomUUID } from "crypto";
+import { Especialidad } from "./servicios/especialidad.js";
+import { Practica } from "./servicios/practica.js";
 import { Practica } from "./servicios/practica.js";
 import { Especialidad } from "./servicios/especialidad.js";
 import { Sede } from "./sede.js";
@@ -49,22 +51,22 @@ export class Medico {
     }
 
     modificarDisponibilidad(nuevaDisponibilidad) {
-        if (!(nuevaDisponibilidad instanceof DisponibilidadHoraria)) {
-          throw new Error("No es una DisponibilidadHoraria válida");
+        if (!((nuevaDisponibilidad instanceof DisponibilidadHoraria))) {
+            throw new Error("No es una DisponibilidadHoraria válida");
         }
-    
+
         const existeDisponibilidadEseDia = this.disponibilidades.some(
-          disponibilidad => disponibilidad.diaSemana === nuevaDisponibilidad.diaSemana
+            disponibilidad => disponibilidad.diaSemana === nuevaDisponibilidad.diaSemana
         );
-    
+
         if (!existeDisponibilidadEseDia) {
-          throw new Error("No existe disponibilidad para ese día");
+            throw new Error("No existe disponibilidad para ese día");
         }
-    
+
         this.disponibilidades = this.disponibilidades.filter(
-          disponibilidad => disponibilidad.diaSemana !== nuevaDisponibilidad.diaSemana
+            disponibilidad => disponibilidad.diaSemana !== nuevaDisponibilidad.diaSemana
         );
-    
+
         this.disponibilidades.push(nuevaDisponibilidad);
     }
 
@@ -72,11 +74,11 @@ export class Medico {
         const cantidadAntes = this.disponibilidades.length;
 
         this.disponibilidades = this.disponibilidades.filter(
-          disponibilidad => disponibilidad.diaSemana !== diaSemana
+            disponibilidad => disponibilidad.diaSemana !== diaSemana
         );
-    
+
         if (this.disponibilidades.length === cantidadAntes) {
-          throw new Error("No existe disponibilidad para ese día");
+            throw new Error("No existe disponibilidad para ese día");
         }
     }
 
@@ -112,15 +114,15 @@ export class Medico {
 
     agregarSede(sede) {
         if (!(sede instanceof Sede)) {
-          throw new Error("Sede inválida");
+            throw new Error("Sede inválida");
         }
-    
+
         const yaTieneSede = this.sedes.some(s => s.id === sede.id);
-    
+
         if (yaTieneSede) {
-          throw new Error("El médico ya trabaja en esa sede");
+            throw new Error("El médico ya trabaja en esa sede");
         }
-    
+
         this.sedes.push(sede);
     }
 
@@ -130,7 +132,7 @@ export class Medico {
         this.sedes = this.sedes.filter(sede => sede.id !== sedeId);
 
         if (cantidadAntes === this.sedes.length) {
-          throw new Error("La sede no estaba asociada al médico");
+            throw new Error("La sede no estaba asociada al médico");
         }
     }
 

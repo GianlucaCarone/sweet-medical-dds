@@ -1,13 +1,15 @@
 import { Medico } from "../medico.js";
-import { ObraSocial } from "../obraSocial.js";
-import { Paciente } from "../paciente.js";
-import { Plan } from "../plan.js";
+import { BadRequestError } from "../../errors/AppError.js";
 import { EstadoTurnoEnum } from "./estadoTurnoEnum.js";
 import { CambioEstadoTurno } from "./cambioEstadoTurno.js";
+import { randomUUID } from "crypto";
+
 export class Turno {
     id;
     medico;
-    servicio;
+    //servicio;
+    practica;
+    especialidad;
     paciente;
     fechaHora;
     sede;
@@ -15,10 +17,10 @@ export class Turno {
     historialEstado;
     costo;
 
-    constructor({ medico, servicio, fechaHora, sede }) {
+    constructor({ medico, fechaHora, sede }) {
 
-        if (!medico || !servicio || !sede) {
-            throw new ErrorDatosObligatorios()
+        if (!medico || !sede || !fechaHora) {
+            throw new BadRequestError()
         }
         if (!(medico instanceof Medico)) {
             throw new Error("Medico inválido");
@@ -26,7 +28,6 @@ export class Turno {
 
         this.id = randomUUID();
         this.medico = medico;
-        this.servicio = servicio;
         this.fechaHora = fechaHora;
         this.sede = sede;
 
@@ -34,7 +35,8 @@ export class Turno {
         this.historialEstado = [];
     }
 
-    actualizarEstadoTurno({ nuevoEstado, quien, motivo }) {
+    //motivo opcional
+    actualizarEstadoTurno({ nuevoEstado, quien, motivo = undefined }) {
         if (!Object.values(EstadoTurnoEnum).includes(nuevoEstado)) {
             throw new Error("No existe ese estado");
         }
@@ -60,56 +62,10 @@ export class Turno {
             throw new Error("Motivo inválido");
         }
         this.estado = nuevoEstado;
-        cambioEstado = new CambioEstadoTurno({ estado: nuevoEstado, usuario: quien, turno: this, motivo: motivo });
+        const cambioEstado = new CambioEstadoTurno({ estado: nuevoEstado, usuario: quien, turno: this, motivo: motivo });
         this.historialEstado.push(cambioEstado);
     }
 
-    /* TODO: consultar que hacemos si aplicamos la logica de cambios de estados CON FUNCIONESA   
-        AsignarTurno(paciente, motivo) {
-            if (!(paciente instanceof Paciente)) {
-                throw new Error("Paciente inválido");
-            }
-            if (!(motivo instanceof String)) {
-                throw new Error("Motivo inválido");
-            }
-            this.paciente = paciente;
-            this.actualizarEstadoTurno({nuevoEstado: EstadoTurno.RESERVADO, quien: paciente, motivo: motivo});
-        }
-    
-        cancelarTurno(quien, motivo) {
-            if (!(quien instanceof Usuario)) {
-                throw new Error("Usuario inválido");
-            }
-            if (!(motivo instanceof String)) {
-                throw new Error("Motivo inválido");
-            }
-            this.actualizarEstadoTurno({nuevoEstado: EstadoTurno.CANCELADO, quien: quien, motivo: motivo});
-        }
-    
-        confirmarTurno(quien, motivo) {
-            if (!(quien instanceof Usuario)) {
-                throw new Error("Usuario inválido");
-            }
-            if (!(motivo instanceof String)) {
-                throw new Error("Motivo inválido");
-            }
-            this.actualizarEstadoTurno({nuevoEstado: EstadoTurno.CONFIRMADO, quien: quien, motivo:motivo});
-        }
-        finalizarTurno(quien, motivo) {
-            if (!(quien instanceof Usuario)) {
-                throw new Error("Usuario inválido");
-            }
-            if (!(motivo instanceof String)) {
-                throw new Error("Motivo inválido");
-            }
-            this.actualizarEstadoTurno({nuevoEstado: EstadoTurno.FINALIZADO, quien: quien, motivo:motivo});
-        }
-        
-        */
 
-    //TODO: hacer logica costo de turnos
-    calcularCosto() {
-        return 0;
-    }
 
 }

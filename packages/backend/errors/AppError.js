@@ -37,3 +37,9 @@ export class ZodError extends AppError {
         super(message, 400);
     }
 }
+
+export class ForbiddenError extends AppError {
+    constructor(message) {
+        super(message, 403)
+    }
+}
