@@ -5,10 +5,6 @@ import { historialEstadoTurnoSchema } from './historialEstadoTurnoSchema.js';
 
 
 const turnoSchema = new mongoose.Schema({
-    _id: {
-        type: String,
-        required: true
-    },
     fechaHora: {
         type: Date,
         required: true,

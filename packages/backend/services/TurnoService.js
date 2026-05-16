@@ -1,25 +1,36 @@
 import { BadRequestError, ConflictError, NotFoundError, UnprocessableEntityError } from "../errors/AppError.js";
 import { filtrosTurnoSchema } from "../schemas/zod/turnoSchema.js";
 import { Turno } from "../domain/turnos/turno.js";
+import { Agenda } from "../domain/agenda.js";
 import { NivelCobertura } from "../domain/coberturas/nivelCoberturaEnum.js";
 import { EstadoTurnoEnum } from "../domain/turnos/estadoTurnoEnum.js";
 import { TurnoRepository } from "../repositories/TurnoRepository.js";
 import { ObraSocialRepository } from "../repositories/ObraSocialRepository.js";
 import { MedicoRepository } from "../repositories/MedicoRepository.js";
 import { PacienteRepository } from "../repositories/PacienteRepository.js";
+import { logger } from "../config/logger.js";
+import { MedicoService } from "../services/MedicoService.js";
+import { UsuarioService } from "../services/UsuarioService.js";
+import { MedicoMapper } from "../mappers/medicoMapper.js";
 
 
 export class TurnoService {
-    constructor({ 
+    constructor({
         turnoRepository = new TurnoRepository(),
         pacienteRepository = new PacienteRepository(),
         obraSocialRepository = new ObraSocialRepository(),
-        medicoRepository = new MedicoRepository()
-    } = { }) {
+        medicoRepository = new MedicoRepository(),
+        medicoService = new MedicoService(),
+        agenda = new Agenda(),
+        usuarioService = new UsuarioService()
+    } = {}) {
         this.turnoRepository = turnoRepository;
         this.pacienteRepository = pacienteRepository;
         this.obraSocialRepository = obraSocialRepository;
         this.medicoRepository = medicoRepository;
+        this.medicoService = medicoService;
+        this.agenda = agenda;
+        this.usuarioService = usuarioService;
     }
 
     toDTO(turno) {
@@ -101,7 +112,7 @@ export class TurnoService {
 
         turno.actualizarEstadoTurno({ nuevoEstado: EstadoTurnoEnum.RESERVADO, paciente });
 
-        return this.toDTO(await this.turnoRepository.update(idTurno,turno));
+        return this.toDTO(await this.turnoRepository.update(idTurno, turno));
     }
 
 
@@ -230,6 +241,38 @@ export class TurnoService {
     validarEnteroPositivo(numero, parametro) {
         if (!Number.isInteger(numero) || numero <= 0) {
             throw new BadRequestError(`${parametro} debe ser un entero positivo`)
+        }
+    }
+
+    /* -------------------------------------------------------------------------- */
+    /*                            CREACION DE TURNOS                              */
+    /* -------------------------------------------------------------------------- */
+
+    async generarTurnosDisponibles() {
+        logger.info("Iniciando generación de turnos disponibles");
+
+        const medicosDocs = await this.medicoService.findAll();
+
+        for (const medicoDoc of medicosDocs) {
+            //const usuarioDoc = await this.usuarioService.findById(medicoDoc.idUsuario);
+
+            const medico = MedicoMapper.toDomain(medicoDoc);
+
+            await this.generarTurnosDisponiblesParaMedico(medico);
+        }
+
+        logger.info("Finalizó generación de turnos disponibles");
+    }
+
+    async generarTurnosDisponiblesParaMedico(medico) {
+        const turnosGenerados = this.agenda.generarTurnosSegunDisponibilidadDelMedico(medico);
+
+        for (const turno of turnosGenerados) {
+            const yaExiste = await this.turnoRepository.existeTurno(medico.id, turno.fechaHora);
+
+            if (!yaExiste) {
+                await this.turnoRepository.save(turno);
+            }
         }
     }
 }

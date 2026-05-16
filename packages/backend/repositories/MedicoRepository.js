@@ -5,7 +5,7 @@ export class MedicoRepository {
   }
 
   async findAll() {
-    return await this.model.find();
+    return await this.model.find().populate("idUsuario");
   }
 
   async findById(id) {

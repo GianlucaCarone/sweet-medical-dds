@@ -17,9 +17,9 @@ export class Turno {
     historialEstado;
     costo;
 
-    constructor({ medico, fechaHora, sede }) {
+    constructor({ medico, fechaHora, sede = null }) {
 
-        if (!medico || !sede || !fechaHora) {
+        if (!medico || !fechaHora) {
             throw new BadRequestError()
         }
         if (!(medico instanceof Medico)) {

@@ -31,7 +31,7 @@ export class MedicoController {
 
   findById = async (req, res, next) => {
     try {
-      const { id } = objectIdSchema.parse(req.params);
+      const id = objectIdSchema("médico").parse(req.params.id);
       const medico = await this.medicoService.findById(id);
 
       if (!medico) {
@@ -46,7 +46,7 @@ export class MedicoController {
 
   delete = async (req, res, next) => {
     try {
-      const { id } = objectIdSchema.parse(req.params);
+      const id = objectIdSchema("médico").parse(req.params.id);
       const medicoEliminado = await this.medicoService.delete(id);
       if (!medicoEliminado) {
         return res.status(404).json({ message: "Médico no encontrado" });
@@ -60,7 +60,7 @@ export class MedicoController {
 
   definirDisponibilidad = async (req, res, next) => {
     try {
-      const { id } = objectIdSchema.parse(req.params);
+      const id = objectIdSchema("médico").parse(req.params.id);
 
       const disponibilidadData = disponibilidadSchema.parse(req.body);
       const disponibilidadActualizada = await this.medicoService.definirDisponibilidadPara(disponibilidadData, id);
@@ -77,7 +77,7 @@ export class MedicoController {
 
   consultarDisponibilidad = async (req, res, next) => {
     try {
-      const { id } = objectIdSchema.parse(req.params);
+      const id = objectIdSchema("médico").parse(req.params.id);
 
       //const { idPractica } = disponibilidadConsultaSchema.parse(req.query);
 
@@ -94,7 +94,7 @@ export class MedicoController {
 
   modificarDisponibilidad = async (req, res, next) => {
     try {
-      const { id } = objectIdSchema.parse(req.params);
+      const id = objectIdSchema("médico").parse(req.params.id);
       const disponibilidadData = disponibilidadSchema.parse(req.body);
 
       const medicoActualizado =
@@ -111,7 +111,7 @@ export class MedicoController {
 
   eliminarDisponibilidad = async (req, res, next) => {
     try {
-      const { id } = objectIdSchema.parse(req.params);
+      const id = objectIdSchema("médico").parse(req.params.id);
       const { diaSemana } = eliminarDisponibilidadSchema.parse(req.body);
 
       const medicoActualizado =
@@ -128,7 +128,7 @@ export class MedicoController {
 
   agregarSede = async (req, res, next) => {
     try {
-      const { id } = objectIdSchema.parse(req.params);
+      const id = objectIdSchema("médico").parse(req.params.id);
       const { sedeId } = asociarSedeSchema.parse(req.body);
 
       const medicoActualizado = await this.medicoService.agregarSede(id, sedeId);
@@ -144,7 +144,7 @@ export class MedicoController {
 
   eliminarSede = async (req, res, next) => {
     try {
-      const { id } = objectIdSchema.parse(req.params);
+      const id = objectIdSchema("médico").parse(req.params.id);
       const { sedeId } = eliminarSedeParamsSchema.parse(req.params);
 
       const medicoActualizado = await this.medicoService.eliminarSede(id, sedeId);

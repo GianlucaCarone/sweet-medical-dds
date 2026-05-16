@@ -1,6 +1,7 @@
 import { EstadoTurnoEnum } from "../domain/turnos/estadoTurnoEnum.js";
 import { BadRequestError } from "../errors/AppError.js";
 import { TurnoModel } from "../schemas/dataBase/turnoSchemaDB.js";
+import { TurnoMapper } from "../mappers/turnoMapper.js";
 
 export class TurnoRepository {
     constructor() {
@@ -28,8 +29,9 @@ export class TurnoRepository {
     }
 
     async save(turno) {
-        const nuevoTurno = new this.model(turno);
-        return await nuevoTurno.save();
+        const turnoPersistence = TurnoMapper.toPersistence(turno);
+
+        return await new this.model(turnoPersistence).save();
     }
 
     async update(id, turno) {
