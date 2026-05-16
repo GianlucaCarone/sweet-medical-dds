@@ -31,3 +31,9 @@ export class UnprocessableEntityError extends AppError {
         super(message, 422)
     }
 }
+
+export class ZodError extends AppError {
+    constructor(message) {
+        super(message, 400);
+    }
+}

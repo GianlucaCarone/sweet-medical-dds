@@ -10,7 +10,7 @@ export default function notificacionesRoutes(getController) {
     router.route("/no-leidas").get((req, res, next) => notificacionesController.getNoLeidas(req, res, next));
     router.route("/no-leidas-paginadas").get((req, res, next) => notificacionesController.getNoLeidasPaginadas(req, res, next));
     router.route("/").post((req, res, next) => notificacionesController.crearNotificacion(req, res, next));
-    router.route("/:idNotificacion").patch((req, res, next) => notificacionesController.leer(req, res, next));
+    router.route("/:idNotificacion/leer").patch((req, res, next) => notificacionesController.leer(req, res, next));
 
     return router;
 }

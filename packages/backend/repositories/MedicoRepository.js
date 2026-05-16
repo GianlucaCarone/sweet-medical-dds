@@ -20,14 +20,12 @@ export class MedicoRepository {
     logger.info("[MEDICO REPOSTIRORY]: Guardando medico: ", medico);
     var medicoGuardado = null;
     if(medico.id) {
-        medicoGuardado = await this.model.findByIdAndUpdate(medico.id, MedicoMapper.toPersistence(medico), {new: true, runValidators: true})
-          .populate(["idUsuario", "especialidades", "practicas"]); //TODO: faltan las disponibilidades y las sedes
-    
-        } else {
-        const nuevoMedico = new this.model(MedicoMapper.toPersistence(medico));//
-        medicoGuardado = await nuevoMedico.save();
-        await medicoGuardado.populate(["idUsuario", "especialidades", "practicas"]); //TODO: faltan las disponibilidades y las sedes
+      medicoGuardado = await this.model.findByIdAndUpdate(medico.id, MedicoMapper.toPersistence(medico), {new: true, runValidators: true});
+    } else {
+      const nuevoMedico = new this.model(MedicoMapper.toPersistence(medico));//
+      medicoGuardado = await nuevoMedico.save();
     }
+    await medicoGuardado.populate(["idUsuario", "especialidades", "practicas"]); //TODO: faltan las disponibilidades y las sedes
     logger.info("[MEDICO REPOSTIRORY]: Medico guardado: ", medicoGuardado);
 
     return MedicoMapper.toDomain(medicoGuardado, medicoGuardado.idUsuario);

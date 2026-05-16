@@ -16,8 +16,6 @@ export default function seedRoute(getController) {
     router.get("/", async (req, res, next) => {
         try {
             const usuarios = await usuariosController.seed();
-            logger.info("[SEED]: usuarios creados: ", usuarios.length);
-            logger.info("[SEED]: usuarios creados: ", usuarios);
             const medicos = await medicosController.seed(usuarios);
             const notificaciones = await notificacionesController.seed(usuarios);
             const servicios = await serviciosController.seed();

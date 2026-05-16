@@ -11,7 +11,7 @@ export class NotificacionesRepository {
         logger.info("[NOTIFICACIONES REPOSITORY]: Obteniendo notificaciones " + ((leido) ? "leidas":"no leidas") + " del destinatario " + idDestinatario);
         const notificaciones = await this.model.find({ destinatario: idDestinatario, leido: leido })
                     .populate(["destinatarioId", "remitenteId"]);
-        logger.info("[NOTIFICACIONES REPOSITORY]: Notificaciones obtenidas: ", notificaciones.length(), notificaciones);
+        logger.info("[NOTIFICACIONES REPOSITORY]: Notificaciones obtenidas: ", notificaciones);
         return notificaciones.map(n => NotificacionMapper.toDomain(n, n.destinatarioId, n.remitenteId));
     }
     
@@ -30,7 +30,7 @@ export class NotificacionesRepository {
         });
         
         notificaciones.map(n => NotificacionMapper.toDomain(n, n.destinatarioId, n.remitenteId));
-        logger.info("[NOTIFICACIONES REPOSITORY]: Notificaciones obtenidas:", notificaciones.length, notificaciones);
+        logger.info("[NOTIFICACIONES REPOSITORY]: Notificaciones obtenidas:", notificaciones);
 
         return {
             total,
@@ -48,6 +48,21 @@ export class NotificacionesRepository {
         
         logger.info("[NOTIFICACIONES REPOSITORY]: Notificacion guardada: ", notificacionGuardada);
         await notificacionGuardada.populate(["destinatarioId", "remitenteId"]);
+
+        return NotificacionMapper.toDomain(notificacionGuardada, notificacionGuardada.destinatarioId, notificacionGuardada.remitenteId);
+    }
+
+    async save(notificacion) {
+        logger.info("[NOTIFICACIONES REPOSITORY]: Guardando notificacion:", notificacion);
+        var notificacionGuardada;
+        if (notificacion.id) {
+            notificacionGuardada = await this.model.findByIdAndUpdate(notificacion.id, NotificacionMapper.toPersistence(notificacion),{ new: true, runValidators: true });
+        } else {
+            const nuevaNotificacion = new this.model(NotificacionMapper.toPersistence(notificacion));
+            notificacionGuardada = await nuevaNotificacion.save();
+        }
+        await notificacionGuardada.populate(["destinatarioId", "remitenteId"]);
+        logger.info("[NOTIFICACIONES REPOSITORY]: Notificacion guardada:", notificacionGuardada);
 
         return NotificacionMapper.toDomain(notificacionGuardada, notificacionGuardada.destinatarioId, notificacionGuardada.remitenteId);
     }

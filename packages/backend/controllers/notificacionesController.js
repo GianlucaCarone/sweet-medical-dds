@@ -1,8 +1,7 @@
 import { NotificacionesService } from "../services/notificacionesService.js";
-import { notificacionIdSchema, notificacionSchema, filtrosNotificacionSchema } from "../schemas/notificacionSchema.js";
+import { notificacionIdParamsSchema, notificacionSchema, filtrosNotificacionSchema } from "../schemas/notificacionSchema.js";
 import { usuarioIdSchema } from "../schemas/usuarioSchema.js";
 import { logger } from '../config/logger.js';
-import { BadRequestError } from "../errors/AppError.js";
 
 export class NotificacionesController {
     constructor ({ 
@@ -27,14 +26,12 @@ export class NotificacionesController {
         }
     };
 
-    
     getLeidas = async (req, res, next) => {
         try {
-            const idUsuario = usuarioIdSchema.parse(req.body.idUsuario);
-            logger.info("[NOTIFICACIONES CONTROLLER]: Obteniendo notificaciones leidas del usuario: ", idUsuario);
+            const { idUsuario } = usuarioIdSchema.parse(req.query);
+            logger.info("[NOTIFICACIONES CONTROLLER]: Obteniendo notificaciones leidas del usuario:", idUsuario);
             const notificaciones = await this.notificacionesService.getLeidosNoLeidos(idUsuario, true);
-            logger.info("[NOTIFICACIONES CONTROLLER]: Notificaciones leidas obtenidas: ", notificaciones);
-            res.status(200).json( {
+            res.status(200).json({
                 status: "success",
                 data: notificaciones
             });
@@ -45,7 +42,7 @@ export class NotificacionesController {
     
     getLeidasPaginadas = async (req, res, next) => {
         try {
-            const idUsuario = usuarioIdSchema.parse(req.body.idUsuario);
+            const { idUsuario } = usuarioIdSchema.parse(req.body);
             const paginacion = this.extraerPaginacion(req.query);
             logger.info("[NOTIFICACIONES CONTROLLER]: Obteniendo notificaciones leidas del usuario:", idUsuario);
             const notificaciones = await this.notificacionesService.getLeidosNoLeidosPaginado(idUsuario, true, paginacion.numeroPagina, paginacion.limitePorPagina);
@@ -61,7 +58,7 @@ export class NotificacionesController {
     
     getNoLeidas = async (req, res, next) => {
         try {
-            const idUsuario = usuarioIdSchema.parse(req.body.idUsuario);
+            const { idUsuario } = usuarioIdSchema.parse(req.body);
             logger.info("[NOTIFICACIONES CONTROLLER]: Obteniendo notificaciones no leidas del usuario: ", idUsuario);
             const notificaciones = await this.notificacionesService.getLeidosNoLeidos(idUsuario, false);
             logger.info("[NOTIFICACIONES CONTROLLER]: Notificaciones no leidas obtenidas: ", notificaciones);
@@ -76,7 +73,7 @@ export class NotificacionesController {
     
     getNoLeidasPaginadas = async (req, res, next) => {
         try {
-            const idUsuario = usuarioIdSchema.parse(req.body.idUsuario);
+            const { idUsuario } = usuarioIdSchema.parse(req.body);
             const paginacion = this.extraerPaginacion(req.query);
             logger.info("[NOTIFICACIONES CONTROLLER]: Obteniendo notificaciones no leidas del usuario:", idUsuario);
             const notificaciones = await this.notificacionesService.getLeidosNoLeidosPaginado(idUsuario, false, paginacion.numeroPagina, paginacion.limitePorPagina);
@@ -93,7 +90,7 @@ export class NotificacionesController {
 
     leer = async (req, res, next) => {
         try {
-            const idNotificacion = notificacionIdSchema.parse(req.body.idUsuario);
+            const { idNotificacion } = notificacionIdParamsSchema.parse(req.params);
             logger.info("[NOTIFICACIONES CONTROLLER]: Leyendo notificacion: ", idNotificacion);
             const notificacion = await this.notificacionesService.leer(idNotificacion);
             logger.info("[NOTIFICACIONES CONTROLLER]: Notificacion leida: ", notificacion);

@@ -1,7 +1,7 @@
 import { z } from "zod";
 
-export const notificacionIdSchema = z.object({
-    id: z.string().uuid("El id de la notificacion debe ser un UUID válido.")
+export const notificacionIdParamsSchema = z.object({
+    idNotificacion: z.string()
 });
 
 export const notificacionSchema = z.object({

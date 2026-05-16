@@ -65,8 +65,6 @@ export class NotificacionesService {
             notificaciones: resultado.notificaciones.map(n => NotificacionMapper.toDTO(n))
         };
     }*/
-    
-    
 
     async leer (idNotificacion) { //TODO: VER QUE FUNCIONE
         logger.info("[NOTIFICACIONES SERVICE]: Obteniendo los datos necesarios para leer la notificacion");

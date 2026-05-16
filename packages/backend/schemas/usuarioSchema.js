@@ -7,5 +7,5 @@ export const usuarioSchema = z.object({
 });
 
 export const usuarioIdSchema = z.object({
-    idUsuario: z.string().uuid("El id del usuario debe ser un UUID válido")
+    idUsuario: z.string().min(1, "El id del usuario es requerido")
 });
