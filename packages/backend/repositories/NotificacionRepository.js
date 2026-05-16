@@ -7,10 +7,9 @@ export class NotificacionRepository {
     constructor() { this.model = NotificacionModel; }
 
 
-    async getByDestinatarioIdAndLeido(idDestinatario, leido) {
-        logger.info("[NOTIFICACIONES REPOSITORY]: Obteniendo notificaciones " + ((leido) ? "leidas" : "no leidas") + " del destinatario " + idDestinatario);
-        const notificaciones = await this.model.find({ destinatario: idDestinatario, leido: leido })
-            .populate(["destinatarioId", "remitenteId"]);
+    async getByDestinatarioIdAndLeido(idDestinatario, leida) {
+        logger.info("[NOTIFICACIONES REPOSITORY]: Obteniendo notificaciones " + ((leida) ? "leidas" : "no leidas") + " del destinatario " + idDestinatario);
+        const notificaciones = await this.model.find({ destinatarioId: idDestinatario, leida: leida }).populate(["destinatarioId", "remitenteId"]);
         logger.info("[NOTIFICACIONES REPOSITORY]: Notificaciones obtenidas: ", notificaciones);
         return notificaciones.map(n => NotificacionMapper.toDomain(n, n.destinatarioId, n.remitenteId));
     }

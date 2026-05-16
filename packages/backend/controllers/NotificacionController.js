@@ -28,7 +28,7 @@ export class NotificacionController {
 
     getLeidas = async (req, res, next) => {
         try {
-            const { idUsuario } = usuarioIdSchema.parse(req.query);
+            const { idUsuario } = usuarioIdSchema.parse(req.params);
             logger.info("[NOTIFICACIONES CONTROLLER]: Obteniendo notificaciones leidas del usuario:", idUsuario);
             const notificaciones = await this.notificacionService.getLeidosNoLeidos(idUsuario, true);
             res.status(200).json({
@@ -42,7 +42,7 @@ export class NotificacionController {
 
     getLeidasPaginadas = async (req, res, next) => {
         try {
-            const { idUsuario } = usuarioIdSchema.parse(req.body);
+            const { idUsuario } = usuarioIdSchema.parse(req.params);
             const paginacion = this.extraerPaginacion(req.query);
             logger.info("[NOTIFICACIONES CONTROLLER]: Obteniendo notificaciones leidas del usuario:", idUsuario);
             const notificaciones = await this.notificacionService.getLeidosNoLeidosPaginado(idUsuario, true, paginacion.numeroPagina, paginacion.limitePorPagina);
@@ -58,7 +58,7 @@ export class NotificacionController {
 
     getNoLeidas = async (req, res, next) => {
         try {
-            const { idUsuario } = usuarioIdSchema.parse(req.body);
+            const { idUsuario } = usuarioIdSchema.parse(req.params);
             logger.info("[NOTIFICACIONES CONTROLLER]: Obteniendo notificaciones no leidas del usuario: ", idUsuario);
             const notificaciones = await this.notificacionService.getLeidosNoLeidos(idUsuario, false);
             logger.info("[NOTIFICACIONES CONTROLLER]: Notificaciones no leidas obtenidas: ", notificaciones);
@@ -73,7 +73,7 @@ export class NotificacionController {
 
     getNoLeidasPaginadas = async (req, res, next) => {
         try {
-            const { idUsuario } = usuarioIdSchema.parse(req.body);
+            const { idUsuario } = usuarioIdSchema.parse(req.params);
             const paginacion = this.extraerPaginacion(req.query);
             logger.info("[NOTIFICACIONES CONTROLLER]: Obteniendo notificaciones no leidas del usuario:", idUsuario);
             const notificaciones = await this.notificacionService.getLeidosNoLeidosPaginado(idUsuario, false, paginacion.numeroPagina, paginacion.limitePorPagina);

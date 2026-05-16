@@ -7,17 +7,17 @@ export class NotificacionMapper {
             destinatario: UsuarioMapper.toDomain(destinatarioDoc),
             remitente: UsuarioMapper.toDomain(remitenteDoc),
             mensaje: notificacionDoc.mensaje,
-            fechaHoraCreacion: notificacionDoc.fechaHoraCreacion,
-            fechaHoraLeida: notificacionDoc.fechaHoraLeida,
-            leida: notificacionDoc.leida
+            fechaHoraCreacion: notificacionDoc.fechaHoraCreacion
         });
 
         notificacion.id = notificacionDoc._id?.toString() ?? notificacionDoc.id;
+        notificacion.leida = notificacionDoc.leida;
+        notificacion.fechaHoraLeida = notificacionDoc.fechaHoraLeida;
 
         return notificacion;
     }
 
-    static toDTO (notificacion) {
+    static toDTO(notificacion) {
         return {
             id: notificacion.id,
             destinatario: notificacion.destinatario.nombre,

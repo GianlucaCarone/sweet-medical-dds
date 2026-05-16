@@ -33,7 +33,7 @@ export class NotificacionService {
         logger.info("[NOTIFICACIONES SERVICE]: Obteniendo notificaciones " + ((leido) ? "leidas" : "no leidas") + " del usuario " + idDestinatario);
         const notificaciones = await this.notificacionRepository.getByDestinatarioIdAndLeido(idDestinatario, leido);
         logger.info("[NOTIFICACIONES SERVICE]: Se obtuvieron las notificaciones: ", notificaciones);
-        return notificaciones.map(n => this.toDTO(n));
+        return notificaciones.map(n => NotificacionMapper.toDTO(n));
     }
 
     async getLeidosNoLeidosPaginado(idDestinatario, leido, page = 1, limit = 10) { //TODO: VER QUE FUNCIONE

@@ -1,5 +1,6 @@
 import express from 'express';
 import { UsuarioController } from '../controllers/UsuarioController.js';
+import notificacionRoutes from './notificacionRoutes.js';
 
 
 export default function usuarioRoutes(getController) {
@@ -14,6 +15,11 @@ export default function usuarioRoutes(getController) {
         .get((req, res, next) => usuarioController.findById(req, res, next))
         .delete((req, res, next) => usuarioController.delete(req, res, next))
         .put((req, res, next) => usuarioController.update(req, res, next));
+
+    router.use(
+        '/:idUsuario/notificaciones',
+        notificacionRoutes(getController)
+    );
 
     return router;
 }

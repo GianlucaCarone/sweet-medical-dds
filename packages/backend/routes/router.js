@@ -11,14 +11,14 @@ import usuarioRoutes from "./usuarioRoutes.js";
 const routes = [
   { path: "/health", handler: healthRoutes },
   { path: "/medicos", handler: medicoRoutes },
-  { path: "/notificaciones", handler: notificacionRoutes },
+  //{ path: "/usuarios/:idUsuario/notificaciones", handler: notificacionesRoutes },
+  //{ path: "/notificaciones", handler: notificacionRoutes }, esta en el usuarioRoutes
   { path: "/obra-social", handler: obraSocialRoutes },
   { path: "/sedes", handler: sedeRoutes },
   { path: "/seed", handler: seedRoute },
   { path: "/servicios", handler: servicioRoutes },
   { path: "/turno", handler: turnoRoutes },
   { path: "/usuarios", handler: usuarioRoutes },
-  //{ path: "/usuarios/:idUsuario/notificaciones", handler: notificacionesRoutes },
 ];
 
 export default routes;

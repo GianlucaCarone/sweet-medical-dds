@@ -2,7 +2,7 @@ import express from "express";
 import { NotificacionController } from "../controllers/NotificacionController.js";
 
 export default function notificacionRoutes(getController) {
-    const router = express.Router();
+    const router = express.Router({ mergeParams: true });
     const notificacionController = getController(NotificacionController);
 
     router.route("/leidas").get((req, res, next) => notificacionController.getLeidas(req, res, next));
