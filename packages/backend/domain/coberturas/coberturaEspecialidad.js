@@ -1,12 +1,14 @@
-import { Especialidad } from "../especialidad";
-import { NivelCobertura } from "../nivelCobertura";
+import { Especialidad } from "../servicios/especialidad.js";
+import { NivelCobertura } from "../coberturas/nivelCoberturaEnum.js";
+import { ErrorDatosObligatorios } from "../../domain/errores.js";
 
 export class CoberturaEspecialidad {
     especialidad;
     nivel;
+    porcentajeCobertura;
 
-    constructor({ especialidad, nivel }) {
-        if (!especialidad || !nivel) {
+    constructor({ especialidad, nivel, porcentajeCobertura }) {
+        if (!especialidad || !nivel || !porcentajeCobertura) {
             throw new ErrorDatosObligatorios();
         }
         if (!(especialidad instanceof Especialidad)) {
@@ -17,5 +19,6 @@ export class CoberturaEspecialidad {
         }
         this.especialidad = especialidad;
         this.nivel = nivel;
+        this.porcentajeCobertura = porcentajeCobertura;
     }
 }

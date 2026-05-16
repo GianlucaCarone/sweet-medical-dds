@@ -1,4 +1,4 @@
-import { randomUUID } from "crypto";
+import { BadRequestError } from "../../errors/AppError.js";import { randomUUID } from "crypto";
 import { ErrorDatosObligatorios } from "../errores.js";
 
 export class Especialidad {
@@ -9,7 +9,7 @@ export class Especialidad {
 
     constructor({ nombre, duracionTurnoEnMins, costoConsulta }) {
         if (!nombre || !duracionTurnoEnMins || !costoConsulta) {
-            throw new ErrorDatosObligatorios();
+            throw new BadRequestError();
         }
         this.id = randomUUID();
         this.nombre = nombre;

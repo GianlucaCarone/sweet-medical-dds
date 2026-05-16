@@ -3,7 +3,9 @@ export const DiaSemana = Object.freeze({
   MARTES:  "MARTES",
   MIERCOLES:   "MIERCOLES",
   JUEVES: "JUEVES",
-  BIERNES: "VIERNES",
+  VIERNES: "VIERNES",
   SABADO: "SABADO",
   DOMINGO: "DOMINGO",
 });
+
+export default DiaSemana;

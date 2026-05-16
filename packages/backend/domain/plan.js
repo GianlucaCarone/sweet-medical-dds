@@ -1,7 +1,9 @@
 import { CoberturaEspecialidad } from "./coberturas/coberturaEspecialidad.js";
 import { CoberturaPractica } from "./coberturas/coberturaPractica.js";
 import { randomUUID } from "crypto";
-import { ErrorDatosObligatorios } from "./errores.js";
+import { Especialidad } from "./servicios/especialidad.js";
+import { Practica } from "./servicios/practica.js";
+import { ErrorDatosObligatorios } from "../domain/errores.js";
 
 export class Plan {
   id;
@@ -44,16 +46,26 @@ export class Plan {
   // Ejemplo: obtenerCobertura(servicio) y que internamente sepa si es una especialidad o practica y busque en el array correspondiente.
   // Esto evitaria tener dos metodos distintos para cada tipo de cobertura.
   // Preguntar: se puede usar polimorfismo en este caso? Con un if si el servicio es de un tipo u otro
+
+  obtenerCoberturaServicio(servicio) {
+    if (servicio instanceof Especialidad) {
+      return this.obtenerCoberturaEspecialidad(servicio);
+    }
+    if (servicio instanceof Practica) {
+      return this.obtenerCoberturaPractica(servicio);
+    }
+    throw new Error("Servicio inválido");
+  }
   obtenerCoberturaEspecialidad(especialidad) {
     const cobertura = this.coberturasEspecialidad.find(
       (ce) => ce.especialidad === especialidad,
     );
-    return cobertura ? cobertura.nivel : null;
+    return cobertura ? { nivel: cobertura.nivel, porcentaje: cobertura.porcentajeCobertura } : null;
   }
   obtenerCoberturaPractica(practica) {
     const cobertura = this.coberturasPractica.find(
       (cp) => cp.practica === practica,
     );
-    return cobertura ? cobertura.nivel : null;
+    return cobertura ? { nivel: cobertura.nivel, porcentaje: cobertura.porcentajeCobertura } : null;
   }
 }

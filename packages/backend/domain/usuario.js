@@ -6,7 +6,7 @@ export class Usuario {
     nombreUsuario;
     password;
 
-    constructor({ nombreUsuario, password }) {
+    constructor({ id, nombreUsuario, password }) {
         if (!nombreUsuario || !password) {
             throw new ErrorDatosObligatorios();
         }
@@ -20,7 +20,7 @@ export class Usuario {
             throw new ErrorUsuarioDemasiadoCorto("El nombre de usuario debe tener al menos 3 caracteres");
         }
 
-        this.id = randomUUID();
+        this.id = id || randomUUID();
         this.nombreUsuario = nombreUsuario;
         this.password = password;
     }

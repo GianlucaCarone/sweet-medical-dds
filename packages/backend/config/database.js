@@ -1,11 +1,11 @@
-import mongoose from "mongoose";
+import mongoose from 'mongoose';
 
+//CONEXION A LA BASE DE DATOS
 export class ClienteMongoDb {
     static async connect() {
         try {
-            const conexionDb = process.env.MONGODB_URI;
-            const conn = await mongoose.connect(`${conexionDb}`);
-            console.warn(`Se realizó la conección a mongoDB ${conn.connection.host}`);
+            const conn = await mongoose.connect(`${process.env.MONGODB_URI}/${process.env.MONGODB_DB_NAME}`);
+            console.warn(`Se realizo la conexion a mongoDB ${conn.connection.host}`);
         } catch (error) {
             console.error(`Error: ${error.message}`);
             process.exit();
