@@ -1,6 +1,6 @@
 import { UsuarioService } from "../services/UsuarioService.js";
 import { usuarioSchema } from "../schemas/usuarioSchema.js";
-import { idParamNumberSchema, idParamUUIDSchema, idParamObjectIdSchema } from "../schemas/urlSchema.js";
+import { idParamObjectIdSchema } from "../schemas/urlSchema.js";
 
 export class UsuarioController {
     constructor({ usuarioService = new UsuarioService() } = {}) {
@@ -27,7 +27,7 @@ export class UsuarioController {
             res.status(200).json(usuario);
         } catch (error) {
             return next(error);
-        }   
+        }
     }
 
     findAll = async (req, res, next) => {
@@ -36,7 +36,7 @@ export class UsuarioController {
             res.status(200).json(usuarios);
         } catch (error) {
             next(error);
-        } 
+        }
     }
 
     delete = async (req, res, next) => {

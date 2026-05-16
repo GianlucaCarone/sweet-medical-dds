@@ -1,37 +1,37 @@
 import { z } from "zod";
 import diaSemanaEnum from "../domain/diaSemanaEnum.js";
+import { objectIdSchema } from "./objectIdSchema.js";
+import { timeHH_MMSchema } from "./timeSchema.js";
 
+// Definimos una constante para la longitud máxima de la matrícula
 const MaxLengthMatricula = 10;
 
-
 export const medicoSchema = z.object({
-    nombre: z.string().min(1, "El nombre es obligatorio"),
-    idUsuario: z.uuid("El id del usuario debe ser un UUID válido"),
-    matricula: z.string().max(MaxLengthMatricula),
-});
-
-export const medicoIdParamsSchema = z.object({
-    id: z.uuid("El id del médico debe ser un UUID válido")
+  nombre: z.string().min(1, "El nombre es obligatorio"),
+  //idUsuario: z.string().uuid("El id del usuario debe ser un UUID válido"),
+  idUsuario: objectIdSchema("usuario"),
+  matricula: z.string().max(MaxLengthMatricula),
 });
 
 export const disponibilidadSchema = z.object({
-    diaSemana: z.enum(Object.values(diaSemanaEnum)),
-    horaDesde: z.string().refine((hora) => {
-        const [horas, minutos] = hora.split(":").map(Number);
-        return (horas >= 0 && horas < 24) && (minutos >= 0 && minutos < 60);
-    }, {
-        message: "La hora debe estar en formato HH:mm y ser una hora válida"
-    }),
-    horaHasta: z.string().refine((hora) => {
-        const [horas, minutos] = hora.split(":").map(Number);
-        return (horas >= 0 && horas < 24) && (minutos >= 0 && minutos < 60);
-    }, {
-        message: "La hora debe estar en formato HH:mm y ser una hora válida"
-    }),
+  diaSemana: z.enum(Object.values(diaSemanaEnum)),
+  horaDesde: timeHH_MMSchema("hora de inicio"),
+  horaHasta: timeHH_MMSchema("hora de fin"),
+})
+  .superRefine((data, ctx) => {
+    if (data.horaDesde >= data.horaHasta) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "La hora de fin debe ser estrictamente posterior a la hora de inicio",
+        path: ["horaHasta"],
+      });
+    }
+  });
+
+export const eliminarDisponibilidadSchema = z.object({
+  diaSemana: z.enum(Object.values(diaSemanaEnum)),
 });
 
 export const disponibilidadConsultaSchema = z.object({
-    practicaId: z.uuid(
-        "El id de la práctica debe ser un UUID válido"
-    )
+  practicaId: z.string().uuid("El id de la práctica debe ser un UUID válido"),
 });

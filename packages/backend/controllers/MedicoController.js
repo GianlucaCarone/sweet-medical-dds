@@ -1,8 +1,7 @@
 import { MedicoService } from "../services/MedicoService.js";
-import { medicoSchema, disponibilidadSchema, disponibilidadConsultaSchema, eliminarDisponibilidadSchema } from "../schemas/medicoSchema.js";
-import { idParamNumberSchema, idParamObjectIdSchema } from "../schemas/urlSchema.js";
+import { medicoSchema, disponibilidadSchema, eliminarDisponibilidadSchema } from "../schemas/medicoSchema.js";
+import { idParamObjectIdSchema } from "../schemas/urlSchema.js";
 import { asociarSedeSchema, eliminarSedeParamsSchema } from "../schemas/sedeSchema.js";
-import { logger } from "../config/logger.js";
 
 export class MedicoController {
   constructor({ medicoService = new MedicoService() } = {}) {
@@ -160,7 +159,7 @@ export class MedicoController {
     }
   };
 
-  
+
 
   /*
   parsearId(idParam) {
