@@ -1,12 +1,10 @@
-import { Usuario } from "./usuario.js.js";
+import { Usuario } from "./usuario.js";
 import { ErrorDatosObligatorios } from "./errores.js";
-import { ConflictError } from "../errors/AppError.js.js";
-import { DisponibilidadHoraria } from "./disponibilidadHoraria.js.js";
+import { ConflictError } from "../errors/AppError.js";
+import { DisponibilidadHoraria } from "./disponibilidadHoraria.js";
 import { randomUUID } from "crypto";
 import { Especialidad } from "./servicios/especialidad.js";
 import { Practica } from "./servicios/practica.js";
-import { Practica } from "./servicios/practica.js";
-import { Especialidad } from "./servicios/especialidad.js";
 import { Sede } from "./sede.js";
 
 export class Medico {

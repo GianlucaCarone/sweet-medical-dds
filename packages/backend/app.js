@@ -8,7 +8,8 @@ import { Server } from "./server.js";
 import routes from "./routes/router.js";
 import { SedeController } from "./controllers/SedeController.js";
 import { TurnoController } from "./controllers/TurnoController.js";
-import { ObraSocialController } from "./controllers/ObraSocialController.js"; import { UsuarioController } from "./controllers/UsuarioController.js";
+import { ObraSocialController } from "./controllers/ObraSocialController.js";
+import { UsuarioController } from "./controllers/UsuarioController.js";
 import { MedicoController } from "./controllers/MedicoController.js";
 
 const app = express();
@@ -23,6 +24,12 @@ server.setController(TurnoController, turnoController);
 
 const obraSocialController = new ObraSocialController();
 server.setController(ObraSocialController, obraSocialController);
+
+const medicoController = new MedicoController();
+server.setController(MedicoController, medicoController);
+
+const usuarioController = new UsuarioController();
+server.setController(UsuarioController, usuarioController);
 
 /* -------------------------------------------------------------------------- */
 /*                                    RUTAS                                   */

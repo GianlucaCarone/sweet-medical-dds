@@ -3,12 +3,10 @@ import { MedicoRepository } from "../repositories/MedicoRepository.js";
 import { UsuarioService } from "./UsuarioService.js";
 import { DisponibilidadHoraria } from "../domain/disponibilidadHoraria.js";
 import { Medico } from "../domain/medico.js";
-import { Usuario } from "../domain/usuario.js";
 import { SedeService } from "./SedeService.js";
 import { logger } from "../config/logger.js";
-import { UsuarioMapper } from "../mappers/usuarioMapper.js";
 import { MedicoMapper } from "../mappers/medicoMapper.js";
-import { DisponibilidadMapper } from "../mappers/disponibilidadMapper.js";
+
 
 
 export class MedicoService {
@@ -91,9 +89,9 @@ export class MedicoService {
     this.validarMatricula(medico.matricula);
   }
 
-  validarUsuario(idUsuario) {
-    // TODO: Implementar validaciones necesarias para el usuario
-  }
+  //validarUsuario(idUsuario) {
+  //  // TODO: Implementar validaciones necesarias para el usuario
+  //}
 
   async agregarSede(medicoId, sedeId) {
     logger.info(`Agregando sede ${sedeId} al médico ${medicoId}`);

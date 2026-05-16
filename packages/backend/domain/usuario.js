@@ -1,4 +1,4 @@
-import { ErrorDatosObligatorios, ErrorContrasenaCorta, ErrorUsuarioDemasiadoLargo, ErrorUsuarioDemasiadoCorto } from "../domain/errores.js.js";
+import { ErrorDatosObligatorios, ErrorContrasenaCorta, ErrorUsuarioDemasiadoLargo, ErrorUsuarioDemasiadoCorto } from "../domain/errores.js";
 import { randomUUID } from "crypto";
 
 export class Usuario {
