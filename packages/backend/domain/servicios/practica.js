@@ -13,7 +13,7 @@ export class Practica {
         if (!codigo || !nombre || !duracionTurnoEnMins || !costo) {
             throw new BadRequestError();
         }
-        this.id = randomUUID();
+        //this.id = randomUUID();
         this.codigo = codigo;
         this.nombre = nombre;
         this.duracionTurnoEnMins = duracionTurnoEnMins;

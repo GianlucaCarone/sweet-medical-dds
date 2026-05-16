@@ -11,20 +11,20 @@ export class NotificacionController {
     }
 
     //este endpoint en la siguiente entrega vuela (es por logica del sistema que se crean)
-    crearNotificacion = async (req, res, next) => {
-        try {
-            const notificacionData = notificacionSchema.parse(req.body);
-            logger.info("[NOTIFICACIONES CONTROLLER]: Creando notificacion: ", notificacionData);
-            const notificacion = await this.notificacionService.crearNotificacion(notificacionData);
-            logger.info("[NOTIFICACIONES CONTROLLER]: Notificacion creada: ", notificacion);
-            res.status(201).json({
-                status: "success",
-                data: notificacion
-            });
-        } catch (error) {
-            next(error);
-        }
-    };
+    //    crearNotificacion = async (req, res, next) => {
+    //        try {
+    //            const notificacionData = notificacionSchema.parse(req.body);
+    //            logger.info("[NOTIFICACIONES CONTROLLER]: Creando notificacion: ", notificacionData);
+    //            const notificacion = await this.notificacionService.crearNotificacion(notificacionData);
+    //            logger.info("[NOTIFICACIONES CONTROLLER]: Notificacion creada: ", notificacion);
+    //            res.status(201).json({
+    //                status: "success",
+    //                data: notificacion
+    //            });
+    //        } catch (error) {
+    //            next(error);
+    //        }
+    //    };
 
     getLeidas = async (req, res, next) => {
         try {
@@ -170,6 +170,6 @@ export class NotificacionController {
             }
         ];
 
-        return notificaciones.map(n => this.notificacionService.crearNotificacion(n));
+        return await notificaciones.map(n => this.notificacionService.crearNotificacion(n));
     }
 }

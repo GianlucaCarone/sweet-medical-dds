@@ -16,7 +16,7 @@ export class MedicoMapper {
     medico.disponibilidades = (medicoDoc.disponibilidades ?? []).map(DisponibilidadMapper.toDomain);
     medico.especialidades = (medicoDoc.especialidades ?? []).map(ServicioMapper.toDomain);
     medico.practicas = (medicoDoc.practicas ?? []).map(ServicioMapper.toDomain);
-    medico.sedes = (medicoDoc.sedes ?? []).map(ServicioMapper.toDomain);
+    medico.sedes = (medicoDoc.sedes ?? []).map(SedeMapper.toDomain);
 
     return medico;
   }

@@ -223,7 +223,7 @@ export class MedicoService {
     async agregarServicioPara(idMedico, idServicio) { //TODO: VER QUE FUNCIONE
         logger.info("[MEDICO SERVICE]: Obteniendo datos necesarios para agendar un servicio para el medico ", idMedico)
         const medico = await this.medicoRepository.findById(idMedico);
-        const servicio = await this.servicioService.getById(idServicio);
+        const servicio = await this.servicioService.getEntityById(idServicio);
         if (!medico || !servicio) throw new NotFoundError("Datos no encontrados");
 
         logger.info("[MEDICO SERVICE]: Guardando servicio con id: ", idServicio);
@@ -239,7 +239,7 @@ export class MedicoService {
     async eliminarServicioPara(idMedico, idServicio) { //TODO: VER QUE FUNCIONE
         logger.info("[MEDICO SERVICE]: Obteniendo datos necesarios para eliminar un servicio para el medico ", idMedico)
         const medico = await this.medicoRepository.findById(idMedico);
-        const servicio = await this.servicioService.getById(idServicio);
+        const servicio = await this.servicioService.getEntityById(idServicio);
         if (!medico || !servicio) throw new NotFoundError("Datos no encontrados");
 
         logger.info("[MEDICO SERVICE]: Eliminando servicio con id: ", idServicio);

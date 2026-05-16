@@ -206,10 +206,10 @@ export class MedicoController {
 
   agregarServicio = async (req, res, next) => {
     try {
-      const idMedico = medicoIdParamsSchema.parse(req.params);
-      const idServicio = servicioIdSchema.parse(req.body);
+      const { idMedico } = medicoIdParamsSchema.parse(req.params);
+      const { idServicio } = servicioIdSchema.parse(req.params);
       logger.info("[MEDICO CONTROLLER]: Agregando servicio " + idServicio + " al medico " + idMedico);
-      const medico = this.medicoService.agregarServicioPara(idMedico, idServicio);
+      const medico = await this.medicoService.agregarServicioPara(idMedico, idServicio);
       logger.info("[MEDICO CONTROLLER]: Servicio agregado al medico: ", medico);
       res.status(200).json({
         status: "success",
@@ -222,10 +222,10 @@ export class MedicoController {
 
   eliminarServicio = async (req, res, next) => {
     try {
-      const idMedico = medicoIdParamsSchema.parse(req.params);
-      const idServicio = servicioIdSchema.parse(req.body);
+      const { idMedico } = medicoIdParamsSchema.parse(req.params);
+      const { idServicio } = servicioIdSchema.parse(req.params);
       logger.info("[MEDICO CONTROLLER]: Eliminando servicio " + idServicio + " al medico " + idMedico);
-      const medico = this.medicoService.eliminarServicioPara(idMedico, idServicio);
+      const medico = await this.medicoService.eliminarServicioPara(idMedico, idServicio);
       logger.info("[MEDICO CONTROLLER]: Servicio eliminado al medico: ", medico);
       res.status(200).json({
         status: "success",
@@ -247,7 +247,7 @@ export class MedicoController {
       }
     ];
 
-    return this.medicoService.crearMedicos(medicos);
+    return await this.medicoService.crearMedicos(medicos);
   };
 
   seedGeneral = async (req, res, next) => { // Esta seed crea el usuario primero y despues al medico con el usuarioId, falta implementar toda la parte de usuario

@@ -5,7 +5,9 @@ import { Practica } from "../domain/servicios/practica.js";
 import { logger } from '../config/logger.js';
 
 export class ServicioRepository {
-    constructor() { this.model = ServicioModel; }
+    constructor() {
+        this.model = ServicioModel;
+    }
 
     #resolverModelo(servicio) {
         if (servicio instanceof Especialidad) return EspecialidadModel;
@@ -16,9 +18,13 @@ export class ServicioRepository {
     async save(servicio) {
         logger.info("[SERVICIO REPOSTIRORY]: Guardando servicio: ", servicio);
         const modelo = this.#resolverModelo(servicio);
-        const nuevoServicio = new modelo(servicio);
-
-        const servicioGuardado = await nuevoServicio.save();
+        var servicioGuardado;
+        if (servicio.id) {
+            servicioGuardado = await modelo.findByIdAndUpdate(servicio.id, ServicioMapper.toPersistence(servicio), { new: true, runValidators: true });
+        } else {
+            const nuevoServicio = new modelo(ServicioMapper.toPersistence(servicio));
+            servicioGuardado = await nuevoServicio.save();
+        }
         logger.info("[SERVICIO REPOSTIRORY]: Servicio guardado: ", servicioGuardado);
 
         return ServicioMapper.toDomain(servicioGuardado);

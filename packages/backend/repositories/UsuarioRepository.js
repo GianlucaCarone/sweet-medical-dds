@@ -9,25 +9,30 @@ export class UsuarioRepository {
         this.model = UsuarioModel;
     }
 
-    async save (usuario) {
+    async save(usuario) {
         logger.info("[USUARIO REPOSITORY]: Guardando usuario: ", usuario);
-        if (!(usuario instanceof Usuario)) {
-            throw new Error("No es un Usuario valido");
+        if (!(usuario instanceof Usuario)) throw new Error("No es un Usuario valido");
+        var usuarioGuardado;
+        if (usuario.id) {
+            usuarioGuardado = await this.model.findByIdAndUpdate(usuario.id, UsuarioMapper.toPersistence(usuario), { new: true, runValidators: true });
+        } else {
+            const nuevoUsuario = new this.model(UsuarioMapper.toPersistence(usuario));
+            usuarioGuardado = await nuevoUsuario.save();
         }
-        const nuevoUsuario = new this.model(usuario);
-        logger.info("[USUARIO REPOSITORY]: Usuario guardado: ", nuevoUsuario);
-        const usuarioGuardado = await nuevoUsuario.save();
+        //const nuevoUsuario = new this.model(usuario);
+        logger.info("[USUARIO REPOSITORY]: Usuario guardado: ", usuarioGuardado);
+        //const usuarioGuardado = await nuevoUsuario.save();
         return UsuarioMapper.toDomain(usuarioGuardado);
     }
 
     async findById(id) {
         logger.info("[USUARIO REPOSITORY]: Obteniendo usuario: " + id);
         const usuario = await this.model.findById(id);
-        if(!usuario) throw new BadRequestError("Usuario no encontrado");
+        if (!usuario) throw new BadRequestError("Usuario no encontrado");
         logger.info("[USUARIO REPOSITORY]: Usuario obtenido: ", usuario);
         return UsuarioMapper.toDomain(usuario);
     }
-    
+
     /* TODO VER SI FUNCIONAN
     async save(usuario) {
         if (!(usuario instanceof Usuario)) {

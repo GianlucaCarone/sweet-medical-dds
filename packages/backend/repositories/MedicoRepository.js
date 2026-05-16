@@ -6,6 +6,10 @@ import { logger } from '../config/logger.js';
 export class MedicoRepository {
   constructor() { this.model = MedicoModel; }
 
+  async findAll() {
+    return await this.model.find();
+  }
+
   async findById(idMedico) {
     logger.info("[MEDICO REPOSTIRORY]: Buscando medico: por id", idMedico);
     const medico = await this.model.findById(idMedico).populate(["idUsuario", "especialidades", "practicas"]); //TODO: faltan las disponibilidades y las sedes
@@ -13,7 +17,7 @@ export class MedicoRepository {
     logger.info("[MEDICO REPOSTIRORY]: " + mensaje);
 
     if (!medico) return;
-    return MedicoMapper.toDomain(medico, medico.idUsuario);
+    return MedicoMapper.toDomain(medico);
   }
 
   async save(medico) {
@@ -28,7 +32,7 @@ export class MedicoRepository {
     await medicoGuardado.populate(["idUsuario", "especialidades", "practicas"]); //TODO: faltan las disponibilidades y las sedes
     logger.info("[MEDICO REPOSTIRORY]: Medico guardado: ", medicoGuardado);
 
-    return MedicoMapper.toDomain(medicoGuardado, medicoGuardado.idUsuario);
+    return MedicoMapper.toDomain(medicoGuardado);
   }
 
   async findByIdUsuario(idUsuario) {
@@ -39,32 +43,7 @@ export class MedicoRepository {
     logger.info("[MEDICO REPOSTIRORY]: " + mensaje);
 
     if (!medico) return;
-    return MedicoMapper.toDomain(medico, medico.idUsuario);
-  }
-}
-
-export class MedicoRepository2 {
-  constructor() {
-    this.model = MedicoModel;
-  }
-
-  async findAll() {
-    return await this.model.find();
-  }
-
-  async findById(id) {
-    return await this.model.findById(id).populate("idUsuario");
-  }
-
-  async save(medico) {
-    if (medico.id) {
-      return await this.model.findByIdAndUpdate(medico.id, medico, { new: true, runValidators: true });
-    }
-    return await new this.model(medico).save();
-  }
-
-  async findByIdUsuario(idUsuario) {
-    return await this.model.findOne({ "idUsuario": idUsuario });
+    return MedicoMapper.toDomain(medico);
   }
 
   async delete(id) {

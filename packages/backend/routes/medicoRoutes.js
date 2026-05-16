@@ -29,9 +29,8 @@ export default function medicoRoutes(getController) {
   router.route("/:id/sedes/:sedeId")
     .delete((req, res, next) => medicoController.eliminarSede(req, res, next));
 
-  router.route("/:id/servicios")
-    .get((req, res, next) => medicoController.getServicios(req, res, next))
-    .post((req, res, next) => medicoController.agregarServicio(req, res, next)) // agrego un servicio al medico
+  router.route("/:idMedico/servicios/:idServicio")
+    .post((req, res, next) => medicoController.agregarServicio(req, res, next)) // Agregar un servicio existente al medico
     .delete((req, res, next) => medicoController.eliminarServicio(req, res, next)); // Eliminar servicio existente del medico
 
   return router;

@@ -45,7 +45,7 @@ export class ServicioController {
         try {
             const { idServicio } = servicioIdParamsSchema.parse(req.params);
             logger.info("[SERVICIOS CONTROLLER]: Eliminando servicio: ", idServicio)
-            this.servicioService.delete(idServicio);
+            await this.servicioService.delete(idServicio);
             logger.info("[SERVICIOS CONTROLLER]: Servicio eliminado");
             res.status(204).json({
                 status: "success"
@@ -77,6 +77,6 @@ export class ServicioController {
             }
         ];
 
-        return servicios.map(s => this.servicioService.create(s));
+        return await servicios.map(s => this.servicioService.create(s));
     }
 }

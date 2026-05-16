@@ -37,9 +37,9 @@ export const disponibilidadConsultaSchema = z.object({
 });
 
 export const medicoIdParamsSchema = z.object({
-  id: z.string().uuid("El id del médico debe ser un UUID válido")
+  idMedico: z.string()
 });
 
 export const servicioIdSchema = z.object({
-  idServicio: z.string().uuid("El id del servicio debe ser un UUID válido")
+  idServicio: z.string()
 });

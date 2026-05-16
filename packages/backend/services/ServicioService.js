@@ -14,8 +14,16 @@ export class ServicioService {
         logger.info("[SERVICIO SERVICE]: Obteniendo servicio: ", idServicio);
         const servicio = await this.serviciosRepository.findById(idServicio);
         if (!servicio) throw new NotFoundError("No se encontro el servicio con el id " + idServicio);
-        logger.info("[SERVICIO SERVICE]: Servicio encontrado: ", servicioGuardado);
+        logger.info("[SERVICIO SERVICE]: Servicio encontrado: ", servicio);
         return ServicioMapper.toDTO(servicio);
+    }
+
+    async getEntityById(idServicio) { //TODO: VER QUE FUNCIONE
+        logger.info("[SERVICIO SERVICE]: Obteniendo servicio: ", idServicio);
+        const servicio = await this.serviciosRepository.findById(idServicio);
+        if (!servicio) throw new NotFoundError("No se encontro el servicio con el id " + idServicio);
+        logger.info("[SERVICIO SERVICE]: Servicio encontrado: ", servicio);
+        return servicio;
     }
 
     async create(datosServicio) { //funciona
@@ -34,8 +42,8 @@ export class ServicioService {
         const servicio = await this.serviciosRepository.findById(idServicio);
         if (!servicio) throw new NotFoundError("No se encontro el servicio con el id " + idServicio);
 
-        const servicioActualizado = this.crearEntidad(datosServicio);
-        servicioActualizado.setId(servicio.idServicio);
+        const servicioActualizado = await this.crearEntidad(datosServicio);
+        servicioActualizado.id = servicio.id;
         logger.info("[SERVICIO SERVICE]: Servicio actualizado: ", servicioActualizado);
         const servicioGuardado = await this.serviciosRepository.save(servicioActualizado);
         logger.info("[SERVICIO SERVICE]: Servicio guardado luego de actualizarse: ", servicioGuardado);
