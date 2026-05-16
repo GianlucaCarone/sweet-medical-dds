@@ -132,7 +132,6 @@ export class MedicoService {
 
     // Docs de mongoose
     const medicoDoc = await this.medicoRepository.findById(id);
-    const usuarioDoc = await this.usuarioService.findById(medicoDoc.idUsuario);
     // docs pasados a dominio
     const medico = MedicoMapper.toDomain(medicoDoc);
 
@@ -142,7 +141,7 @@ export class MedicoService {
 
     logger.info(`Disponibilidad definida para el médico ${id}: `, disponibilidad);
 
-    return this.medicoRepository.save(medico);
+    return MedicoMapper.toDto(await this.medicoRepository.save(medico));
   }
 
   async modificarDisponibilidadPara(disponibilidadData, medicoId) {

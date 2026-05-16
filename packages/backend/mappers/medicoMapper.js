@@ -1,16 +1,17 @@
 import { Medico } from "../domain/medico.js";
 import { UsuarioMapper } from "./usuarioMapper.js";
+import { DisponibilidadMapper } from "./disponibilidadMapper.js";
 
 export class MedicoMapper {
-  static toDomain(medicoDoc, usuarioDoc) {
+  static toDomain(medicoDoc) {
     const medico = new Medico({
       nombre: medicoDoc.nombre,
       matricula: medicoDoc.matricula,
-      usuario: UsuarioMapper.toDomain(usuarioDoc),
+      usuario: UsuarioMapper.toDomain(medicoDoc.idUsuario),
     });
 
     medico.id = medicoDoc._id?.toString() ?? medicoDoc.id;
-    //medico.disponibilidades = (medicoDoc.disponibilidades ?? []).map(DisponibilidadMapper.toDomain);
+    medico.disponibilidades = (medicoDoc.disponibilidades ?? []).map(DisponibilidadMapper.toDomain);
 
     return medico;
   }
@@ -32,8 +33,8 @@ export class MedicoMapper {
       nombre: medico.nombre,
       matricula: medico.matricula,
       idUsuario: medico.idUsuario,
-      //sedes: medico.sedes,
-      //disponibilidades: medico.disponibilidades,
+      sedes: medico.sedes,
+      disponibilidades: medico.disponibilidades,
     };
   }
 }

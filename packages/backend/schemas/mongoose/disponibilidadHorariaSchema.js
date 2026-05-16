@@ -15,6 +15,6 @@ export const disponibilidadHorariaSchema = new mongoose.Schema({
       match: /^([01]\d|2[0-3]):([0-5]\d)$/,
     }, // formato HH:mm
 },
-{ id: true });
+{ id: false });
 
 disponibilidadHorariaSchema.loadClass(DisponibilidadHoraria);

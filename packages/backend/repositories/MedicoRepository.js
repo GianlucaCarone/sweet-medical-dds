@@ -9,12 +9,12 @@ export class MedicoRepository {
   }
 
   async findById(id) {
-    return await this.model.findById(id);
+    return await this.model.findById(id).populate("idUsuario");
   }
 
-  async save(medico, id = null) {
-    if (id) {
-      return await this.model.findByIdAndUpdate(id,medico,{new: true, runValidators: true});
+  async save(medico) {
+    if (medico.id) {
+      return await this.model.findByIdAndUpdate(medico.id, medico, { new: true, runValidators: true });
     }
     return await new this.model(medico).save();
   }

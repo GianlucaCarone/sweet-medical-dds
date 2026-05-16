@@ -18,9 +18,7 @@ const MedicoSchema = new mongoose.Schema(
       minlength: 1,
     },
     disponibilidades: [disponibilidadHorariaSchema], // embebido
-
-    // TODO
-    // disponibilidades: [disponibilidadHorariaSchema], // embebido
+    
     /* especialidades: [{ type: mongoose.Schema.Types.ObjectId, ref: "Especialidad" }],
   practicas: [{ type: mongoose.Schema.Types.ObjectId, ref: "Practica" }],
   sedes: [{ type: mongoose.Schema.Types.ObjectId, ref: "Sede" }] */
