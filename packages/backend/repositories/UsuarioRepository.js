@@ -1,6 +1,6 @@
 import { Usuario } from "../domain/usuario.js";
 import { BadRequestError } from "../errors/AppError.js";
-import { UsuarioModel } from "../schemas/mongoose/usuarioSchema.js";
+import { UsuarioModel } from "../schemas/database/usuarioSchema.js";
 
 export class UsuarioRepository {
     constructor() {

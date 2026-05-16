@@ -9,6 +9,6 @@ export const asociarSedeSchema = z.object({
   sedeId: z.string().uuid("El id de la sede debe ser un UUID válido")
 });
 
-export const eliminarSedeParamsSchema  = z.object({
+export const eliminarSedeParamsSchema = z.object({
   sedeId: z.string().uuid("El id de la sede debe ser un UUID válido")
 });

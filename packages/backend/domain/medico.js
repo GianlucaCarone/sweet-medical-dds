@@ -39,9 +39,11 @@ export class Medico {
         }
 
         // TODO: Revisar si el mergeo lo sacamos
-        this.disponibilidades.forEach(horarioExistente => {
+        this.disponibilidades.forEach((horarioExistente) => {
             if (disponibilidad.seSuperponeCon(horarioExistente)) {
-                throw new ConflictError("Este horario se superpone con otro horario existente");
+                throw new ConflictError(
+                    "Este horario se superpone con otro horario existente",
+                );
             }
         });
 
@@ -49,12 +51,13 @@ export class Medico {
     }
 
     modificarDisponibilidad(nuevaDisponibilidad) {
-        if (!((nuevaDisponibilidad instanceof DisponibilidadHoraria))) {
+        if (!(nuevaDisponibilidad instanceof DisponibilidadHoraria)) {
             throw new Error("No es una DisponibilidadHoraria válida");
         }
 
         const existeDisponibilidadEseDia = this.disponibilidades.some(
-            disponibilidad => disponibilidad.diaSemana === nuevaDisponibilidad.diaSemana
+            (disponibilidad) =>
+                disponibilidad.diaSemana === nuevaDisponibilidad.diaSemana,
         );
 
         if (!existeDisponibilidadEseDia) {
@@ -62,7 +65,8 @@ export class Medico {
         }
 
         this.disponibilidades = this.disponibilidades.filter(
-            disponibilidad => disponibilidad.diaSemana !== nuevaDisponibilidad.diaSemana
+            (disponibilidad) =>
+                disponibilidad.diaSemana !== nuevaDisponibilidad.diaSemana,
         );
 
         this.disponibilidades.push(nuevaDisponibilidad);
@@ -72,7 +76,7 @@ export class Medico {
         const cantidadAntes = this.disponibilidades.length;
 
         this.disponibilidades = this.disponibilidades.filter(
-            disponibilidad => disponibilidad.diaSemana !== diaSemana
+            (disponibilidad) => disponibilidad.diaSemana !== diaSemana,
         );
 
         if (this.disponibilidades.length === cantidadAntes) {
@@ -81,33 +85,37 @@ export class Medico {
     }
 
     agregarServicio(servicio) {
-        if (!servicio) { throw new Error("Servicio invalido"); }
+        if (!servicio) {
+            throw new Error("Servicio invalido");
+        }
         if (servicio instanceof Especialidad) {
             this.especialidades.push(servicio);
-        }
-        else if (servicio instanceof Practica) {
+        } else if (servicio instanceof Practica) {
             this.practicas.push(servicio);
-        }
-        else {
+        } else {
             throw new Error("Tipo de Servicio invalido");
         }
     }
 
     eliminarServicio(servicioAEliminar) {
-        if (!servicioAEliminar) { throw new Error("Servicio invalido"); }
+        if (!servicioAEliminar) {
+            throw new Error("Servicio invalido");
+        }
         if (servicioAEliminar instanceof Especialidad) {
-            this.especialidades = this.especialidades.filter(especialidad => especialidad.id !== servicioAEliminar.id);
-        }
-        else if (servicioAEliminar instanceof Practica) {
-            this.practicas = this.practicas.filter(practica => practica.id !== servicioAEliminar.id);
-        }
-        else {
+            this.especialidades = this.especialidades.filter(
+                (especialidad) => especialidad.id !== servicioAEliminar.id,
+            );
+        } else if (servicioAEliminar instanceof Practica) {
+            this.practicas = this.practicas.filter(
+                (practica) => practica.id !== servicioAEliminar.id,
+            );
+        } else {
             throw new Error("Tipo de Servicio invalido");
         }
     }
 
     ofrecePractica(practicaId) {
-        return this.practicas.some(practica => practica.id === practicaId);
+        return this.practicas.some((practica) => practica.id === practicaId);
     }
 
     agregarSede(sede) {
@@ -115,7 +123,7 @@ export class Medico {
             throw new Error("Sede inválida");
         }
 
-        const yaTieneSede = this.sedes.some(s => s.id === sede.id);
+        const yaTieneSede = this.sedes.some((s) => s.id === sede.id);
 
         if (yaTieneSede) {
             throw new Error("El médico ya trabaja en esa sede");
@@ -127,12 +135,10 @@ export class Medico {
     eliminarSede(sedeId) {
         const cantidadAntes = this.sedes.length;
 
-        this.sedes = this.sedes.filter(sede => sede.id !== sedeId);
+        this.sedes = this.sedes.filter((sede) => sede.id !== sedeId);
 
         if (cantidadAntes === this.sedes.length) {
             throw new Error("La sede no estaba asociada al médico");
         }
     }
-
 }
-

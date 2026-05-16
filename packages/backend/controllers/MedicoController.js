@@ -1,8 +1,14 @@
 import { MedicoService } from "../services/MedicoService.js";
-import { medicoSchema, disponibilidadSchema, disponibilidadConsultaSchema, eliminarDisponibilidadSchema } from "../schemas/medicoSchema.js";
-import { idParamNumberSchema, idParamObjectIdSchema } from "../schemas/urlSchema.js";
-import { asociarSedeSchema, eliminarSedeParamsSchema } from "../schemas/sedeSchema.js";
-import { logger } from "../config/logger.js";
+import {
+  medicoSchema,
+  disponibilidadSchema,
+  eliminarDisponibilidadSchema,
+} from "../schemas/zod/medicoSchema.js";
+import { objectIdSchema } from "../schemas/zod/objectIdSchema.js";
+import {
+  asociarSedeSchema,
+  eliminarSedeParamsSchema,
+} from "../schemas/sedeSchema.js";
 
 export class MedicoController {
   constructor({ medicoService = new MedicoService() } = {}) {
@@ -10,7 +16,6 @@ export class MedicoController {
   }
 
   create = async (req, res, next) => {
-
     try {
       const medicoData = medicoSchema.parse(req.body);
       const nuevoMedico = await this.medicoService.create(medicoData);
@@ -24,15 +29,14 @@ export class MedicoController {
     try {
       const medicos = await this.medicoService.findAll();
       res.status(200).json(medicos);
-    }
-    catch (error) {
+    } catch (error) {
       next(error);
     }
   };
 
   findById = async (req, res, next) => {
     try {
-      const { id } = idParamObjectIdSchema.parse(req.params);
+      const { id } = objectIdSchema.parse(req.params);
       const medico = await this.medicoService.findById(id);
 
       if (!medico) {
@@ -47,7 +51,7 @@ export class MedicoController {
 
   delete = async (req, res, next) => {
     try {
-      const { id } = idParamObjectIdSchema.parse(req.params);
+      const { id } = objectIdSchema.parse(req.params);
       const medicoEliminado = await this.medicoService.delete(id);
       if (!medicoEliminado) {
         return res.status(404).json({ message: "Médico no encontrado" });
@@ -61,16 +65,19 @@ export class MedicoController {
 
   definirDisponibilidad = async (req, res, next) => {
     try {
-      const { id } = idParamObjectIdSchema.parse(req.params);
+      const { id } = objectIdSchema.parse(req.params);
 
       const disponibilidadData = disponibilidadSchema.parse(req.body);
-      const disponibilidadActualizada = await this.medicoService.definirDisponibilidadPara(disponibilidadData, id);
+      const disponibilidadActualizada =
+        await this.medicoService.definirDisponibilidadPara(
+          disponibilidadData,
+          id,
+        );
 
       return res.status(201).json({
         status: "success",
-        data: disponibilidadActualizada
+        data: disponibilidadActualizada,
       });
-
     } catch (error) {
       return next(error);
     }
@@ -78,15 +85,16 @@ export class MedicoController {
 
   consultarDisponibilidad = async (req, res, next) => {
     try {
-      const { id } = idParamObjectIdSchema.parse(req.params);
+      const { id } = objectIdSchema.parse(req.params);
 
       //const { idPractica } = disponibilidadConsultaSchema.parse(req.query);
 
-      const disponibilidades = await this.medicoService.consultarDisponibilidad(id);
+      const disponibilidades =
+        await this.medicoService.consultarDisponibilidad(id);
 
       return res.status(200).json({
         status: "success",
-        data: disponibilidades
+        data: disponibilidades,
       });
     } catch (error) {
       return next(error);
@@ -95,15 +103,18 @@ export class MedicoController {
 
   modificarDisponibilidad = async (req, res, next) => {
     try {
-      const { id } = idParamObjectIdSchema.parse(req.params);
+      const { id } = objectIdSchema.parse(req.params);
       const disponibilidadData = disponibilidadSchema.parse(req.body);
 
       const medicoActualizado =
-        await this.medicoService.modificarDisponibilidadPara(disponibilidadData, id);
+        await this.medicoService.modificarDisponibilidadPara(
+          disponibilidadData,
+          id,
+        );
 
       return res.status(200).json({
         status: "success",
-        data: medicoActualizado
+        data: medicoActualizado,
       });
     } catch (error) {
       return next(error);
@@ -112,7 +123,7 @@ export class MedicoController {
 
   eliminarDisponibilidad = async (req, res, next) => {
     try {
-      const { id } = idParamObjectIdSchema.parse(req.params);
+      const { id } = objectIdSchema.parse(req.params);
       const { diaSemana } = eliminarDisponibilidadSchema.parse(req.body);
 
       const medicoActualizado =
@@ -120,7 +131,7 @@ export class MedicoController {
 
       return res.status(200).json({
         status: "success",
-        data: medicoActualizado
+        data: medicoActualizado,
       });
     } catch (error) {
       return next(error);
@@ -129,14 +140,17 @@ export class MedicoController {
 
   agregarSede = async (req, res, next) => {
     try {
-      const { id } = idParamObjectIdSchema.parse(req.params);
+      const { id } = objectIdSchema.parse(req.params);
       const { sedeId } = asociarSedeSchema.parse(req.body);
 
-      const medicoActualizado = await this.medicoService.agregarSede(id, sedeId);
+      const medicoActualizado = await this.medicoService.agregarSede(
+        id,
+        sedeId,
+      );
 
       return res.status(200).json({
         status: "success",
-        data: medicoActualizado
+        data: medicoActualizado,
       });
     } catch (error) {
       return next(error);
@@ -145,22 +159,22 @@ export class MedicoController {
 
   eliminarSede = async (req, res, next) => {
     try {
-      const { id } = idParamObjectIdSchema.parse(req.params);
+      const { id } = objectIdSchema.parse(req.params);
       const { sedeId } = eliminarSedeParamsSchema.parse(req.params);
 
-      const medicoActualizado = await this.medicoService.eliminarSede(id, sedeId);
+      const medicoActualizado = await this.medicoService.eliminarSede(
+        id,
+        sedeId,
+      );
 
       return res.status(200).json({
         status: "success",
-        data: medicoActualizado
+        data: medicoActualizado,
       });
-
     } catch (error) {
       return next(error);
     }
   };
-
-  
 
   /*
   parsearId(idParam) {
@@ -202,23 +216,23 @@ export class MedicoController {
     }
       */
 
-  seed = async (req, res, next) => { // Esta seed crea el usuario primero y despues al medico con el usuarioId, falta implementar toda la parte de usuario
+  seed = async (req, res, next) => {
+    // Esta seed crea el usuario primero y despues al medico con el usuarioId, falta implementar toda la parte de usuario
     try {
-
       // 1. Crear usuarios
       const usuarios = [
         {
           nombreUsuario: "juanperez",
-          password: "password123"
+          password: "password123",
         },
         {
           nombreUsuario: "mariagomez",
-          password: "password456"
-        }
+          password: "password456",
+        },
       ];
 
-      const usuariosCreados = usuarios.map(usuarioData =>
-        this.medicoService.usuarioService.create(usuarioData)
+      const usuariosCreados = usuarios.map((usuarioData) =>
+        this.medicoService.usuarioService.create(usuarioData),
       );
 
       // 2. Crear médicos usando usuarioId
@@ -226,23 +240,21 @@ export class MedicoController {
         {
           nombre: "Dr. Juan Pérez",
           usuarioId: usuariosCreados[0].id,
-          matricula: "1234567890"
+          matricula: "1234567890",
         },
         {
           nombre: "Dra. María Gómez",
           usuarioId: usuariosCreados[1].id,
-          matricula: "0987654321"
-        }
+          matricula: "0987654321",
+        },
       ];
 
-      const medicosCreados =
-        this.medicoService.crearMedicos(medicos);
+      const medicosCreados = this.medicoService.crearMedicos(medicos);
 
       return res.status(201).json({
         status: "success",
-        data: medicosCreados
+        data: medicosCreados,
       });
-
     } catch (error) {
       next(error);
     }

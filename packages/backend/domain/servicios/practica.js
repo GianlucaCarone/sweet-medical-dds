@@ -19,7 +19,7 @@ export class Practica {
         this.costo = costo;
     }
 
-    get costo() {
+    getCosto() {
         return this.costo;
     }
 }
