@@ -1,5 +1,6 @@
 import { Notificacion } from "../domain/notificacion.js";
 import { EstadoTurno } from "./turno.js";
+import { Especialidad } from "./especialidad";
 
 
 // TODO Investigar I18NN para manejar los mensajes de las notificaciones en diferentes idiomas.

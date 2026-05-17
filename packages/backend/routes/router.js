@@ -19,6 +19,9 @@ const routes = [
   { path: "/servicios", handler: servicioRoutes },
   { path: "/turno", handler: turnoRoutes },
   { path: "/usuarios", handler: usuarioRoutes },
+  { path: "/medicos", handler: medicoRoutes },
+  { path: "/turno", handler: turnoRoutes },
+  { path: "/obra-social", handler: obraSocialRoutes },
 ];
 
 export default routes;

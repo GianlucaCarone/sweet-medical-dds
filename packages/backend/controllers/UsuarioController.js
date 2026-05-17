@@ -1,6 +1,6 @@
 import { UsuarioService } from "../services/UsuarioService.js";
-import { usuarioSchema } from "../schemas/usuarioSchema.js";
-import { idParamNumberSchema, idParamUUIDSchema, idParamObjectIdSchema } from "../schemas/urlSchema.js";
+import { usuarioSchema } from "../schemas/zod/usuarioSchema.js";
+import { idParamObjectIdSchema } from "../schemas/zod/urlSchema.js";
 import { logger } from '../config/logger.js';
 
 export class UsuarioController {
@@ -46,7 +46,7 @@ export class UsuarioController {
         } catch (error) {
             next(error);
         }
-    };
+    }
 
     delete = async (req, res, next) => {
         try {

@@ -1,4 +1,4 @@
-import { MedicoModel } from "../schemas/mongoose/medicoSchema.js";
+import { MedicoModel } from "../schemas/dataBase/medicoSchema.js";
 import { MedicoMapper } from "../mappers/medicoMapper.js";
 import { Medico } from "../domain/medico.js";
 import { logger } from '../config/logger.js';

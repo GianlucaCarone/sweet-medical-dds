@@ -1,6 +1,6 @@
 import { Usuario } from "../domain/usuario.js";
 import { BadRequestError } from "../errors/AppError.js";
-import { UsuarioModel } from "../schemas/mongoose/usuarioSchema.js";
+import { UsuarioModel } from "../schemas/database/usuarioSchema.js";
 import { logger } from '../config/logger.js';
 import { UsuarioMapper } from "../mappers/usuarioMapper.js";
 
