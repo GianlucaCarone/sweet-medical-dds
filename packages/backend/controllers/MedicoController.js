@@ -1,7 +1,7 @@
 import { MedicoService } from "../services/MedicoService.js";
 import { logger } from "../config/logger.js";
 import { medicoSchema, disponibilidadSchema, eliminarDisponibilidadSchema, medicoIdParamsSchema, servicioIdSchema } from "../schemas/zod/medicoSchema.js";
-import { objectIdSchema } from "../schemas/zod/objectIdSchema.js";
+import { idParamObjectIdSchema } from "../schemas/zod/urlSchema.js";
 import { asociarSedeSchema, eliminarSedeParamsSchema } from "../schemas/zod/sedeSchema.js";
 
 export class MedicoController {
@@ -35,7 +35,7 @@ export class MedicoController {
 
   findById = async (req, res, next) => {
     try {
-      const { id } = objectIdSchema.parse(req.params);
+      const { id } = idParamObjectIdSchema.parse(req.params);
       logger.info("[MEDICO CONTROLLER]: Obteniendo medico de id: ", id);
       const medico = await this.medicoService.findById(id);
       if (!medico) {
@@ -50,7 +50,7 @@ export class MedicoController {
 
   delete = async (req, res, next) => {
     try {
-      const { id } = objectIdSchema.parse(req.params);
+      const { id } = idParamObjectIdSchema.parse(req.params);
       logger.info("[MEDICO CONTROLLER]: Eliminando medico de id: ", id);
       const medicoEliminado = await this.medicoService.delete(id);
       if (!medicoEliminado) {
@@ -65,7 +65,7 @@ export class MedicoController {
 
   definirDisponibilidad = async (req, res, next) => {
     try {
-      const { id } = objectIdSchema.parse(req.params);
+      const { id } = idParamObjectIdSchema.parse(req.params);
       logger.info("[MEDICO CONTROLLER]: Definiendo disponibilidad del medico de id: ", id);
       const disponibilidadData = disponibilidadSchema.parse(req.body);
       const disponibilidadActualizada = await this.medicoService.definirDisponibilidadPara(disponibilidadData, id);
@@ -82,7 +82,7 @@ export class MedicoController {
 
   consultarDisponibilidad = async (req, res, next) => {
     try {
-      const { id } = objectIdSchema.parse(req.params);
+      const { id } = idParamObjectIdSchema.parse(req.params);
       logger.info("[MEDICO CONTROLLER]: Consultando disponibilidad del medico de id: ", id);
       //const { idPractica } = disponibilidadConsultaSchema.parse(req.query);
 
@@ -99,7 +99,7 @@ export class MedicoController {
 
   modificarDisponibilidad = async (req, res, next) => {
     try {
-      const { id } = objectIdSchema.parse(req.params);
+      const { id } = idParamObjectIdSchema.parse(req.params);
       const disponibilidadData = disponibilidadSchema.parse(req.body);
       logger.info("[MEDICO CONTROLLER]: Modificando disponibilidad para el medico con id: ", id);
       const medicoActualizado =
@@ -116,7 +116,7 @@ export class MedicoController {
 
   eliminarDisponibilidad = async (req, res, next) => {
     try {
-      const { id } = objectIdSchema.parse(req.params);
+      const { id } = idParamObjectIdSchema.parse(req.params);
       const { diaSemana } = eliminarDisponibilidadSchema.parse(req.body);
       logger.info("[MEDICO CONTROLLER]: Eliminando disponibilidad para medico con id: ", id);
       const medicoActualizado =
@@ -133,7 +133,7 @@ export class MedicoController {
 
   agregarSede = async (req, res, next) => {
     try {
-      const { id } = objectIdSchema.parse(req.params);
+      const { id } = idParamObjectIdSchema.parse(req.params);
       const { sedeId } = asociarSedeSchema.parse(req.body);
       logger.info("[MEDICO CONTROLLER]: Agregando sede con id: ", sedeId);
       const medicoActualizado = await this.medicoService.agregarSede(id, sedeId);
@@ -149,7 +149,7 @@ export class MedicoController {
 
   eliminarSede = async (req, res, next) => {
     try {
-      const { id } = objectIdSchema.parse(req.params);
+      const { id } = idParamObjectIdSchema.parse(req.params);
       const { sedeId } = eliminarSedeParamsSchema.parse(req.params);
       logger.info("[MEDICO CONTROLLER]: Eliminando sede con id: ", sedeId);
       const medicoActualizado = await this.medicoService.eliminarSede(id, sedeId);
