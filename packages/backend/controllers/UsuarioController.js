@@ -87,8 +87,6 @@ export class UsuarioController {
             }
         ];
 
-        //return usuarios.map(usuarioData => this.usuarioService.create(usuarioData));
-
         return await Promise.all(
             usuarios.map(usuarioData => this.usuarioService.create(usuarioData))
         );

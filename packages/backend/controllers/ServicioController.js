@@ -47,23 +47,21 @@ export class ServicioController {
             logger.info("[SERVICIOS CONTROLLER]: Eliminando servicio: ", idServicio);
             await this.servicioService.delete(idServicio);
             logger.info("[SERVICIOS CONTROLLER]: Servicio eliminado");
-            res.status(204).json({
-                status: "success",
-                message: "Servicio eliminado"
-            });
+            res.status(204).send();
         } catch (error) {
             next(error);
         }
     };
 
     async seed() {
-        const servicios = [
-            {
-                nombre: "Cardiologia",
-                duracionEnMin: 25,
-                costo: 200,
-                codigo: null
-            },
+        const cardiologia = {
+            nombre: "Cardiologia",
+            duracionEnMin: 25,
+            costo: 200,
+            codigo: null,
+            especialidadPadreId: null
+        };
+        const practicas = [
             {
                 nombre: "Biopsia endomiocárdica",
                 duracionEnMin: 60,
@@ -78,6 +76,13 @@ export class ServicioController {
             }
         ];
 
-        return await servicios.map(s => this.servicioService.create(s));
+        const especialidad = await this.servicioService.create(cardiologia);
+        practicas.map(p => p.especialidadPadreId = especialidad.id);
+
+        const practicasGuardadas = await Promise.all(
+            practicas.map(p => this.servicioService.create(p))
+        );
+
+        return [especialidad, ...practicasGuardadas];
     }
 }

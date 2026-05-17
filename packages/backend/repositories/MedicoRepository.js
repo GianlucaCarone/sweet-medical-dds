@@ -13,7 +13,13 @@ export class MedicoRepository {
 
   async findById(idMedico) {
     logger.info("[MEDICO REPOSTIRORY]: Buscando medico: por id", idMedico);
-    const medico = await this.model.findById(idMedico).populate(["idUsuario", "especialidades", "practicas"]); //TODO: faltan las disponibilidades y las sedes
+    const medico = await this.model.findById(idMedico)
+      .populate([
+        "idUsuario",
+        "especialidades",
+        "practicas",
+        { path: "practicas", populate: { path: "especialidadPadreId" } },
+        "disponibilidades"]).lean(); //TODO: faltan las sedes
     const mensaje = (medico) ? ("Medico obtenido: " + medico) : ("No se encontro el medico con id: " + idMedico);
     logger.info("[MEDICO REPOSTIRORY]: " + mensaje);
 
@@ -32,7 +38,7 @@ export class MedicoRepository {
       const nuevoMedico = new this.model(MedicoMapper.toPersistence(medico));//
       medicoGuardado = await nuevoMedico.save();
     }
-    await medicoGuardado.populate(["idUsuario", "especialidades", "practicas"]); //TODO: faltan las disponibilidades y las sedes
+    await medicoGuardado.populate(["idUsuario", "especialidades", "practicas", { path: "practicas", populate: { path: "especialidadPadreId" } }, "disponibilidades"]); //TODO: faltan las sedes
     logger.info("[MEDICO REPOSTIRORY]: Medico guardado: ", medicoGuardado);
 
     return MedicoMapper.toDomain(medicoGuardado);
@@ -40,7 +46,13 @@ export class MedicoRepository {
 
   async findByIdUsuario(idUsuario) {
     logger.info("[MEDICO REPOSTIRORY]: Buscando medico: por id de usuario", idUsuario);
-    const medico = await this.model.findOne({ "idUsuario": idUsuario }).populate(["idUsuario", "especialidades", "practicas"]); //TODO: faltan las disponibilidades y las sedes
+    const medico = await this.model.findOne({ "idUsuario": idUsuario })
+      .populate([
+        "idUsuario",
+        "especialidades",
+        "practicas",
+        { path: "practicas", populate: { path: "especialidadPadreId" } },
+        "disponibilidades"]).lean(); //TODO: faltan las sedes
 
     const mensaje = (medico) ? ("Medico obtenido: " + medico) : ("No se encontro el medico con id de usuario: " + idUsuario);
     logger.info("[MEDICO REPOSTIRORY]: " + mensaje);

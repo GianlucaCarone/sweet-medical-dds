@@ -1,7 +1,7 @@
 import { Especialidad } from "../domain/servicios/especialidad.js";
 import { Practica } from "../domain/servicios/practica.js";
 import { ServicioRepository } from "../repositories/ServicioRepository.js";
-import { NotFoundError, ConflictError } from "../errors/AppError.js";
+import { NotFoundError, ConflictError, BadRequestError } from "../errors/AppError.js";
 import { logger } from "../config/logger.js";
 import { ServicioMapper } from "../mappers/servicioMapper.js";
 
@@ -10,7 +10,7 @@ export class ServicioService {
         this.serviciosRepository = serviciosRepository;
     }
 
-    async getById(idServicio) { //TODO: VER QUE FUNCIONE
+    async getById(idServicio) {
         logger.info("[SERVICIO SERVICE]: Obteniendo servicio: ", idServicio);
         const servicio = await this.serviciosRepository.findById(idServicio);
         if (!servicio) throw new NotFoundError("No se encontro el servicio con el id " + idServicio);
@@ -18,7 +18,7 @@ export class ServicioService {
         return ServicioMapper.toDTO(servicio);
     }
 
-    async getEntityById(idServicio) { //TODO: VER QUE FUNCIONE
+    async getEntityById(idServicio) {
         logger.info("[SERVICIO SERVICE]: Obteniendo servicio: ", idServicio);
         const servicio = await this.serviciosRepository.findById(idServicio);
         if (!servicio) throw new NotFoundError("No se encontro el servicio con el id " + idServicio);
@@ -26,12 +26,12 @@ export class ServicioService {
         return servicio;
     }
 
-    async create(datosServicio) { //funciona
-        logger.info("[SERVICIO SERVICE]: Creando servicio: ", datosServicio);
+    async create(datosServicio) { //TODO: VER QUE FUNCIONE
+        logger.info("[SERVICIO SERVICE]: Creando servicio: " + datosServicio);
 
         if (await this.serviciosRepository.findByNombre(datosServicio.nombre)) throw new ConflictError("Ya existe un servicio con ese nombre");
 
-        const servicio = await this.crearEntidad(datosServicio);
+        const servicio = await this.#crearEntidad(datosServicio);
         const servicioGuardado = await this.serviciosRepository.save(servicio);
         logger.info("[SERVICIO SERVICE]: Servicio creado:", servicioGuardado);
         return ServicioMapper.toDTO(servicioGuardado);
@@ -42,7 +42,7 @@ export class ServicioService {
         const servicio = await this.serviciosRepository.findById(idServicio);
         if (!servicio) throw new NotFoundError("No se encontro el servicio con el id " + idServicio);
 
-        const servicioActualizado = await this.crearEntidad(datosServicio);
+        const servicioActualizado = await this.#crearEntidad(datosServicio);
         servicioActualizado.id = servicio.id;
         logger.info("[SERVICIO SERVICE]: Servicio actualizado: ", servicioActualizado);
         const servicioGuardado = await this.serviciosRepository.save(servicioActualizado);
@@ -50,14 +50,14 @@ export class ServicioService {
         return ServicioMapper.toDTO(servicioActualizado);
     }
 
-    async delete(id) { //TODO: VER QUE FUNCIONE
+    async delete(id) {
         logger.info("[SERVICIO SERVICE]:Eliminando servicio con el id: ", id);
         this.serviciosRepository.deleteById(id);
         logger.info("[SERVICIO SERVICE]:Servicio eliminado.");
     }
 
-    async crearEntidad(datosServicio) { //funciona
-        if (!datosServicio.codigo) {
+    async #crearEntidad(datosServicio) { //TODO: VER QUE FUNCIONE
+        if (!datosServicio.codigo && !datosServicio.especialidadPadreId) {
             logger.info("[SERVICIO SERVICE]: Creando especialidad.");
             const especialidadData = {
                 nombre: datosServicio.nombre,
@@ -68,12 +68,16 @@ export class ServicioService {
             logger.info("[SERVICIO SERVICE]: Especialidad creada: ", especialidad);
             return especialidad;
         } else {
+            logger.info("[SERVICIO SERVICE]: Creando practica; obteniendo especialidad padre.");
+            const especialidadPadre = await this.serviciosRepository.findById(datosServicio.especialidadPadreId);
+            if (!(especialidadPadre instanceof Especialidad)) throw new BadRequestError("El id de especialidad padre no corresponde a una especialidad");
             logger.info("[SERVICIO SERVICE]: Creando practica.");
             const practicaData = {
                 codigo: datosServicio.codigo,
                 nombre: datosServicio.nombre,
                 duracionTurnoEnMins: datosServicio.duracionEnMin,
-                costo: datosServicio.costo
+                costo: datosServicio.costo,
+                especialidadPadre: especialidadPadre
             };
             const practica = new Practica(practicaData);
             logger.info("[SERVICIO SERVICE]: Practica creada: ", practica);

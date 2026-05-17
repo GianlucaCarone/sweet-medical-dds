@@ -23,4 +23,8 @@ export class Especialidad {
     getCodigo() {
         return null;
     }
+
+    getEspecialidadPadre() {
+        return null;
+    }
 }

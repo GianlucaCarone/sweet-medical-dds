@@ -42,6 +42,11 @@ const PracticaModel = ServicioModel.discriminator(
       required: true,
       trim: true,
     },
+    especialidadPadreId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Especialidad",
+      required: true,
+    }
   })
 );
 

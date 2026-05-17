@@ -38,6 +38,13 @@ const MedicoSchema = new mongoose.Schema(
                 ref: "Practica",
                 required: true
             }
+        ],
+        sedes: [
+            {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: "Sede",
+                required: true
+            }
         ]
     },
     { timestamps: true },
