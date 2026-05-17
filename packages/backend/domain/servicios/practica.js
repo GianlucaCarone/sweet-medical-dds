@@ -1,5 +1,5 @@
-import { BadRequestError } from "../../errors/AppError.js";
-import { randomUUID } from "crypto";
+import { ErrorDatosObligatorios } from "../errores.js";
+import { Especialidad } from "./especialidad.js";
 
 export class Practica {
     id;
@@ -7,19 +7,32 @@ export class Practica {
     nombre;
     duracionTurnoEnMins;
     costo;
+    especialidadPadre;
 
-    constructor({ codigo, nombre, duracionTurnoEnMins, costo }) {
-        if (!codigo || !nombre || !duracionTurnoEnMins || !costo) {
-            throw new BadRequestError();
+    constructor({ codigo, nombre, duracionTurnoEnMins, costo, especialidadPadre }) {
+        if (!codigo || !nombre || !duracionTurnoEnMins || !costo || !especialidadPadre) {
+            throw new ErrorDatosObligatorios();
         }
-        this.id = randomUUID();
+        if (!(especialidadPadre instanceof Especialidad)) {
+            throw new Error("La especialidad padre no es una especialidad")
+        }
+        //this.id = randomUUID();
         this.codigo = codigo;
         this.nombre = nombre;
         this.duracionTurnoEnMins = duracionTurnoEnMins;
         this.costo = costo;
+        this.especialidadPadre = especialidadPadre;
     }
 
     getCosto() {
         return this.costo;
+    }
+
+    getCodigo() {
+        return this.codigo;
+    }
+
+    getEspecialidadPadre() {
+        return this.especialidadPadre;
     }
 }

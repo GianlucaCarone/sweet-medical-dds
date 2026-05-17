@@ -15,10 +15,10 @@ export const logger = winston.createLogger({
   transports: [
     // 1. Siempre mostramos en consola
     new winston.transports.Console(),
-    
+
     // 2. Opcional: Guardamos los errores graves en un archivo
     //new winston.transports.File({ filename: 'logs/error.log', level: 'error' }),
-    
+
     // 3. Opcional: Guardamos TODOS los logs en otro archivo
     //new winston.transports.File({ filename: 'logs/combined.log' }),
   ],

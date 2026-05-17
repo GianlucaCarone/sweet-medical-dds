@@ -7,137 +7,139 @@ import { Practica } from "./servicios/practica.js";
 import { Sede } from "./sede.js";
 
 export class Medico {
-  id;
-  usuario;
-  matricula;
-  nombre;
-  especialidades = [];
-  practicas = [];
-  sedes = [];
-  disponibilidades = [];
+    id;
+    usuario;
+    matricula;
+    nombre;
+    especialidades = [];
+    practicas = [];
+    sedes = [];
+    disponibilidades = [];
 
-  constructor({ usuario, matricula, nombre }) {
-    if (!usuario || !matricula || !nombre) {
-      throw new ErrorDatosObligatorios();
-    }
-    if (!(usuario instanceof Usuario)) {
-      throw new Error("No es un Usuario");
-    }
-    if (matricula.length > 10) {
-      throw new Error("Matricula Demasiado larga");
-    }
-    //this.id = randomUUID();
-    this.usuario = usuario;
-    this.matricula = matricula;
-    this.nombre = nombre;
-  }
-
-  definirDisponibilidad(disponibilidad) {
-    if (!(disponibilidad instanceof DisponibilidadHoraria)) {
-      throw new Error("No es una DisponibilidadHoraria valida");
+    constructor({ usuario, matricula, nombre }) {
+        if (!usuario || !matricula || !nombre) {
+            throw new ErrorDatosObligatorios();
+        }
+        if (!(usuario instanceof Usuario)) {
+            throw new Error("No es un Usuario");
+        }
+        if (matricula.length > 10) {
+            throw new Error("Matricula Demasiado larga");
+        }
+        //this.id = randomUUID();
+        this.usuario = usuario;
+        this.matricula = matricula;
+        this.nombre = nombre;
     }
 
-    // TODO: Revisar si el mergeo lo sacamos
-    this.disponibilidades.forEach((horarioExistente) => {
-      if (disponibilidad.seSuperponeCon(horarioExistente)) {
-        throw new ConflictError(
-          "Este horario se superpone con otro horario existente",
+    definirDisponibilidad(disponibilidad) {
+        if (!(disponibilidad instanceof DisponibilidadHoraria)) {
+            throw new Error("No es una DisponibilidadHoraria valida");
+        }
+
+        // TODO: Revisar si el mergeo lo sacamos
+        this.disponibilidades.forEach((horarioExistente) => {
+            if (disponibilidad.seSuperponeCon(horarioExistente)) {
+                throw new ConflictError(
+                    "Este horario se superpone con otro horario existente",
+                );
+            }
+        });
+
+        this.disponibilidades.push(disponibilidad);
+    }
+
+    modificarDisponibilidad(nuevaDisponibilidad) {
+        if (!(nuevaDisponibilidad instanceof DisponibilidadHoraria)) {
+            throw new Error("No es una DisponibilidadHoraria válida");
+        }
+
+        const existeDisponibilidadEseDia = this.disponibilidades.some(
+            (disponibilidad) =>
+                disponibilidad.diaSemana === nuevaDisponibilidad.diaSemana,
         );
-      }
-    });
 
-    this.disponibilidades.push(disponibilidad);
-  }
+        if (!existeDisponibilidadEseDia) {
+            throw new Error("No existe disponibilidad para ese día");
+        }
 
-  modificarDisponibilidad(nuevaDisponibilidad) {
-    if (!(nuevaDisponibilidad instanceof DisponibilidadHoraria)) {
-      throw new Error("No es una DisponibilidadHoraria válida");
+        this.disponibilidades = this.disponibilidades.filter(
+            (disponibilidad) =>
+                disponibilidad.diaSemana !== nuevaDisponibilidad.diaSemana,
+        );
+
+        this.disponibilidades.push(nuevaDisponibilidad);
     }
 
-    const existeDisponibilidadEseDia = this.disponibilidades.some(
-      (disponibilidad) =>
-        disponibilidad.diaSemana === nuevaDisponibilidad.diaSemana,
-    );
+    eliminarDisponibilidad(diaSemana) {
+        const cantidadAntes = this.disponibilidades.length;
 
-    if (!existeDisponibilidadEseDia) {
-      throw new Error("No existe disponibilidad para ese día");
+        this.disponibilidades = this.disponibilidades.filter(
+            (disponibilidad) => disponibilidad.diaSemana !== diaSemana,
+        );
+
+        if (this.disponibilidades.length === cantidadAntes) {
+            throw new Error("No existe disponibilidad para ese día");
+        }
     }
 
-    this.disponibilidades = this.disponibilidades.filter(
-      (disponibilidad) =>
-        disponibilidad.diaSemana !== nuevaDisponibilidad.diaSemana,
-    );
-
-    this.disponibilidades.push(nuevaDisponibilidad);
-  }
-
-  eliminarDisponibilidad(diaSemana) {
-    const cantidadAntes = this.disponibilidades.length;
-
-    this.disponibilidades = this.disponibilidades.filter(
-      (disponibilidad) => disponibilidad.diaSemana !== diaSemana,
-    );
-
-    if (this.disponibilidades.length === cantidadAntes) {
-      throw new Error("No existe disponibilidad para ese día");
-    }
-  }
-
-  agregarServicio(servicio) {
-    if (!servicio) {
-      throw new Error("Servicio invalido");
-    }
-    if (servicio instanceof Especialidad) {
-      this.especialidades.push(servicio);
-    } else if (servicio instanceof Practica) {
-      this.practicas.push(servicio);
-    } else {
-      throw new Error("Tipo de Servicio invalido");
-    }
-  }
-
-  eliminarServicio(servicioAEliminar) {
-    if (!servicioAEliminar) {
-      throw new Error("Servicio invalido");
-    }
-    if (servicioAEliminar instanceof Especialidad) {
-      this.especialidades = this.especialidades.filter(
-        (especialidad) => especialidad.id !== servicioAEliminar.id,
-      );
-    } else if (servicioAEliminar instanceof Practica) {
-      this.practicas = this.practicas.filter(
-        (practica) => practica.id !== servicioAEliminar.id,
-      );
-    } else {
-      throw new Error("Tipo de Servicio invalido");
-    }
-  }
-
-  ofrecePractica(practicaId) {
-    return this.practicas.some((practica) => practica.id === practicaId);
-  }
-
-  agregarSede(sede) {
-    if (!(sede instanceof Sede)) {
-      throw new Error("Sede inválida");
+    agregarServicio(servicio) {
+        if (!servicio) {
+            throw new Error("Servicio invalido");
+        }
+        if (servicio instanceof Especialidad) {
+            if (this.especialidades.some((e) => e.id === servicio.id)) throw new ConflictError("El medico ya tiene esa especialiad")
+            this.especialidades.push(servicio);
+        } else if (servicio instanceof Practica) {
+            if (this.practicas.some((p) => p.id === servicio.id)) throw new ConflictError("El medico ya tiene esa practica");
+            this.practicas.push(servicio);
+        } else {
+            throw new Error("Tipo de Servicio invalido");
+        }
     }
 
-    const yaTieneSede = this.sedes.some((s) => s.id === sede.id);
-
-    if (yaTieneSede) {
-      throw new Error("El médico ya trabaja en esa sede");
+    eliminarServicio(servicioAEliminar) {
+        if (!servicioAEliminar) {
+            throw new Error("Servicio invalido");
+        }
+        if (servicioAEliminar instanceof Especialidad) {
+            this.especialidades = this.especialidades.filter(
+                (especialidad) => especialidad.id !== servicioAEliminar.id,
+            );
+        } else if (servicioAEliminar instanceof Practica) {
+            this.practicas = this.practicas.filter(
+                (practica) => practica.id !== servicioAEliminar.id,
+            );
+        } else {
+            throw new Error("Tipo de Servicio invalido");
+        }
     }
 
-    this.sedes.push(sede);
-  }
-
-  eliminarSede(sedeId) {
-    const cantidadAntes = this.sedes.length;
-
-    this.sedes = this.sedes.filter((sede) => sede.id !== sedeId);
-
-    if (cantidadAntes === this.sedes.length) {
-      throw new Error("La sede no estaba asociada al médico");
+    ofrecePractica(practicaId) {
+        return this.practicas.some((practica) => practica.id === practicaId);
     }
-  }
+
+    agregarSede(sede) {
+        if (!(sede instanceof Sede)) {
+            throw new Error("Sede inválida");
+        }
+
+        const yaTieneSede = this.sedes.some((s) => s.id === sede.id);
+
+        if (yaTieneSede) {
+            throw new Error("El médico ya trabaja en esa sede");
+        }
+
+        this.sedes.push(sede);
+    }
+
+    eliminarSede(sedeId) {
+        const cantidadAntes = this.sedes.length;
+
+        this.sedes = this.sedes.filter((sede) => sede.id !== sedeId);
+
+        if (cantidadAntes === this.sedes.length) {
+            throw new Error("La sede no estaba asociada al médico");
+        }
+    }
 }

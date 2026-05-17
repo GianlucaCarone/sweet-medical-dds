@@ -1,37 +1,46 @@
-import { ConflictError, NotFoundError } from "../errors/AppError.js";
 import { Usuario } from "../domain/usuario.js";
 import { UsuarioRepository } from "../repositories/UsuarioRepository.js";
+import { logger } from "../config/logger.js";
+import { UsuarioMapper } from "../mappers/usuarioMapper.js";
+import { NotFoundError } from "../errors/AppError.js";
 
 export class UsuarioService {
   constructor({ usuarioRepository = new UsuarioRepository() } = {}) {
     this.usuarioRepository = usuarioRepository;
   }
 
-  async create(usuarioData) {
+  async create(usuarioData) { //funciona
     //const usuarioExistente = await this.findByUsername(usuarioData.nombreUsuario); // Verificar que no exista otro usuario con el mismo nombre de usuario
-//
+    // TODO: HACER FUNCION findByUserName
     //if (usuarioExistente) {
     //  throw new ConflictError(`Ya existe un usuario con el nombre de usuario ${usuarioData.nombreUsuario}`);
     //}
-
+    logger.info("[USUARIO SERVICE]: Creando usuario: ", usuarioData);
     const usuario = new Usuario(usuarioData);
-    const nuevoUsuario = await this.usuarioRepository.save(usuario);
-    return this.toDto(nuevoUsuario);
+    const usuarioGuardado = await this.usuarioRepository.save(usuario);
+    logger.info("[USUARIO SERVICE]: Usuario creado: ", usuarioGuardado);
+    return UsuarioMapper.toDTO(usuarioGuardado);
   }
 
-  async findById(id) {
+  async findById(id) { //funciona
+    logger.info("[USUARIO SERVICE]: Obteniendo usuario con id: " + id);
     const usuario = await this.usuarioRepository.findById(id);
-
-    if (!usuario) {
-      throw new NotFoundError("Usuario no encontrado");
-    }
-    return this.toDto(usuario);
+    if (!usuario) throw new NotFoundError("Usuario no encontrado");
+    logger.info("[USUARIO SERVICE]: Usuario obtenido: ", usuario);
+    return UsuarioMapper.toDTO(usuario);
   }
 
+  async findEntityById(id) { //funciona
+    logger.info("[USUARIO SERVICE]: Obteniendo usuario con id: " + id);
+    const usuario = await this.usuarioRepository.findById(id);
+    if (!usuario) throw new Error("Usuario no encontrado");
+    logger.info("[USUARIO SERVICE]: Usuario obtenido: ", usuario);
+    return usuario;
+  }
 
   async findAll() {
     const usuarios = await this.usuarioRepository.findAll();
-    return usuarios.map(usuario => this.toDto(usuario));
+    return usuarios.map(usuario => UsuarioMapper.toDTO(usuario));
   }
 
   async delete(id) {
@@ -41,7 +50,7 @@ export class UsuarioService {
       throw new NotFoundError("Usuario no encontrado");
     }
     await this.usuarioRepository.delete(id);
-    return this.toDto(usuarioExistente);
+    return UsuarioMapper.toDTO(usuarioExistente);
   }
 
   async update(id, usuario) {
@@ -54,14 +63,6 @@ export class UsuarioService {
     usuarioExistente.password = usuario.password || usuarioExistente.password;
 
     const usuarioActualizado = await this.usuarioRepository.update(usuarioExistente);
-    return this.toDto(usuarioActualizado);
+    return UsuarioMapper.toDTO(usuarioActualizado);
   }
-
-  toDto(usuario) {
-        return {
-            id: usuario.id || usuario._id,
-            nombreUsuario: usuario.nombreUsuario,
-            password: usuario.password
-        };
-    }
 }

@@ -1,4 +1,4 @@
-import { TurnoService } from '../services/TurnoService.js';
+import { TurnoService } from "../services/TurnoService.js";
 import { idParamsSchema, bodyCambioEstadoTurnoSchema, bodyAsignarTurnoSchema, bodyUpdateTurnoSchema, turnoBaseSchema } from "../schemas/zod/turnoSchema.js";
 
 
@@ -15,7 +15,7 @@ export class TurnoController {
         } catch (error) {
             return next(error);
         }
-    }
+    };
 
     cambiarEstadoTurno = async (req, res, next) => {
         try {
@@ -29,11 +29,11 @@ export class TurnoController {
                 cambioTurnoData.motivo
             );
 
-            return res.status(200).json({ status: "success", data: turnoActualizado })
+            return res.status(200).json({ status: "success", data: turnoActualizado });
         } catch (error) {
-            return next(error)
+            return next(error);
         }
-    }
+    };
 
     asignarTurno = async (req, res, next) => {
         try {
@@ -42,17 +42,17 @@ export class TurnoController {
 
             const turnoAsignado = await this.turnoService.asignarTurno(idTurno, turnoData.pacienteId, turnoData.costoTurno);
 
-            return res.status(200).json({ status: "success", data: turnoAsignado })
+            return res.status(200).json({ status: "success", data: turnoAsignado });
         } catch (error) {
-            return next(error)
+            return next(error);
         }
-    }
+    };
 
 
     findAllPaginated = async (req, res, next) => {
         try {
-            const paginacion = this.extraerPaginacion(req.query)
-            const filtros = this.extraerFiltros(req.query)
+            const paginacion = this.extraerPaginacion(req.query);
+            const filtros = this.extraerFiltros(req.query);
 
             const resultado = await this.turnoService.obtenerTodosPaginados(
                 paginacion.numeroPagina,
@@ -60,7 +60,7 @@ export class TurnoController {
                 filtros
             );
             res.status(200).json({
-                status: 'success',
+                status: "success",
                 data: resultado.turnos,
                 paginacion: {
                     numeroPagina: resultado.numeroPagina,
@@ -72,12 +72,12 @@ export class TurnoController {
         } catch (error) {
             return next(error);
         }
-    }
+    };
 
     findById = async (req, res, next) => {
         try {
             const turno = await this.turnoService.findById(req.params.id);
-            res.status(200).json( {
+            res.status(200).json({
                 status: "success",
                 data: turno
             });
@@ -90,7 +90,7 @@ export class TurnoController {
         try {
             const estado = req.params.estado;
             const turnos = await this.turnoService.findByEstado(estado);
-            res.status(200).json( {
+            res.status(200).json({
                 status: "success",
                 data: turnos
             });
@@ -99,21 +99,21 @@ export class TurnoController {
         }
     };
 
-    update = async (req,res,next) => {
+    update = async (req, res, next) => {
         try {
-            const idTurno = idParamsSchema.parse(req.params)
-            const turnoData = bodyUpdateTurnoSchema.parse(req.body)
+            const idTurno = idParamsSchema.parse(req.params);
+            const turnoData = bodyUpdateTurnoSchema.parse(req.body);
 
             const turnoActualizado = await this.turnoService.update(idTurno, turnoData);
 
             return res.status(200).json({ status: "success", data: turnoActualizado });
         } catch (error) {
-            return next(error)
+            return next(error);
         }
-    }
+    };
 
     extraerFiltros(query) {
-        const filtros = {}
+        const filtros = {};
 
         if (query.pacienteId !== undefined) {
             filtros.pacienteId = query.pacienteId;
@@ -141,17 +141,17 @@ export class TurnoController {
             filtros.fechaHoraFin = query.fechaHoraFin;
         }
 
-        return filtros
-    }
+        return filtros;
+    };
 
     extraerPaginacion(query) {
-        const numeroPagina = query?.page === undefined ? 1 : Number(query.page)
-        const limitePorPagina = query?.limit === undefined ? 10 : Number(query.limit)
+        const numeroPagina = query?.page === undefined ? 1 : Number(query.page);
+        const limitePorPagina = query?.limit === undefined ? 10 : Number(query.limit);
 
-        this.turnoService.validarEnteroPositivo(numeroPagina, "page")
-        this.turnoService.validarEnteroPositivo(limitePorPagina, "limit")
+        this.turnoService.validarEnteroPositivo(numeroPagina, "page");
+        this.turnoService.validarEnteroPositivo(limitePorPagina, "limit");
 
-        return { numeroPagina, limitePorPagina }
-    }
+        return { numeroPagina, limitePorPagina };
+    };
 
 }

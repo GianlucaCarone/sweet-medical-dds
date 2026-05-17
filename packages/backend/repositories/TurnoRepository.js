@@ -132,7 +132,7 @@ disponible:
         // Ejecutar la consulta y el conteo en paralelo
         const [turnos, totalTurnos] = await Promise.all([
             this.model.find(query)
-                .populate('medico paciente practica especialidad sede')
+                .populate("medico paciente practica especialidad sede")
                 .skip(inicio)
                 .limit(limitePorPagina)
                 .lean()

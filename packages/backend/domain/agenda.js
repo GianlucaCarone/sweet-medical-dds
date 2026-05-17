@@ -6,6 +6,6 @@ export class Agenda {
     }
 
     refresacarTurnosSegunDisponibilidad({ medico }) {
-        return []
+        return [];
     }
 }

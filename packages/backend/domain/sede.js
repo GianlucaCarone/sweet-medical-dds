@@ -1,5 +1,6 @@
 import { randomUUID } from "crypto";
-import { BadRequestError } from "../errors/AppError.js";
+import { ErrorDatosObligatorios } from "./errores.js";
+
 export class Sede {
     id;
     nombre;
@@ -7,7 +8,7 @@ export class Sede {
 
     constructor({ nombre, direccion }) {
         if (!nombre || !direccion) {
-            throw new BadRequestError("Datos obligatorios de la sede incompletos");
+            throw new ErrorDatosObligatorios("Datos obligatorios de la sede incompletos");
         }
         this.id = randomUUID();
         this.nombre = nombre;

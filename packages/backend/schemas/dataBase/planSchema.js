@@ -1,7 +1,7 @@
-import { mongoose } from 'mongoose';
-import { coberturaEspecialidadSchema } from './coberturaEspecialidadSchema.js';
-import { coberturaPracticaSchema } from './coberturaPractica.js';
-import { Plan } from '../../domain/plan.js';
+import { mongoose } from "mongoose";
+import { coberturaEspecialidadSchema } from "./coberturaEspecialidadSchema.js";
+import { coberturaPracticaSchema } from "./coberturaPractica.js";
+import { Plan } from "../../domain/plan.js";
 
 export const planSchema = new mongoose.Schema({
     _id: {
@@ -25,6 +25,6 @@ export const planSchema = new mongoose.Schema({
         required: true,
         default: false,
     }
-})
+});
 
 planSchema.loadClass(Plan);

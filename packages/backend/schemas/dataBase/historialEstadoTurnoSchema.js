@@ -1,4 +1,4 @@
-import { mongoose } from 'mongoose';
+import { mongoose } from "mongoose";
 
 export const historialEstadoTurnoSchema = new mongoose.Schema({
     fechaHoraIngreso: {
@@ -11,7 +11,7 @@ export const historialEstadoTurnoSchema = new mongoose.Schema({
     },
     usuario: {
         type: String, //referenciamos el uuid del usuario 
-        ref: 'Usuario',
+        ref: "Usuario",
         required: true,
     },
     motivo: {
