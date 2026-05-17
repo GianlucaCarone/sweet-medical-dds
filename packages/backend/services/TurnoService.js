@@ -40,16 +40,16 @@ export class TurnoService {
                 usuario: h.usuario?.id ?? h.usuario, // por si el usuario es un objeto o un string
                 motivo: h.motivo
             })) ?? []
-        }
+        };
     }
 
     async cambiarEstadoTurno(id, nuevoEstado, quien, motivo) {
         const turno = await this.turnoRepository.findById(id);
         if (!turno) {
-            throw new BadRequestError("No se encontro el turno con el id " + id)
+            throw new BadRequestError("No se encontro el turno con el id " + id);
         }
-
-        turno.actualizarEstadoTurno({ nuevoEstado, quien, motivo })
+        turno.actualizarEstadoTurno({ nuevoEstado, quien, motivo });
+        //llamar a notificacion service
         return this.toDTO(await this.turnoRepository.update(id, turno));
     }
 
@@ -68,12 +68,12 @@ export class TurnoService {
 
         const medico = await this.medicoRepository.findById(medicoId);
         if (!medico) {
-            throw new NotFoundError("No se encontro el medico con el id " + medicoId)
+            throw new NotFoundError("No se encontro el medico con el id " + medicoId);
         }
 
         const sede = await this.sedeRepository.findById(sedeId);
         if (!sede) {
-            throw new NotFoundError("No se encontro la sede con el id " + sedeId)
+            throw new NotFoundError("No se encontro la sede con el id " + sedeId);
         }
 
         const servicio = await this.servicioRepository.findById(servicioId);
@@ -91,11 +91,11 @@ export class TurnoService {
 
         const turno = await this.turnoRepository.findById(idTurno);
         if (!turno) {
-            throw new NotFoundError("No se encontro el turno con el id " + idTurno)
+            throw new NotFoundError("No se encontro el turno con el id " + idTurno);
         }
         const paciente = await this.pacienteRepository.findById(pacienteId);
         if (!paciente) {
-            throw new NotFoundError("No se encontro el paciente con el id " + pacienteId)
+            throw new NotFoundError("No se encontro el paciente con el id " + pacienteId);
         }
 
         turno.paciente = paciente;
@@ -113,7 +113,7 @@ export class TurnoService {
 
         const { turnos, totalTurnos } = await this.turnoRepository.obtenerPaginados(numeroPagina, limitePorPagina, filtrosValidados);
 
-        const totalPaginas = totalTurnos === 0 ? 0 : Math.ceil(totalTurnos / limitePorPagina)
+        const totalPaginas = totalTurnos === 0 ? 0 : Math.ceil(totalTurnos / limitePorPagina);
 
         // Solo buscaremos el plan si tenemos un paciente para calcular la cobertura.
         // Si el front pide por medicoId o algo sin paciente, no se calcularán coberturas que no aplican
@@ -146,7 +146,7 @@ export class TurnoService {
     async findById(id) {
         const turno = await this.turnoRepository.findById(id);
         if (!turno) {
-            throw new NotFoundError("No se encontro el turno con el id " + id)
+            throw new NotFoundError("No se encontro el turno con el id " + id);
         }
         return this.toDTO(turno);
     }
@@ -292,7 +292,7 @@ export class TurnoService {
     validarFiltros(filtrosRecibidos) {
         const validacion = filtrosTurnoSchema.safeParse(filtrosRecibidos); //Analiza y devuelve un objeto con success y data entonces lo que hacemos es usar ese obkjecto para manejar el estado de la respuesta de success
         if (!validacion.success) {
-            const mensajesError = validacion.error.issues.map(issue => issue.message).join(', ');
+            const mensajesError = validacion.error.issues.map(issue => issue.message).join(", ");
             throw new BadRequestError(`Filtros inválidos: ${mensajesError}`);
         }
         return validacion.data;
@@ -300,13 +300,13 @@ export class TurnoService {
 
 
     validarPaginacion(numeroPagina, limitePorPagina) {
-        this.validarEnteroPositivo(numeroPagina, "Numero de página")
-        this.validarEnteroPositivo(limitePorPagina, "Límite por página")
+        this.validarEnteroPositivo(numeroPagina, "Numero de página");
+        this.validarEnteroPositivo(limitePorPagina, "Límite por página");
     }
 
     validarEnteroPositivo(numero, parametro) {
         if (!Number.isInteger(numero) || numero <= 0) {
-            throw new BadRequestError(`${parametro} debe ser un entero positivo`)
+            throw new BadRequestError(`${parametro} debe ser un entero positivo`);
         }
     }
 }

@@ -1,4 +1,3 @@
-import express from "express"; // framework para crear el servidor y manejar las rutas
 import cors from "cors"; // middleware para permitir solicitudes desde diferentes orígenes (CORS)
 import { notFoundHandler } from "./middlewares/notFoundHandler.js";
 import { errorLogger } from "./middlewares/errorLogger.js";
@@ -15,7 +14,6 @@ export class Server {
         this.port = port || 3000;
         this.#routes = [];
         this.#controllers = [];
-        this.#app.use(express.json());
     }
 
     get app() {

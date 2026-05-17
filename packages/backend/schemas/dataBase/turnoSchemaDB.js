@@ -1,8 +1,6 @@
-import { mongoose } from 'mongoose';
-import { Turno } from '../../domain/turnos/turno.js';
-import { historialEstadoTurnoSchema } from './historialEstadoTurnoSchema.js';
-
-
+import { mongoose } from "mongoose";
+import { Turno } from "../../domain/turnos/turno.js";
+import { historialEstadoTurnoSchema } from "./historialEstadoTurnoSchema.js";
 
 const turnoSchema = new mongoose.Schema({
     fechaHora: {
@@ -58,4 +56,4 @@ turnoSchema.index({ estado: 1 });
 turnoSchema.index({ paciente: 1 });
 turnoSchema.index({ sede: 1 });
 
-export const TurnoModel = mongoose.model('Turno', turnoSchema)
+export const TurnoModel = mongoose.model("Turno", turnoSchema);

@@ -61,6 +61,7 @@ export class TurnoController {
         }
     };
 
+
     findAllPaginated = async (req, res, next) => {
         try {
             const paginacion = this.extraerPaginacion(req.query);
@@ -113,7 +114,7 @@ export class TurnoController {
 
     update = async (req, res, next) => {
         try {
-            const idTurno = idParamsSchema.parse(req.params).id;
+            const idTurno = idParamsSchema.parse(req.params);
             const turnoData = bodyUpdateTurnoSchema.parse(req.body);
 
             const turnoActualizado = await this.turnoService.update(
@@ -201,16 +202,16 @@ export class TurnoController {
         }
 
         return filtros;
-    }
+    };
 
     extraerPaginacion(query) {
         const numeroPagina = query?.page === undefined ? 1 : Number(query.page);
-        const limitePorPagina =
-            query?.limit === undefined ? 10 : Number(query.limit);
+        const limitePorPagina = query?.limit === undefined ? 10 : Number(query.limit);
 
         this.turnoService.validarEnteroPositivo(numeroPagina, "page");
         this.turnoService.validarEnteroPositivo(limitePorPagina, "limit");
 
         return { numeroPagina, limitePorPagina };
-    }
+    };
+
 }

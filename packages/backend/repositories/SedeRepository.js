@@ -4,7 +4,7 @@ import { Model } from "mongoose";
 
 export class SedeRepository {
     /**@type {typeof Model} */
-    model
+    model;
     constructor() {
         this.model = SedeModel;
     }
@@ -26,8 +26,8 @@ export class SedeRepository {
     }
 
     async save(sede) {
-    const nuevaSede = new this.model(sede);
-    return await nuevaSede.save();
+        const nuevaSede = new this.model(sede);
+        return await nuevaSede.save();
     }
 
     async update(id, sedeData) {
@@ -35,11 +35,11 @@ export class SedeRepository {
     }
 
     async delete(id) {
-      return await this.model.findByIdAndDelete(id).exec();
+        return await this.model.findByIdAndDelete(id).exec();
     }
 
     async softDelete(id) {
-      return await this.model.findByIdAndUpdate(id, { eliminado: true }, { new: true }).exec();
+        return await this.model.findByIdAndUpdate(id, { eliminado: true }, { new: true }).exec();
     }
 
 }

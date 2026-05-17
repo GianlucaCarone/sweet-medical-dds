@@ -12,11 +12,18 @@ export class UsuarioMapper {
     return usuario;
   }
 
-  static toDto(usuario) {
+  static toPersistence(usuario) {
     return {
-      id: usuario._id,
       nombreUsuario: usuario.nombreUsuario,
-      // No incluimos el password en el DTO por razones de seguridad
+      password: usuario.password,
+    };
+  }
+
+  static toDTO(usuario) {
+    return {
+      id: usuario.id || usuario._id,
+      nombreUsuario: usuario.nombreUsuario,
+      password: usuario.password
     };
   }
 }

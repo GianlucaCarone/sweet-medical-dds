@@ -4,7 +4,7 @@ import { CoberturaEspecialidad } from "../../domain/coberturas/coberturaEspecial
 export const coberturaEspecialidadSchema = new mongoose.Schema({
     especialidad: {
         type: String,
-        ref: 'Especialidad',
+        ref: "Especialidad",
         required: true
     },
     nivel: {
@@ -15,8 +15,8 @@ export const coberturaEspecialidadSchema = new mongoose.Schema({
         type: Number,
         required: true
     },
-})
+});
 
-coberturaEspecialidadSchema.loadClass(CoberturaEspecialidad)
+coberturaEspecialidadSchema.loadClass(CoberturaEspecialidad);
 
 

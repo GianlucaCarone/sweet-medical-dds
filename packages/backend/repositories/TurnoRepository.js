@@ -100,10 +100,10 @@ disponible:
 
         const ordenamiento = {};
         if (filtros.ordenPorCosto !== undefined) {
-             ordenamiento.costoBase = filtros.ordenPorCosto === 'desc' ? -1 : 1;
+            ordenamiento.costoBase = filtros.ordenPorCosto === 'desc' ? -1 : 1;
         }
         if (filtros.ordenPorFecha !== undefined) {
-             ordenamiento.fechaHora = filtros.ordenPorFecha === 'desc' ? -1 : 1;
+            ordenamiento.fechaHora = filtros.ordenPorFecha === 'desc' ? -1 : 1;
         }
 
         const inicio = (numeroPagina - 1) * limitePorPagina;
