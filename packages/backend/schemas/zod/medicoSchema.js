@@ -17,6 +17,8 @@ export const disponibilidadSchema = z.object({
     diaSemana: z.enum(Object.values(diaSemanaEnum)),
     horaDesde: timeHH_MMSchema("hora de inicio"),
     horaHasta: timeHH_MMSchema("hora de fin"),
+    idServicio: objectIdSchema("servicio"),
+    idSede: objectIdSchema("sede"),
 })
     .superRefine((data, ctx) => {
         if (data.horaDesde >= data.horaHasta) {

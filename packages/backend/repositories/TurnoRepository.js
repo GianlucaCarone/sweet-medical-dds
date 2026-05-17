@@ -94,36 +94,8 @@ disponible:
             query.medico = filtros.medicoId;
         }
 
-        let medicosQueCumplen = null;
-
-        if (filtros.especialidadId !== undefined) {
-            // Buscamos medicos que tengan esa especialidad
-            const medicos = await this.medicoRepository.findByEspecialidadId(filtros.especialidadId);
-            medicosQueCumplen = medicos.map(m => m._id.toString());
-        }
-
-        if (filtros.practicaId !== undefined) {
-            // Buscamos medicos que tengan esa practica
-            const medicos = await this.medicoRepository.findByPracticaId(filtros.practicaId);
-            const idsConPractica = medicos.map(m => m._id.toString());
-
-            if (medicosQueCumplen !== null) {
-                medicosQueCumplen = medicosQueCumplen.filter(id => idsConPractica.includes(id)); //si filtro por especialidad y practica verificamos que el medico tenga ambas
-            } else {
-                medicosQueCumplen = idsConPractica;
-            }
-        }
-
-        //Aplicamos el filtro al Turno
-        if (medicosQueCumplen !== null) {
-            if (filtros.medicoId !== undefined) {
-                if (!medicosQueCumplen.includes(filtros.medicoId)) { //si el medico especifico no esta en los que cumplen la especialidad o practica cortamos la ejecucion y devolvemos 0 resultados sin tocar la bd de turnos
-                    return { turnos: [], totalTurnos: 0 };
-                }
-                query.medico = filtros.medicoId;
-            } else {
-                query.medico = { $in: medicosQueCumplen };
-            }
+        if (filtros.servicioId !== undefined) {
+            query.servicio = filtros.servicioId;
         }
 
 
@@ -132,7 +104,7 @@ disponible:
         // Ejecutar la consulta y el conteo en paralelo
         const [turnos, totalTurnos] = await Promise.all([
             this.model.find(query)
-                .populate('medico paciente practica especialidad sede')
+                .populate('medico paciente servicio sede')
                 .skip(inicio)
                 .limit(limitePorPagina)
                 .lean()

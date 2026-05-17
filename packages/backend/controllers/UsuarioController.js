@@ -1,6 +1,6 @@
 import { UsuarioService } from "../services/UsuarioService.js";
 import { usuarioSchema } from "../schemas/zod/usuarioSchema.js";
-import { idParamObjectIdSchema } from "../schemas/zod/urlSchema.js";
+import { objectIdSchema } from "../schemas/zod/objectIdSchema.js";
 
 export class UsuarioController {
     constructor({ usuarioService = new UsuarioService() } = {}) {
@@ -19,7 +19,7 @@ export class UsuarioController {
 
     findById = async (req, res, next) => {
         try {
-            const { id } = idParamObjectIdSchema.parse(req.params);
+            const { id } = objectIdSchema("usuario").parse(req.params);
             const usuario = await this.usuarioService.findById(id);
             if (!usuario) {
                 return res.status(404).json({ message: "Usuario no encontrado" });
@@ -41,7 +41,7 @@ export class UsuarioController {
 
     delete = async (req, res, next) => {
         try {
-            const { id } = idParamObjectIdSchema.parse(req.params);
+            const { id } = objectIdSchema("usuario").parse(req.params);
             await this.usuarioService.delete(id);
             res.status(204).send();
         } catch (error) {
@@ -52,7 +52,7 @@ export class UsuarioController {
     // solo actualiza el nombre de usuario y la contraseña, no el id
     update = async (req, res, next) => {
         try {
-            const { id } = idParamObjectIdSchema.parse(req.params);
+            const { id } = objectIdSchema("usuario").parse(req.params);
             const usuarioData = usuarioSchema.partial().parse(req.body);
             const usuarioActualizado = await this.usuarioService.update(id, usuarioData);
             res.status(200).json(usuarioActualizado);

@@ -10,12 +10,12 @@ import { PacienteRepository } from "../repositories/PacienteRepository.js";
 
 
 export class TurnoService {
-    constructor({ 
+    constructor({
         turnoRepository = new TurnoRepository(),
         pacienteRepository = new PacienteRepository(),
         obraSocialRepository = new ObraSocialRepository(),
         medicoRepository = new MedicoRepository()
-    } = { }) {
+    } = {}) {
         this.turnoRepository = turnoRepository;
         this.pacienteRepository = pacienteRepository;
         this.obraSocialRepository = obraSocialRepository;
@@ -53,9 +53,9 @@ export class TurnoService {
 
 
     async create(data) {
-        const { fechaHora, medicoId, sedeId } = data
+        const { fechaHora, medicoId, sedeId, servicioId } = data
 
-        if (!medicoId || !sedeId || !fechaHora) {
+        if (!medicoId || !sedeId || !fechaHora || !servicioId) {
             throw new UnprocessableEntityError("Datos incompletos para crear el turno")
         }
 
@@ -74,13 +74,18 @@ export class TurnoService {
             throw new NotFoundError("No se encontro la sede con el id " + sedeId)
         }
 
-        const turno = new Turno({ medico, sede, fechaHora });
+        const servicio = await this.servicioRepository.findById(servicioId);
+        if (!servicio) {
+            throw new NotFoundError("No se encontro el servicio con el id " + servicioId)
+        }
+
+        const turno = new Turno({ medico, sede, fechaHora, servicio });
         const turnoGuardado = await this.turnoRepository.save(turno);
         return this.toDTO(turnoGuardado);
     }
 
     async asignarTurno(idTurno, pacienteId, data) {
-        const { costoTurno, practicaId, especialidadId } = data
+        const { costoTurno } = data
 
         const turno = await this.turnoRepository.findById(idTurno);
         if (!turno) {
@@ -91,17 +96,12 @@ export class TurnoService {
             throw new NotFoundError("No se encontro el paciente con el id " + pacienteId)
         }
 
-        if (practicaId) {
-            turno.practica = practicaId;
-        } else if (especialidadId) {
-            turno.especialidad = especialidadId;
-        }
         turno.paciente = paciente;
         turno.costo = costoTurno;
 
         turno.actualizarEstadoTurno({ nuevoEstado: EstadoTurnoEnum.RESERVADO, paciente });
 
-        return this.toDTO(await this.turnoRepository.update(idTurno,turno));
+        return this.toDTO(await this.turnoRepository.update(idTurno, turno));
     }
 
 
@@ -128,7 +128,7 @@ export class TurnoService {
         const { obraSocial, plan } = await this.obtenerObraSocialYPlanPorPaciente(filtrosValidados.pacienteId);
 
         const turnosConCobertura = turnos.map(t => {
-            const cobertura = this.calcularCostoTurno(obraSocial, plan, t.servicio);
+            const cobertura = this.calcularCostoTurno(obraSocial, plan, t.servicio, t.medico.honorario);
             const turnoDto = this.toDTO(t);
 
             turnoDto.costo = cobertura.costoFinal;
@@ -173,11 +173,11 @@ export class TurnoService {
 
     //-------Funciones aux----------
 
-    calcularCostoTurno(obraSocial, plan, servicio) {
-        const precioInicial = servicio.precio;
+    calcularCostoTurno(obraSocial, plan, servicio, honorarioMedico) {
+        const precioInicial = servicio.precio + honorarioMedico;
 
         if (!obraSocial || !plan) {
-            return precioInicial;
+            return precioInicial; // Si no hay obra social ni plan, el paciente paga el 100%
         }
 
         const { nivel, porcentaje } = plan.obtenerCoberturaServicio(servicio);

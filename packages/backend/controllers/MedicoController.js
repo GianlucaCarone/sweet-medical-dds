@@ -83,7 +83,7 @@ export class MedicoController {
       //const { idPractica } = disponibilidadConsultaSchema.parse(req.query);
 
       const disponibilidades =
-        await this.medicoService.consultarDisponibilidad(id);
+        await this.medicoService.consultarDisponibilidades(id);
 
       return res.status(200).json({
         status: "success",

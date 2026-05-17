@@ -2,14 +2,13 @@ import { Medico } from "../medico.js";
 import { BadRequestError } from "../../errors/AppError.js";
 import { EstadoTurnoEnum } from "./estadoTurnoEnum.js";
 import { CambioEstadoTurno } from "./cambioEstadoTurno.js";
-import { randomUUID } from "crypto";
-
+import { Practica } from "../servicios/practica.js";
+import { Especialidad } from "../servicios/especialidad.js";
+import { Usuario } from "../usuario.js";
 export class Turno {
     id;
     medico;
-    //servicio;
-    practica;
-    especialidad;
+    servicio;
     paciente;
     fechaHora;
     sede;
@@ -17,7 +16,7 @@ export class Turno {
     historialEstado;
     costo;
 
-    constructor({ medico, fechaHora, sede }) {
+    constructor({ medico, fechaHora, sede, servicio }) {
 
         if (!medico || !sede || !fechaHora) {
             throw new BadRequestError()
@@ -25,11 +24,12 @@ export class Turno {
         if (!(medico instanceof Medico)) {
             throw new Error("Medico inválido");
         }
+        if (!(servicio instanceof Practica || !(servicio instanceof Especialidad)))
 
-        this.id = randomUUID();
-        this.medico = medico;
+            this.medico = medico;
         this.fechaHora = fechaHora;
         this.sede = sede;
+        this.servicio = servicio;
 
         this.estado = EstadoTurnoEnum.DISPONIBLE;
         this.historialEstado = [];

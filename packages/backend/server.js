@@ -25,7 +25,7 @@ export class Server {
     setController(controllerClass, controller) {
         this.#controllers[controllerClass.name] = controller;
     }
-    
+
     getController(controllerClass) {
         const controller = this.#controllers[controllerClass.name];
         if (!controller) throw new Error("El controller no está definido para la ruta dada");
@@ -37,21 +37,21 @@ export class Server {
     }
 
     configurarRutas() {
-        this.#routes.forEach( ({path, handler}) => this.app.use(path, handler(this.getController.bind(this))));
+        this.#routes.forEach(({ path, handler }) => this.app.use(path, handler(this.getController.bind(this))));
 
+        this.#app.use(zodErrorHandler);
         this.#app.use(notFoundHandler);
         this.#app.use(errorLogger);
-        this.#app.use(zodErrorHandler);
         this.#app.use(errorHandler);
 
         this.#app.use(
             cors({
                 origin: process.env.ALLOWED_ORIGINS
-                ? process.env.ALLOWED_ORIGINS.split(",").map((o) => o.trim())
-                : true,
+                    ? process.env.ALLOWED_ORIGINS.split(",").map((o) => o.trim())
+                    : true,
             }),
         );
-        
+
     }
 
     start() {

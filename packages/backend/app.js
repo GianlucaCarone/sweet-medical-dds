@@ -23,6 +23,9 @@ server.setController(ObraSocialController, obraSocialController);
 const usuarioController = new UsuarioController();
 server.setController(UsuarioController, usuarioController);
 
+const medicoController = new MedicoController();
+server.setController(MedicoController, medicoController);
+
 /* -------------------------------------------------------------------------- */
 /*                                    RUTAS                                   */
 /* -------------------------------------------------------------------------- */

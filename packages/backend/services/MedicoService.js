@@ -8,8 +8,6 @@ import { logger } from "../config/logger.js";
 import { MedicoMapper } from "../mappers/medicoMapper.js";
 import { UsuarioMapper } from "../mappers/usuarioMapper.js";
 
-
-
 export class MedicoService {
   constructor({
     medicoRepository = new MedicoRepository(),
@@ -46,7 +44,7 @@ export class MedicoService {
     const medicoEntityData = {
       nombre: medicoData.nombre,
       matricula: medicoData.matricula,
-      usuario
+      usuario,
     };
     const medico = new Medico(medicoEntityData);
     const medicoPersistencia = MedicoMapper.toPersistence(medico);
@@ -67,7 +65,9 @@ export class MedicoService {
 
   async findAll() {
     logger.info("Consultando todos los médicos");
-    return this.medicoRepository.findAll().then(medicos => medicos.map(medico => this.toDto(medico)));
+    return this.medicoRepository
+      .findAll()
+      .then((medicos) => medicos.map((medico) => MedicoMapper.toDto(medico)));
   }
 
   async delete(id) {
@@ -140,7 +140,10 @@ export class MedicoService {
 
     medico.definirDisponibilidad(disponibilidad);
 
-    logger.info(`Disponibilidad definida para el médico ${id}: `, disponibilidad);
+    logger.info(
+      `Disponibilidad definida para el médico ${id}: `,
+      disponibilidad,
+    );
 
     return MedicoMapper.toDto(await this.medicoRepository.save(medico));
   }
@@ -182,24 +185,13 @@ export class MedicoService {
     return MedicoMapper.toDto(await this.medicoRepository.save(medico));
   }
 
-  async consultarDisponibilidad(medicoId) {
+  async consultarDisponibilidades(medicoId) {
     const medico = await this.findById(medicoId);
 
-    /* if (!medico.ofrecePractica(practicaId)) {
-      throw new Error("El médico no ofrece esa práctica");
-    } */
+    if (!medico) {
+      throw new NotFoundError("Médico no encontrado");
+    }
 
     return medico.disponibilidades;
-  }
-
-  toDto(medico) {
-    return {
-      id: medico._id,
-      nombre: medico.nombre,
-      matricula: medico.matricula,
-      idUsuario: medico.idUsuario,
-      sedes: medico.sedes,
-      disponibilidades: medico.disponibilidades,
-    };
   }
 }

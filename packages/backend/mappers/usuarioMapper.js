@@ -11,4 +11,12 @@ export class UsuarioMapper {
 
     return usuario;
   }
+
+  static toDto(usuario) {
+    return {
+      id: usuario._id,
+      nombreUsuario: usuario.nombreUsuario,
+      // No incluimos el password en el DTO por razones de seguridad
+    };
+  }
 }

@@ -18,12 +18,12 @@ export class MedicoMapper {
 
   static toPersistence(medico) {
     return {
-        nombre: medico.nombre,
-        matricula: medico.matricula,
-        idUsuario: medico.usuario.id,
-        disponibilidades: medico.disponibilidades.map(d => d.id),
-        especialidades: medico.especialidades.map(e => e.id),
-        practicas: medico.practicas.map(p => p.id)
+      nombre: medico.nombre,
+      matricula: medico.matricula,
+      idUsuario: medico.usuario.id,
+      disponibilidades: medico.disponibilidades.map(d => d.id),
+      especialidades: medico.especialidades.map(e => e.id),
+      practicas: medico.practicas.map(p => p.id)
     };
   }
 
@@ -32,7 +32,7 @@ export class MedicoMapper {
       id: medico._id,
       nombre: medico.nombre,
       matricula: medico.matricula,
-      idUsuario: medico.idUsuario,
+      usuario: UsuarioMapper.toDto(medico.idUsuario),
       sedes: medico.sedes,
       disponibilidades: medico.disponibilidades,
     };

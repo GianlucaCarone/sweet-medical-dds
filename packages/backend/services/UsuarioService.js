@@ -1,6 +1,6 @@
-import { ConflictError, NotFoundError } from "../errors/AppError.js";
 import { Usuario } from "../domain/usuario.js";
 import { UsuarioRepository } from "../repositories/UsuarioRepository.js";
+import { NotFoundError } from "../errors/AppError.js";
 
 export class UsuarioService {
   constructor({ usuarioRepository = new UsuarioRepository() } = {}) {
@@ -9,7 +9,7 @@ export class UsuarioService {
 
   async create(usuarioData) {
     //const usuarioExistente = await this.findByUsername(usuarioData.nombreUsuario); // Verificar que no exista otro usuario con el mismo nombre de usuario
-//
+    //
     //if (usuarioExistente) {
     //  throw new ConflictError(`Ya existe un usuario con el nombre de usuario ${usuarioData.nombreUsuario}`);
     //}
@@ -58,10 +58,10 @@ export class UsuarioService {
   }
 
   toDto(usuario) {
-        return {
-            id: usuario.id || usuario._id,
-            nombreUsuario: usuario.nombreUsuario,
-            password: usuario.password
-        };
-    }
+    return {
+      id: usuario.id || usuario._id,
+      nombreUsuario: usuario.nombreUsuario,
+      password: usuario.password
+    };
+  }
 }

@@ -2,7 +2,6 @@ import { Usuario } from "./usuario.js";
 import { ErrorDatosObligatorios } from "./errores.js";
 import { ConflictError } from "../errors/AppError.js";
 import { DisponibilidadHoraria } from "./disponibilidadHoraria.js";
-import { randomUUID } from "crypto";
 import { Especialidad } from "./servicios/especialidad.js";
 import { Practica } from "./servicios/practica.js";
 import { Sede } from "./sede.js";
@@ -12,12 +11,13 @@ export class Medico {
     usuario;
     matricula;
     nombre;
+    honorario;
     especialidades = [];
     practicas = [];
     sedes = [];
     disponibilidades = [];
 
-    constructor({ usuario, matricula, nombre }) {
+    constructor({ usuario, matricula, nombre, honorario: honorario }) {
         if (!usuario || !matricula || !nombre) {
             throw new ErrorDatosObligatorios();
         }
@@ -27,10 +27,13 @@ export class Medico {
         if (matricula.length > 10) {
             throw new Error("Matricula Demasiado larga");
         }
-        //this.id = randomUUID();
+        if (honorario < 0 || !(honorario instanceof Number)) {
+            throw new Error("Honorario inválido");
+        }
         this.usuario = usuario;
         this.matricula = matricula;
         this.nombre = nombre;
+        this.honorario = honorario;
     }
 
     definirDisponibilidad(disponibilidad) {
