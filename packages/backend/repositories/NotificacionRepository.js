@@ -1,4 +1,4 @@
-import { NotificacionModel } from "../schemas/mongoose/notificacionSchema.js";
+import { NotificacionModel } from "../schemas/database/notificacionSchema.js";
 import { logger } from '../config/logger.js';
 import { NotificacionMapper } from "../mappers/notificacionMapper.js";
 

@@ -35,3 +35,11 @@ export const eliminarDisponibilidadSchema = z.object({
 export const disponibilidadConsultaSchema = z.object({
     practicaId: z.string().uuid("El id de la práctica debe ser un UUID válido"),
 });
+
+export const medicoIdParamsSchema = z.object({
+  idMedico: z.string()
+});
+
+export const servicioIdSchema = z.object({
+  idServicio: z.string()
+});

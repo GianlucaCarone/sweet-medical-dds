@@ -29,7 +29,7 @@ export class ServicioService {
     async create(datosServicio) { //funciona
         logger.info("[SERVICIO SERVICE]: Creando servicio: ", datosServicio);
 
-        // TODO if (this.serviciosRepository.findByNombre(datosServicio.nombre)) throw new ConflictError("Ya existe un servicio con ese nombre");
+        if (this.serviciosRepository.findByNombre(datosServicio.nombre)) throw new ConflictError("Ya existe un servicio con ese nombre");
 
         const servicio = await this.crearEntidad(datosServicio);
         const servicioGuardado = await this.serviciosRepository.save(servicio);

@@ -1,10 +1,15 @@
 import mongoose from "mongoose";
 import { Medico } from "../../domain/medico.js";
-import { disponibilidadHorariaSchema } from "./disponibilidadHorariaSchema.js";
+import { disponibilidadHorariaSchema } from "./disponibilidadHorariaSchema.js";;
 
 const MedicoSchema = new mongoose.Schema(
     {
-        nombre: { type: String, required: true, trim: true, minlength: 1 },
+        nombre: {
+            type: String,
+            required: true,
+            trim: true,
+            minlength: 1,
+        },
         idUsuario: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "Usuario",
@@ -17,11 +22,23 @@ const MedicoSchema = new mongoose.Schema(
             maxlength: 10,
             minlength: 1,
         },
-        disponibilidades: [disponibilidadHorariaSchema], // embebido
-
-        /* especialidades: [{ type: mongoose.Schema.Types.ObjectId, ref: "Especialidad" }],
-      practicas: [{ type: mongoose.Schema.Types.ObjectId, ref: "Practica" }],
-      sedes: [{ type: mongoose.Schema.Types.ObjectId, ref: "Sede" }] */
+        disponibilidades: [
+            disponibilidadHorariaSchema
+        ], // embebido
+        especialidades: [
+            {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: "Especialidad",
+                required: true
+            }
+        ],
+        practicas: [
+            {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: "Practica",
+                required: true
+            }
+        ]
     },
     { timestamps: true },
 );
