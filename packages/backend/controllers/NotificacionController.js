@@ -1,7 +1,8 @@
 import { NotificacionService } from "../services/NotificacionService.js";
-import { notificacionIdParamsSchema, notificacionSchema, filtrosNotificacionSchema } from "../schemas/notificacionSchema.js";
-import { usuarioIdSchema } from "../schemas/usuarioSchema.js";
-import { logger } from '../config/logger.js';
+import { notificacionIdParamsSchema } from "../schemas/zod/notificacionSchema.js";
+import { usuarioIdSchema } from "../schemas/zod/usuarioSchema.js";
+import { BadRequestError } from "../errors/AppError.js";
+import { logger } from "../config/logger.js";
 
 export class NotificacionController {
     constructor({
@@ -96,7 +97,8 @@ export class NotificacionController {
             logger.info("[NOTIFICACIONES CONTROLLER]: Notificacion leida: ", notificacion);
             res.status(200).json({
                 status: "success",
-                data: notificacion
+                data: notificacion,
+                message: "Notificación leída exitosamente."
             });
         } catch (error) {
             next(error);
@@ -139,11 +141,11 @@ export class NotificacionController {
 
     extraerPaginacion(query) {
         logger.info("[NOTIFICACIONES CONTROLLER]: Extrayendo paginacion");
-        const numeroPagina = query?.page === undefined ? 1 : Number(query.page)
-        const limitePorPagina = query?.limit === undefined ? 10 : Number(query.limit)
+        const numeroPagina = query?.page === undefined ? 1 : Number(query.page);
+        const limitePorPagina = query?.limit === undefined ? 10 : Number(query.limit);
         if (numeroPagina <= 0 || limitePorPagina <= 0) throw new BadRequestError("Paginacion invalida");
         logger.info("[NOTIFICACIONES CONTROLLER]: Paginacion extraida");
-        return { numeroPagina, limitePorPagina }
+        return { numeroPagina, limitePorPagina };
     }
 
     async seed(usuarios) {

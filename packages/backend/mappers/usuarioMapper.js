@@ -16,7 +16,7 @@ export class UsuarioMapper {
     return {
       nombreUsuario: usuario.nombreUsuario,
       password: usuario.password,
-    }
+    };
   }
 
   static toDTO(usuario) {

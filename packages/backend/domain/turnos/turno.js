@@ -1,5 +1,6 @@
 import { Medico } from "../medico.js";
-import { BadRequestError } from "../../errors/AppError.js";
+import { ErrorDatosObligatorios } from "../errores.js";
+import { Usuario } from "../usuario.js";
 import { EstadoTurnoEnum } from "./estadoTurnoEnum.js";
 import { CambioEstadoTurno } from "./cambioEstadoTurno.js";
 import { randomUUID } from "crypto";
@@ -20,7 +21,7 @@ export class Turno {
     constructor({ medico, fechaHora, sede }) {
 
         if (!medico || !sede || !fechaHora) {
-            throw new BadRequestError()
+            throw new ErrorDatosObligatorios();
         }
         if (!(medico instanceof Medico)) {
             throw new Error("Medico inválido");

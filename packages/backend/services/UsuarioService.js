@@ -1,8 +1,8 @@
 import { Usuario } from "../domain/usuario.js";
 import { UsuarioRepository } from "../repositories/UsuarioRepository.js";
-import { logger } from '../config/logger.js';
+import { logger } from "../config/logger.js";
 import { UsuarioMapper } from "../mappers/usuarioMapper.js";
-import { ConflictError, NotFoundError } from "../errors/AppError.js";
+import { NotFoundError } from "../errors/AppError.js";
 
 export class UsuarioService {
   constructor({ usuarioRepository = new UsuarioRepository() } = {}) {

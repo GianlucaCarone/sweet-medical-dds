@@ -1,11 +1,9 @@
 import { NotificacionModel } from "../schemas/database/notificacionSchema.js";
-import { logger } from '../config/logger.js';
+import { logger } from "../config/logger.js";
 import { NotificacionMapper } from "../mappers/notificacionMapper.js";
 
 export class NotificacionRepository {
-    //Este es el modelo que creamos en el esquema, es el modelo de mongoose que nos ayudara con todas las consultas a la base
     constructor() { this.model = NotificacionModel; }
-
 
     async getByDestinatarioIdAndLeido(idDestinatario, leida) {
         logger.info("[NOTIFICACIONES REPOSITORY]: Obteniendo notificaciones " + ((leida) ? "leidas" : "no leidas") + " del destinatario " + idDestinatario);
@@ -53,7 +51,7 @@ export class NotificacionRepository {
 
     async save(notificacion) {
         logger.info("[NOTIFICACIONES REPOSITORY]: Guardando notificacion:", notificacion);
-        var notificacionGuardada;
+        let notificacionGuardada;
         if (notificacion.id) {
             notificacionGuardada = await this.model.findByIdAndUpdate(notificacion.id, NotificacionMapper.toPersistence(notificacion), { new: true, runValidators: true });
         } else {

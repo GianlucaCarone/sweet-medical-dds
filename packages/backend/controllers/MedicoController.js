@@ -1,8 +1,8 @@
 import { MedicoService } from "../services/MedicoService.js";
-import { logger } from '../config/logger.js';
+import { logger } from "../config/logger.js";
 import { medicoSchema, disponibilidadSchema, eliminarDisponibilidadSchema, medicoIdParamsSchema, servicioIdSchema } from "../schemas/zod/medicoSchema.js";
 import { objectIdSchema } from "../schemas/zod/objectIdSchema.js";
-import { asociarSedeSchema, eliminarSedeParamsSchema } from "../schemas/sedeSchema.js";
+import { asociarSedeSchema, eliminarSedeParamsSchema } from "../schemas/zod/sedeSchema.js";
 
 export class MedicoController {
   constructor({ medicoService = new MedicoService() } = {}) {
@@ -215,7 +215,8 @@ export class MedicoController {
       logger.info("[MEDICO CONTROLLER]: Servicio agregado al medico: ", medico);
       res.status(200).json({
         status: "success",
-        data: medico
+        data: medico,
+        message: "Servicio agregado al médico exitosamente."
       });
     } catch (error) {
       next(error);
@@ -231,7 +232,8 @@ export class MedicoController {
       logger.info("[MEDICO CONTROLLER]: Servicio eliminado al medico: ", medico);
       res.status(200).json({
         status: "success",
-        data: medico
+        data: medico,
+        message: "Servicio eliminado del médico exitosamente."
       });
     } catch (error) {
       next(error);

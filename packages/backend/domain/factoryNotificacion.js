@@ -1,38 +1,38 @@
 import { Notificacion } from "../domain/notificacion.js";
-import { EstadoTurno } from "./turno.js";
-import { Especialidad } from "./especialidad";
+import { EstadoTurnoEnum } from "./turnos/estadoTurnoEnum.js";
+import { Especialidad } from "./servicios/especialidad.js";
 
 
 // TODO Investigar I18NN para manejar los mensajes de las notificaciones en diferentes idiomas.
 
-class FactoryNotificacion {
+export class FactoryNotificacion {
   crearSegunEstadoTurno(turno) {
     switch (turno.estado) {
-      case EstadoTurno.RESERVADO:
+      case EstadoTurnoEnum.RESERVADO:
         return new Notificacion({
           destinatario: turno.medico,
           remitente: turno.paciente,
           mensaje:
             `El turno fue reservado por el paciente ${turno.paciente.nombre} 
-            ${turno.servicio instanceof Especialidad ? 'para la especialidad' : 'con la practica'} ${turno.servicio.nombre} 
+            ${turno.servicio instanceof Especialidad ? "para la especialidad" : "con la practica"} ${turno.servicio.nombre} 
             en la sede ${turno.sede.nombre}`
         });
-      case EstadoTurno.CANCELADO:
+      case EstadoTurnoEnum.CANCELADO:
         return new Notificacion({
           destinatario: turno.medico,
           remitente: turno.paciente,
           mensaje:
             `El turno fue cancelado por el paciente ${turno.paciente.nombre} 
-            ${turno.servicio instanceof Especialidad ? 'para la especialidad' : 'con la practica'} ${turno.servicio.nombre} 
+            ${turno.servicio instanceof Especialidad ? "para la especialidad" : "con la practica"} ${turno.servicio.nombre} 
             en la sede ${turno.sede.nombre}`
         });
-      case EstadoTurno.CONFIRMADO:
+      case EstadoTurnoEnum.CONFIRMADO:
         return new Notificacion({
           destinatario: turno.paciente,
           remitente: turno.medico,
           mensaje:
             `El turno fue confirmado por el medico ${turno.medico.nombre}
-            ${turno.servicio instanceof Especialidad ? 'para la especialidad' : 'con la practica'} ${turno.servicio.nombre} 
+            ${turno.servicio instanceof Especialidad ? "para la especialidad" : "con la practica"} ${turno.servicio.nombre} 
             en la sede ${turno.sede.nombre}`
         });
       default:

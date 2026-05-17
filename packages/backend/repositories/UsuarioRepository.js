@@ -1,7 +1,7 @@
 import { Usuario } from "../domain/usuario.js";
 import { BadRequestError } from "../errors/AppError.js";
 import { UsuarioModel } from "../schemas/database/usuarioSchema.js";
-import { logger } from '../config/logger.js';
+import { logger } from "../config/logger.js";
 import { UsuarioMapper } from "../mappers/usuarioMapper.js";
 
 export class UsuarioRepository {
@@ -11,17 +11,16 @@ export class UsuarioRepository {
 
     async save(usuario) {
         logger.info("[USUARIO REPOSITORY]: Guardando usuario: ", usuario);
-        if (!(usuario instanceof Usuario)) throw new Error("No es un Usuario valido");
-        var usuarioGuardado;
+        if (!(usuario instanceof Usuario)) throw new BadRequestError("No es un Usuario valido");
+        let usuarioGuardado;
         if (usuario.id) {
             usuarioGuardado = await this.model.findByIdAndUpdate(usuario.id, UsuarioMapper.toPersistence(usuario), { new: true, runValidators: true });
         } else {
             const nuevoUsuario = new this.model(UsuarioMapper.toPersistence(usuario));
             usuarioGuardado = await nuevoUsuario.save();
         }
-        //const nuevoUsuario = new this.model(usuario);
         logger.info("[USUARIO REPOSITORY]: Usuario guardado: ", usuarioGuardado);
-        //const usuarioGuardado = await nuevoUsuario.save();
+
         return UsuarioMapper.toDomain(usuarioGuardado);
     }
 
@@ -30,6 +29,7 @@ export class UsuarioRepository {
         const usuario = await this.model.findById(id);
         if (!usuario) throw new BadRequestError("Usuario no encontrado");
         logger.info("[USUARIO REPOSITORY]: Usuario obtenido: ", usuario);
+
         return UsuarioMapper.toDomain(usuario);
     }
 

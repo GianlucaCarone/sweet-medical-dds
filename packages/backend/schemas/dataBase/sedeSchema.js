@@ -1,4 +1,4 @@
-import { mongoose } from 'mongoose';
+import { mongoose } from "mongoose";
 import { Sede } from "../../domain/sede.js";
 
 const sedeSchema = new mongoose.Schema({
@@ -14,7 +14,7 @@ const sedeSchema = new mongoose.Schema({
         type: Boolean,
         default: false,
     }
-})
+});
 
 sedeSchema.loadClass(Sede);
 

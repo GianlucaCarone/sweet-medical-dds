@@ -1,6 +1,5 @@
 import { Especialidad } from "../domain/servicios/especialidad.js";
 import { Practica } from "../domain/servicios/practica.js";
-import { logger } from "../config/logger.js";
 
 export class ServicioMapper {
 

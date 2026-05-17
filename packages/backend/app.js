@@ -40,7 +40,7 @@ server.setController(
 server.setController(
     SedeController,
     new SedeController()
-)
+);
 
 const turnoController = new TurnoController();
 server.setController(TurnoController, turnoController);

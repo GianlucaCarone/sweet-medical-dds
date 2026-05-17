@@ -2,7 +2,7 @@ import { ServicioModel, EspecialidadModel, PracticaModel } from "../schemas/data
 import { ServicioMapper } from "../mappers/servicioMapper.js";
 import { Especialidad } from "../domain/servicios/especialidad.js";
 import { Practica } from "../domain/servicios/practica.js";
-import { logger } from '../config/logger.js';
+import { logger } from "../config/logger.js";
 
 export class ServicioRepository {
     constructor() {
@@ -18,7 +18,7 @@ export class ServicioRepository {
     async save(servicio) {
         logger.info("[SERVICIO REPOSTIRORY]: Guardando servicio: ", servicio);
         const modelo = this.#resolverModelo(servicio);
-        var servicioGuardado;
+        let servicioGuardado;
         if (servicio.id) {
             servicioGuardado = await modelo.findByIdAndUpdate(servicio.id, ServicioMapper.toPersistence(servicio), { new: true, runValidators: true });
         } else {

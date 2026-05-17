@@ -1,6 +1,6 @@
 import { ServicioService } from "../services/ServicioService.js";
-import { servicioSchema, servicioIdParamsSchema } from "../schemas/servicioSchema.js";
-import { logger } from '../config/logger.js';
+import { servicioSchema, servicioIdParamsSchema } from "../schemas/zod/servicioSchema.js";
+import { logger } from "../config/logger.js";
 
 export class ServicioController {
     constructor({
@@ -44,11 +44,12 @@ export class ServicioController {
     delete = async (req, res, next) => { //idSchema
         try {
             const { idServicio } = servicioIdParamsSchema.parse(req.params);
-            logger.info("[SERVICIOS CONTROLLER]: Eliminando servicio: ", idServicio)
+            logger.info("[SERVICIOS CONTROLLER]: Eliminando servicio: ", idServicio);
             await this.servicioService.delete(idServicio);
             logger.info("[SERVICIOS CONTROLLER]: Servicio eliminado");
             res.status(204).json({
-                status: "success"
+                status: "success",
+                message: "Servicio eliminado"
             });
         } catch (error) {
             next(error);

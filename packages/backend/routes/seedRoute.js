@@ -3,7 +3,6 @@ import { UsuarioController } from "../controllers/UsuarioController.js";
 import { MedicoController } from "../controllers/MedicoController.js";
 import { ServicioController } from "../controllers/ServicioController.js";
 import { NotificacionController } from "../controllers/NotificacionController.js";
-import { logger } from '../config/logger.js';
 
 export default function seedRoute(getController) {
     const router = express.Router();

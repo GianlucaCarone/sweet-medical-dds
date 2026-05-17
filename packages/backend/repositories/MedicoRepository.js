@@ -1,7 +1,8 @@
 import { MedicoModel } from "../schemas/dataBase/medicoSchema.js";
 import { MedicoMapper } from "../mappers/medicoMapper.js";
 import { Medico } from "../domain/medico.js";
-import { logger } from '../config/logger.js';
+import { logger } from "../config/logger.js";
+import { BadRequestError } from "../errors/AppError.js";
 
 export class MedicoRepository {
   constructor() { this.model = MedicoModel; }
@@ -22,7 +23,9 @@ export class MedicoRepository {
 
   async save(medico) {
     logger.info("[MEDICO REPOSTIRORY]: Guardando medico: ", medico);
-    var medicoGuardado = null;
+    if (!(medico instanceof Medico)) throw new BadRequestError("No es un Medico valido");
+
+    let medicoGuardado = null;
     if (medico.id) {
       medicoGuardado = await this.model.findByIdAndUpdate(medico.id, MedicoMapper.toPersistence(medico), { new: true, runValidators: true });
     } else {

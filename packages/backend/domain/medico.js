@@ -1,9 +1,7 @@
-
 import { Usuario } from "./usuario.js";
 import { ErrorDatosObligatorios } from "./errores.js";
 import { ConflictError } from "../errors/AppError.js";
 import { DisponibilidadHoraria } from "./disponibilidadHoraria.js";
-import { randomUUID } from "crypto";
 import { Especialidad } from "./servicios/especialidad.js";
 import { Practica } from "./servicios/practica.js";
 import { Sede } from "./sede.js";
@@ -90,8 +88,10 @@ export class Medico {
             throw new Error("Servicio invalido");
         }
         if (servicio instanceof Especialidad) {
+            if (this.especialidades.some((e) => e.id === servicio.id)) throw new ConflictError("El medico ya tiene esa especialiad")
             this.especialidades.push(servicio);
         } else if (servicio instanceof Practica) {
+            if (this.practicas.some((p) => p.id === servicio.id)) throw new ConflictError("El medico ya tiene esa practica");
             this.practicas.push(servicio);
         } else {
             throw new Error("Tipo de Servicio invalido");

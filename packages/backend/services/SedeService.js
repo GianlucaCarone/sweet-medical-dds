@@ -17,10 +17,10 @@ export class SedeService {
   }
 
   async create(data) {
-    const { nombre, direccion } = data
+    const { nombre, direccion } = data;
 
     if (!nombre || !direccion) {
-      throw new UnprocessableEntityError("Datos incompletos para crear la sede")
+      throw new UnprocessableEntityError("Datos incompletos para crear la sede");
     }
 
     const sedeExistente = await this.sedeRepository.findByName(nombre);

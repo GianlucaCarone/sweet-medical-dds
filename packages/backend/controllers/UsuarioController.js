@@ -1,7 +1,7 @@
 import { UsuarioService } from "../services/UsuarioService.js";
 import { usuarioSchema } from "../schemas/zod/usuarioSchema.js";
 import { idParamObjectIdSchema } from "../schemas/zod/urlSchema.js";
-import { logger } from '../config/logger.js';
+import { logger } from "../config/logger.js";
 
 export class UsuarioController {
     constructor({
@@ -35,7 +35,7 @@ export class UsuarioController {
         } catch (error) {
             return next(error);
         }
-    }
+    };
 
     findAll = async (req, res, next) => {
         try {
@@ -46,7 +46,7 @@ export class UsuarioController {
         } catch (error) {
             next(error);
         }
-    }
+    };
 
     delete = async (req, res, next) => {
         try {
@@ -58,7 +58,7 @@ export class UsuarioController {
         } catch (error) {
             next(error);
         }
-    }
+    };
 
     // solo actualiza el nombre de usuario y la contraseña, no el id
     update = async (req, res, next) => {
@@ -72,7 +72,7 @@ export class UsuarioController {
         } catch (error) {
             next(error);
         }
-    }
+    };
 
     //1. El primer seed. Crea los usuarios
     async seed() {
@@ -92,5 +92,5 @@ export class UsuarioController {
         return await Promise.all(
             usuarios.map(usuarioData => this.usuarioService.create(usuarioData))
         );
-    }
+    };
 }

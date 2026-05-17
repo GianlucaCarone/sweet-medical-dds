@@ -2,7 +2,7 @@ import { Especialidad } from "../domain/servicios/especialidad.js";
 import { Practica } from "../domain/servicios/practica.js";
 import { ServicioRepository } from "../repositories/ServicioRepository.js";
 import { NotFoundError, ConflictError } from "../errors/AppError.js";
-import { logger } from '../config/logger.js';
+import { logger } from "../config/logger.js";
 import { ServicioMapper } from "../mappers/servicioMapper.js";
 
 export class ServicioService {
@@ -29,7 +29,7 @@ export class ServicioService {
     async create(datosServicio) { //funciona
         logger.info("[SERVICIO SERVICE]: Creando servicio: ", datosServicio);
 
-        if (this.serviciosRepository.findByNombre(datosServicio.nombre)) throw new ConflictError("Ya existe un servicio con ese nombre");
+        if (await this.serviciosRepository.findByNombre(datosServicio.nombre)) throw new ConflictError("Ya existe un servicio con ese nombre");
 
         const servicio = await this.crearEntidad(datosServicio);
         const servicioGuardado = await this.serviciosRepository.save(servicio);
@@ -63,7 +63,7 @@ export class ServicioService {
                 nombre: datosServicio.nombre,
                 duracionTurnoEnMins: datosServicio.duracionEnMin,
                 costoConsulta: datosServicio.costo
-            }
+            };
             const especialidad = new Especialidad(especialidadData);
             logger.info("[SERVICIO SERVICE]: Especialidad creada: ", especialidad);
             return especialidad;
@@ -74,7 +74,7 @@ export class ServicioService {
                 nombre: datosServicio.nombre,
                 duracionTurnoEnMins: datosServicio.duracionEnMin,
                 costo: datosServicio.costo
-            }
+            };
             const practica = new Practica(practicaData);
             logger.info("[SERVICIO SERVICE]: Practica creada: ", practica);
             return practica;

@@ -1,19 +1,21 @@
 import { NotificacionRepository } from "../repositories/NotificacionRepository.js";
-import { BadRequestError } from "../errors/AppError.js";
+import { NotFoundError } from "../errors/AppError.js";
 import { Notificacion } from "../domain/notificacion.js";
 import { UsuarioService } from "./UsuarioService.js";
-import { logger } from '../config/logger.js';
+import { logger } from "../config/logger.js";
 import { Usuario } from "../domain/usuario.js";
 import { NotificacionMapper } from "../mappers/notificacionMapper.js";
+import { FactoryNotificacion } from "../domain/factoryNotificacion.js";
 
 export class NotificacionService {
-    constructor({ notificacionRepository = new NotificacionRepository(), usuarioService = new UsuarioService() } = {}) {
+    constructor({ notificacionRepository = new NotificacionRepository(), usuarioService = new UsuarioService(), factoryNotificacion = new FactoryNotificacion() } = {}) {
         this.notificacionRepository = notificacionRepository;
         this.usuarioService = usuarioService;
+        this.factoryNotificacion = factoryNotificacion;
     }
 
-    async crearNotificacion(notificacionData) { //funciona
-        logger.info("[NOTIFICACIONES SERVICE]: Obteniendo datos necesarios para crear la notificacion")
+    async crearNotificacion(notificacionData) {
+        logger.info("[NOTIFICACIONES SERVICE]: Obteniendo datos necesarios para crear la notificacion");
         const destinatarioObtenido = await this.usuarioService.findById(notificacionData.destinatario);
         const destinatario = new Usuario(destinatarioObtenido); destinatario.id = destinatarioObtenido.id;
         notificacionData.destinatario = destinatario;
@@ -22,21 +24,27 @@ export class NotificacionService {
         notificacionData.remitente = remitente;
 
         const notificacion = new Notificacion(notificacionData);
-
-        logger.info("[NOTIFICACIONES SERVICE]: Creando notificacion con id: ", notificacionData.id);
-        const guardado = await this.notificacionRepository.save(notificacion);
-        logger.info("[NOTIFICACIONES SERVICE]: Notificacion creada: ", guardado);
-        return NotificacionMapper.toDTO(guardado);
+        const notificacionGuardada = await this.notificacionRepository.save(notificacion);
+        logger.info("[NOTIFICACIONES SERVICE]: Notificacion creada: ", notificacionGuardada);
+        return NotificacionMapper.toDTO(notificacionGuardada);
     }
 
-    async getLeidosNoLeidos(idDestinatario, leido) { //TODO: VER QUE FUNCIONE
+    async crearNotificacionSegunTurno(turno) {
+        logger.info("[NOTIFICACIONES SERVICE]: Creando la notificacion con el Factory para el turno ", turno);
+        const notificacion = this.factoryNotificacion.crearSegunEstadoTurno(turno);
+        const notificacionGuardada = await this.notificacionRepository.save(notificacion);
+        logger.info("[NOTIFICACIONES SERVICE]: Notificacion creada: ", notificacionGuardada);
+        return NotificacionMapper.toDTO(notificacionGuardada);
+    }
+
+    async getLeidosNoLeidos(idDestinatario, leido) {
         logger.info("[NOTIFICACIONES SERVICE]: Obteniendo notificaciones " + ((leido) ? "leidas" : "no leidas") + " del usuario " + idDestinatario);
         const notificaciones = await this.notificacionRepository.getByDestinatarioIdAndLeido(idDestinatario, leido);
         logger.info("[NOTIFICACIONES SERVICE]: Se obtuvieron las notificaciones: ", notificaciones);
         return notificaciones.map(n => NotificacionMapper.toDTO(n));
     }
 
-    async getLeidosNoLeidosPaginado(idDestinatario, leido, page = 1, limit = 10) { //TODO: VER QUE FUNCIONE
+    async getLeidosNoLeidosPaginado(idDestinatario, leido, page = 1, limit = 10) {
         logger.info("[NOTIFICACIONES SERVICE]: Obteniendo notificaciones " + (leido ? "leidas" : "no leidas") + " del usuario " + idDestinatario);
         const resultado = await this.notificacionRepository.getByDestinatarioIdAndLeidoPaginado(idDestinatario, leido, page, limit);
 
@@ -66,12 +74,13 @@ export class NotificacionService {
         };
     }*/
 
-    async leer(idNotificacion) { //TODO: VER QUE FUNCIONE
+    async leer(idNotificacion) {
         logger.info("[NOTIFICACIONES SERVICE]: Obteniendo los datos necesarios para leer la notificacion");
         const notificacion = await this.notificacionRepository.getById(idNotificacion);
 
-        if (!notificacion) throw new BadRequestError("No se encontro la notificacion con el id " + idNotificacion);
+        if (!notificacion) throw new NotFoundError("No se encontro la notificacion con el id " + idNotificacion);
         logger.info("[NOTIFICACIONES SERVICE]: Leyendo notificacion: ", idNotificacion);
+        if (notificacion.leida === true) return NotificacionMapper.toDTO(notificacion); //de ultima que tire BadRequestError
         notificacion.marcarComoLeida();
         const notificacionGuardada = await this.notificacionRepository.save(notificacion);
         logger.info("[NOTIFICACIONES SERVICE]: Notificacion leida: ", notificacionGuardada);
