@@ -9,6 +9,10 @@ const turnoSchema = new mongoose.Schema({
         type: Date,
         required: true,
     },
+    fechaHoraPropuesta: {
+        type: Date,
+        required: false,
+    },
     estado: {
         type: String,
         required: true,

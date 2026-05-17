@@ -26,6 +26,7 @@ export class TurnoService {
         return {
             id: turno.id || turno._id, //validacion de if default de mongo
             fechaHora: turno.fechaHora,
+            fechaHoraPropuesta: turno.fechaHoraPropuesta,
             estado: turno.estado,
             medico: turno.medico?.id,
             paciente: turno.paciente?.id,
@@ -47,6 +48,7 @@ export class TurnoService {
         if (!turno) {
             throw new BadRequestError("No se encontro el turno con el id " + id)
         }
+
         turno.actualizarEstadoTurno({ nuevoEstado, quien, motivo })
         return this.toDTO(await this.turnoRepository.update(id, turno));
     }
@@ -104,7 +106,6 @@ export class TurnoService {
         return this.toDTO(await this.turnoRepository.update(idTurno, turno));
     }
 
-
     // TODO:● Ordenamiento por costo y fecha ascendente/descendente FALTA
     async obtenerTodosPaginados(numeroPagina = 1, limitePorPagina = Number(process.env.ITEMS_PER_PAGE) || 10, filtros = {}) {
         this.validarPaginacion(numeroPagina, limitePorPagina);
@@ -114,28 +115,24 @@ export class TurnoService {
 
         const totalPaginas = totalTurnos === 0 ? 0 : Math.ceil(totalTurnos / limitePorPagina)
 
-        /*
-        TODO Por cada turno calcular el precio que tiene que pagar el paciente, si la obra social y el plan del paciente cubren la prestacion, el paciente no tiene que pagar nada,
-         si la obra social cubre la prestacion pero el plan del paciente no, el paciente tiene que pagar un porcentaje de la prestacion,
-         si la obra social no cubre la prestacion, el paciente tiene que pagar el 100% de la prestacion.
-         TODO Si el paciente no tiene obra social ni plan, el paciente tiene que pagar el 100% de la prestacion.
-         SOLUCION:
-         1) MODO FACIL: QUERY PARAM Y QUE CARGUE LA OBRA SOCIAL Y EL PLAN CADA VEZ QUE SOLICITE UNA BUSQUEDA DE TURNOS
-         2) REALISTA: http::.../turnos?pacienteId={id} --> De aca obtenemos datos del paciente, su obra social, plan y de ahi podemos obtener  cuanto cubre su plan con esa obra social,
-         hay que chequear si tiene obra social, si existe esa practica o especialidad en el plan que tiene, luego si existe, cuanto es el porcentaje que le cubre y ahi calcular el cobro.
-        */
+        // Solo buscaremos el plan si tenemos un paciente para calcular la cobertura.
+        // Si el front pide por medicoId o algo sin paciente, no se calcularán coberturas que no aplican
+        if (filtrosValidados.pacienteId) {
+            const { obraSocial: osObtenida, plan: planObtenido } = await this.obtenerObraSocialYPlanPorPaciente(filtrosValidados.pacienteId);
+            obraSocial = osObtenida;
+            plan = planObtenido;
+        }
 
-        const { obraSocial, plan } = await this.obtenerObraSocialYPlanPorPaciente(filtrosValidados.pacienteId);
-
+        //solo se calcula si el turno tiene un servicio y si se filtra por pacienteID para una busqueda de turnos.
         const turnosConCobertura = turnos.map(t => {
-            const cobertura = this.calcularCostoTurno(obraSocial, plan, t.servicio, t.medico.honorario);
             const turnoDto = this.toDTO(t);
-
-            turnoDto.costo = cobertura.costoFinal;
-            turnoDto.estadoCobertura = cobertura.estadoCobertura;
-
+            if (t.servicio && filtrosValidados.pacienteId) {
+                const cobertura = this.calcularCostoTurno(obraSocial, plan, t.costo);
+                turnoDto.costo = cobertura.costoFinal;
+                turnoDto.estadoCobertura = cobertura.estadoCobertura;
+            }
             return turnoDto;
-        }); // TODO ANALIZAR SI QUEREMOS TODOS LOS TURNOS QUE EXISTEN SI HACER OTRA FUNCION
+        });
 
         return {
             turnosConCobertura,
@@ -170,14 +167,94 @@ export class TurnoService {
         return this.toDTO(turnoActualizado);
     }
 
+    async solicitarCambioFecha(idTurno, nuevaFechaHora, usuarioId) {
+        const turno = await this.turnoRepository.findById(idTurno);
+        if (!turno) {
+            throw new NotFoundError("No se encontro el turno con el id " + idTurno);
+        }
+
+        let quien;
+        let receptor;
+        let rol;
+        if (turno.paciente && (turno.paciente.toString() === usuarioId || turno.paciente.id === usuarioId)) {
+            quien = await this.pacienteRepository.findById(usuarioId);
+            receptor = await this.medicoRepository.findById(turno.medico);
+            rol = "paciente";
+        } else if (turno.medico && (turno.medico.toString() === usuarioId || turno.medico.id === usuarioId)) {
+            quien = await this.medicoRepository.findById(usuarioId);
+            receptor = await this.pacienteRepository.findById(turno.paciente);
+            rol = "médico";
+        } else {
+            throw new BadRequestError("El turno no pertenece a este usuario");
+        }
+
+        turno.fechaHoraPropuesta = nuevaFechaHora;
+        turno.actualizarEstadoTurno({
+            nuevoEstado: EstadoTurnoEnum.PENDIENTECAMBIO,
+            quien,
+            motivo: `El ${rol} propone cambio de fecha a ${nuevaFechaHora}`
+        });
+
+        // TODO: notificacionService.notificarCambio(receptor, quien);
+
+        return this.toDTO(await this.turnoRepository.update(idTurno, turno));
+    }
+
+    async responderCambioFecha(idTurno, aceptado, usuarioId) {
+        const turno = await this.turnoRepository.findById(idTurno);
+        if (!turno) {
+            throw new NotFoundError("No se encontro el turno con el id " + idTurno);
+        }
+
+        if (turno.estado !== EstadoTurnoEnum.PENDIENTECAMBIO) {
+            throw new BadRequestError("El turno no está pendiente de cambio");
+        }
+
+        let quien;
+        let receptor;
+        let rol;
+        if (turno.paciente && (turno.paciente.toString() === usuarioId || turno.paciente.id === usuarioId)) {
+            quien = await this.pacienteRepository.findById(usuarioId);
+            receptor = await this.medicoRepository.findById(turno.medico);
+            rol = "paciente";
+        } else if (turno.medico && (turno.medico.toString() === usuarioId || turno.medico.id === usuarioId)) {
+            quien = await this.medicoRepository.findById(usuarioId);
+            receptor = await this.pacienteRepository.findById(turno.paciente);
+            rol = "médico";
+        } else {
+            throw new BadRequestError("El turno no pertenece a este usuario");
+        }
+
+        if (aceptado) {
+            turno.fechaHora = turno.fechaHoraPropuesta;
+            turno.fechaHoraPropuesta = undefined;
+            turno.actualizarEstadoTurno({
+                nuevoEstado: EstadoTurnoEnum.CONFIRMADO,
+                quien,
+                motivo: `El ${rol} aceptó la propuesta de cambio de fecha`
+            });
+            // TODO: notificacionService.notificarCambio(receptor, quien);
+        } else {
+            turno.fechaHoraPropuesta = undefined;
+            turno.actualizarEstadoTurno({
+                nuevoEstado: EstadoTurnoEnum.RESERVADO,
+                quien,
+                motivo: `El ${rol} rechazó el cambio de fecha. Se conserva la original.`
+            });
+            // TODO: notificacionService.notificarCambio(receptor, quien);
+        }
+
+        return this.toDTO(await this.turnoRepository.update(idTurno, turno));
+    }
+
 
     //-------Funciones aux----------
 
-    calcularCostoTurno(obraSocial, plan, servicio, honorarioMedico) {
-        const precioInicial = servicio.precio + honorarioMedico;
+    calcularCostoTurno(obraSocial, plan, precioBase) {
+        const precioFinal = precioBase;
 
         if (!obraSocial || !plan) {
-            return precioInicial; // Si no hay obra social ni plan, el paciente paga el 100%
+            return precioFinal; // Si no hay obra social ni plan, el paciente paga el 100%
         }
 
         const { nivel, porcentaje } = plan.obtenerCoberturaServicio(servicio);
@@ -186,11 +263,11 @@ export class TurnoService {
             case NivelCobertura.TOTAL:
                 return { costoFinal: 0, estadoCobertura: "TOTAL" };
             case NivelCobertura.PARCIAL:
-                return { costoFinal: precioInicial * porcentaje, estadoCobertura: "PARCIAL" };
+                return { costoFinal: precioFinal * porcentaje, estadoCobertura: "PARCIAL" };
             case NivelCobertura.NO_CUBIERTA:
-                return { costoFinal: precioInicial, estadoCobertura: "NO_CUBIERTA" };
+                return { costoFinal: precioFinal, estadoCobertura: "NO_CUBIERTA" };
             default:
-                return { costoFinal: precioInicial, estadoCobertura: "NO_CUBIERTA" };
+                return { costoFinal: precioFinal, estadoCobertura: "NO_CUBIERTA" };
         }
     }
 

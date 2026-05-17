@@ -27,7 +27,9 @@ export const filtrosTurnoSchema = z.object({
     fechaHora: z.object({
         inicio: z.coerce.date({ invalid_type_error: "Fecha de inicio inválida" }),
         fin: z.coerce.date({ invalid_type_error: "Fecha de fin inválida" })
-    }).optional()
+    }).optional(),
+    ordenPorCosto: z.enum(["asc", "desc"]).optional(),
+    ordenPorFecha: z.enum(["asc", "desc"]).optional()
 }).superRefine((filtros, ctx) => {
     if (filtros.fechaHora && filtros.fechaHora.inicio > filtros.fechaHora.fin) {
         ctx.addIssue({
@@ -45,6 +47,16 @@ export const turnoBaseSchema = z.object({
     servicioId: objectIdSchema("servicio"),
     estado: z.enum(EstadoTurnoEnum, { error: "El estado del turno no es válido" }),
     fechaHora: z.coerce.date({ invalid_type_error: "Fecha inválida" })
+});
+
+export const bodySolicitarCambioFechaSchema = z.object({
+    nuevaFechaHora: z.coerce.date({ invalid_type_error: "La nueva fecha debe ser una fecha válida" }),
+    usuarioId: z.string({ required_error: "El id del usuario es requerido" })
+});
+
+export const bodyResponderCambioFechaSchema = z.object({
+    aceptado: z.boolean({ required_error: "Debe indicar si el cambio es aceptado o no" }),
+    usuarioId: z.string({ required_error: "El id del usuario es requerido" })
 });
 
 export const bodyUpdateTurnoSchema = turnoBaseSchema.partial();

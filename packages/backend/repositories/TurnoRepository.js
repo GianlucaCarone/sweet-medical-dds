@@ -98,6 +98,13 @@ disponible:
             query.servicio = filtros.servicioId;
         }
 
+        const ordenamiento = {};
+        if (filtros.ordenPorCosto !== undefined) {
+             ordenamiento.costoBase = filtros.ordenPorCosto === 'desc' ? -1 : 1;
+        }
+        if (filtros.ordenPorFecha !== undefined) {
+             ordenamiento.fechaHora = filtros.ordenPorFecha === 'desc' ? -1 : 1;
+        }
 
         const inicio = (numeroPagina - 1) * limitePorPagina;
 
@@ -105,6 +112,7 @@ disponible:
         const [turnos, totalTurnos] = await Promise.all([
             this.model.find(query)
                 .populate('medico paciente servicio sede')
+                .sort(ordenamiento)
                 .skip(inicio)
                 .limit(limitePorPagina)
                 .lean()

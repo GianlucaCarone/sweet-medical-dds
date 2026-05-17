@@ -11,6 +11,7 @@ export class Turno {
     servicio;
     paciente;
     fechaHora;
+    fechaHoraPropuesta;
     sede;
     estado;
     historialEstado;
