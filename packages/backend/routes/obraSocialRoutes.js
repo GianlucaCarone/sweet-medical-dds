@@ -16,8 +16,8 @@ export default function obraSocialRoutes(getController) {
         .delete((req, res, next) => obraSocialController.eliminar(req, res, next));
 
     router.route("/:obraSocialId/plan")
-        .get((req, res, next) => obraSocialController.findAllPaginated(req, res, next))
-        .post((req, res, next) => obraSocialController.findAllPaginated(req, res, next));
+        .get((req, res, next) => obraSocialController.buscarTodosLosPlanes(req, res, next))
+        .post((req, res, next) => obraSocialController.crearPlan(req, res, next));
 
     router.route("/:obraSocialId/plan/:planId")
         .get((req, res, next) => obraSocialController.buscarPlan(req, res, next))

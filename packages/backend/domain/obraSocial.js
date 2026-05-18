@@ -1,4 +1,4 @@
-import { randomUUID } from "crypto";
+// import { randomUUID } from "crypto";
 import { Plan } from "./plan.js";
 import { ErrorDatosObligatorios } from "../domain/errores.js";
 
@@ -11,7 +11,7 @@ export class ObraSocial {
     if (!nombre) {
       throw new ErrorDatosObligatorios("Faltan datos obligatorios");
     }
-    this.id = randomUUID();
+    // this.id = randomUUID();
     this.nombre = nombre;
   }
 
@@ -19,7 +19,7 @@ export class ObraSocial {
     if (!planId) {
       throw new Error("Id invalido");
     }
-    const plan = this.planes.find((plan) => plan.id === planId);
+    const plan = this.planes.find((plan) => plan._id.toString() === planId);
 
     return plan ?? null;
   }
@@ -35,6 +35,6 @@ export class ObraSocial {
     if (!planAEliminar) {
       throw new Error("Plan invalido");
     }
-    this.planes = this.planes.filter((plan) => plan.id !== planAEliminar.id);
+    this.planes = this.planes.filter((plan) => plan._id.toString() !== planAEliminar._id.toString());
   }
 }

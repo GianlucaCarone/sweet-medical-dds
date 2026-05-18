@@ -6,7 +6,9 @@ import { logger } from "../config/logger.js";
 import { ServicioMapper } from "../mappers/servicioMapper.js";
 
 export class ServicioService {
-    constructor({ serviciosRepository = new ServicioRepository() } = {}) {
+    constructor({
+        serviciosRepository = new ServicioRepository()
+    } = {}) {
         this.serviciosRepository = serviciosRepository;
     }
 
@@ -18,6 +20,13 @@ export class ServicioService {
         return ServicioMapper.toDTO(servicio);
     }
 
+    async findAll() {
+        logger.info("[SERVICIO SERVICE]: Obteniendo todos los servicios",);
+        const servicios = await this.serviciosRepository.findAll();
+        logger.info("[SERVICIO SERVICE]:Todos los servicios obtenidos: " + servicios);
+        return servicios.map(servicio => ServicioMapper.toDTO(servicio));
+    }
+
     async getEntityById(idServicio) {
         logger.info("[SERVICIO SERVICE]: Obteniendo servicio: ", idServicio);
         const servicio = await this.serviciosRepository.findById(idServicio);
@@ -26,7 +35,7 @@ export class ServicioService {
         return servicio;
     }
 
-    async create(datosServicio) { //TODO: VER QUE FUNCIONE
+    async create(datosServicio) {
         logger.info("[SERVICIO SERVICE]: Creando servicio: " + datosServicio);
 
         if (await this.serviciosRepository.findByNombre(datosServicio.nombre)) throw new ConflictError("Ya existe un servicio con ese nombre");
@@ -37,7 +46,7 @@ export class ServicioService {
         return ServicioMapper.toDTO(servicioGuardado);
     }
 
-    async update(idServicio, datosServicio) { //TODO: VER QUE FUNCIONE
+    async update(idServicio, datosServicio) {
         logger.info("[SERVICIO SERVICE]: Actualizando servicio.");
         const servicio = await this.serviciosRepository.findById(idServicio);
         if (!servicio) throw new NotFoundError("No se encontro el servicio con el id " + idServicio);
@@ -56,7 +65,7 @@ export class ServicioService {
         logger.info("[SERVICIO SERVICE]:Servicio eliminado.");
     }
 
-    async #crearEntidad(datosServicio) { //TODO: VER QUE FUNCIONE
+    async #crearEntidad(datosServicio) {
         if (!datosServicio.codigo && !datosServicio.especialidadPadreId) {
             logger.info("[SERVICIO SERVICE]: Creando especialidad.");
             const especialidadData = {

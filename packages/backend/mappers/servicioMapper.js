@@ -20,11 +20,11 @@ export class ServicioMapper {
         return {
             id: servicio.id,
             nombre: servicio.nombre,
-            tipo: servicio.tipo,
+            tipo: servicio instanceof Especialidad ? "Especialidad" : "Practica",
             duracion: servicio.duracionTurnoEnMins,
             costo: servicio.costo,
             codigo: servicio.codigo,
-            especialidadPadre: servicio.especialidadPadre
+            especialidadPadreId: servicio.especialidadPadre
         };
     }
 
@@ -44,7 +44,7 @@ export class ServicioMapper {
             duracionTurnoEnMins: practicaDoc.duracionTurnoEnMins,
             costo: practicaDoc.costo,
             codigo: practicaDoc.codigo,
-            especialidadPadre: this.#especialidadToDomain(practicaDoc.especialidadPadreId)
+            especialidadPadre: practicaDoc.especialidadPadreId /* this.#especialidadToDomain(practicaDoc.especialidadPadreId) */
         });
         practica.id = practicaDoc._id?.toString() ?? practicaDoc.id;
         return practica;

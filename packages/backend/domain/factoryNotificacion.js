@@ -1,39 +1,102 @@
 import { Notificacion } from "./notificacion.js";
 import { EstadoTurnoEnum } from "./turnos/estadoTurnoEnum.js";
-
-// TODO Investigar I18NN para manejar los mensajes de las notificaciones en diferentes idiomas.
+import { Especialidad } from "./servicios/especialidad.js";
+import { Usuario } from "./usuario.js";
+//import {i18next} from "./config/i18n.js";
 
 export class FactoryNotificacion {
-  crearSegunEstadoTurno(turno, remitente, destinatario) {
-    const servicio = turno.servicio?.nombre;
-    const sede = turno.sede?.nombre;
+  static #usuarioSistema;
+ 
+  static #t(clave, params /*, idiomaDestinatario*/) {
+    return i18next.t(clave, { ns: "notificaciones", ...params });
+  }
+ 
+  static #params(turno, destinatario) {
+    const esEspecialidad = turno.servicio instanceof Especialidad;
+    return {
+      paciente:     turno.paciente.nombre,
+      medico:       turno.medico.nombre,
+      tipoServicio: this.#t(esEspecialidad ? "tipoServicio.especialidad" : "tipoServicio.practica"),
+      destinatario: destinatario.nombre,
+      servicio:     turno.servicio.nombre,
+      sede:         turno.sede.nombre,
+    };
+  }
+ 
+  static crearSegunEstadoTurnoI(turno, remitente, destinatario) {
+    const claveEstado = `estados.${turno.estado}`;
+    if (!i18next.exists(claveEstado, { ns: "notificaciones" })) {
+      throw new Error(`Estado de turno desconocido: ${turno.estado}`);
+    }
+ 
+    return new Notificacion({
+      destinatario: destinatario,
+      remitente:    remitente,
+      mensaje:      this.#t(claveEstado, this.#params(turno, destinatario /*, destinatario.idioma */)),
+    });
+  }
+ 
+  static crearSegunFechaTurnoI(turno, destinatario) {
+    const esMañana = turno.fechaHora.getDay() === new Date().getDay() + 1;
+    if (!esMañana) return null;
+ 
+    return new Notificacion({
+      destinatario: destinatario,
+      remitente:    this.#usuarioSistema,
+      mensaje:      this.#t("recordatorio", this.#params(turno, destinatario /*, destinatario.idioma */)),
+    });
+  }
 
-    let mensaje = "";
-    
+  static crearSegunEstadoTurno(turno, remitente, destinatario) {
     switch (turno.estado) {
       case EstadoTurnoEnum.RESERVADO:
-        mensaje = `El turno para el servicio de ${servicio} en la sede ${sede} ha sido reservado.`;
-        break;
+        return new Notificacion({
+          destinatario: destinatario,
+          remitente: remitente,
+          mensaje:
+            `El turno fue reservado por el paciente ${turno.paciente.nombre} 
+            ${turno.servicio instanceof Especialidad ? "para la especialidad" : "con la practica"} ${turno.servicio.nombre} 
+            en la sede ${turno.sede.nombre}`
+        });
       case EstadoTurnoEnum.CANCELADO:
-        mensaje = `El turno para el servicio de ${servicio} en la sede ${sede} ha sido cancelado.`;
-        break;
+        return new Notificacion({
+          destinatario: destinatario,
+          remitente: remitente,
+          mensaje:
+            `El turno fue cancelado por el paciente ${turno.paciente.nombre} 
+            ${turno.servicio instanceof Especialidad ? "para la especialidad" : "con la practica"} ${turno.servicio.nombre} 
+            en la sede ${turno.sede.nombre}`
+        });
       case EstadoTurnoEnum.CONFIRMADO:
-        mensaje = `El turno para el servicio de ${servicio} en la sede ${sede} ha sido confirmado.`;
-        break;
-      case EstadoTurnoEnum.PENDIENTECAMBIO:
-        mensaje = `El turno para el servicio de ${servicio} en la sede ${sede} tiene un cambio pendiente de confirmación.`;
-        break;
+        return new Notificacion({
+          destinatario: destinatario,
+          remitente: remitente,
+          mensaje:
+            `El turno fue confirmado por el medico ${turno.medico.nombre}
+            ${turno.servicio instanceof Especialidad ? "para la especialidad" : "con la practica"} ${turno.servicio.nombre} 
+            en la sede ${turno.sede.nombre}`
+        });
       default:
         throw new Error("Estado de turno desconocido");
     }
+  }
 
-    return new Notificacion({
-      destinatario,
-      remitente,
-      mensaje
-    });
+  static crearSegunFechaTurno (turno, destinatario) {
+    if(turno.fechaHora.getDay() === new Date().getDay() + 1) {
+      return new Notificacion({
+          destinatario: destinatario,
+          remitente: this.#usuarioSistema,
+          mensaje:
+            `Hola, señor/a ${destinatario.nombre}! Desde Sweet Medical le recordamos que su turno
+            ${turno.servicio instanceof Especialidad ? "para la especialidad" : "con la practica"} ${turno.servicio.nombre} 
+            en la sede ${turno.sede.nombre} 
+            es el día de mañana.`
+        });
+    }
+  }
+ 
+  static setUsuarioSistema(usuario) {
+    if (!(usuario instanceof Usuario)) throw new Error("El sistema debe ser un usuario.");
+    this.#usuarioSistema = usuario;
   }
 }
-
-//El día previo al turno, se envía un recordatorio tanto al paciente como al médico.
-// Consideramos que es parte de la capa de service se encargue de filtrar los turnos del dia siguientes y crear y enviar las notificaciones 

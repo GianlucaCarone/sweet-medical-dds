@@ -1,4 +1,6 @@
 import { Turno } from "../domain/turnos/turno.js";
+import { MedicoMapper } from "./medicoMapper.js";
+import { PacienteMapper } from "./pacienteMapper.js";
 
 export class TurnoMapper {
   static toDomain(turnoDoc) {
@@ -45,11 +47,11 @@ export class TurnoMapper {
 
   static toPersistence(turno) {
     return {
-      medico: turno.medico?.id ?? turno.medico,
+      medico: turno.medico?.id || turno.medico,
       fechaHora: turno.fechaHora,
-      sede: turno.sede?.id ?? turno.sede,
-      servicio: turno.servicio?.id ?? turno.servicio,
-      paciente: turno.paciente?.id ?? turno.paciente ?? null,
+      sede: turno.sede?.id || turno.sede,
+      servicio: turno.servicio?.id || turno.servicio,
+      paciente: turno.paciente?.id || turno.paciente,
       estado: turno.estado,
       historialEstado: turno.historialEstado ?? [],
       fechaHoraPropuesta: turno.fechaHoraPropuesta,

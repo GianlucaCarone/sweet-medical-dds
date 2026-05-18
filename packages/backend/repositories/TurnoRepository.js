@@ -40,9 +40,11 @@ export class TurnoRepository {
     async save(turno) {
         const nuevoTurno = new this.model(TurnoMapper.toPersistence(turno));
         const saved = await nuevoTurno.save();
-
-        return saved.toObject();
+        await saved.populate('medico paciente servicio sede');
+        return TurnoMapper.toDomain(saved);
     }
+
+
 
     async update(id, turno) {
         const doc = await this.model.findByIdAndUpdate(id, TurnoMapper.toPersistence(turno), { new: true }).lean().exec();

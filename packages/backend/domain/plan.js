@@ -1,6 +1,6 @@
 import { CoberturaEspecialidad } from "./coberturas/coberturaEspecialidad.js";
 import { CoberturaPractica } from "./coberturas/coberturaPractica.js";
-import { randomUUID } from "crypto";
+// import { randomUUID } from "crypto";
 import { Especialidad } from "./servicios/especialidad.js";
 import { Practica } from "./servicios/practica.js";
 import { ErrorDatosObligatorios } from "../domain/errores.js";
@@ -15,7 +15,7 @@ export class Plan {
     if (!nombre) {
       throw new ErrorDatosObligatorios();
     }
-    this.id = randomUUID();
+    // this.id = randomUUID();
     this.nombre = nombre;
   }
 
@@ -56,9 +56,9 @@ export class Plan {
     }
     throw new Error("Servicio inválido");
   }
-  obtenerCoberturaEspecialidad(especialidad) {
+  obtenerCoberturaEspecialidad(especialidadId) {
     const cobertura = this.coberturasEspecialidad.find(
-      (ce) => ce.especialidad === especialidad,
+      (ce) => (ce.especialidad.id ?? ce.especialidad) === especialidadId,
     );
     return cobertura ? { nivel: cobertura.nivel, porcentaje: cobertura.porcentajeCobertura } : null;
   }

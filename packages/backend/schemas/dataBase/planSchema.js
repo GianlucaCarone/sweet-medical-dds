@@ -4,10 +4,6 @@ import { coberturaPracticaSchema } from "./coberturaPractica.js";
 import { Plan } from "../../domain/plan.js";
 
 export const planSchema = new mongoose.Schema({
-    _id: {
-        type: String,
-        required: true,
-    },
     nombre: {
         type: String,
         required: true,

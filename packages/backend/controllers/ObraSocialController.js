@@ -1,4 +1,5 @@
 import { ObraSocialService } from "../services/ObraSocialService.js";
+import { actualizarObraSocialSchema, actualizarPlanObraSocialSchema, crearObraSocialSchema, crearPlanObraSocialSchema, obraSocialIdParamSchema, planIdParamSchema } from "../schemas/zod/obraSocialSchema.js"
 
 export class ObraSocialController {
     #obraSocialService;
@@ -6,99 +7,103 @@ export class ObraSocialController {
         this.#obraSocialService = obraSocialService;
     }
 
-    crear(req, res, next) {
-        const { crearObraSocialDto } = req.body;
+    async crear(req, res, next) {
         try {
-            const nuevaObraSocial = this.#obraSocialService.crear(crearObraSocialDto);
-            res.status(200).json({ status: "success", data: nuevaObraSocial });
+            const crearObraSocialDto = crearObraSocialSchema.parse(req.body);
+            const nuevaObraSocial = await this.#obraSocialService.crear(crearObraSocialDto);
+            res.status(201).json({ status: "success", data: nuevaObraSocial });
         } catch (error) {
             return next(error);
         }
     }
-    buscarTodos(req, res, next) {
+    async buscarTodos(req, res, next) {
         try {
-            const obrasSociales = this.#obraSocialService.buscarTodos();
+            // TODO evaluar paginación
+            const obrasSociales = await this.#obraSocialService.buscarTodos();
             res.status(200).json({ status: "success", data: obrasSociales });
         } catch (error) {
-            next(error);
+            return next(error)
         }
     }
 
-    buscar(req, res, next) {
-        const { obraSocialId } = req.params;
+    async buscar(req, res, next) {
         try {
-            const obraSocial = this.#obraSocialService.buscar(obraSocialId);
+            const { obraSocialId } = obraSocialIdParamSchema.parse(req.params)
+            const obraSocial = await this.#obraSocialService.buscar(obraSocialId)
             res.status(200).json({ status: "success", data: obraSocial });
         } catch (error) {
-            next(error);
+            return next(error)
         }
     }
-    eliminar(req, res, next) {
-        const { obraSocialId } = req.params;
+    async eliminar(req, res, next) {
         try {
-            const obraSocialEliminada = this.#obraSocialService.eliminar(obraSocialId);
-            res.status(200).json({ status: "success", data: obraSocialEliminada });
+            const { obraSocialId } = obraSocialIdParamSchema.parse(req.params)
+            const obraSocialEliminada = await this.#obraSocialService.eliminar(obraSocialId);
+            res.status(202).json({ status: "success", data: obraSocialEliminada });
         } catch (error) {
-            next(error);
+           return next(error)
         }
     }
-    actualizar(req, res, next) {
-        const { obraSocialId } = req.query;
-        const { actualizarObraSocialDto } = req.body;
+    async actualizar(req, res, next) {
+        const { obraSocialId } = obraSocialIdParamSchema.parse(req.params)
+        const actualizarObraSocialDto = actualizarObraSocialSchema.parse(req.body)
         try {
-            const obraSocialActualizada = this.#obraSocialService.actualizar(obraSocialId, actualizarObraSocialDto);
+            const obraSocialActualizada = await this.#obraSocialService.actualizar(obraSocialId, actualizarObraSocialDto);
             res.status(200).json({ status: "success", data: obraSocialActualizada });
         } catch (error) {
-            next(error);
+            return next(error)
         }
     }
 
-    crearPlan(req, res, next) {
-        const { obraSocialId } = req.params;
-        const { crearPlanDto } = req.body;
+    async crearPlan(req, res, next) {
         try {
-            const planObraSocialCreado = this.#obraSocialService.crearPlan(obraSocialId, crearPlanDto);
-            res.status(200).json({ status: "success", data: planObraSocialCreado });
+            const { obraSocialId } = obraSocialIdParamSchema.parse(req.params)
+            const crearPlanDto = crearPlanObraSocialSchema.parse(req.body)
+            const planObraSocialCreado = await this.#obraSocialService.crearPlan(obraSocialId, crearPlanDto);
+            res.status(201).json({ status: "success", data: planObraSocialCreado });
         } catch (error) {
-            next(error);
+            return next(error)
         }
     }
-    buscarTodosLosPlanes(req, res, next) {
-        const { obraSocialId } = req.params;
+    async buscarTodosLosPlanes(req, res, next) {
         try {
-            const planesObraSocial = this.#obraSocialService.buscarTodosLosPlanesDeObraSocial(obraSocialId);
+            const { obraSocialId } = obraSocialIdParamSchema.parse(req.params)
+            const planesObraSocial = await this.#obraSocialService.buscarTodosLosPlanesDeObraSocial(obraSocialId);
             res.status(200).json({ status: "success", data: planesObraSocial });
         } catch (error) {
-            next(error);
+            return next(error)
         }
     }
 
-    eliminarPlan(req, res, next) {
-        const { obraSocialId, planId } = req.params;
+    async eliminarPlan(req, res, next) {
         try {
-            const planObraSocialEliminado = this.#obraSocialService.eliminarPlanDeObraSocial(obraSocialId, planId);
-            res.status(200).json({ status: "success", data: planObraSocialEliminado });
+            const { obraSocialId } = obraSocialIdParamSchema.parse(req.params)
+            const { planId } = planIdParamSchema.parse(req.params)
+            const planObraSocialEliminado = await this.#obraSocialService.eliminarPlanDeObraSocial(obraSocialId, planId);
+            res.status(202).json({ status: "success", data: planObraSocialEliminado });
         } catch (error) {
-            next(error);
+            return next(error)
         }
     }
-    actualizarPlan(req, res, next) {
-        const { obraSocialId, planId } = req.params;
-        const { actualizarPlanDto } = req.body;
+    async actualizarPlan(req, res, next ) {
         try {
-            const planObraSocialActualizado = this.#obraSocialService.actualizarPlanDeObraSocial(obraSocialId, planId, actualizarPlanDto);
+            const { obraSocialId } = obraSocialIdParamSchema.parse(req.params)
+            const { planId } = planIdParamSchema.parse(req.params)
+            const actualizarPlanDto = actualizarPlanObraSocialSchema.parse(req.body)
+            const planObraSocialActualizado = await this.#obraSocialService.actualizarPlanDeObraSocial(obraSocialId, planId, actualizarPlanDto);
             res.status(200).json({ status: "success", data: planObraSocialActualizado });
         } catch (error) {
-            next(error);
+            return next(error)
         }
     }
-    buscarPlan(req, res, next) {
-        const { obraSocialId, planId } = req.params;
+    async buscarPlan(req, res, next) {
         try {
-            const planObraSocialEncontrado = this.#obraSocialService.buscarPlanDeObraSocial(obraSocialId, planId);
+            const { obraSocialId } = obraSocialIdParamSchema.parse(req.params)
+            const { planId } = planIdParamSchema.parse(req.params)
+            const planObraSocialEncontrado = await this.#obraSocialService.buscarPlanDeObraSocial(obraSocialId, planId);
             res.status(200).json({ status: "success", data: planObraSocialEncontrado });
         } catch (error) {
-            next(error);
+            return next(error)
         }
     }
 }

@@ -54,7 +54,7 @@ export class MedicoRepository {
         },
         "sedes",
       ])
-      .lean(); //TODO: faltan las sedes
+      .lean();
     const mensaje = medico
       ? "Medico obtenido: " + medico
       : "No se encontro el medico con id: " + idMedico;

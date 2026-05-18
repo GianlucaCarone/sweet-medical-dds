@@ -1,4 +1,4 @@
-import { ServicioModel, EspecialidadModel, PracticaModel } from "../schemas/database/servicioSchema.js";
+import { ServicioModel, EspecialidadModel, PracticaModel } from "../schemas/dataBase/servicioSchema.js";
 import { ServicioMapper } from "../mappers/servicioMapper.js";
 import { Especialidad } from "../domain/servicios/especialidad.js";
 import { Practica } from "../domain/servicios/practica.js";
@@ -35,7 +35,7 @@ export class ServicioRepository {
         logger.info("[SERVICIO REPOSTIRORY]: Obteniendo todos los servicios");
         const servicios = await this.model.find();
         logger.info("[SERVICIO REPOSTIRORY]: Todos los servicios obtenidos: " + servicios);
-        return servicios;
+        return servicios.map(s => ServicioMapper.toDomain(s));
     }
 
     async findById(idServicio) {

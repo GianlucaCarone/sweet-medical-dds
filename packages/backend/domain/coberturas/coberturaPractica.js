@@ -12,7 +12,7 @@ export class CoberturaPractica {
         if (!practica || !nivel || !porcentajeCobertura) {
             throw new ErrorDatosObligatorios();
         }
-        if (!(practica instanceof Practica)) {
+        if (!(practica instanceof Practica) && typeof practica !== "string") {
             throw new Error("Practica inválida");
         }
         if (!Object.values(NivelCobertura).includes(nivel)) { //Como NivelCobertura es un objeto plano inmutable, para chequearlo usamos Object.values
