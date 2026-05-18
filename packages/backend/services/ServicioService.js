@@ -14,6 +14,13 @@ export class ServicioService {
         this.serviciosRepository = serviciosRepository;
     }
 
+    async getAll() {
+        logger.info("[SERVICIO SERVICE]: Obteniendo todos los servicios");
+        const servicios = await this.serviciosRepository.findAll();
+        logger.info("[SERVICIO SERVICE]:Todos los servicios obtenidos: " + servicios);
+        return servicios;
+    }
+
     async getById(idServicio) {
         logger.info("[SERVICIO SERVICE]: Obteniendo servicio: ", idServicio);
         const servicio = await this.serviciosRepository.findById(idServicio);
