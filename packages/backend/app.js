@@ -54,7 +54,7 @@ const usuarioController = new UsuarioController();
 server.setController(UsuarioController, usuarioController);
 
 const medicoController = new MedicoController();
-server.setController(MedicoController, medicoController);
+server.setController(MedicoController, medicoController, new MedicoController({ turnoService }));
 
 const turnoService = new TurnoService();
 

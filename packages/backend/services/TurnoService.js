@@ -16,7 +16,7 @@ import { PacienteRepository } from "../repositories/PacienteRepository.js";
 import { logger } from "../config/logger.js";
 import { MedicoService } from "../services/MedicoService.js";
 import { UsuarioService } from "../services/UsuarioService.js";
-import { MedicoMapper } from "../mappers/medicoMapper.js";
+//import { MedicoMapper } from "../mappers/medicoMapper.js";
 import { TurnoMapper } from "../mappers/turnoMapper.js";
 import { NotificacionService } from "./NotificacionService.js";
 

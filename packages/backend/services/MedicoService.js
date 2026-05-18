@@ -7,7 +7,7 @@ import { Medico } from "../domain/medico.js";
 import { SedeService } from "./SedeService.js";
 import { logger } from "../config/logger.js";
 import { MedicoMapper } from "../mappers/medicoMapper.js";
-import { TurnoService } from "./TurnoService.js";
+
 
 export class MedicoService {
   constructor({
