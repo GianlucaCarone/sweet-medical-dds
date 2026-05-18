@@ -22,7 +22,7 @@ export class ServicioController {
         } catch (error) {
             next(error);
         }
-    }
+    };
 
     create = async (req, res, next) => {
         try {
@@ -53,7 +53,7 @@ export class ServicioController {
             logger.error("No se pudo crear el servicio.");
             next(error);
         }
-    }
+    };
 
     update = async (req, res, next) => {
         try {

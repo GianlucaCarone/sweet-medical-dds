@@ -19,7 +19,6 @@ import { UsuarioService } from "../services/UsuarioService.js";
 //import { MedicoMapper } from "../mappers/medicoMapper.js";
 import { TurnoMapper } from "../mappers/turnoMapper.js";
 import { NotificacionService } from "./NotificacionService.js";
-import { logger } from "../config/logger.js";
 import { SedeRepository } from "../repositories/SedeRepository.js";
 import { ServicioService } from "./ServicioService.js";
 import { ServicioMapper } from "../mappers/servicioMapper.js";
@@ -390,6 +389,17 @@ export class TurnoService {
     const turnoActualizado = await this.turnoRepository.update(idTurno, turno);
     logger.info(`[TURNO SERVICE]: Respuesta a cambio de fecha procesada. Turno ${idTurno} actualizado`);
     return TurnoMapper.toDTO(turnoActualizado);
+  }
+
+  async generarNotificacionesDeTurnosProximos() {
+    logger.info("[TURNO SERVICE]: Generando notificaciones para turnos próximos");
+    const turnosProximos = await this.turnoRepository.find({date: { $e: new Date(Date.now()).getDay() + 1}, estado: EstadoTurnoEnum.CONFIRMADO}); //turnos confirmados de mañana
+    logger.info(`[TURNO SERVICE]: Se encontraron ${turnosProximos.length} turnos próximos para notificar`);
+    for (const turno of turnosProximos) {
+      await this.notificacionService.crearNotificacionSegunFechaTurno(turno, turno.medico);
+      await this.notificacionService.crearNotificacionSegunFechaTurno(turno, turno.paciente);
+    }
+    logger.info("[TURNO SERVICE]: Se ha notificado a los usuarios de los turnos próximos");
   }
 
   //-------Funciones aux----------
