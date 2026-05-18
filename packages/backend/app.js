@@ -9,7 +9,7 @@ import { ObraSocialController } from "./controllers/ObraSocialController.js";
 import { UsuarioController } from "./controllers/UsuarioController.js";
 import { MedicoController } from "./controllers/MedicoController.js";
 import { TurnoService } from "./services/TurnoService.js";
-import { iniciarGeneracionTurnosBatch } from "./batch/generacionTurnos.js";
+import { iniciarGeneracionTurnosBatch } from "./schedulers/generacionTurnos.js";
 import { SedeController } from "./controllers/SedeController.js";
 
 const app = express();
@@ -54,7 +54,7 @@ const usuarioController = new UsuarioController();
 server.setController(UsuarioController, usuarioController);
 
 const medicoController = new MedicoController();
-server.setController(MedicoController, medicoController, new MedicoController({ turnoService }));
+server.setController(MedicoController, medicoController);
 
 const turnoService = new TurnoService();
 
