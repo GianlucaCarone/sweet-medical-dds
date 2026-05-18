@@ -27,6 +27,9 @@ export default function turnoRoutes(getController) {
     router.route("/:id")
         .get((req, res, next) => turnoController.findById(req, res, next))
         .patch((req, res, next) => turnoController.update(req, res, next));
+    
+    router.route("/mis-turnos")
+        .get((req, res, next) => turnoController.findAllPaginatedByUsuario(req, res, next));
 
     return router;
 }

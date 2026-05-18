@@ -73,7 +73,29 @@ export class TurnoController {
       );
       res.status(200).json({
         status: "success",
-        data: resultado.turnos,
+        data: resultado.turnosConCobertura, 
+        paginacion: {
+          numeroPagina: resultado.numeroPagina,
+          limitePorPagina: resultado.limitePorPagina,
+          totalPaginas: resultado.totalPaginas,
+          totalTurnos: resultado.totalTurnos,
+        },
+      });
+    } catch (error) {
+      return next(error);
+    }
+  };
+
+  findAllPaginatedByUsuario = async (req, res, next) => {
+    try {
+      const paginacion = this.extraerPaginacion(req.query);
+      const filtros = this.extraerFiltros(req.query);
+      
+      const resultado = await this.turnoService.obtenerTurnosDeUsuario(filtros, paginacion.numeroPagina, paginacion.limitePorPagina);
+
+      res.status(200).json({
+        status: "success",
+        data: resultado.turnos, 
         paginacion: {
           numeroPagina: resultado.numeroPagina,
           limitePorPagina: resultado.limitePorPagina,

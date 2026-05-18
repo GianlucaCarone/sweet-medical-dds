@@ -1,6 +1,6 @@
 import { UsuarioService } from "../services/UsuarioService.js";
 import { usuarioSchema } from "../schemas/zod/usuarioSchema.js";
-import { idParamObjectIdSchema } from "../schemas/zod/urlSchema.js";
+import { idParamObjectIdSchema , objectIdSchema } from "../schemas/zod/urlSchema.js";
 import { logger } from "../config/logger.js";
 
 export class UsuarioController {

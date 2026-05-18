@@ -13,6 +13,7 @@ import { ObraSocialRepository } from "../repositories/ObraSocialRepository.js";
 import { MedicoRepository } from "../repositories/MedicoRepository.js";
 import { PacienteRepository } from "../repositories/PacienteRepository.js";
 import { TurnoMapper } from "../mappers/turnoMapper.js";
+import { NotificacionService } from "./NotificacionService.js";
 
 export class TurnoService {
   constructor({
@@ -20,15 +21,17 @@ export class TurnoService {
     pacienteRepository = new PacienteRepository(),
     obraSocialRepository = new ObraSocialRepository(),
     medicoRepository = new MedicoRepository(),
+    notificacionService = new NotificacionService(),
   } = {}) {
     this.turnoRepository = turnoRepository;
     this.pacienteRepository = pacienteRepository;
     this.obraSocialRepository = obraSocialRepository;
     this.medicoRepository = medicoRepository;
+    this.notificacionService = notificacionService;
   }
 
   async cambiarEstadoTurno(id, nuevoEstado, quien, motivo) {
-    const turno = await this.turnoRepository.findById(id);
+    const turno = await this.turnoRepository.findByIdPopulate(id);
     if (!turno) {
       throw new BadRequestError("No se encontro el turno con el id " + id);
     }
@@ -104,33 +107,26 @@ export class TurnoService {
     return TurnoMapper.toDTO(await this.turnoRepository.update(idTurno, turno));
   }
 
-  async obtenerTodosPaginados(
-    numeroPagina = 1,
-    limitePorPagina = Number(process.env.ITEMS_PER_PAGE) || 10,
-    filtros = {},
-  ) {
+  async obtenerTodosPaginados(numeroPagina = 1,limitePorPagina = Number(process.env.ITEMS_PER_PAGE) || 10,filtros = {}) {
     this.validarPaginacion(numeroPagina, limitePorPagina);
     const filtrosValidados = this.validarFiltros(filtros);
 
-    const { turnos, totalTurnos } = await this.turnoRepository.obtenerPaginados(
-      numeroPagina,
-      limitePorPagina,
-      filtrosValidados,
-    );
+    const filtrosParaBD = { ...filtrosValidados };
+    // Si buscamos turnos disponibles, quitamos pacienteId para que Mongoose no intente buscar un turno disponible con paciente asignado
+    if (filtrosParaBD.estado === EstadoTurnoEnum.DISPONIBLE) {
+      delete filtrosParaBD.pacienteId;
+    }
 
-    const totalPaginas =
-      totalTurnos === 0 ? 0 : Math.ceil(totalTurnos / limitePorPagina);
+    const { turnos, totalTurnos } = await this.turnoRepository.obtenerPaginados(numeroPagina,limitePorPagina,filtrosParaBD,);
+
+    const totalPaginas = totalTurnos === 0 ? 0 : Math.ceil(totalTurnos / limitePorPagina);
 
     let obraSocial = null;
     let plan = null;
 
     // Solo buscaremos el plan si tenemos un paciente para calcular la cobertura.
-    // Si el front pide por medicoId o algo sin paciente, no se calcularán coberturas que no aplican
     if (filtrosValidados.pacienteId) {
-      const { obraSocial: osObtenida, plan: planObtenido } =
-        await this.obtenerObraSocialYPlanPorPaciente(
-          filtrosValidados.pacienteId,
-        );
+      const { obraSocial: osObtenida, plan: planObtenido } = await this.obtenerObraSocialYPlanPorPaciente(filtrosValidados.pacienteId);
       obraSocial = osObtenida;
       plan = planObtenido;
     }
@@ -154,6 +150,30 @@ export class TurnoService {
       totalTurnos,
     };
   }
+
+  async obtenerTurnosDeUsuario(filtros, numeroPagina = 1, limitePorPagina = Number(process.env.ITEMS_PER_PAGE) || 10) {
+    this.validarPaginacion(numeroPagina, limitePorPagina);
+    const filtrosValidados = this.validarFiltros(filtros);
+
+    // Acá los filtros ya deberían venir validados con `pacienteId` o `medicoId`
+    // No calculamos la obra social en tiempo de ejecución porque se supone 
+    // que estos turnos (RESERVADO, CONFIRMADO, FINALIZADO) ya tienen un costo/asociación guardada
+    
+    const { turnos, totalTurnos } = await this.turnoRepository.obtenerPaginados(numeroPagina,limitePorPagina,filtrosValidados);
+
+    const totalPaginas = totalTurnos === 0 ? 0 : Math.ceil(totalTurnos / limitePorPagina);
+
+    const turnosDTo = turnos.map((t) => TurnoMapper.toDTO(t));
+
+    return {
+      turnos: turnosDTo,
+      numeroPagina,
+      limitePorPagina,
+      totalPaginas,
+      totalTurnos,
+    };
+  }
+
 
   async findById(id) {
     const turno = await this.turnoRepository.findById(id);
