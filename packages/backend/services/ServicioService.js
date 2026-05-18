@@ -25,6 +25,12 @@ export class ServicioService {
         return ServicioMapper.toDTO(servicio);
     }
 
+    async findAll() {
+        logger.info("[SERVICIO SERVICE]: Obteniendo todos los servicios",);
+        const servicios = await this.serviciosRepository.findAll();
+        return servicios.map(servicio => ServicioMapper.toDTO(servicio));
+    }
+
     async findEntityById(idServicio) {
         logger.info("[SERVICIO SERVICE]: Obteniendo servicio: ", idServicio);
         const servicio = await this.serviciosRepository.findById(idServicio);

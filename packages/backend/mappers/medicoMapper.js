@@ -36,7 +36,7 @@ export class MedicoMapper {
   static toDTO(medico) {
     if (medico instanceof Medico) {
       return {
-        id: medico._id,
+        id: medico.id,
         nombre: medico.nombre,
         matricula: medico.matricula,
         usuario: UsuarioMapper.toDTO(medico.usuario),

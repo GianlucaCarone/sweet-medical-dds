@@ -41,6 +41,11 @@ export class ServicioRepository {
         return ServicioMapper.toDomain(servicio);
     }
 
+    async findAll() {
+        logger.info("[SERVICIO REPOSTIRORY]: Obteniendo todos los servicios");
+        return await this.model.find();
+    }
+
     async findByNombre(nombreServicio) {
         logger.info("[SERVICIO REPOSTIRORY]: Obteniendo servicio de nombre: " + nombreServicio);
         const servicio = await this.model.findOne({ nombre: nombreServicio });

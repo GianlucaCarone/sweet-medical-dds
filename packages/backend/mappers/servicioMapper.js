@@ -20,6 +20,7 @@ export class ServicioMapper {
         return {
             id: servicio.id,
             nombre: servicio.nombre,
+            tipo: servicio.tipo,
             duracion: servicio.duracionTurnoEnMins,
             costo: servicio.costo,
             codigo: servicio.codigo,
