@@ -3,7 +3,7 @@ import { CoberturaEspecialidad } from "../../domain/coberturas/coberturaEspecial
 
 export const coberturaEspecialidadSchema = new mongoose.Schema({
     especialidad: {
-        type: String,
+        type: mongoose.Schema.Types.ObjectId,
         ref: "Especialidad",
         required: true
     },

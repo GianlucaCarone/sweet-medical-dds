@@ -3,7 +3,7 @@ import { CoberturaPractica } from "../../domain/coberturas/coberturaPractica.js"
 
 export const coberturaPracticaSchema = new mongoose.Schema({
   practica: {
-    type: String,
+    type: mongoose.Schema.Types.ObjectId,
     ref: "Practica",
     required: true,
   },

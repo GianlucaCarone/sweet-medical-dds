@@ -15,7 +15,7 @@ export class ObraSocialRepository {
     }
 
     async findAll() {
-        return await this.model.find({ eliminado: false }).lean().exec();
+        return await this.model.find({eliminado: false}).lean().exec();
     }
 
     async save(obraSocial) {
@@ -28,7 +28,7 @@ export class ObraSocialRepository {
     }
 
     async findByNombre(nombre) {
-        return await this.model.findOne({ nombre }).lean().exec();
+        return await this.model.findOne({nombre}).lean().exec();
     }
 
     async delete(id) {
@@ -47,10 +47,10 @@ export class ObraSocialRepository {
             { new: true }
         ).exec();
     }
-
-    async update(id, obraSocialData) {
-        return await this.model.findByIdAndUpdate(id,
-            { $set: obraSocialData },
+ 
+    async update(id,obraSocialData){
+        return await this.model.findByIdAndUpdate(id, 
+            {$set: obraSocialData},
             { new: true })
             .lean()
             .exec();
@@ -58,7 +58,7 @@ export class ObraSocialRepository {
 
 
     //crud plan 
-    async findPlan(obraSocialId, planId) {
+    async findPlan(obraSocialId, planId){
         const obraSocial = await this.model.findOne(
             { _id: obraSocialId, "planes._id": planId },
             { "planes.$": 1 }
@@ -68,7 +68,7 @@ export class ObraSocialRepository {
         return obraSocial.planes[0];
     }
 
-    async addPlan(obraSocialId, plan) {
+    async addPlan(obraSocialId, plan){
         return await this.model.findByIdAndUpdate(
             obraSocialId,
             { $push: { planes: plan } },
@@ -92,7 +92,7 @@ export class ObraSocialRepository {
         ).exec();
     }
 
-    async updatePlan(obraSocialId, planId, planData) {
+    async updatePlan(obraSocialId, planId, planData){
         const updateData = {};
         for (const key in planData) {
             updateData[`planes.$[plan].${key}`] = planData[key];
@@ -109,7 +109,7 @@ export class ObraSocialRepository {
         ).lean().exec();
     }
 
-    async findAllPlans(obraSocialId) {
+    async findAllPlans(obraSocialId){
         const obraSocial = await this.model.findOne({ _id: obraSocialId, eliminado: false },
             {
                 planes: {
@@ -143,9 +143,9 @@ export class ObraSocialRepository {
     async findPlanByIdPopulado(obraSocialId, planId) {
         const obraSocial = await this.model.findOne(
             { _id: obraSocialId, "planes._id": planId },
-            { "planes.$": 1 })  // Element match: devuelve solo el elemento del array que hace match
-            .populate("planes.coberturaEspecialidad.especialidad")
-            .populate("planes.coberturaPractica.practica")
+            { "planes.$": 1 })
+            // .populate("planes.coberturaEspecialidad.especialidad")
+            // .populate("planes.coberturaPractica.practica")
             .lean()
             .exec();
 

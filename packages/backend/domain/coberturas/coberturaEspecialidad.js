@@ -11,7 +11,7 @@ export class CoberturaEspecialidad {
         if (!especialidad || !nivel || !porcentajeCobertura) {
             throw new ErrorDatosObligatorios();
         }
-        if (!(especialidad instanceof Especialidad)) {
+        if (!(especialidad instanceof Especialidad) && typeof especialidad !== "string") {
             throw new Error("Especialidad inválida");
         }
         if (!Object.values(NivelCobertura).includes(nivel)) {
