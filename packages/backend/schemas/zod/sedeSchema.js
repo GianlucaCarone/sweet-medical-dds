@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { objectIdSchema } from "./objectIdSchema.js";
 
 const MIN_NOMBRE_SEDE = 3;
 const MAX_NOMBRE_SEDE = 50;
@@ -38,4 +39,9 @@ export const asociarSedeSchema = z.object({
 
 export const eliminarSedeParamsSchema = z.object({
   sedeId: z.string("El id de la sede debe ser un string")
+});
+
+export const agregarSedeParamsSchema = z.object({
+  id: objectIdSchema("médico"),
+  sedeId: objectIdSchema("sede"),
 });

@@ -2,7 +2,7 @@ import { MedicoService } from "../services/MedicoService.js";
 import { logger } from "../config/logger.js";
 import { medicoSchema, disponibilidadSchema, eliminarDisponibilidadSchema, medicoIdParamsSchema, servicioIdSchema } from "../schemas/zod/medicoSchema.js";
 import { idParamObjectIdSchema } from "../schemas/zod/urlSchema.js";
-import { asociarSedeSchema, eliminarSedeParamsSchema } from "../schemas/zod/sedeSchema.js";
+import { agregarSedeParamsSchema, eliminarSedeParamsSchema } from "../schemas/zod/sedeSchema.js";
 
 export class MedicoController {
   constructor({ medicoService = new MedicoService() } = {}) {
@@ -131,14 +131,13 @@ export class MedicoController {
 
   agregarSede = async (req, res, next) => {
     try {
-      const { id } = idParamObjectIdSchema.parse(req.params);
-      const { sedeId } = asociarSedeSchema.parse(req.body);
-      logger.info("[MEDICO CONTROLLER]: Agregando sede con id: ", sedeId);
+      const { id, sedeId } = agregarSedeParamsSchema.parse(req.params);
+
       const medicoActualizado = await this.medicoService.agregarSede(id, sedeId);
-      logger.info("[MEDICO CONTROLLER]: Sede agregada con id: ", sedeId);
+
       return res.status(200).json({
         status: "success",
-        data: medicoActualizado,
+        data: medicoActualizado
       });
     } catch (error) {
       return next(error);

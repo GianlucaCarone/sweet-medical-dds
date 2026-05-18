@@ -66,7 +66,7 @@ export class SedeService {
       throw new NotFoundError(`No se encontró la sede con ID ${id}`);
     }
 
-    return SedeMapper.toDomain(sede);
+    return sede;
   }
 
   async findByName(nombre) {

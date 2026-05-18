@@ -8,7 +8,12 @@ export class MedicoRepository {
   constructor() { this.model = MedicoModel; }
 
   async findAll() {
-    return await this.model.find().populate("idUsuario especialidades practicas disponibilidades");
+    return await this.model.find().populate([
+      "idUsuario",
+      "especialidades",
+      "practicas",
+      { path: "practicas", populate: { path: "especialidadPadreId" } },
+      "disponibilidades", "sedes"]);
   }
 
   async findById(idMedico) {
@@ -19,7 +24,7 @@ export class MedicoRepository {
         "especialidades",
         "practicas",
         { path: "practicas", populate: { path: "especialidadPadreId" } },
-        "disponibilidades"]).lean(); //TODO: faltan las sedes
+        "disponibilidades", "sedes"]).lean(); //TODO: faltan las sedes
     const mensaje = (medico) ? ("Medico obtenido: " + medico) : ("No se encontro el medico con id: " + idMedico);
     logger.info("[MEDICO REPOSTIRORY]: " + mensaje);
 
@@ -52,7 +57,7 @@ export class MedicoRepository {
         "especialidades",
         "practicas",
         { path: "practicas", populate: { path: "especialidadPadreId" } },
-        "disponibilidades"]).lean(); //TODO: faltan las sedes
+        "disponibilidades", "sedes"]).lean(); //TODO: faltan las sedes
 
     const mensaje = (medico) ? ("Medico obtenido: " + medico) : ("No se encontro el medico con id de usuario: " + idUsuario);
     logger.info("[MEDICO REPOSTIRORY]: " + mensaje);

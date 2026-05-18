@@ -9,264 +9,264 @@ import { logger } from "../config/logger.js";
 import { MedicoMapper } from "../mappers/medicoMapper.js";
 
 export class MedicoService {
-    constructor({
-        medicoRepository = new MedicoRepository(),
-        usuarioService = new UsuarioService(),
-        servicioService = new ServicioService(),
-        sedeService = new SedeService(),
-    } = {}) {
-        this.medicoRepository = medicoRepository;
-        this.usuarioService = usuarioService;
-        this.servicioService = servicioService;
-        this.sedeService = sedeService;
+  constructor({
+    medicoRepository = new MedicoRepository(),
+    usuarioService = new UsuarioService(),
+    servicioService = new ServicioService(),
+    sedeService = new SedeService(),
+  } = {}) {
+    this.medicoRepository = medicoRepository;
+    this.usuarioService = usuarioService;
+    this.servicioService = servicioService;
+    this.sedeService = sedeService;
+  }
+
+  async crearMedicos(listaMedicos) { //funciona
+    return listaMedicos.map((medicoData) => this.create(medicoData));
+  }
+
+  async create(medicoData) { //funciona
+    logger.info("[MEDICO SERVICE]: Obteniendo los datos necesarios para crear medico");
+    const usuario = await this.usuarioService.findEntityById(medicoData.usuarioId);
+    if (!usuario) throw new NotFoundError("Usuario no encontrado");
+    const medicoExistente = await this.medicoRepository.findByIdUsuario(usuario.id);
+    if (medicoExistente) throw new ConflictError("Ya existe un médico con ese usuario");
+
+    logger.info("[MEDICO SERVICE]: Creando medico: ", medicoData);
+    const medicoEntityData = {
+      usuario: usuario,
+      matricula: medicoData.matricula,
+      nombre: medicoData.nombre,
+      honorario: medicoData.honorario
+    };
+    const medico = new Medico(medicoEntityData);
+
+    const nuevoMedico = await this.medicoRepository.save(medico);
+    logger.info("[MEDICO SERVICE]: Médico creado: ", nuevoMedico);
+
+    return MedicoMapper.toDTO(nuevoMedico);
+  }
+
+  /* TODO: VER SI FUNCIONA
+  async create2(medicoData) {
+      logger.info("Iniciando creación de médico con los datos: ", medicoData);
+      const usuarioDTO = await this.usuarioService.findById(medicoData.idUsuario);
+
+      if (!usuarioDTO) {
+          logger.error("Usuario no encontrado para el ID: ", medicoData.idUsuario);
+          throw new NotFoundError("Usuario no encontrado");
+      }
+
+      const medicoExistente = await this.medicoRepository.findByIdUsuario(
+          usuarioDTO.id,
+      ); // Verificar que no exista otro médico con el mismo nombre de usuario
+      if (medicoExistente) {
+          logger.error(
+              "Ya existe un médico con ese nombre de usuario: ",
+              medicoData.nombre,
+          );
+          throw new ConflictError("Ya existe un médico con ese nombre de usuario");
+      }
+
+      const medicoEntityData = {
+          nombre: medicoData.nombre,
+          matricula: medicoData.matricula,
+          idUsuario: medicoData.idUsuario,
+      };
+      const medico = new Medico(medicoEntityData); //TODO: VER SI FUNCIONA, PORQUE EL CONSTRUCTOR DE MEDICO NECESITA UNA INSTANCIA DE USUARIO, NO SU ID
+
+      const nuevoMedico = await this.medicoRepository.save(medico);
+      logger.info("Médico creado exitosamente: ", nuevoMedico);
+      return MedicoMapper.toDTO(nuevoMedico);
+  }*/
+
+  async findById(idMedico) {
+    logger.info("[MEDICO SERVICE]: Obteniendo medico con id: ", idMedico);
+    const medico = await this.medicoRepository.findById(idMedico);
+    if (!medico) throw new NotFoundError("Médico no encontrado");
+    logger.info("[MEDICO SERVICE]: Medico obtenido: ", medico);
+
+    return MedicoMapper.toDTO(medico);
+  }
+
+  async findAll() {
+    logger.info("Consultando todos los médicos");
+    return (await this.medicoRepository.findAll()).map(MedicoMapper.toDTO);
+  }
+
+  async delete(id) {
+    logger.info(`Eliminando médico con ID: ${id}`);
+    const medicoEliminado = await this.medicoRepository.delete(id);
+
+    if (!medicoEliminado) {
+      throw new NotFoundError("Médico no encontrado");
     }
 
-    async crearMedicos(listaMedicos) { //funciona
-        return listaMedicos.map((medicoData) => this.create(medicoData));
+    logger.info(`Médico eliminado con ID: ${id}`);
+    return MedicoMapper.toDTO(medicoEliminado);
+  }
+
+  validarMedico(medico) {
+    // TODO: Implementar validaciones necesarias para el médico
+    this.validarUsuario(medico.idUsuario);
+    this.validarMatricula(medico.matricula);
+  }
+
+  validarUsuario(idUsuario) {
+    // TODO: Implementar validaciones necesarias para el usuario
+  }
+
+  async agregarSede(medicoId, sedeId) {
+    logger.info(`Agregando sede ${sedeId} al médico ${medicoId}`);
+    const medico = await this.medicoRepository.findById(medicoId);
+    if (!medico) {
+      throw new NotFoundError("Médico no encontrado");
     }
 
-    async create(medicoData) { //funciona
-        logger.info("[MEDICO SERVICE]: Obteniendo los datos necesarios para crear medico");
-        const usuario = await this.usuarioService.findEntityById(medicoData.usuarioId);
-        if (!usuario) throw new NotFoundError("Usuario no encontrado");
-        const medicoExistente = await this.medicoRepository.findByIdUsuario(usuario.id);
-        if (medicoExistente) throw new ConflictError("Ya existe un médico con ese usuario");
+    const sede = await this.sedeService.findEntityById(sedeId);
 
-        logger.info("[MEDICO SERVICE]: Creando medico: ", medicoData);
-        const medicoEntityData = {
-            usuario: usuario,
-            matricula: medicoData.matricula,
-            nombre: medicoData.nombre,
-            honorario: medicoData.honorario
-        };
-        const medico = new Medico(medicoEntityData);
 
-        const nuevoMedico = await this.medicoRepository.save(medico);
-        logger.info("[MEDICO SERVICE]: Médico creado: ", nuevoMedico);
+    medico.agregarSede(sede);
 
-        return MedicoMapper.toDTO(nuevoMedico);
+    const medicoActualizado = await this.medicoRepository.save(medico);
+    return MedicoMapper.toDTO(medicoActualizado);
+  }
+
+  async eliminarSede(medicoId, sedeId) {
+    logger.info(`Eliminando sede ${sedeId} del médico ${medicoId}`);
+    const medico = await this.medicoRepository.findById(medicoId);
+
+    if (!medico) {
+      throw new NotFoundError("Médico no encontrado");
     }
 
-    /* TODO: VER SI FUNCIONA
-    async create2(medicoData) {
-        logger.info("Iniciando creación de médico con los datos: ", medicoData);
-        const usuarioDTO = await this.usuarioService.findById(medicoData.idUsuario);
+    //const sede = this.sedeService.getById(sedeId);
 
-        if (!usuarioDTO) {
-            logger.error("Usuario no encontrado para el ID: ", medicoData.idUsuario);
-            throw new NotFoundError("Usuario no encontrado");
-        }
+    medico.eliminarSede(sedeId);
 
-        const medicoExistente = await this.medicoRepository.findByIdUsuario(
-            usuarioDTO.id,
-        ); // Verificar que no exista otro médico con el mismo nombre de usuario
-        if (medicoExistente) {
-            logger.error(
-                "Ya existe un médico con ese nombre de usuario: ",
-                medicoData.nombre,
-            );
-            throw new ConflictError("Ya existe un médico con ese nombre de usuario");
-        }
+    const medicoActualizado = await this.medicoRepository.save(medico);
+    return MedicoMapper.toDTO(medicoActualizado);
+  }
 
-        const medicoEntityData = {
-            nombre: medicoData.nombre,
-            matricula: medicoData.matricula,
-            idUsuario: medicoData.idUsuario,
-        };
-        const medico = new Medico(medicoEntityData); //TODO: VER SI FUNCIONA, PORQUE EL CONSTRUCTOR DE MEDICO NECESITA UNA INSTANCIA DE USUARIO, NO SU ID
+  async definirDisponibilidadPara(disponibilidadData, id) {
+    logger.info(`Definiendo disponibilidad para el médico ${id}`);
 
-        const nuevoMedico = await this.medicoRepository.save(medico);
-        logger.info("Médico creado exitosamente: ", nuevoMedico);
-        return MedicoMapper.toDTO(nuevoMedico);
-    }*/
+    // Docs de mongoose
+    const medico = await this.medicoRepository.findById(id);
 
-    async findById(idMedico) {
-        logger.info("[MEDICO SERVICE]: Obteniendo medico con id: ", idMedico);
-        const medico = await this.medicoRepository.findById(idMedico);
-        if (!medico) throw new NotFoundError("Médico no encontrado");
-        logger.info("[MEDICO SERVICE]: Medico obtenido: ", medico);
-
-        return MedicoMapper.toDTO(medico);
+    if (!medico) {
+      logger.error(`Médico con ID ${id} no encontrado`);
+      throw new NotFoundError("Médico no encontrado");
     }
 
-    async findAll() {
-        logger.info("Consultando todos los médicos");
-        return (await this.medicoRepository.findAll()).map(MedicoMapper.toDTO);
+    const sede = await this.sedeService.findEntityById(disponibilidadData.sedeId);
+    if (!sede) {
+      logger.error(`Sede con ID ${disponibilidadData.sedeId} no encontrada`);
+      throw new NotFoundError("Sede no encontrada");
+    }
+    const servicio = await this.servicioService.findEntityById(disponibilidadData.servicioId);
+    if (!servicio) {
+      logger.error(`Servicio con ID ${disponibilidadData.servicioId} no encontrado`);
+      throw new NotFoundError("Servicio no encontrado");
     }
 
-    async delete(id) {
-        logger.info(`Eliminando médico con ID: ${id}`);
-        const medicoEliminado = await this.medicoRepository.delete(id);
+    const disponibilidadEntityData = {
+      diaSemana: disponibilidadData.diaSemana,
+      horaDesde: disponibilidadData.horaDesde,
+      horaHasta: disponibilidadData.horaHasta,
+      servicio: servicio,
+      sede: sede
+    };
+    const disponibilidad = new DisponibilidadHoraria(disponibilidadEntityData);
 
-        if (!medicoEliminado) {
-            throw new NotFoundError("Médico no encontrado");
-        }
+    medico.definirDisponibilidad(disponibilidad);
 
-        logger.info(`Médico eliminado con ID: ${id}`);
-        return MedicoMapper.toDTO(medicoEliminado);
+    logger.info(`Disponibilidad definida para el médico ${id}: `, disponibilidad);
+
+    return MedicoMapper.toDTO(await this.medicoRepository.save(medico));
+  }
+
+  async modificarDisponibilidadPara(disponibilidadData, medicoId) {
+    const medicoDoc = await this.medicoRepository.findById(medicoId);
+    if (!medicoDoc) {
+      throw new NotFoundError("Médico no encontrado");
+    }
+    const usuarioDoc = await this.usuarioService.findById(medicoDoc.idUsuario);
+
+    const medico = MedicoMapper.toDomain(medicoDoc, usuarioDoc);
+
+    const disponibilidad = new DisponibilidadHoraria(disponibilidadData);
+
+    medico.modificarDisponibilidad(disponibilidad);
+
+    // TODO avisar al turno service que genere los turnos.
+    //await this.turnoService.regenerarTurnosDisponiblesDelMedico(medico.id);
+
+    return this.medicoRepository.save(
+      MedicoMapper.toPersistence(medico),
+      medico.id
+    );
+  }
+
+  async eliminarDisponibilidadPara(medicoId, diaSemana) {
+    const medicoDoc = await this.medicoRepository.findById(medicoId);
+    if (!medicoDoc) {
+      throw new NotFoundError("Médico no encontrado");
     }
 
-    validarMedico(medico) {
-        // TODO: Implementar validaciones necesarias para el médico
-        this.validarUsuario(medico.idUsuario);
-        this.validarMatricula(medico.matricula);
-    }
+    const usuarioDoc = await this.usuarioService.findById(medicoDoc.idUsuario);
 
-    validarUsuario(idUsuario) {
-        // TODO: Implementar validaciones necesarias para el usuario
-    }
+    const medico = MedicoMapper.toDomain(medicoDoc, usuarioDoc);
 
-    async agregarSede(medicoId, sedeId) {
-        logger.info(`Agregando sede ${sedeId} al médico ${medicoId}`);
-        const medico = await this.medicoRepository.findById(medicoId);
-        if (!medico) {
-            throw new NotFoundError("Médico no encontrado");
-        }
+    medico.eliminarDisponibilidad(diaSemana);
 
-        const sede = await this.sedeService.getById(sedeId);
+    // TODO avisar al turno service que genere los turnos.
+    //await this.turnoService.regenerarTurnosDisponiblesDelMedico(medico.id);
 
-        const medicoDomain = MedicoMapper.toDomain(medico);
-        medicoDomain.agregarSede(sede);
+    return this.medicoRepository.save(
+      MedicoMapper.toPersistence(medico),
+      medico.id
+    );
+  }
 
-        const medicoActualizado = await this.medicoRepository.save(medicoDomain);
-        return MedicoMapper.toDTO(medicoActualizado);
-    }
+  async consultarDisponibilidad(medicoId) {
+    const medico = await this.findById(medicoId);
 
-    async eliminarSede(medicoId, sedeId) {
-        logger.info(`Eliminando sede ${sedeId} del médico ${medicoId}`);
-        const medico = await this.medicoRepository.findById(medicoId);
+    /* if (!medico.ofrecePractica(practicaId)) {
+      throw new Error("El médico no ofrece esa práctica");
+    } */
 
-        if (!medico) {
-            throw new NotFoundError("Médico no encontrado");
-        }
+    return medico.disponibilidades;
+  }
 
-        //const sede = this.sedeService.getById(sedeId);
+  async agregarServicioPara(idMedico, idServicio) {
+    logger.info("[MEDICO SERVICE]: Obteniendo datos necesarios para agendar un servicio para el medico ", idMedico);
+    const medico = await this.medicoRepository.findById(idMedico);
+    const servicio = await this.servicioService.findEntityById(idServicio);
+    if (!medico || !servicio) throw new NotFoundError("Datos no encontrados");
 
-        medico.eliminarSede(sedeId);
+    logger.info("[MEDICO SERVICE]: Guardando servicio con id: ", idServicio);
+    medico.agregarServicio(servicio);
 
-        const medicoActualizado = await this.medicoRepository.save(medico);
-        return MedicoMapper.toDTO(medicoActualizado);
-    }
+    const guardado = await this.medicoRepository.save(medico);
+    logger.info("[MEDICO SERVICE]: Servicio guardado: ", guardado);
 
-    async definirDisponibilidadPara(disponibilidadData, id) {
-        logger.info(`Definiendo disponibilidad para el médico ${id}`);
-
-        // Docs de mongoose
-        const medico = await this.medicoRepository.findById(id);
-
-        if (!medico) {
-            logger.error(`Médico con ID ${id} no encontrado`);
-            throw new NotFoundError("Médico no encontrado");
-        }
-
-        const sede = await this.sedeService.findEntityById(disponibilidadData.sedeId);
-        if (!sede) {
-            logger.error(`Sede con ID ${disponibilidadData.sedeId} no encontrada`);
-            throw new NotFoundError("Sede no encontrada");
-        }
-        const servicio = await this.servicioService.findEntityById(disponibilidadData.servicioId);
-        if (!servicio) {
-            logger.error(`Servicio con ID ${disponibilidadData.servicioId} no encontrado`);
-            throw new NotFoundError("Servicio no encontrado");
-        }
-
-        const disponibilidadEntityData = {
-            diaSemana: disponibilidadData.diaSemana,
-            horaDesde: disponibilidadData.horaDesde,
-            horaHasta: disponibilidadData.horaHasta,
-            servicio: servicio,
-            sede: sede
-        };
-        const disponibilidad = new DisponibilidadHoraria(disponibilidadEntityData);
-
-        medico.definirDisponibilidad(disponibilidad);
-
-        logger.info(`Disponibilidad definida para el médico ${id}: `, disponibilidad);
-
-        return MedicoMapper.toDTO(await this.medicoRepository.save(medico));
-    }
-
-    async modificarDisponibilidadPara(disponibilidadData, medicoId) {
-        const medicoDoc = await this.medicoRepository.findById(medicoId);
-        if (!medicoDoc) {
-            throw new NotFoundError("Médico no encontrado");
-        }
-        const usuarioDoc = await this.usuarioService.findById(medicoDoc.idUsuario);
-
-        const medico = MedicoMapper.toDomain(medicoDoc, usuarioDoc);
-
-        const disponibilidad = new DisponibilidadHoraria(disponibilidadData);
-
-        medico.modificarDisponibilidad(disponibilidad);
-
-        // TODO avisar al turno service que genere los turnos.
-        //await this.turnoService.regenerarTurnosDisponiblesDelMedico(medico.id);
-
-        return this.medicoRepository.save(
-            MedicoMapper.toPersistence(medico),
-            medico.id
-        );
-    }
-
-    async eliminarDisponibilidadPara(medicoId, diaSemana) {
-        const medicoDoc = await this.medicoRepository.findById(medicoId);
-        if (!medicoDoc) {
-            throw new NotFoundError("Médico no encontrado");
-        }
-
-        const usuarioDoc = await this.usuarioService.findById(medicoDoc.idUsuario);
-
-        const medico = MedicoMapper.toDomain(medicoDoc, usuarioDoc);
-
-        medico.eliminarDisponibilidad(diaSemana);
-
-        // TODO avisar al turno service que genere los turnos.
-        //await this.turnoService.regenerarTurnosDisponiblesDelMedico(medico.id);
-
-        return this.medicoRepository.save(
-            MedicoMapper.toPersistence(medico),
-            medico.id
-        );
-    }
-
-    async consultarDisponibilidad(medicoId) {
-        const medico = await this.findById(medicoId);
-
-        /* if (!medico.ofrecePractica(practicaId)) {
-          throw new Error("El médico no ofrece esa práctica");
-        } */
-
-        return medico.disponibilidades;
-    }
-
-    async agregarServicioPara(idMedico, idServicio) {
-        logger.info("[MEDICO SERVICE]: Obteniendo datos necesarios para agendar un servicio para el medico ", idMedico);
-        const medico = await this.medicoRepository.findById(idMedico);
-        const servicio = await this.servicioService.findEntityById(idServicio);
-        if (!medico || !servicio) throw new NotFoundError("Datos no encontrados");
-
-        logger.info("[MEDICO SERVICE]: Guardando servicio con id: ", idServicio);
-        medico.agregarServicio(servicio);
-
-        const guardado = await this.medicoRepository.save(medico);
-        logger.info("[MEDICO SERVICE]: Servicio guardado: ", guardado);
-
-        return MedicoMapper.toDTO(guardado);
-    }
+    return MedicoMapper.toDTO(guardado);
+  }
 
 
-    async eliminarServicioPara(idMedico, idServicio) {
-        logger.info("[MEDICO SERVICE]: Obteniendo datos necesarios para eliminar un servicio para el medico ", idMedico);
-        const medico = await this.medicoRepository.findById(idMedico);
-        const servicio = await this.servicioService.findEntityById(idServicio);
-        if (!medico || !servicio) throw new NotFoundError("Datos no encontrados");
+  async eliminarServicioPara(idMedico, idServicio) {
+    logger.info("[MEDICO SERVICE]: Obteniendo datos necesarios para eliminar un servicio para el medico ", idMedico);
+    const medico = await this.medicoRepository.findById(idMedico);
+    const servicio = await this.servicioService.findEntityById(idServicio);
+    if (!medico || !servicio) throw new NotFoundError("Datos no encontrados");
 
-        logger.info("[MEDICO SERVICE]: Eliminando servicio con id: ", idServicio);
-        medico.eliminarServicio(servicio);
+    logger.info("[MEDICO SERVICE]: Eliminando servicio con id: ", idServicio);
+    medico.eliminarServicio(servicio);
 
-        const guardadoGuardado = await this.medicoRepository.save(medico);
-        logger.info("[MEDICO SERVICE]: Servicio eliminado con id: ", idServicio);
+    const guardadoGuardado = await this.medicoRepository.save(medico);
+    logger.info("[MEDICO SERVICE]: Servicio eliminado con id: ", idServicio);
 
-        return MedicoMapper.toDTO(guardadoGuardado);
-    }
+    return MedicoMapper.toDTO(guardadoGuardado);
+  }
 }

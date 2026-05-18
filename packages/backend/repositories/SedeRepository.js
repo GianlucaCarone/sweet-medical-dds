@@ -21,6 +21,9 @@ export class SedeRepository {
 
     async findById(id) {
         const sede = await this.model.findById(id).exec();
+        if (!sede) {
+            return null;
+        }
         return SedeMapper.toDomain(sede);
     }
 
