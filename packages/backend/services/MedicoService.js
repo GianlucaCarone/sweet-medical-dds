@@ -172,7 +172,7 @@ export class MedicoService {
       logger.error(`Sede con ID ${disponibilidadData.sedeId} no encontrada`);
       throw new NotFoundError("Sede no encontrada");
     }
-    const servicio = await this.servicioService.findEntityById(
+    const servicio = await this.servicioService.getEntityById(
       disponibilidadData.servicioId,
     );
     if (!servicio) {
@@ -255,7 +255,7 @@ para turnos existentes futuros pero en estado DISPONIBLE. */
       idMedico,
     );
     const medico = await this.medicoRepository.findById(idMedico);
-    const servicio = await this.servicioService.findEntityById(idServicio);
+    const servicio = await this.servicioService.getEntityById(idServicio);
     if (!medico || !servicio) throw new NotFoundError("Datos no encontrados");
 
     logger.info("[MEDICO SERVICE]: Guardando servicio con id: ", idServicio);
@@ -273,7 +273,7 @@ para turnos existentes futuros pero en estado DISPONIBLE. */
       idMedico,
     );
     const medico = await this.medicoRepository.findById(idMedico);
-    const servicio = await this.servicioService.findEntityById(idServicio);
+    const servicio = await this.servicioService.getEntityById(idServicio);
     if (!medico || !servicio) throw new NotFoundError("Datos no encontrados");
 
     logger.info("[MEDICO SERVICE]: Eliminando servicio con id: ", idServicio);

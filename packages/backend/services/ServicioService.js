@@ -62,7 +62,7 @@ export class ServicioService {
             const especialidadData = {
                 nombre: datosServicio.nombre,
                 duracionTurnoEnMins: datosServicio.duracionEnMin,
-                costoConsulta: datosServicio.costo
+                costo: datosServicio.costo
             };
             const especialidad = new Especialidad(especialidadData);
             logger.info("[SERVICIO SERVICE]: Especialidad creada: ", especialidad);
