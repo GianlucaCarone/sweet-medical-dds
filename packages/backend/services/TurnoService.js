@@ -37,21 +37,49 @@ export class TurnoService {
     if (!turno) {
       throw new BadRequestError("No se encontro el turno con el id " + id);
     }
-    turno.actualizarEstadoTurno({ nuevoEstado, quien, motivo });
 
+    // Determinar quién realiza el cambio (paciente o médico) y obtener remitente/destinatario
     let remitente;
     let destinatario;
+    let quienObj = null;
 
-    if(quien==turno.paciente._id ) {
+    if (
+      turno.paciente &&
+      (turno.paciente.toString() === quien || turno.paciente.id === quien)
+    ) {
       remitente = turno.paciente;
       destinatario = turno.medico;
-    } else if (quien == turno.medico._id) {
+      quienObj = await this.pacienteRepository.findById(quien);
+    } else if (
+      turno.medico &&
+      (turno.medico.toString() === quien || turno.medico.id === quien)
+    ) {
       remitente = turno.medico;
       destinatario = turno.paciente;
+      quienObj = await this.medicoRepository.findById(quien);
+    } else {
+      throw new BadRequestError("El turno no pertenece a este usuario");
     }
 
-    this.notificacionService.crearNotificacionSegunEstadoTurno(turno,remitente,destinatario);
+    // La cancelación requiere motivo y 1 hora de anticipación
+    if (nuevoEstado === EstadoTurnoEnum.CANCELADO) {
+      if (!motivo || typeof motivo !== "string" || motivo.trim().length === 0) {
+        throw new BadRequestError("Para cancelar el turno se requiere un motivo");
+      }
 
+      const fechaTurno = new Date(turno.fechaHora).getTime();
+      const ahora = Date.now();
+      const diferenciaMs = fechaTurno - ahora;
+      const unaHoraMs = 60 * 60 * 1000;
+      if (diferenciaMs < unaHoraMs) {
+        throw new BadRequestError(
+          "No se puede cancelar un turno con menos de 1 hora de anticipación",
+        );
+      }
+    }
+
+    turno.actualizarEstadoTurno({ nuevoEstado, quien: quienObj, motivo });
+    this.notificacionService.crearNotificacionSegunEstadoTurno(turno, remitente, destinatario);
     const turnoActualizado = await this.turnoRepository.update(id, turno);
     logger.info(`[TURNO SERVICE]: Estado de turno ${id} actualizado correctamente`);
     return TurnoMapper.toDTO(turnoActualizado);
