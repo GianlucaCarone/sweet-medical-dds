@@ -6,12 +6,17 @@ import {
 } from "../errors/AppError.js";
 import { filtrosTurnoSchema } from "../schemas/zod/turnoSchema.js";
 import { Turno } from "../domain/turnos/turno.js";
+import { Agenda } from "../domain/agenda.js";
 import { NivelCobertura } from "../domain/coberturas/nivelCoberturaEnum.js";
 import { EstadoTurnoEnum } from "../domain/turnos/estadoTurnoEnum.js";
 import { TurnoRepository } from "../repositories/TurnoRepository.js";
 import { ObraSocialRepository } from "../repositories/ObraSocialRepository.js";
 import { MedicoRepository } from "../repositories/MedicoRepository.js";
 import { PacienteRepository } from "../repositories/PacienteRepository.js";
+import { logger } from "../config/logger.js";
+import { MedicoService } from "../services/MedicoService.js";
+import { UsuarioService } from "../services/UsuarioService.js";
+//import { MedicoMapper } from "../mappers/medicoMapper.js";
 import { TurnoMapper } from "../mappers/turnoMapper.js";
 import { NotificacionService } from "./NotificacionService.js";
 import { logger } from "../config/logger.js";
@@ -25,6 +30,9 @@ export class TurnoService {
     pacienteRepository = new PacienteRepository(),
     obraSocialRepository = new ObraSocialRepository(),
     medicoRepository = new MedicoRepository(),
+    medicoService = new MedicoService(),
+    agenda = new Agenda(),
+    usuarioService = new UsuarioService(),
     notificacionService = new NotificacionService(),
     sedeRepository = new SedeRepository(),
     servicioService = new ServicioService(),
@@ -33,6 +41,9 @@ export class TurnoService {
     this.pacienteRepository = pacienteRepository;
     this.obraSocialRepository = obraSocialRepository;
     this.medicoRepository = medicoRepository;
+    this.medicoService = medicoService;
+    this.agenda = agenda;
+    this.usuarioService = usuarioService;
     this.notificacionService = notificacionService;
     this.sedeRepository = sedeRepository;
     this.servicioService = servicioService;
@@ -449,5 +460,43 @@ export class TurnoService {
     if (!Number.isInteger(numero) || numero <= 0) {
       throw new BadRequestError(`${parametro} debe ser un entero positivo`);
     }
+  }
+  /* -------------------------------------------------------------------------- */
+  /*                            CREACION DE TURNOS                              */
+  /* -------------------------------------------------------------------------- */
+
+  async generarTurnosDisponibles() {
+    logger.info("Iniciando generación de turnos disponibles");
+
+    const medicos = await this.medicoService.findAllEntities();
+
+    for (const medico of medicos) {
+      await this.generarTurnosDisponiblesParaMedico(medico);
+    }
+
+    logger.info("Finalizó generación de turnos disponibles");
+  }
+
+  async generarTurnosDisponiblesParaMedico(medico) {
+    const turnosGenerados = this.agenda.generarTurnosSegunDisponibilidadDelMedico(medico);
+
+    for (const turno of turnosGenerados) {
+      const yaExiste = await this.turnoRepository.existeTurno(medico.id, turno.fechaHora);
+
+      if (!yaExiste) {
+        await this.turnoRepository.save(turno);
+      }
+    }
+  }
+
+  async refrescarTurnosDisponiblesDelMedico(medico) {
+    const ahora = new Date();
+
+    await this.turnoRepository.eliminarTurnosDisponiblesFuturosDelMedico(
+      medico.id,
+      ahora
+    );
+
+    await this.generarTurnosDisponiblesParaMedico(medico);
   }
 }

@@ -53,7 +53,7 @@ export class TurnoMapper {
       servicio: turno.servicio?.id || turno.servicio,
       paciente: turno.paciente?.id || turno.paciente,
       estado: turno.estado,
-      historialEstado: turno.historialEstado,
+      historialEstado: turno.historialEstado ?? [],
       fechaHoraPropuesta: turno.fechaHoraPropuesta,
       costo: turno.costo
     };

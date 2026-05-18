@@ -13,12 +13,22 @@ export class MedicoRepository {
     return await this.model.find().populate([
       "idUsuario",
       "especialidades",
-      "practicas",
-      { path: "practicas", populate: { path: "especialidadPadreId" } },
-      "disponibilidades",
+      {
+        path: "practicas",
+        populate: { path: "especialidadPadreId" }
+      },
       {
         path: "disponibilidades",
-        populate: [{ path: "sede" }, { path: "servicio" }],
+        populate: [
+          { path: "sede" },
+          {
+            path: "servicio",
+            populate: {
+              path: "especialidadPadreId",
+              strictPopulate: false
+            }
+          }
+        ],
       },
       "sedes",
     ]);

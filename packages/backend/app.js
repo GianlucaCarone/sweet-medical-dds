@@ -8,6 +8,8 @@ import { TurnoController } from "./controllers/TurnoController.js";
 import { ObraSocialController } from "./controllers/ObraSocialController.js";
 import { UsuarioController } from "./controllers/UsuarioController.js";
 import { MedicoController } from "./controllers/MedicoController.js";
+import { TurnoService } from "./services/TurnoService.js";
+import { iniciarGeneracionTurnosBatch } from "./schedulers/generacionTurnos.js";
 import { SedeController } from "./controllers/SedeController.js";
 import { PacienteController } from "./controllers/PacienteController.js";
 
@@ -59,6 +61,10 @@ server.setController(UsuarioController, usuarioController);
 
 const medicoController = new MedicoController();
 server.setController(MedicoController, medicoController);
+
+const turnoService = new TurnoService();
+
+iniciarGeneracionTurnosBatch(turnoService);
 
 /* -------------------------------------------------------------------------- */
 /*                                    RUTAS                                   */

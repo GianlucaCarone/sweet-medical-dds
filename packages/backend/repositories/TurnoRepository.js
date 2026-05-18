@@ -148,4 +148,12 @@ disponible:
             throw new BadRequestError("Estado de turno inválido");
         }
     }
+
+    async eliminarTurnosDisponiblesFuturosDelMedico(medicoId, fechaActual) {
+        return await this.model.deleteMany({
+            medico: medicoId,
+            estado: EstadoTurnoEnum.DISPONIBLE,
+            fechaHora: { $gt: fechaActual }
+        });
+    }
 }

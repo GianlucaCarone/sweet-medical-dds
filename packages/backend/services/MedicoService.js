@@ -8,12 +8,13 @@ import { SedeService } from "./SedeService.js";
 import { logger } from "../config/logger.js";
 import { MedicoMapper } from "../mappers/medicoMapper.js";
 
+
 export class MedicoService {
   constructor({
     medicoRepository = new MedicoRepository(),
     usuarioService = new UsuarioService(),
     servicioService = new ServicioService(),
-    sedeService = new SedeService(),
+    sedeService = new SedeService()
   } = {}) {
     this.medicoRepository = medicoRepository;
     this.usuarioService = usuarioService;
@@ -66,6 +67,14 @@ export class MedicoService {
   async findAll() {
     logger.info("Consultando todos los médicos");
     return (await this.medicoRepository.findAll()).map(MedicoMapper.toDTO);
+  }
+
+  async findAllEntities() {
+    logger.info("Consultando todos los médicos como entidades de dominio");
+
+    const medicosDocs = await this.medicoRepository.findAll();
+
+    return medicosDocs.map(medicoDoc => MedicoMapper.toDomain(medicoDoc));
   }
 
   async delete(id) {
@@ -167,15 +176,26 @@ export class MedicoService {
   }
 
   async modificarDisponibilidadPara(disponibilidadData, medicoId) {
-    const medicoDoc = await this.medicoRepository.findById(medicoId);
-    if (!medicoDoc) {
+    const medico = await this.medicoRepository.findById(medicoId);
+    if (!medico) {
       throw new NotFoundError("Médico no encontrado");
     }
-    const usuarioDoc = await this.usuarioService.findById(medicoDoc.idUsuario);
 
-    const medico = MedicoMapper.toDomain(medicoDoc, usuarioDoc);
+    const sede = await this.sedeService.findEntityById(
+      disponibilidadData.sedeId,
+    );
 
-    const disponibilidad = new DisponibilidadHoraria(disponibilidadData);
+    const servicio = await this.servicioService.getEntityById(
+      disponibilidadData.servicioId,
+    );
+
+    const disponibilidad = new DisponibilidadHoraria({
+      diaSemana: disponibilidadData.diaSemana,
+      horaDesde: disponibilidadData.horaDesde,
+      horaHasta: disponibilidadData.horaHasta,
+      sede,
+      servicio
+    });
 
     medico.modificarDisponibilidad(disponibilidad);
     /*Si un médico modifica su disponibilidad: 
@@ -185,7 +205,7 @@ export class MedicoService {
     ○ El cambio impacta únicamente en la generación de turnos futuros y 
     para turnos existentes futuros pero en estado DISPONIBLE. */
     // TODO avisar al turno service que genere los turnos.
-    //await this.turnoService.regenerarTurnosDisponiblesDelMedico(medico.id);
+    //await this.turnoService.refrescarTurnosDisponiblesDelMedico(medico);
 
     return MedicoMapper.toDTO(await this.medicoRepository.save(medico));
   }
