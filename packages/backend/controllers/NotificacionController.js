@@ -172,6 +172,8 @@ export class NotificacionController {
             }
         ];
 
+        await this.notificacionService.setUsuarioSistema(usuarios[0].id); //configuro el usuario sistema para el factory de notificaciones
+
         return await notificaciones.map(n => this.notificacionService.crearNotificacion(n));
     }
 }

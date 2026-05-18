@@ -1,6 +1,5 @@
 import { Medico } from "../medico.js";
 import { ErrorDatosObligatorios } from "../errores.js";
-import { Usuario } from "../usuario.js";
 import { EstadoTurnoEnum } from "./estadoTurnoEnum.js";
 import { CambioEstadoTurno } from "./cambioEstadoTurno.js";
 import { Practica } from "../servicios/practica.js";
@@ -53,10 +52,6 @@ export class Turno {
                             throw new Error(`Transición inválida: un turno en estado '${this.estado}' no puede pasar a '${nuevoEstado}'.`);
                         }
                         */
-
-        if (!(quien instanceof Usuario)) {
-            throw new Error("Usuario inválido");
-        }
         if (!(motivo instanceof String)) {
             throw new Error("Motivo inválido");
         }

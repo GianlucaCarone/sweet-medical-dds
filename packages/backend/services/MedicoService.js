@@ -22,12 +22,10 @@ export class MedicoService {
   }
 
   async crearMedicos(listaMedicos) {
-    //funciona
     return listaMedicos.map((medicoData) => this.create(medicoData));
   }
 
   async create(medicoData) {
-    //funciona
     logger.info(
       "[MEDICO SERVICE]: Obteniendo los datos necesarios para crear medico",
     );
@@ -55,39 +53,6 @@ export class MedicoService {
 
     return MedicoMapper.toDTO(nuevoMedico);
   }
-
-  /* TODO: VER SI FUNCIONA
-  async create2(medicoData) {
-      logger.info("Iniciando creación de médico con los datos: ", medicoData);
-      const usuarioDTO = await this.usuarioService.findById(medicoData.idUsuario);
-
-      if (!usuarioDTO) {
-          logger.error("Usuario no encontrado para el ID: ", medicoData.idUsuario);
-          throw new NotFoundError("Usuario no encontrado");
-      }
-
-      const medicoExistente = await this.medicoRepository.findByIdUsuario(
-          usuarioDTO.id,
-      ); // Verificar que no exista otro médico con el mismo nombre de usuario
-      if (medicoExistente) {
-          logger.error(
-              "Ya existe un médico con ese nombre de usuario: ",
-              medicoData.nombre,
-          );
-          throw new ConflictError("Ya existe un médico con ese nombre de usuario");
-      }
-
-      const medicoEntityData = {
-          nombre: medicoData.nombre,
-          matricula: medicoData.matricula,
-          idUsuario: medicoData.idUsuario,
-      };
-      const medico = new Medico(medicoEntityData); //TODO: VER SI FUNCIONA, PORQUE EL CONSTRUCTOR DE MEDICO NECESITA UNA INSTANCIA DE USUARIO, NO SU ID
-
-      const nuevoMedico = await this.medicoRepository.save(medico);
-      logger.info("Médico creado exitosamente: ", nuevoMedico);
-      return MedicoMapper.toDTO(nuevoMedico);
-  }*/
 
   async findById(idMedico) {
     logger.info("[MEDICO SERVICE]: Obteniendo medico con id: ", idMedico);
@@ -172,7 +137,7 @@ export class MedicoService {
       logger.error(`Sede con ID ${disponibilidadData.sedeId} no encontrada`);
       throw new NotFoundError("Sede no encontrada");
     }
-    const servicio = await this.servicioService.findEntityById(
+    const servicio = await this.servicioService.getEntityById(
       disponibilidadData.servicioId,
     );
     if (!servicio) {
@@ -214,11 +179,11 @@ export class MedicoService {
 
     medico.modificarDisponibilidad(disponibilidad);
     /*Si un médico modifica su disponibilidad: 
-○ Los turnos existentes con fecha previa a la actual no se modifican. 
-○ Los turnos existentes RESERVADOS con fecha posterior a la actual, 
-no se modifican. 
-○ El cambio impacta únicamente en la generación de turnos futuros y 
-para turnos existentes futuros pero en estado DISPONIBLE. */
+    ○ Los turnos existentes con fecha previa a la actual no se modifican. 
+    ○ Los turnos existentes RESERVADOS con fecha posterior a la actual, 
+    no se modifican. 
+    ○ El cambio impacta únicamente en la generación de turnos futuros y 
+    para turnos existentes futuros pero en estado DISPONIBLE. */
     // TODO avisar al turno service que genere los turnos.
     //await this.turnoService.regenerarTurnosDisponiblesDelMedico(medico.id);
 
@@ -255,7 +220,7 @@ para turnos existentes futuros pero en estado DISPONIBLE. */
       idMedico,
     );
     const medico = await this.medicoRepository.findById(idMedico);
-    const servicio = await this.servicioService.findEntityById(idServicio);
+    const servicio = await this.servicioService.getEntityById(idServicio);
     if (!medico || !servicio) throw new NotFoundError("Datos no encontrados");
 
     logger.info("[MEDICO SERVICE]: Guardando servicio con id: ", idServicio);
@@ -273,7 +238,7 @@ para turnos existentes futuros pero en estado DISPONIBLE. */
       idMedico,
     );
     const medico = await this.medicoRepository.findById(idMedico);
-    const servicio = await this.servicioService.findEntityById(idServicio);
+    const servicio = await this.servicioService.getEntityById(idServicio);
     if (!medico || !servicio) throw new NotFoundError("Datos no encontrados");
 
     logger.info("[MEDICO SERVICE]: Eliminando servicio con id: ", idServicio);
