@@ -63,7 +63,7 @@ export class UsuarioController {
     // solo actualiza el nombre de usuario y la contraseña, no el id
     update = async (req, res, next) => {
         try {
-            const { id } = objectIdSchema("usuario").parse(req.params);
+            const { id } = idParamObjectIdSchema.parse(req.params);
             const usuarioData = usuarioSchema.partial().parse(req.body);
             logger.info("[USUARIOS CONTROLLER]: Actualizando datos de usuario: ", id);
             const usuarioActualizado = await this.usuarioService.update(id, usuarioData);

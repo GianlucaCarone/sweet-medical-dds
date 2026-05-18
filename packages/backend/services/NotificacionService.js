@@ -8,15 +8,17 @@ import { NotificacionMapper } from "../mappers/notificacionMapper.js";
 import { FactoryNotificacion } from "../domain/factoryNotificacion.js";
 
 export class NotificacionService {
-    constructor({ notificacionRepository = new NotificacionRepository(), usuarioService = new UsuarioService(), factoryNotificacion = new FactoryNotificacion() } = {}) {
+    constructor({ 
+        notificacionRepository = new NotificacionRepository(), 
+        usuarioService = new UsuarioService() 
+    } = {}) {
         this.notificacionRepository = notificacionRepository;
         this.usuarioService = usuarioService;
-        this.factoryNotificacion = factoryNotificacion;
     }
 
     async crearNotificacion(notificacionData) {
         logger.info("[NOTIFICACIONES SERVICE]: Obteniendo datos necesarios para crear la notificacion");
-        const destinatarioObtenido = await this.usuarioService.findById(notificacionData.destinatario);
+        const destinatarioObtenido = await this.usuarioService.findById(notificacionData.destinatario); //TODO: usar los metodos findEntityById para evitar conversiones innecesarias
         const destinatario = new Usuario(destinatarioObtenido); destinatario.id = destinatarioObtenido.id;
         notificacionData.destinatario = destinatario;
         const remitenteObtenido = await this.usuarioService.findById(notificacionData.remitente);
@@ -29,9 +31,17 @@ export class NotificacionService {
         return NotificacionMapper.toDTO(notificacionGuardada);
     }
 
-    async crearNotificacionSegunTurno(turno) {
+    async crearNotificacionSegunEstadoTurno(turno, remitente, destinatario) {
         logger.info("[NOTIFICACIONES SERVICE]: Creando la notificacion con el Factory para el turno ", turno);
-        const notificacion = this.factoryNotificacion.crearSegunEstadoTurno(turno);
+        const notificacion = FactoryNotificacion.crearSegunEstadoTurno(turno, remitente, destinatario);
+        const notificacionGuardada = await this.notificacionRepository.save(notificacion);
+        logger.info("[NOTIFICACIONES SERVICE]: Notificacion creada: ", notificacionGuardada);
+        return NotificacionMapper.toDTO(notificacionGuardada);
+    }
+
+    async crearNotificacionSegunFechaTurno(turno, destinatario) {
+        logger.info("[NOTIFICACIONES SERVICE]: Creando la notificacion con el Factory para el turno ", turno);
+        const notificacion = FactoryNotificacion.crearSegunFechaTurno(turno, destinatario);
         const notificacionGuardada = await this.notificacionRepository.save(notificacion);
         logger.info("[NOTIFICACIONES SERVICE]: Notificacion creada: ", notificacionGuardada);
         return NotificacionMapper.toDTO(notificacionGuardada);
@@ -86,5 +96,12 @@ export class NotificacionService {
         logger.info("[NOTIFICACIONES SERVICE]: Notificacion leida: ", notificacionGuardada);
 
         return NotificacionMapper.toDTO(notificacionGuardada);
+    }
+
+    async setUsuarioSistema(usuarioSistemaId) {
+        logger.info("[NOTIFICACIONES SERVICE]: Configurando usuario sistema para el factory de notificaciones");
+        const usuarioSistema = await this.usuarioService.findEntityById(usuarioSistemaId);
+        FactoryNotificacion.setUsuarioSistema(usuarioSistema);
+        logger.info("[NOTIFICACIONES SERVICE]: Usuario sistema configurado para el factory de notificaciones");
     }
 }
