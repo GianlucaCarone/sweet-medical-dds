@@ -35,7 +35,7 @@ export class ServicioRepository {
         logger.info("[SERVICIO REPOSTIRORY]: Obteniendo todos los servicios");
         const servicios = await this.model.find();
         logger.info("[SERVICIO REPOSTIRORY]: Todos los servicios obtenidos: " + servicios);
-        return servicios;
+        return servicios.map(s => ServicioMapper.toDomain(s));
     }
 
     async findById(idServicio) {

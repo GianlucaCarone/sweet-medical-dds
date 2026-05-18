@@ -15,6 +15,9 @@ import { PacienteRepository } from "../repositories/PacienteRepository.js";
 import { TurnoMapper } from "../mappers/turnoMapper.js";
 import { NotificacionService } from "./NotificacionService.js";
 import { logger } from "../config/logger.js";
+import { SedeRepository } from "../repositories/SedeRepository.js";
+import { ServicioService } from "./ServicioService.js";
+import { ServicioMapper } from "../mappers/servicioMapper.js";
 
 export class TurnoService {
   constructor({
@@ -23,12 +26,16 @@ export class TurnoService {
     obraSocialRepository = new ObraSocialRepository(),
     medicoRepository = new MedicoRepository(),
     notificacionService = new NotificacionService(),
+    sedeRepository = new SedeRepository(),
+    servicioService = new ServicioService(),
   } = {}) {
     this.turnoRepository = turnoRepository;
     this.pacienteRepository = pacienteRepository;
     this.obraSocialRepository = obraSocialRepository;
     this.medicoRepository = medicoRepository;
     this.notificacionService = notificacionService;
+    this.sedeRepository = sedeRepository;
+    this.servicioService = servicioService;
   }
 
   async cambiarEstadoTurno(id, nuevoEstado, quien, motivo) {
@@ -37,12 +44,51 @@ export class TurnoService {
     if (!turno) {
       throw new BadRequestError("No se encontro el turno con el id " + id);
     }
-    turno.actualizarEstadoTurno({ nuevoEstado, quien, motivo });
-    //llamar a notificacion service
+
+    // Determinar quién realiza el cambio (paciente o médico) y obtener remitente/destinatario
+    let remitente;
+    let destinatario;
+    let quienObj = null;
+
+    if (
+      turno.paciente &&
+      (turno.paciente.toString() === quien || turno.paciente.id === quien)
+    ) {
+      remitente = turno.paciente;
+      destinatario = turno.medico;
+      quienObj = await this.pacienteRepository.findById(quien);
+    } else if (
+      turno.medico &&
+      (turno.medico.toString() === quien || turno.medico.id === quien)
+    ) {
+      remitente = turno.medico;
+      destinatario = turno.paciente;
+      quienObj = await this.medicoRepository.findById(quien);
+    } else {
+      throw new BadRequestError("El turno no pertenece a este usuario");
+    }
+
+    // La cancelación requiere motivo y 1 hora de anticipación
+    if (nuevoEstado === EstadoTurnoEnum.CANCELADO) {
+      if (!motivo || typeof motivo !== "string" || motivo.trim().length === 0) {
+        throw new BadRequestError("Para cancelar el turno se requiere un motivo");
+      }
+
+      const fechaTurno = new Date(turno.fechaHora).getTime();
+      const ahora = Date.now();
+      const diferenciaMs = fechaTurno - ahora;
+      const unaHoraMs = 60 * 60 * 1000;
+      if (diferenciaMs < unaHoraMs) {
+        throw new BadRequestError(
+          "No se puede cancelar un turno con menos de 1 hora de anticipación",
+        );
+      }
+    }
+
+    turno.actualizarEstadoTurno({ nuevoEstado, quien: quienObj, motivo });
+    this.notificacionService.crearNotificacionSegunEstadoTurno(turno, remitente, destinatario);
     const turnoActualizado = await this.turnoRepository.update(id, turno);
-    logger.info(
-      `[TURNO SERVICE]: Estado de turno ${id} actualizado correctamente`,
-    );
+    logger.info(`[TURNO SERVICE]: Estado de turno ${id} actualizado correctamente`);
     return TurnoMapper.toDTO(turnoActualizado);
   }
 
@@ -76,7 +122,7 @@ export class TurnoService {
       throw new NotFoundError("No se encontro la sede con el id " + sedeId);
     }
 
-    const servicio = await this.servicioRepository.findById(servicioId);
+    const servicio = await this.servicioService.getById(servicioId);
     if (!servicio) {
       throw new NotFoundError(
         "No se encontro el servicio con el id " + servicioId,
@@ -93,7 +139,7 @@ export class TurnoService {
     logger.info(`[TURNO SERVICE]: Intentando asignar el turno ${idTurno} al paciente ${pacienteId}`);
     const { costoTurno } = data;
 
-    const turno = await this.turnoRepository.findById(idTurno);
+    const turno = await this.turnoRepository.findByIdPopulate(idTurno);
     if (!turno) {
       throw new NotFoundError("No se encontro el turno con el id " + idTurno);
     }
@@ -111,7 +157,7 @@ export class TurnoService {
       nuevoEstado: EstadoTurnoEnum.RESERVADO,
       paciente,
     });
-    //llamar al service de notificacion
+    this.notificacionService.crearNotificacionSegunEstadoTurno(turno, paciente, turno.medico);
 
     const turnoActualizado = await this.turnoRepository.update(idTurno, turno);
     logger.info(`[TURNO SERVICE]: Turno ${idTurno} asignado correctamente`);
@@ -161,7 +207,8 @@ export class TurnoService {
     const turnosConCobertura = turnos.map((t) => {
       const turnoDto = TurnoMapper.toDTO(t);
       if (t.servicio && filtrosValidados.pacienteId) {
-        const cobertura = this.calcularCostoTurno(obraSocial, plan, t.costo, t.servicio);
+        const servicioCompleto = ServicioMapper.toDomain(t.servicio);
+        const cobertura = this.calcularCostoTurno(obraSocial, plan, t.costo, servicioCompleto);
         turnoDto.costo = cobertura.costoFinal;
         turnoDto.estadoCobertura = cobertura.estadoCobertura;
       }
@@ -234,7 +281,7 @@ export class TurnoService {
         `No se encontró ningún turno con el estado ${estado}`,
       );
     }
-    logger.info( `[TURNO SERVICE]: Se encontraron ${turnos.length} turnos con estado ${estado}`);
+    logger.info(`[TURNO SERVICE]: Se encontraron ${turnos.length} turnos con estado ${estado}`);
     return turnos.map((t) => TurnoMapper.toDTO(t));
   }
 
@@ -262,7 +309,7 @@ export class TurnoService {
       quien = await this.pacienteRepository.findById(usuarioId);
       receptor = await this.medicoRepository.findById(turno.medico);
       rol = "paciente";
-    } else if ( turno.medico && (turno.medico.toString() === usuarioId || turno.medico.id === usuarioId)) {
+    } else if (turno.medico && (turno.medico.toString() === usuarioId || turno.medico.id === usuarioId)) {
       quien = await this.medicoRepository.findById(usuarioId);
       receptor = await this.pacienteRepository.findById(turno.paciente);
       rol = "médico";
@@ -277,7 +324,7 @@ export class TurnoService {
       motivo: `El ${rol} propone cambio de fecha a ${nuevaFechaHora}`,
     });
 
-    // TODO: notificacionService.notificarCambio(receptor, quien);
+    this.notificacionService.crearNotificacionSegunFechaTurno(turno, receptor, quien);
 
     const turnoActualizado = await this.turnoRepository.update(idTurno, turno);
     logger.info(`[TURNO SERVICE]: Cambio de fecha solicitado. Turno ${idTurno} actualizado`);
@@ -318,7 +365,7 @@ export class TurnoService {
         quien,
         motivo: `El ${rol} aceptó la propuesta de cambio de fecha`,
       });
-      // TODO: notificacionService.notificarCambio(receptor, quien);
+      this.notificacionService.crearNotificacionSegunFechaTurno(turno, receptor, quien);
     } else {
       turno.fechaHoraPropuesta = undefined;
       turno.actualizarEstadoTurno({
@@ -326,7 +373,7 @@ export class TurnoService {
         quien,
         motivo: `El ${rol} rechazó el cambio de fecha. Se conserva la original.`,
       });
-      // TODO: notificacionService.notificarCambio(receptor, quien);
+      this.notificacionService.crearNotificacionSegunFechaTurno(turno, receptor, quien);
     }
 
     const turnoActualizado = await this.turnoRepository.update(idTurno, turno);
@@ -363,19 +410,19 @@ export class TurnoService {
   async obtenerObraSocialYPlanPorPaciente(pacienteId) {
     const paciente = await this.pacienteRepository.findById(pacienteId);
 
-    if (!paciente.obraSocialId) {
+    if (!paciente.obraSocial) {
       return { obraSocial: null, plan: null };
     }
 
     const obraSocial = await this.obraSocialRepository.findById(
-      paciente.obraSocialId,
+      paciente.obraSocial,
     );
     if (!obraSocial) {
       throw new NotFoundError(
         "No se encontro la obra social con el id " + paciente.obraSocialId,
       );
     }
-    const plan = obraSocial.obtenerPlanPorId(paciente.planId);
+    const plan = obraSocial.obtenerPlanPorId(paciente.plan);
     return {
       obraSocial,
       plan,

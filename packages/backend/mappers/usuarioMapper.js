@@ -23,7 +23,6 @@ export class UsuarioMapper {
     return {
       id: usuario.id || usuario._id,
       nombreUsuario: usuario.nombreUsuario,
-      password: usuario.password
     };
   }
 }

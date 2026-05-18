@@ -34,12 +34,10 @@ export class TurnoController {
       const cambioTurnoData = bodyCambioEstadoTurnoSchema.parse(req.body);
 
       logger.info(`[TURNOS CONTROLLER]: Cambiando estado del turno a ${cambioTurnoData.nuevoEstado}`);
-      const turnoActualizado = await this.turnoService.cambiarEstadoTurno(
-        idTurno,
+      const turnoActualizado = await this.turnoService.cambiarEstadoTurno(idTurno,
         cambioTurnoData.nuevoEstado,
         cambioTurnoData.quien,
-        cambioTurnoData.motivo,
-      );
+        cambioTurnoData.motivo);
 
       logger.info("[TURNOS CONTROLLER]: Estado de turno actualizado");
       return res

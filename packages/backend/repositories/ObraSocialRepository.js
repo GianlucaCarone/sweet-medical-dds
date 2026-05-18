@@ -24,11 +24,11 @@ export class ObraSocialRepository {
     }
 
     async findById(id) {
-        return await this.model.findById(id).lean().exec();
+        return await this.model.findById(id).populate("planes").exec();
     }
 
     async findByNombre(nombre) {
-        return await this.model.findOne({nombre}).lean().exec();
+        return await this.model.findOne({nombre}).exec();
     }
 
     async delete(id) {
@@ -52,7 +52,6 @@ export class ObraSocialRepository {
         return await this.model.findByIdAndUpdate(id, 
             {$set: obraSocialData},
             { new: true })
-            .lean()
             .exec();
     }
 
@@ -62,7 +61,7 @@ export class ObraSocialRepository {
         const obraSocial = await this.model.findOne(
             { _id: obraSocialId, "planes._id": planId },
             { "planes.$": 1 }
-        ).lean().exec();
+        ).exec();
 
         if (!obraSocial || !obraSocial.planes?.length) return null;
         return obraSocial.planes[0];
@@ -73,7 +72,7 @@ export class ObraSocialRepository {
             obraSocialId,
             { $push: { planes: plan } },
             { new: true }
-        ).lean().exec();
+        ).exec();
     }
 
     async deletePlan(obraSocialId, planId) {
@@ -81,7 +80,7 @@ export class ObraSocialRepository {
             obraSocialId,
             { $pull: { planes: { _id: planId } } },
             { new: true }
-        ).lean().exec();
+        ).exec();
     }
 
     async softDeletePlan(obraSocialId, planId) {
@@ -106,7 +105,7 @@ export class ObraSocialRepository {
                 new: true,
                 runValidators: true
             }
-        ).lean().exec();
+        ).exec();
     }
 
     async findAllPlans(obraSocialId){
@@ -120,7 +119,7 @@ export class ObraSocialRepository {
                     }
                 }
             }
-        ).lean().exec();
+        ).exec();
 
         if (!obraSocial) return null;
 
@@ -133,7 +132,6 @@ export class ObraSocialRepository {
             { "planes.$": 1 })
             .populate("planes.coberturaEspecialidad.especialidad")
             .populate("planes.coberturaPractica.practica")
-            .lean()
             .exec();
 
         if (!obraSocial || !obraSocial.planes?.length) return null;
@@ -146,7 +144,6 @@ export class ObraSocialRepository {
             { "planes.$": 1 })
             // .populate("planes.coberturaEspecialidad.especialidad")
             // .populate("planes.coberturaPractica.practica")
-            .lean()
             .exec();
 
         if (!obraSocial || !obraSocial.planes || obraSocial.planes.length === 0) return null;

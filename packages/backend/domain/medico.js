@@ -21,9 +21,6 @@ export class Medico {
         if (!usuario || !matricula || !nombre) {
             throw new ErrorDatosObligatorios();
         }
-        if (!(usuario instanceof Usuario)) {
-            throw new Error("No es un Usuario");
-        }
         if (matricula.length > 10) {
             throw new Error("Matricula Demasiado larga");
         }
@@ -131,7 +128,7 @@ export class Medico {
         const yaTieneSede = this.sedes.some((s) => s.id === sede.id);
 
         if (yaTieneSede) {
-            throw new Error("El médico ya trabaja en esa sede");
+            throw new ConflictError("El médico ya trabaja en esa sede");
         }
 
         this.sedes.push(sede);

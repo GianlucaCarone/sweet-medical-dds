@@ -52,9 +52,4 @@ const MedicoSchema = new mongoose.Schema(
 
 MedicoSchema.loadClass(Medico);
 
-MedicoSchema.pre(/^find/, function (next) {
-    //this.lean();
-    next();
-});
-
 export const MedicoModel = mongoose.model("Medico", MedicoSchema);
