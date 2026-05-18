@@ -1,4 +1,4 @@
-import { randomUUID } from "crypto";
+// import { randomUUID } from "crypto";
 import { Plan } from "./plan.js";
 import { ErrorDatosObligatorios } from "../domain/errores.js";
 
@@ -11,7 +11,7 @@ export class ObraSocial {
     if (!nombre) {
       throw new ErrorDatosObligatorios("Faltan datos obligatorios");
     }
-    this.id = randomUUID();
+    // this.id = randomUUID();
     this.nombre = nombre;
   }
 
