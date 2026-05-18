@@ -15,14 +15,15 @@ export class Agenda {
             );
 
             for (const disponibilidad of disponibilidadesDelDia) {
-                const slots = this.generarSlotsCada30Minutos(fecha, disponibilidad);
+                const duracion = disponibilidad.servicio.duracionTurnoEnMins;
+                const slots = this.generarSlots(fecha, disponibilidad, duracion);
 
                 for (const fechaHora of slots) {
                     turnos.push(new Turno({
                         medico,
-                        paciente: null,
-                        practica: null,
                         fechaHora,
+                        sede: disponibilidad.sede,
+                        servicio: disponibilidad.servicio,
                         estado: EstadoTurnoEnum.DISPONIBLE
                     }));
                 }
@@ -58,15 +59,20 @@ export class Agenda {
         return dias[fecha.getDay()];
     }
 
-    generarSlotsCada30Minutos(fechaBase, disponibilidad) {
+    generarSlots(fechaBase, disponibilidad, duracionEnMinutos) {
         const slots = [];
 
         let actual = this.fechaConHora(fechaBase, disponibilidad.horaDesde);
         const fin = this.fechaConHora(fechaBase, disponibilidad.horaHasta);
 
         while (actual < fin) {
-            slots.push(new Date(actual));
-            actual = new Date(actual.getTime() + 30 * 60 * 1000);
+            const posibleFin = new Date(actual.getTime() + duracionEnMinutos * 60 * 1000);
+
+            if (posibleFin <= fin) {
+                slots.push(new Date(actual));
+            }
+
+            actual = posibleFin;
         }
 
         return slots;

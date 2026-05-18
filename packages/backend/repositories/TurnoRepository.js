@@ -38,15 +38,10 @@ export class TurnoRepository {
     }
 
     async save(turno) {
-<<<<<<< HEAD
-        const turnoPersistence = TurnoMapper.toPersistence(turno);
-
-        return await new this.model(turnoPersistence).save();
-=======
         const nuevoTurno = new this.model(TurnoMapper.toPersistence(turno));
         const saved = await nuevoTurno.save();
-        return TurnoMapper.toDomain(saved.toObject());
->>>>>>> 0870246c7e6075b06923482da68dfa3f8668bab0
+
+        return saved.toObject();
     }
 
     async update(id, turno) {
@@ -137,7 +132,7 @@ disponible:
                 .exec(),
             this.model.countDocuments(query).exec()
         ]);
-        
+
         const turnos = turnosDoc.map(doc => TurnoMapper.toDomain(doc));
 
         return {
@@ -150,5 +145,13 @@ disponible:
         if (!Object.values(EstadoTurnoEnum).includes(estado)) {
             throw new BadRequestError("Estado de turno inválido");
         }
+    }
+
+    async eliminarTurnosDisponiblesFuturosDelMedico(medicoId, fechaActual) {
+        return await this.model.deleteMany({
+            medico: medicoId,
+            estado: EstadoTurnoEnum.DISPONIBLE,
+            fechaHora: { $gt: fechaActual }
+        });
     }
 }

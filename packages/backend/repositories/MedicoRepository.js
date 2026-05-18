@@ -10,22 +10,28 @@ export class MedicoRepository {
   }
 
   async findAll() {
-<<<<<<< HEAD
-    return await this.model.find().populate("idUsuario");
-=======
     return await this.model.find().populate([
       "idUsuario",
       "especialidades",
-      "practicas",
-      { path: "practicas", populate: { path: "especialidadPadreId" } },
-      "disponibilidades",
+      {
+        path: "practicas",
+        populate: { path: "especialidadPadreId" }
+      },
       {
         path: "disponibilidades",
-        populate: [{ path: "sede" }, { path: "servicio" }],
+        populate: [
+          { path: "sede" },
+          {
+            path: "servicio",
+            populate: {
+              path: "especialidadPadreId",
+              strictPopulate: false
+            }
+          }
+        ],
       },
       "sedes",
     ]);
->>>>>>> 0870246c7e6075b06923482da68dfa3f8668bab0
   }
 
   async findById(idMedico) {

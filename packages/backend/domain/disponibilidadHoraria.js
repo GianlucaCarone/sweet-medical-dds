@@ -52,10 +52,6 @@ export class DisponibilidadHoraria {
             this.horaHasta > otroHorario.horaDesde
         );
     }
-<<<<<<< HEAD
-}
-=======
 
     // Consultar como administrar la disponibilidad, si manejarla con ID y sacar el mergeo. No tengo manera de modificar una disponiblidad cambiando el horario completamente, solo sumo horarios.
 }
->>>>>>> 0870246c7e6075b06923482da68dfa3f8668bab0

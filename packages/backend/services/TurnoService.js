@@ -383,13 +383,9 @@ export class TurnoService {
   async generarTurnosDisponibles() {
     logger.info("Iniciando generación de turnos disponibles");
 
-    const medicosDocs = await this.medicoService.findAll();
+    const medicos = await this.medicoService.findAllEntities();
 
-    for (const medicoDoc of medicosDocs) {
-      //const usuarioDoc = await this.usuarioService.findById(medicoDoc.idUsuario);
-
-      const medico = MedicoMapper.toDomain(medicoDoc);
-
+    for (const medico of medicos) {
       await this.generarTurnosDisponiblesParaMedico(medico);
     }
 
@@ -406,5 +402,16 @@ export class TurnoService {
         await this.turnoRepository.save(turno);
       }
     }
+  }
+
+  async refrescarTurnosDisponiblesDelMedico(medico) {
+    const ahora = new Date();
+
+    await this.turnoRepository.eliminarTurnosDisponiblesFuturosDelMedico(
+      medico.id,
+      ahora
+    );
+
+    await this.generarTurnosDisponiblesParaMedico(medico);
   }
 }

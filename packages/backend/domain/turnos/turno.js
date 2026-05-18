@@ -16,22 +16,17 @@ export class Turno {
     historialEstado;
     costo;
 
-<<<<<<< HEAD
-    constructor({ medico, fechaHora, sede = null }) {
-
-        if (!medico || !fechaHora) {
-            throw new BadRequestError()
-=======
     constructor({ medico, fechaHora, sede, servicio }) {
         if (!medico || !sede || !fechaHora) {
             throw new ErrorDatosObligatorios();
->>>>>>> 0870246c7e6075b06923482da68dfa3f8668bab0
         }
         if (!(medico instanceof Medico)) {
             throw new Error("Medico inválido");
         }
-        if (!(servicio instanceof Practica || !(servicio instanceof Especialidad)))
-            this.medico = medico;
+        if (!(servicio instanceof Practica) && !(servicio instanceof Especialidad)) {
+            throw new Error("Servicio inválido");
+        }
+        this.medico = medico;
         this.fechaHora = fechaHora;
         this.sede = sede;
         this.servicio = servicio;
