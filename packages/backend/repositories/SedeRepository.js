@@ -24,14 +24,17 @@ export class SedeRepository {
         return SedeMapper.toDomain(sede);
     }
 
-    async findByName(name) {
-        const sede = await this.model.findOne({ name }).exec();
+    async findByName(nombre) {
+        const sede = await this.model.findOne({ nombre }).exec();
+        if (!sede) {
+            return null;
+        }
         return SedeMapper.toDomain(sede);
     }
 
     async save(sede) {
-        if (sede.id) {
-            return await this.model.findByIdAndUpdate(sede.id, SedeMapper.toPersistence(sede), { new: true }).exec();
+        if (sede._id) {
+            return await this.model.findByIdAndUpdate(sede._id, SedeMapper.toPersistence(sede), { new: true }).exec();
         }
         const nuevoSede = new this.model(SedeMapper.toPersistence(sede));
         const sedeGuardada = await nuevoSede.save();
