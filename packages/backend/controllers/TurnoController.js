@@ -8,6 +8,7 @@ import {
   bodySolicitarCambioFechaSchema,
   bodyResponderCambioFechaSchema,
 } from "../schemas/zod/turnoSchema.js";
+import { logger } from "../config/logger.js";
 
 export class TurnoController {
   constructor({ turnoService = new TurnoService() } = {}) {
@@ -17,9 +18,12 @@ export class TurnoController {
   create = async (req, res, next) => {
     try {
       const turnoData = turnoBaseSchema.parse(req.body);
+      logger.info("[TURNOS CONTROLLER]: Creando turno con datos: ", turnoData);
       const nuevoTurno = await this.turnoService.create(turnoData);
+      logger.info("[TURNOS CONTROLLER]: Turno creado con éxito");
       return res.status(201).json({ status: "success", data: nuevoTurno });
     } catch (error) {
+      logger.error("[TURNOS CONTROLLER]: No se pudo crear el turno");
       return next(error);
     }
   };
@@ -29,6 +33,7 @@ export class TurnoController {
       const idTurno = idParamsSchema.parse(req.params);
       const cambioTurnoData = bodyCambioEstadoTurnoSchema.parse(req.body);
 
+      logger.info(`[TURNOS CONTROLLER]: Cambiando estado del turno a ${cambioTurnoData.nuevoEstado}`);
       const turnoActualizado = await this.turnoService.cambiarEstadoTurno(
         idTurno,
         cambioTurnoData.nuevoEstado,
@@ -36,10 +41,12 @@ export class TurnoController {
         cambioTurnoData.motivo,
       );
 
+      logger.info("[TURNOS CONTROLLER]: Estado de turno actualizado");
       return res
         .status(200)
         .json({ status: "success", data: turnoActualizado });
     } catch (error) {
+      logger.error("[TURNOS CONTROLLER]: Error al cambiar el estado del turno");
       return next(error);
     }
   };
@@ -49,14 +56,17 @@ export class TurnoController {
       const idTurno = idParamsSchema.parse(req.params);
       const turnoData = bodyAsignarTurnoSchema.parse(req.body);
 
+      logger.info(`[TURNOS CONTROLLER]: Asignando turno a paciente: ${turnoData.pacienteId}`);
       const turnoAsignado = await this.turnoService.asignarTurno(
         idTurno,
         turnoData.pacienteId,
         turnoData.costoTurno,
       );
 
+      logger.info("[TURNOS CONTROLLER]: Turno asignado con éxito");
       return res.status(200).json({ status: "success", data: turnoAsignado });
     } catch (error) {
+      logger.error("[TURNOS CONTROLLER]: Error al asignar paciente al turno");
       return next(error);
     }
   };
@@ -66,14 +76,17 @@ export class TurnoController {
       const paginacion = this.extraerPaginacion(req.query);
       const filtros = this.extraerFiltros(req.query);
 
+      logger.info(`[TURNOS CONTROLLER]: Obteniendo turnos paginados con estos filtros: ${JSON.stringify(filtros)}`);
       const resultado = await this.turnoService.obtenerTodosPaginados(
         paginacion.numeroPagina,
         paginacion.limitePorPagina,
         filtros,
       );
+
+      logger.info(`[TURNOS CONTROLLER]: Turnos obtenidos: ${resultado.turnosConCobertura.length}`);
       res.status(200).json({
         status: "success",
-        data: resultado.turnosConCobertura, 
+        data: resultado.turnosConCobertura,
         paginacion: {
           numeroPagina: resultado.numeroPagina,
           limitePorPagina: resultado.limitePorPagina,
@@ -82,6 +95,7 @@ export class TurnoController {
         },
       });
     } catch (error) {
+      logger.error("[TURNOS CONTROLLER]: Error al obtener turnos paginados");
       return next(error);
     }
   };
@@ -90,12 +104,21 @@ export class TurnoController {
     try {
       const paginacion = this.extraerPaginacion(req.query);
       const filtros = this.extraerFiltros(req.query);
-      
-      const resultado = await this.turnoService.obtenerTurnosDeUsuario(filtros, paginacion.numeroPagina, paginacion.limitePorPagina);
 
+      logger.info(
+        "[TURNOS CONTROLLER]: Obteniendo turnos de usuario paginados: ",
+        filtros,
+      );
+      const resultado = await this.turnoService.obtenerTurnosDeUsuario(
+        filtros,
+        paginacion.numeroPagina,
+        paginacion.limitePorPagina,
+      );
+
+      logger.info(`[TURNOS CONTROLLER]: Turnos de usuario obtenidos: ${resultado.turnos.length}`);
       res.status(200).json({
         status: "success",
-        data: resultado.turnos, 
+        data: resultado.turnos,
         paginacion: {
           numeroPagina: resultado.numeroPagina,
           limitePorPagina: resultado.limitePorPagina,
@@ -104,18 +127,22 @@ export class TurnoController {
         },
       });
     } catch (error) {
+      logger.error("[TURNOS CONTROLLER]: Error al obtener turnos de usuario");
       return next(error);
     }
   };
 
   findById = async (req, res, next) => {
     try {
+      logger.info("[TURNOS CONTROLLER]: Obteniendo turno: " + req.params.id);
       const turno = await this.turnoService.findById(req.params.id);
+      logger.info("[TURNOS CONTROLLER]: Turno obtenido con éxito");
       res.status(200).json({
         status: "success",
         data: turno,
       });
     } catch (error) {
+      logger.error("[TURNOS CONTROLLER]: Error al obtener el turno");
       next(error);
     }
   };
@@ -123,12 +150,15 @@ export class TurnoController {
   findByEstado = async (req, res, next) => {
     try {
       const estado = req.params.estado;
+      logger.info(`[TURNOS CONTROLLER]: Obteniendo turnos por estado: ${estado}`);
       const turnos = await this.turnoService.findByEstado(estado);
+      logger.info(`[TURNOS CONTROLLER]: Turnos obtenidos (${turnos.length})`);
       res.status(200).json({
         status: "success",
         data: turnos,
       });
     } catch (error) {
+      logger.error("[TURNOS CONTROLLER]: Error al obtener turnos por estado");
       next(error);
     }
   };
@@ -138,15 +168,18 @@ export class TurnoController {
       const idTurno = idParamsSchema.parse(req.params);
       const turnoData = bodyUpdateTurnoSchema.parse(req.body);
 
+      logger.info("[TURNOS CONTROLLER]: Actualizando turno: ", turnoData);
       const turnoActualizado = await this.turnoService.update(
         idTurno,
         turnoData,
       );
 
+      logger.info("[TURNOS CONTROLLER]: Turno actualizado con éxito");
       return res
         .status(200)
         .json({ status: "success", data: turnoActualizado });
     } catch (error) {
+      logger.error("[TURNOS CONTROLLER]: Error al actualizar el turno");
       return next(error);
     }
   };
@@ -157,16 +190,19 @@ export class TurnoController {
       const { nuevaFechaHora, usuarioId } =
         bodySolicitarCambioFechaSchema.parse(req.body);
 
+      logger.info(`[TURNOS CONTROLLER]: Solicitando cambio de fecha para turno ${idTurno} a fecha ${nuevaFechaHora}`);
       const turnoActualizado = await this.turnoService.solicitarCambioFecha(
         idTurno,
         nuevaFechaHora,
         usuarioId,
       );
 
+      logger.info("[TURNOS CONTROLLER]: Cambio de fecha solicitado con éxito");
       return res
         .status(200)
         .json({ status: "success", data: turnoActualizado });
     } catch (error) {
+      logger.error("[TURNOS CONTROLLER]: Error al solicitar cambio de fecha");
       return next(error);
     }
   };
@@ -178,16 +214,19 @@ export class TurnoController {
         req.body,
       );
 
+      logger.info(`[TURNOS CONTROLLER]: Respondiendo cambio de fecha para turno ${idTurno} (Aceptado: ${aceptado})`);
       const turnoActualizado = await this.turnoService.responderCambioFecha(
         idTurno,
         aceptado,
         usuarioId,
       );
 
+      logger.info("[TURNOS CONTROLLER]: Respuesta de cambio de fecha procesada");
       return res
         .status(200)
         .json({ status: "success", data: turnoActualizado });
     } catch (error) {
+      logger.error("[TURNOS CONTROLLER]: Error al responder cambio de fecha");
       return next(error);
     }
   };

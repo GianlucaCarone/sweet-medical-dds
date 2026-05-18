@@ -38,3 +38,4 @@ export class PacienteService {
 
         return MedicoMapper.toDTO(nuevoMedico);
     }
+}
