@@ -19,7 +19,6 @@ import { UsuarioService } from "../services/UsuarioService.js";
 //import { MedicoMapper } from "../mappers/medicoMapper.js";
 import { TurnoMapper } from "../mappers/turnoMapper.js";
 import { NotificacionService } from "./NotificacionService.js";
-import { logger } from "../config/logger.js";
 import { SedeRepository } from "../repositories/SedeRepository.js";
 import { ServicioService } from "./ServicioService.js";
 import { ServicioMapper } from "../mappers/servicioMapper.js";
