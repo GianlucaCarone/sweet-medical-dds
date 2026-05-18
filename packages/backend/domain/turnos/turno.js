@@ -21,11 +21,8 @@ export class Turno {
         if (!medico || !sede || !fechaHora) {
             throw new ErrorDatosObligatorios();
         }
-        if (!(medico instanceof Medico)) {
-            throw new Error("Medico inválido");
-        }
-        if (!(servicio instanceof Practica || !(servicio instanceof Especialidad)))
-            this.medico = medico;
+
+        this.medico = medico;
         this.fechaHora = fechaHora;
         this.sede = sede;
         this.servicio = servicio;

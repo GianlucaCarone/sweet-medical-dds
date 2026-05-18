@@ -25,12 +25,12 @@ export class MedicoMapper {
   static toDomainSimple(medicoDoc) {
           if (!medicoDoc) return null;
           const medico = new Medico({
-              id: medicoDoc._id?.toString() || medicoDoc.id,
-              nombre: medicoDoc.nombre,
-              matricula: medicoDoc.matricula,
               usuario: medicoDoc.usuario,
+              matricula: medicoDoc.matricula,
+              nombre: medicoDoc.nombre,
               honorario: medicoDoc.honorario
           });
+          medico.id = medicoDoc._id?.toString() ?? medicoDoc.id;
           return medico;
   }     
 

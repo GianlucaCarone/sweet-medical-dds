@@ -40,8 +40,11 @@ export class TurnoRepository {
     async save(turno) {
         const nuevoTurno = new this.model(TurnoMapper.toPersistence(turno));
         const saved = await nuevoTurno.save();
-        return TurnoMapper.toDomain(saved.toObject());
+        await saved.populate('medico paciente servicio sede');
+        return TurnoMapper.toDomain(saved);
     }
+
+
 
     async update(id, turno) {
         const doc = await this.model.findByIdAndUpdate(id, TurnoMapper.toPersistence(turno), { new: true }).lean().exec();
@@ -131,7 +134,7 @@ disponible:
                 .exec(),
             this.model.countDocuments(query).exec()
         ]);
-        
+
         const turnos = turnosDoc.map(doc => TurnoMapper.toDomain(doc));
 
         return {
