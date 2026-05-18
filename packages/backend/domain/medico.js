@@ -21,9 +21,6 @@ export class Medico {
         if (!usuario || !matricula || !nombre) {
             throw new ErrorDatosObligatorios();
         }
-        if (!(usuario instanceof Usuario)) {
-            throw new Error("No es un Usuario");
-        }
         if (matricula.length > 10) {
             throw new Error("Matricula Demasiado larga");
         }

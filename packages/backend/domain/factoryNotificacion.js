@@ -2,7 +2,7 @@ import { Notificacion } from "./notificacion.js";
 import { EstadoTurnoEnum } from "./turnos/estadoTurnoEnum.js";
 import { Especialidad } from "./servicios/especialidad.js";
 import { Usuario } from "./usuario.js";
-import i18next from "./config/i18n.js";
+//import {i18next} from "./config/i18n.js";
 
 export class FactoryNotificacion {
   static #usuarioSistema;

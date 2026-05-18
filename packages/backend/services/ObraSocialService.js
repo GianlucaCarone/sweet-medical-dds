@@ -126,10 +126,10 @@ export class ObraSocialService {
         const practicas = planDto.coberturaPractica.map( (practica) => practica.practica );
         const servicios = [...especialidades, ...practicas];
 
-        for (const ser of servicios) {
+        /*for (const ser of servicios) {
             const existeServicio = await this.#servicioService.getById(ser);
             if (!existeServicio) throw new BadRequestError("Especialidad o Servicio no existe");
-        }
+        }*/
 
         const obraSocialConPlanCreado = await this.#obraSocialRepository.addPlan(obraSocialId, planDto);
         return this.toObraSocialDomain(obraSocialConPlanCreado);

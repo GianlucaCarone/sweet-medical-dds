@@ -38,11 +38,22 @@ export class TurnoService {
       throw new BadRequestError("No se encontro el turno con el id " + id);
     }
     turno.actualizarEstadoTurno({ nuevoEstado, quien, motivo });
-    //llamar a notificacion service
+
+    let remitente;
+    let destinatario;
+
+    if(quien==turno.paciente._id ) {
+      remitente = turno.paciente;
+      destinatario = turno.medico;
+    } else if (quien == turno.medico._id) {
+      remitente = turno.medico;
+      destinatario = turno.paciente;
+    }
+
+    this.notificacionService.crearNotificacionSegunEstadoTurno(turno,remitente,destinatario);
+
     const turnoActualizado = await this.turnoRepository.update(id, turno);
-    logger.info(
-      `[TURNO SERVICE]: Estado de turno ${id} actualizado correctamente`,
-    );
+    logger.info(`[TURNO SERVICE]: Estado de turno ${id} actualizado correctamente`);
     return TurnoMapper.toDTO(turnoActualizado);
   }
 
@@ -93,7 +104,7 @@ export class TurnoService {
     logger.info(`[TURNO SERVICE]: Intentando asignar el turno ${idTurno} al paciente ${pacienteId}`);
     const { costoTurno } = data;
 
-    const turno = await this.turnoRepository.findById(idTurno);
+    const turno = await this.turnoRepository.findByIdPopulate(idTurno);
     if (!turno) {
       throw new NotFoundError("No se encontro el turno con el id " + idTurno);
     }
@@ -111,7 +122,7 @@ export class TurnoService {
       nuevoEstado: EstadoTurnoEnum.RESERVADO,
       paciente,
     });
-    //llamar al service de notificacion
+    this.notificacionService.crearNotificacionSegunEstadoTurno(turno,paciente,turno.medico);
 
     const turnoActualizado = await this.turnoRepository.update(idTurno, turno);
     logger.info(`[TURNO SERVICE]: Turno ${idTurno} asignado correctamente`);
@@ -277,7 +288,7 @@ export class TurnoService {
       motivo: `El ${rol} propone cambio de fecha a ${nuevaFechaHora}`,
     });
 
-    // TODO: notificacionService.notificarCambio(receptor, quien);
+    this.notificacionService.crearNotificacionSegunFechaTurno(turno,receptor,quien);
 
     const turnoActualizado = await this.turnoRepository.update(idTurno, turno);
     logger.info(`[TURNO SERVICE]: Cambio de fecha solicitado. Turno ${idTurno} actualizado`);
@@ -318,7 +329,7 @@ export class TurnoService {
         quien,
         motivo: `El ${rol} aceptó la propuesta de cambio de fecha`,
       });
-      // TODO: notificacionService.notificarCambio(receptor, quien);
+      this.notificacionService.crearNotificacionSegunFechaTurno(turno,receptor,quien);
     } else {
       turno.fechaHoraPropuesta = undefined;
       turno.actualizarEstadoTurno({
@@ -326,7 +337,7 @@ export class TurnoService {
         quien,
         motivo: `El ${rol} rechazó el cambio de fecha. Se conserva la original.`,
       });
-      // TODO: notificacionService.notificarCambio(receptor, quien);
+      this.notificacionService.crearNotificacionSegunFechaTurno(turno,receptor,quien);
     }
 
     const turnoActualizado = await this.turnoRepository.update(idTurno, turno);

@@ -1,17 +1,19 @@
 import { Turno } from "../domain/turnos/turno.js";
+import { MedicoMapper } from "./medicoMapper.js";
+import { PacienteMapper } from "./pacienteMapper.js";
 
 export class TurnoMapper {
   static toDomain(turnoDoc) {
     if (!turnoDoc) return null;
     const turno = new Turno({
-      medico: turnoDoc.medico,
+      medico: MedicoMapper.toDomainSimple(turnoDoc.medico),
       fechaHora: turnoDoc.fechaHora,
       sede: turnoDoc.sede,
       servicio: turnoDoc.servicio
     });
     
     turno.id = turnoDoc._id?.toString() || turnoDoc.id;
-    turno.paciente = turnoDoc.paciente;
+    turno.paciente = PacienteMapper.toDomainSimple(turnoDoc.paciente);
     turno.estado = turnoDoc.estado;
     turno.historialEstado = turnoDoc.historialEstado || [];
     turno.fechaHoraPropuesta = turnoDoc.fechaHoraPropuesta;

@@ -15,13 +15,6 @@ export class Paciente {
         if (!usuario || !dni || !nombre) {
             throw new ErrorDatosObligatorios();
         }
-        if (!(this.obraSocial instanceof ObraSocial)) {
-            throw new Error("Obra social inválida");
-        }
-        if (!(this.plan instanceof Plan)) {
-            throw new Error("Plan inválido");
-        }
-        // this.id = randomUUID();
         this.usuario = usuario;
         this.dni = dni;
         this.nombre = nombre;

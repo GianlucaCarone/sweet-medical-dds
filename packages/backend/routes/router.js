@@ -18,7 +18,6 @@ const routes = [
   { path: "/sedes", handler: sedeRoutes },
   { path: "/seed", handler: seedRoute },
   { path: "/servicios", handler: servicioRoutes },
-  { path: "/turno", handler: turnoRoutes },
   { path: "/usuarios", handler: usuarioRoutes },
   { path: "/medicos", handler: medicoRoutes },
   { path: "/turno", handler: turnoRoutes },
