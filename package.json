@@ -10,8 +10,12 @@
     "dev:backend": "npm run dev --workspace=backend",
     "start:frontend": "npm start --workspace=frontend",
     "start:dev": "concurrently \"npm run dev:backend\" \"npm run start:frontend\"",
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
     "lint": "eslint .",
     "format": "prettier . --write"
+  },
+  "jest": {
+    "testEnvironment": "node"
   },
   "keywords": [],
   "author": "",
@@ -32,7 +36,6 @@
     "jest": "^30.4.2",
     "mongoose": "^8.23.1",
     "winston": "^3.19.0",
-    "supertest": "^7.2.2",
     "zod": "^4.3.6"
   }
 }

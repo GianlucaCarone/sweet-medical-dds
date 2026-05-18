@@ -1,6 +1,5 @@
-import { ErrorDatosObligatorios } from "./errores";
-import { randomUUID } from "crypto";
-import { Usuario } from "./usuario";
+import { ErrorDatosObligatorios } from "./errores.js";
+import { Usuario } from "./usuario.js";
 
 export class Notificacion {
     id;
@@ -18,7 +17,7 @@ export class Notificacion {
         if (!(destinatario instanceof Usuario) || !(remitente instanceof Usuario)) {
             throw new Error("Los destinatarios deben ser usuarios");
         }
-        this.id = randomUUID();
+        //this.id = randomUUID();
         this.destinatario = destinatario;
         this.remitente = remitente;
         this.mensaje = mensaje;

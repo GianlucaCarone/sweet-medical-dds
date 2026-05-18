@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+import mongoose from "mongoose";
 
 //CONEXION A LA BASE DE DATOS
 export class ClienteMongoDb {

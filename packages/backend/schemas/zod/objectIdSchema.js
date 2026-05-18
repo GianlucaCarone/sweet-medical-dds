@@ -13,3 +13,7 @@ export function objectIdSchema(label = "entity") {
         message: `El id de ${label} debe ser un ObjectId válido (24 caracteres hexadecimales)`,
     });
 }
+
+export const objectIdParamSchema = z.object({
+    id: objectIdSchema("parámetro"),
+});

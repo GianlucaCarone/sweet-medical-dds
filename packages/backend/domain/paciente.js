@@ -1,5 +1,5 @@
 import { Plan } from "./plan.js";
-import { ObraSocial } from "./obraSocial.js"
+import { ObraSocial } from "./obraSocial.js";
 import { randomUUID } from "crypto";
 import { ErrorDatosObligatorios } from "./errores.js";
 

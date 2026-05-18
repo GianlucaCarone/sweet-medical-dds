@@ -1,13 +1,15 @@
-import { mongoose } from 'mongoose';
-import { Turno } from '../../domain/turnos/turno.js';
-import { historialEstadoTurnoSchema } from './historialEstadoTurnoSchema.js';
-
-
+import { mongoose } from "mongoose";
+import { Turno } from "../../domain/turnos/turno.js";
+import { historialEstadoTurnoSchema } from "./historialEstadoTurnoSchema.js";
 
 const turnoSchema = new mongoose.Schema({
     fechaHora: {
         type: Date,
         required: true,
+    },
+    fechaHoraPropuesta: {
+        type: Date,
+        required: false,
     },
     estado: {
         type: String,
@@ -15,27 +17,22 @@ const turnoSchema = new mongoose.Schema({
     },
     historialEstado: [historialEstadoTurnoSchema],
     medico: {
-        type: String, //referenciamos el uuid del medico 
+        type: mongoose.Schema.Types.ObjectId,
         ref: 'Medico',
         required: true,
     },
     paciente: {
-        type: String,  //referenciamos el uuid del paciente 
+        type: mongoose.Schema.Types.ObjectId,
         ref: 'Paciente',
         required: false,
     },
-    practica: {
-        type: String, // referenciamos el uuid de la practica si eligió una practica
-        ref: 'Practica',
-        required: false,
-    },
-    especialidad: {
-        type: String, // referenciamos el uuid de la especialidad si eligió una especialidad
-        ref: 'Especialidad',
+    servicio: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Servicio',
         required: false,
     },
     sede: {
-        type: String, //referenciamos el uuid de la sede 
+        type: mongoose.Schema.Types.ObjectId,
         ref: 'Sede',
         required: false,
     },
@@ -59,4 +56,4 @@ turnoSchema.index({ estado: 1 });
 turnoSchema.index({ paciente: 1 });
 turnoSchema.index({ sede: 1 });
 
-export const TurnoModel = mongoose.model('Turno', turnoSchema)
+export const TurnoModel = mongoose.model("Turno", turnoSchema);

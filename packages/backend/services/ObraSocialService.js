@@ -4,14 +4,14 @@ import { ObraSocialRepository } from "../repositories/ObraSocialRepository.js";
 export class ObraSocialService {
     #obraSocialRepository;
     constructor(obraSocialRepository = new ObraSocialRepository()) {
-        this.#obraSocialRepository = obraSocialRepository 
+        this.#obraSocialRepository = obraSocialRepository;
     }
 
     buscarTodos() {
         return this.#obraSocialRepository.findAll();
     }
     crear(data) {
-        const { nombre } = data
+        const { nombre } = data;
         const obraSocial = new ObraSocial({ nombre });
         const nuevaObraSocial = this.#obraSocialRepository.crear(obraSocial);
         return nuevaObraSocial;
@@ -25,7 +25,7 @@ export class ObraSocialService {
     eliminar(obraSocialId) {
         this.#obraSocialRepository.delete(obraSocialId);
     }
-    
+
     crearPlan(obraSocialId, planDto = {}) {
         this.#obraSocialRepository.addPlan(planDto);
     }
@@ -36,7 +36,7 @@ export class ObraSocialService {
         this.#obraSocialRepository.deletePlan(obraSocialId, planId);
     }
     buscarPlanDeObraSocial(obraSocialId, nombrePlan) {
-        this.#obraSocialRepository.findPlan(obraSocialId, nombrePlan)
+        this.#obraSocialRepository.findPlan(obraSocialId, nombrePlan);
     }
     buscarTodosLosPlanesDeObraSocial(obraSocialId) {
         this.#obraSocialRepository.findAllPlans(obraSocialId);

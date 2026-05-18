@@ -1,20 +1,30 @@
-import { BadRequestError } from "../../errors/AppError.js";
+import { ErrorDatosObligatorios } from "../errores.js";
+
 export class Especialidad {
     id;
     nombre;
     duracionTurnoEnMins;
-    costoConsulta;
+    costo;
 
-    constructor({ nombre, duracionTurnoEnMins, costoConsulta }) {
-        if (!nombre || !duracionTurnoEnMins || !costoConsulta) {
-            throw new BadRequestError();
+    constructor({ nombre, duracionTurnoEnMins, costo }) {
+        if (!nombre || !duracionTurnoEnMins || !costo) {
+            throw new ErrorDatosObligatorios();
         }
+        //this.id = randomUUID();
         this.nombre = nombre;
         this.duracionTurnoEnMins = duracionTurnoEnMins;
-        this.costoConsulta = costoConsulta;
+        this.costo = costo;
     }
 
-    get costo() {
-        return this.costoConsulta;
+    getCosto() {
+        return this.costo;
+    }
+
+    getCodigo() {
+        return null;
+    }
+
+    getEspecialidadPadre() {
+        return null;
     }
 }
