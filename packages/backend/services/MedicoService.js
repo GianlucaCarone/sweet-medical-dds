@@ -213,7 +213,12 @@ export class MedicoService {
     const disponibilidad = new DisponibilidadHoraria(disponibilidadData);
 
     medico.modificarDisponibilidad(disponibilidad);
-
+    /*Si un médico modifica su disponibilidad: 
+○ Los turnos existentes con fecha previa a la actual no se modifican. 
+○ Los turnos existentes RESERVADOS con fecha posterior a la actual, 
+no se modifican. 
+○ El cambio impacta únicamente en la generación de turnos futuros y 
+para turnos existentes futuros pero en estado DISPONIBLE. */
     // TODO avisar al turno service que genere los turnos.
     //await this.turnoService.regenerarTurnosDisponiblesDelMedico(medico.id);
 

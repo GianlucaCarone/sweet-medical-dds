@@ -2,15 +2,18 @@ import express from "express";
 import { ServicioController } from "../controllers/ServicioController.js";
 
 export default function servicioRoutes(getController) {
-    const router = express.Router();
-    const servicioController = getController(ServicioController);
+  const router = express.Router();
+  const servicioController = getController(ServicioController);
 
-    router.route("/")
-        .post((req, res, next) => servicioController.create(req, res, next))
-        .get((req, res, next) => servicioController.findAll(req, res, next))
-    router.route("/:idServicio")
-        .put((req, res, next) => servicioController.update(req, res, next))
-        .delete((req, res, next) => servicioController.delete(req, res, next));
+  router
+    .route("/")
+    .post((req, res, next) => servicioController.create(req, res, next))
+    .get((req, res, next) => servicioController.findAll(req, res, next));
+  router
+    .route("/:idServicio")
+    .get((req, res, next) => servicioController.findById(req, res, next))
+    .put((req, res, next) => servicioController.update(req, res, next))
+    .delete((req, res, next) => servicioController.delete(req, res, next));
 
-    return router;
+  return router;
 }
