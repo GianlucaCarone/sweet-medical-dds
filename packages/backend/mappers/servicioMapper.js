@@ -20,7 +20,7 @@ export class ServicioMapper {
         return {
             id: servicio.id,
             nombre: servicio.nombre,
-            tipo: servicio.tipo,
+            tipo: servicio instanceof Especialidad ? "Especialidad" : "Practica",
             duracion: servicio.duracionTurnoEnMins,
             costo: servicio.costo,
             codigo: servicio.codigo,
