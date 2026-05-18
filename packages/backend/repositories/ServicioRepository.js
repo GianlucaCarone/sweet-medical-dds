@@ -1,4 +1,4 @@
-import { ServicioModel, EspecialidadModel, PracticaModel } from "../schemas/database/servicioSchema.js";
+import { ServicioModel, EspecialidadModel, PracticaModel } from "../schemas/dataBase/servicioSchema.js";
 import { ServicioMapper } from "../mappers/servicioMapper.js";
 import { Especialidad } from "../domain/servicios/especialidad.js";
 import { Practica } from "../domain/servicios/practica.js";

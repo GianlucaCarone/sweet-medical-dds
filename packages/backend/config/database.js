@@ -4,7 +4,7 @@ import mongoose from "mongoose";
 export class ClienteMongoDb {
     static async connect() {
         try {
-            const conn = await mongoose.connect(`${process.env.MONGODB_URI}/${process.env.MONGODB_DB_NAME}`);
+            const conn = await mongoose.connect(`${process.env.MONGODB_URI}`);
             console.warn(`Se realizo la conexion a mongoDB ${conn.connection.host}`);
         } catch (error) {
             console.error(`Error: ${error.message}`);

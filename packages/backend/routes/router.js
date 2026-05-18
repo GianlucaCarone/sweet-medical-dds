@@ -7,13 +7,14 @@ import seedRoute from "./seedRoute.js";
 import servicioRoutes from "./servicioRoutes.js";
 import turnoRoutes from "./turnoRoutes.js";
 import usuarioRoutes from "./usuarioRoutes.js";
+import { pacienteRoutes } from "./pacienteRoutes.js";
 
 const routes = [
   { path: "/health", handler: healthRoutes },
   { path: "/medicos", handler: medicoRoutes },
   //{ path: "/usuarios/:idUsuario/notificaciones", handler: notificacionesRoutes },
   //{ path: "/notificaciones", handler: notificacionRoutes }, esta en el usuarioRoutes
-  { path: "/obra-social", handler: obraSocialRoutes },
+  // { path: "/obra-social", handler: obraSocialRoutes },
   { path: "/sedes", handler: sedeRoutes },
   { path: "/seed", handler: seedRoute },
   { path: "/servicios", handler: servicioRoutes },
@@ -22,6 +23,7 @@ const routes = [
   { path: "/medicos", handler: medicoRoutes },
   { path: "/turno", handler: turnoRoutes },
   { path: "/obra-social", handler: obraSocialRoutes },
+  { path: "/pacientes", handler: pacienteRoutes },
 ];
 
 export default routes;
