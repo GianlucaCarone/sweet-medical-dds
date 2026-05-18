@@ -7,6 +7,7 @@ import { TurnoRepository } from "../repositories/TurnoRepository.js";
 import { ObraSocialRepository } from "../repositories/ObraSocialRepository.js";
 import { MedicoRepository } from "../repositories/MedicoRepository.js";
 import { PacienteRepository } from "../repositories/PacienteRepository.js";
+import { TurnoMapper } from "../mappers/turnoMapper.js";
 
 
 export class TurnoService {
@@ -22,27 +23,6 @@ export class TurnoService {
         this.medicoRepository = medicoRepository;
     }
 
-    toDTO(turno) {
-        return {
-            id: turno.id || turno._id, //validacion de if default de mongo
-            fechaHora: turno.fechaHora,
-            fechaHoraPropuesta: turno.fechaHoraPropuesta,
-            estado: turno.estado,
-            medico: turno.medico?.id,
-            paciente: turno.paciente?.id,
-            practica: turno.practica?.id ?? turno.practica,
-            especialidad: turno.especialidad?.id ?? turno.especialidad,
-            sede: turno.sede?.id,
-            costo: turno.costo,
-            historialEstado: turno.historialEstado?.map(h => ({
-                fechaHoraIngreso: h.fechaHoraIngreso,
-                estado: h.estado,
-                usuario: h.usuario?.id ?? h.usuario, // por si el usuario es un objeto o un string
-                motivo: h.motivo
-            })) ?? []
-        };
-    }
-
     async cambiarEstadoTurno(id, nuevoEstado, quien, motivo) {
         const turno = await this.turnoRepository.findById(id);
         if (!turno) {
@@ -50,7 +30,7 @@ export class TurnoService {
         }
         turno.actualizarEstadoTurno({ nuevoEstado, quien, motivo });
         //llamar a notificacion service
-        return this.toDTO(await this.turnoRepository.update(id, turno));
+        return TurnoMapper.toDTO(await this.turnoRepository.update(id, turno));
     }
 
 
@@ -83,7 +63,7 @@ export class TurnoService {
 
         const turno = new Turno({ medico, sede, fechaHora, servicio });
         const turnoGuardado = await this.turnoRepository.save(turno);
-        return this.toDTO(turnoGuardado);
+        return TurnoMapper.toDTO(turnoGuardado);
     }
 
     async asignarTurno(idTurno, pacienteId, data) {
@@ -102,11 +82,11 @@ export class TurnoService {
         turno.costo = costoTurno;
 
         turno.actualizarEstadoTurno({ nuevoEstado: EstadoTurnoEnum.RESERVADO, paciente });
+        //llamar al service de notificacion
 
-        return this.toDTO(await this.turnoRepository.update(idTurno, turno));
+        return TurnoMapper.toDTO(await this.turnoRepository.update(idTurno, turno));
     }
 
-    // TODO:● Ordenamiento por costo y fecha ascendente/descendente FALTA
     async obtenerTodosPaginados(numeroPagina = 1, limitePorPagina = Number(process.env.ITEMS_PER_PAGE) || 10, filtros = {}) {
         this.validarPaginacion(numeroPagina, limitePorPagina);
         const filtrosValidados = this.validarFiltros(filtros);
@@ -125,7 +105,7 @@ export class TurnoService {
 
         //solo se calcula si el turno tiene un servicio y si se filtra por pacienteID para una busqueda de turnos.
         const turnosConCobertura = turnos.map(t => {
-            const turnoDto = this.toDTO(t);
+            const turnoDto = TurnoMapper.toDTO(t);
             if (t.servicio && filtrosValidados.pacienteId) {
                 const cobertura = this.calcularCostoTurno(obraSocial, plan, t.costo);
                 turnoDto.costo = cobertura.costoFinal;
@@ -148,7 +128,7 @@ export class TurnoService {
         if (!turno) {
             throw new NotFoundError("No se encontro el turno con el id " + id);
         }
-        return this.toDTO(turno);
+        return TurnoMapper.toDTO(turno);
     }
 
     async findByEstado(estado) {
@@ -156,7 +136,7 @@ export class TurnoService {
         if (turnos.length === 0) {
             throw new NotFoundError(`No se encontró ningún turno con el estado ${estado}`);
         }
-        return turnos.map(t => this.toDTO(t));
+        return turnos.map(t => TurnoMapper.toDTO(t));
     }
 
     async update(idTurno, turno) {
@@ -164,7 +144,7 @@ export class TurnoService {
         if (!turnoActualizado) {
             throw new NotFoundError("No se encontro el turno con el id " + idTurno);
         }
-        return this.toDTO(turnoActualizado);
+        return TurnoMapper.toDTO(turnoActualizado);
     }
 
     async solicitarCambioFecha(idTurno, nuevaFechaHora, usuarioId) {
@@ -197,7 +177,7 @@ export class TurnoService {
 
         // TODO: notificacionService.notificarCambio(receptor, quien);
 
-        return this.toDTO(await this.turnoRepository.update(idTurno, turno));
+        return TurnoMapper.toDTO(await this.turnoRepository.update(idTurno, turno));
     }
 
     async responderCambioFecha(idTurno, aceptado, usuarioId) {
@@ -244,7 +224,7 @@ export class TurnoService {
             // TODO: notificacionService.notificarCambio(receptor, quien);
         }
 
-        return this.toDTO(await this.turnoRepository.update(idTurno, turno));
+        return TurnoMapper.toDTO(await this.turnoRepository.update(idTurno, turno));
     }
 
 

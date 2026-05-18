@@ -1,6 +1,7 @@
 import { EstadoTurnoEnum } from "../domain/turnos/estadoTurnoEnum.js";
 import { BadRequestError } from "../errors/AppError.js";
 import { TurnoModel } from "../schemas/dataBase/turnoSchemaDB.js";
+import { TurnoMapper } from "../mappers/turnoMapper.js";
 
 export class TurnoRepository {
     constructor() {
@@ -11,29 +12,35 @@ export class TurnoRepository {
     // se agrega el método dentro de turno repository para llamarlo
     // y no declararlos dos veces
     async crear(turnoDto) {
-        return await this.model.create(turnoDto);
+        const doc = await this.model.create(turnoDto);
+        return TurnoMapper.toDomain(doc.toObject());
     }
 
     async findAll() {
-        return await this.model.find().lean().exec();  // no es necesariamente obligatorio pero mejora el Stack Traces y devuelve una promesa de js 
+        const docs = await this.model.find().exec();  // no es necesariamente obligatorio pero mejora el Stack Traces y devuelve una promesa de js 
+        return docs.map(doc => TurnoMapper.toDomain(doc));
     }
 
     async findByEstado(estado) {
         this.validarEstado(estado);
-        return await this.model.find({ estado }).lean().exec();
+        const docs = await this.model.find({ estado }).lean().exec();
+        return docs.map(doc => TurnoMapper.toDomain(doc));
     }
 
     async findById(id) {
-        return await this.model.findById(id).lean().exec();
+        const doc = await this.model.findById(id).lean().exec();
+        return TurnoMapper.toDomain(doc);
     }
 
     async save(turno) {
-        const nuevoTurno = new this.model(turno);
-        return await nuevoTurno.save();
+        const nuevoTurno = new this.model(TurnoMapper.toPersistence(turno));
+        const saved = await nuevoTurno.save();
+        return TurnoMapper.toDomain(saved.toObject());
     }
 
     async update(id, turno) {
-        return await this.model.findByIdAndUpdate(id, turno, { new: true }).exec();
+        const doc = await this.model.findByIdAndUpdate(id, TurnoMapper.toPersistence(turno), { new: true }).lean().exec();
+        return TurnoMapper.toDomain(doc);
     }
 
     async existeTurno(medicoId, fechaHora) {
@@ -109,7 +116,7 @@ disponible:
         const inicio = (numeroPagina - 1) * limitePorPagina;
 
         // Ejecutar la consulta y el conteo en paralelo
-        const [turnos, totalTurnos] = await Promise.all([
+        const [turnosDoc, totalTurnos] = await Promise.all([
             this.model.find(query)
                 .populate('medico paciente servicio sede')
                 .sort(ordenamiento)
@@ -119,6 +126,8 @@ disponible:
                 .exec(),
             this.model.countDocuments(query).exec()
         ]);
+        
+        const turnos = turnosDoc.map(doc => TurnoMapper.toDomain(doc));
 
         return {
             turnos,
