@@ -6,8 +6,8 @@ import { logger } from "../config/logger.js";
 import { ServicioMapper } from "../mappers/servicioMapper.js";
 
 export class ServicioService {
-    constructor({ 
-        serviciosRepository = new ServicioRepository() 
+    constructor({
+        serviciosRepository = new ServicioRepository()
     } = {}) {
         this.serviciosRepository = serviciosRepository;
     }
@@ -18,6 +18,13 @@ export class ServicioService {
         if (!servicio) throw new NotFoundError("No se encontro el servicio con el id " + idServicio);
         logger.info("[SERVICIO SERVICE]: Servicio encontrado: ", servicio);
         return ServicioMapper.toDTO(servicio);
+    }
+
+    async findAll() {
+        logger.info("[SERVICIO SERVICE]: Obteniendo todos los servicios",);
+        const servicios = await this.serviciosRepository.findAll();
+        logger.info("[SERVICIO SERVICE]:Todos los servicios obtenidos: " + servicios);
+        return servicios.map(servicio => ServicioMapper.toDTO(servicio));
     }
 
     async getEntityById(idServicio) {

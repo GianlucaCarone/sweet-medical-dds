@@ -1,0 +1,1032 @@
+{
+  "info": {
+    "_postman_id": "c7f2e2a1-7f05-4c9f-9d12-7c2e7e2f3a11",
+    "name": "DDS API - CRUD completo",
+    "description": "Colección para probar los endpoints del backend. Asume baseUrl = http://localhost:3001. El recurso de pacientes está incluido con /pacientes aunque todavía puede no estar montado en router.js.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Health",
+      "item": [
+        {
+          "name": "Health check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/health",
+              "host": ["{{baseUrl}}"],
+              "path": ["health"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Seed",
+      "item": [
+        {
+          "name": "Ejecutar seed",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/seed",
+              "host": ["{{baseUrl}}"],
+              "path": ["seed"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Usuarios",
+      "item": [
+        {
+          "name": "Listar usuarios",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/usuarios",
+              "host": ["{{baseUrl}}"],
+              "path": ["usuarios"]
+            }
+          }
+        },
+        {
+          "name": "Crear usuario",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombreUsuario\": \"usuario_demo\",\n  \"password\": \"Password123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/usuarios",
+              "host": ["{{baseUrl}}"],
+              "path": ["usuarios"]
+            }
+          }
+        },
+        {
+          "name": "Obtener usuario por id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/usuarios/{{usuarioId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["usuarios", "{{usuarioId}}"]
+            }
+          }
+        },
+        {
+          "name": "Actualizar usuario",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombreUsuario\": \"usuario_demo_actualizado\",\n  \"password\": \"Password123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/usuarios/{{usuarioId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["usuarios", "{{usuarioId}}"]
+            }
+          }
+        },
+        {
+          "name": "Eliminar usuario",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/usuarios/{{usuarioId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["usuarios", "{{usuarioId}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Usuarios / Notificaciones",
+      "item": [
+        {
+          "name": "Notificaciones leídas",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/usuarios/{{usuarioId}}/notificaciones/leidas",
+              "host": ["{{baseUrl}}"],
+              "path": ["usuarios", "{{usuarioId}}", "notificaciones", "leidas"]
+            }
+          }
+        },
+        {
+          "name": "Notificaciones no leídas",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/usuarios/{{usuarioId}}/notificaciones/no-leidas",
+              "host": ["{{baseUrl}}"],
+              "path": ["usuarios", "{{usuarioId}}", "notificaciones", "no-leidas"]
+            }
+          }
+        },
+        {
+          "name": "Marcar notificación como leída",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/usuarios/{{usuarioId}}/notificaciones/{{notificacionId}}/leer",
+              "host": ["{{baseUrl}}"],
+              "path": ["usuarios", "{{usuarioId}}", "notificaciones", "{{notificacionId}}", "leer"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Pacientes",
+      "item": [
+        {
+          "name": "Listar pacientes",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/pacientes",
+              "host": ["{{baseUrl}}"],
+              "path": ["pacientes"]
+            }
+          }
+        },
+        {
+          "name": "Crear paciente",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"idUsuario\": \"{{usuarioId}}\",\n  \"dni\": 30123456,\n  \"nombre\": \"Juan Perez\",\n  \"obraSocial\": \"{{obraSocialId}}\",\n  \"plan\": \"{{planId}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/pacientes",
+              "host": ["{{baseUrl}}"],
+              "path": ["pacientes"]
+            }
+          }
+        },
+        {
+          "name": "Obtener paciente por id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/pacientes/{{pacienteId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["pacientes", "{{pacienteId}}"]
+            }
+          }
+        },
+        {
+          "name": "Actualizar paciente",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"dni\": 30123457,\n  \"nombre\": \"Juan Perez Actualizado\",\n  \"obraSocial\": \"{{obraSocialId}}\",\n  \"plan\": \"{{planId}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/pacientes/{{pacienteId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["pacientes", "{{pacienteId}}"]
+            }
+          }
+        },
+        {
+          "name": "Eliminar paciente",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/pacientes/{{pacienteId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["pacientes", "{{pacienteId}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Médicos",
+      "item": [
+        {
+          "name": "Listar médicos",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/medicos",
+              "host": ["{{baseUrl}}"],
+              "path": ["medicos"]
+            }
+          }
+        },
+        {
+          "name": "Crear médico",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Dr. House\",\n  \"usuarioId\": \"{{usuarioId}}\",\n  \"matricula\": \"M12345\",\n  \"honorario\": 15000\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/medicos",
+              "host": ["{{baseUrl}}"],
+              "path": ["medicos"]
+            }
+          }
+        },
+        {
+          "name": "Ejecutar seed general de médicos",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/medicos/seed",
+              "host": ["{{baseUrl}}"],
+              "path": ["medicos", "seed"]
+            }
+          }
+        },
+        {
+          "name": "Obtener médico por id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/medicos/{{medicoId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["medicos", "{{medicoId}}"]
+            }
+          }
+        },
+        {
+          "name": "Actualizar médico",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Dr. House Actualizado\",\n  \"matricula\": \"M54321\",\n  \"honorario\": 18000\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/medicos/{{medicoId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["medicos", "{{medicoId}}"]
+            }
+          }
+        },
+        {
+          "name": "Eliminar médico",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/medicos/{{medicoId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["medicos", "{{medicoId}}"]
+            }
+          }
+        },
+        {
+          "name": "Consultar disponibilidades",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/medicos/{{medicoId}}/disponibilidades",
+              "host": ["{{baseUrl}}"],
+              "path": ["medicos", "{{medicoId}}", "disponibilidades"]
+            }
+          }
+        },
+        {
+          "name": "Definir disponibilidad",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"diaSemana\": \"Lunes\",\n  \"horaDesde\": \"09:00\",\n  \"horaHasta\": \"13:00\",\n  \"servicioId\": \"{{servicioId}}\",\n  \"sedeId\": \"{{sedeId}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/medicos/{{medicoId}}/disponibilidades",
+              "host": ["{{baseUrl}}"],
+              "path": ["medicos", "{{medicoId}}", "disponibilidades"]
+            }
+          }
+        },
+        {
+          "name": "Modificar disponibilidad",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"diaSemana\": \"Lunes\",\n  \"horaDesde\": \"10:00\",\n  \"horaHasta\": \"14:00\",\n  \"servicioId\": \"{{servicioId}}\",\n  \"sedeId\": \"{{sedeId}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/medicos/{{medicoId}}/disponibilidades",
+              "host": ["{{baseUrl}}"],
+              "path": ["medicos", "{{medicoId}}", "disponibilidades"]
+            }
+          }
+        },
+        {
+          "name": "Eliminar disponibilidad",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"diaSemana\": \"Lunes\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/medicos/{{medicoId}}/disponibilidades",
+              "host": ["{{baseUrl}}"],
+              "path": ["medicos", "{{medicoId}}", "disponibilidades"]
+            }
+          }
+        },
+        {
+          "name": "Agregar sede al médico",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/medicos/{{medicoId}}/sedes/{{sedeId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["medicos", "{{medicoId}}", "sedes", "{{sedeId}}"]
+            }
+          }
+        },
+        {
+          "name": "Eliminar sede del médico",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/medicos/{{medicoId}}/sedes/{{sedeId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["medicos", "{{medicoId}}", "sedes", "{{sedeId}}"]
+            }
+          }
+        },
+        {
+          "name": "Agregar servicio al médico",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/medicos/{{medicoId}}/servicios/{{servicioId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["medicos", "{{medicoId}}", "servicios", "{{servicioId}}"]
+            }
+          }
+        },
+        {
+          "name": "Eliminar servicio del médico",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/medicos/{{medicoId}}/servicios/{{servicioId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["medicos", "{{medicoId}}", "servicios", "{{servicioId}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Sedes",
+      "item": [
+        {
+          "name": "Listar sedes",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/sedes",
+              "host": ["{{baseUrl}}"],
+              "path": ["sedes"]
+            }
+          }
+        },
+        {
+          "name": "Crear sede",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Sede Centro\",\n  \"direccion\": \"Av. Siempre Viva 123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/sedes",
+              "host": ["{{baseUrl}}"],
+              "path": ["sedes"]
+            }
+          }
+        },
+        {
+          "name": "Obtener sede por id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/sedes/{{sedeId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["sedes", "{{sedeId}}"]
+            }
+          }
+        },
+        {
+          "name": "Actualizar sede",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Sede Centro Actualizada\",\n  \"direccion\": \"Av. Siempre Viva 456\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/sedes/{{sedeId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["sedes", "{{sedeId}}"]
+            }
+          }
+        },
+        {
+          "name": "Eliminar sede",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/sedes/{{sedeId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["sedes", "{{sedeId}}"]
+            }
+          }
+        },
+        {
+          "name": "Buscar sede por nombre",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/sedes/{{sedeNombre}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["sedes", "{{sedeNombre}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Servicios",
+      "item": [
+        {
+          "name": "Listar servicios",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/servicios",
+              "host": ["{{baseUrl}}"],
+              "path": ["servicios"]
+            }
+          }
+        },
+        {
+          "name": "Crear servicio",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Consulta clínica\",\n  \"especialidadPadreId\": \"{{especialidadId}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/servicios",
+              "host": ["{{baseUrl}}"],
+              "path": ["servicios"]
+            }
+          }
+        },
+        {
+          "name": "Obtener servicio por id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/servicios/{{servicioId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["servicios", "{{servicioId}}"]
+            }
+          }
+        },
+        {
+          "name": "Actualizar servicio",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Consulta clínica actualizada\",\n  \"especialidadPadreId\": \"{{especialidadId}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/servicios/{{servicioId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["servicios", "{{servicioId}}"]
+            }
+          }
+        },
+        {
+          "name": "Eliminar servicio",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/servicios/{{servicioId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["servicios", "{{servicioId}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Obra social",
+      "item": [
+        {
+          "name": "Listar obras sociales",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/obra-social",
+              "host": ["{{baseUrl}}"],
+              "path": ["obra-social"]
+            }
+          }
+        },
+        {
+          "name": "Crear obra social",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"OSDE\",\n  \"planes\": []\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/obra-social",
+              "host": ["{{baseUrl}}"],
+              "path": ["obra-social"]
+            }
+          }
+        },
+        {
+          "name": "Obtener obra social por id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/obra-social/{{obraSocialId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["obra-social", "{{obraSocialId}}"]
+            }
+          }
+        },
+        {
+          "name": "Actualizar obra social",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"OSDE Actualizada\",\n  \"planes\": []\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/obra-social/{{obraSocialId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["obra-social", "{{obraSocialId}}"]
+            }
+          }
+        },
+        {
+          "name": "Eliminar obra social",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/obra-social/{{obraSocialId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["obra-social", "{{obraSocialId}}"]
+            }
+          }
+        },
+        {
+          "name": "Listar planes paginados",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/obra-social/{{obraSocialId}}/plan?page=1&limit=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["obra-social", "{{obraSocialId}}", "plan"],
+              "query": [
+                { "key": "page", "value": "1" },
+                { "key": "limit", "value": "10" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Crear/consultar plan paginado",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/obra-social/{{obraSocialId}}/plan?page=1&limit=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["obra-social", "{{obraSocialId}}", "plan"],
+              "query": [
+                { "key": "page", "value": "1" },
+                { "key": "limit", "value": "10" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Obtener plan por id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/obra-social/{{obraSocialId}}/plan/{{planId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["obra-social", "{{obraSocialId}}", "plan", "{{planId}}"]
+            }
+          }
+        },
+        {
+          "name": "Actualizar plan",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Plan Oro\",\n  \"coberturaEspecialidad\": [],\n  \"coberturaPractica\": [],\n  \"eliminado\": false\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/obra-social/{{obraSocialId}}/plan/{{planId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["obra-social", "{{obraSocialId}}", "plan", "{{planId}}"]
+            }
+          }
+        },
+        {
+          "name": "Eliminar plan",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/obra-social/{{obraSocialId}}/plan/{{planId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["obra-social", "{{obraSocialId}}", "plan", "{{planId}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Turnos",
+      "item": [
+        {
+          "name": "Listar turnos paginados",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/turno?page=1&limit=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["turno"],
+              "query": [
+                { "key": "page", "value": "1" },
+                { "key": "limit", "value": "10" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Crear turno",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"pacienteId\": \"{{pacienteId}}\",\n  \"medicoId\": \"{{medicoId}}\",\n  \"sedeId\": \"{{sedeId}}\",\n  \"servicioId\": \"{{servicioId}}\",\n  \"estado\": \"Pendiente\",\n  \"fechaHora\": \"2026-05-18T15:00:00.000Z\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/turno",
+              "host": ["{{baseUrl}}"],
+              "path": ["turno"]
+            }
+          }
+        },
+        {
+          "name": "Asignar turno",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"costoTurno\": 15000,\n  \"pacienteId\": \"{{pacienteId}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/turno/{{turnoId}}/asignar",
+              "host": ["{{baseUrl}}"],
+              "path": ["turno", "{{turnoId}}", "asignar"]
+            }
+          }
+        },
+        {
+          "name": "Cambiar estado del turno",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nuevoEstado\": \"Cancelado\",\n  \"quien\": \"{{usuarioId}}\",\n  \"motivo\": \"No puede asistir\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/turno/{{turnoId}}/cambiar-estado",
+              "host": ["{{baseUrl}}"],
+              "path": ["turno", "{{turnoId}}", "cambiar-estado"]
+            }
+          }
+        },
+        {
+          "name": "Solicitar cambio de fecha",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nuevaFechaHora\": \"2026-05-19T15:00:00.000Z\",\n  \"usuarioId\": \"{{usuarioId}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/turno/{{turnoId}}/solicitar-cambio-fecha",
+              "host": ["{{baseUrl}}"],
+              "path": ["turno", "{{turnoId}}", "solicitar-cambio-fecha"]
+            }
+          }
+        },
+        {
+          "name": "Responder cambio de fecha",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"aceptado\": true,\n  \"usuarioId\": \"{{usuarioId}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/turno/{{turnoId}}/responder-cambio-fecha",
+              "host": ["{{baseUrl}}"],
+              "path": ["turno", "{{turnoId}}", "responder-cambio-fecha"]
+            }
+          }
+        },
+        {
+          "name": "Filtrar turnos por estado",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/turno/{{estadoTurno}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["turno", "{{estadoTurno}}"]
+            }
+          }
+        },
+        {
+          "name": "Obtener turno por id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/turno/{{turnoId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["turno", "{{turnoId}}"]
+            }
+          }
+        },
+        {
+          "name": "Actualizar turno",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"estado\": \"Confirmado\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/turno/{{turnoId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["turno", "{{turnoId}}"]
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3001"
+    },
+    {
+      "key": "usuarioId",
+      "value": "REEMPLAZAR_POR_ID_REAL"
+    },
+    {
+      "key": "pacienteId",
+      "value": "REEMPLAZAR_POR_ID_REAL"
+    },
+    {
+      "key": "medicoId",
+      "value": "REEMPLAZAR_POR_ID_REAL"
+    },
+    {
+      "key": "sedeId",
+      "value": "REEMPLAZAR_POR_ID_REAL"
+    },
+    {
+      "key": "servicioId",
+      "value": "REEMPLAZAR_POR_ID_REAL"
+    },
+    {
+      "key": "obraSocialId",
+      "value": "REEMPLAZAR_POR_ID_REAL"
+    },
+    {
+      "key": "planId",
+      "value": "REEMPLAZAR_POR_ID_REAL"
+    },
+    {
+      "key": "notificacionId",
+      "value": "REEMPLAZAR_POR_ID_REAL"
+    },
+    {
+      "key": "turnoId",
+      "value": "REEMPLAZAR_POR_ID_REAL"
+    },
+    {
+      "key": "estadoTurno",
+      "value": "Pendiente"
+    },
+    {
+      "key": "sedeNombre",
+      "value": "Sede Centro"
+    },
+    {
+      "key": "especialidadId",
+      "value": "REEMPLAZAR_POR_ID_REAL"
+    }
+  ]
+}

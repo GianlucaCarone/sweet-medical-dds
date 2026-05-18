@@ -1,0 +1,646 @@
+{
+  "info": {
+    "_postman_id": "86e0023a-909c-449e-8ac4-519de35673ec",
+    "name": "SweetMedical",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "44963625"
+  },
+  "item": [
+    {
+      "name": "GetsAll",
+      "item": [
+        {
+          "name": "Sedes",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3001/sedes",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3001",
+              "path": [
+                "sedes"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Usuario",
+      "item": [
+        {
+          "name": "CrearUser",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombreUsuario\": \"Franco\",\n  \"password\": \"#Andino1234\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:3001/usuarios",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3001",
+              "path": [
+                "usuarios"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Buscar todos",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base-url}}/usuarios",
+              "host": [
+                "{{base-url}}"
+              ],
+              "path": [
+                "usuarios"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Buscar por id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base-url}}/usuarios/6a0a75bd4f249c7c56740001",
+              "host": [
+                "{{base-url}}"
+              ],
+              "path": [
+                "usuarios",
+                "6a0a75bd4f249c7c56740001"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Medico",
+      "item": [
+        {
+          "name": "Disponibilidades",
+          "item": [
+            {
+              "name": "CrearDisponibilidad",
+              "request": {
+                "auth": {
+                  "type": "noauth"
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"diaSemana\": \"LUNES\",\n  \"horaDesde\": \"08:00\",\n  \"horaHasta\": \"13:00\",\n  \"sedeId\": \"6a0a80d931d545fa05e8ae56\",\n  \"servicioId\":\"6a0a7ddbea471e8781182f79\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:3001/medicos/6a0a76214f249c7c56740009/disponibilidades",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "3001",
+                  "path": [
+                    "medicos",
+                    "6a0a76214f249c7c56740009",
+                    "disponibilidades"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Buscar disponibilidades",
+              "request": {
+                "auth": {
+                  "type": "noauth"
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"diaSemana\": \"LUNES\",\n  \"horaDesde\": \"15:00\",\n  \"horaHasta\": \"17:00\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:3001/medicos/6a07e05a634453753c266cd3/disponibilidades",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "3001",
+                  "path": [
+                    "medicos",
+                    "6a07e05a634453753c266cd3",
+                    "disponibilidades"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Borrar Disponibilidad",
+              "request": {
+                "auth": {
+                  "type": "noauth"
+                },
+                "method": "DELETE",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"diaSemana\": \"LUNES\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:3001/medicos/6a07e05a634453753c266cd3/disponibilidades",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "3001",
+                  "path": [
+                    "medicos",
+                    "6a07e05a634453753c266cd3",
+                    "disponibilidades"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "ModificarDisponibilidad",
+              "request": {
+                "auth": {
+                  "type": "noauth"
+                },
+                "method": "PUT",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"diaSemana\": \"LUNES\",\n  \"horaDesde\": \"10:00\",\n  \"horaHasta\": \"17:00\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:3001/medicos/6a07e05a634453753c266cd3/disponibilidades",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "3001",
+                  "path": [
+                    "medicos",
+                    "6a07e05a634453753c266cd3",
+                    "disponibilidades"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "servicios",
+          "item": [
+            {
+              "name": "Agregar servicio a medico",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "url": {
+                  "raw": "{{base-url}}/medicos/6a0a76214f249c7c56740009/servicios/6a0a7df8ea471e8781182f80",
+                  "host": [
+                    "{{base-url}}"
+                  ],
+                  "path": [
+                    "medicos",
+                    "6a0a76214f249c7c56740009",
+                    "servicios",
+                    "6a0a7df8ea471e8781182f80"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Eliminar servicio a medico",
+              "request": {
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": ""
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "sedes",
+          "item": [
+            {
+              "name": "Agregar sede a medico",
+              "protocolProfileBehavior": {
+                "disableBodyPruning": true
+              },
+              "request": {
+                "method": "GET",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base-url}}/medicos",
+                  "host": [
+                    "{{base-url}}"
+                  ],
+                  "path": [
+                    "medicos"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Crear Medico",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Dr. Franco\",\n  \"usuarioId\": \"6a0a75bd4f249c7c56740001\",\n  \"matricula\": \"1234567890\",\n  \"honorario\": 10000\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:3001/medicos",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3001",
+              "path": [
+                "medicos"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Buscar todos",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base-url}}/medicos",
+              "host": [
+                "{{base-url}}"
+              ],
+              "path": [
+                "medicos"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Buscar por id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base-url}}/medicos/6a08f604f7c7bdf4a7d78441",
+              "host": [
+                "{{base-url}}"
+              ],
+              "path": [
+                "medicos",
+                "6a08f604f7c7bdf4a7d78441"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "HEALTH",
+      "item": [
+        {
+          "name": "Health",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3001/health",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3001",
+              "path": [
+                "health"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Sedes",
+      "item": [
+        {
+          "name": "Crear sede",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"nombre\": \"Hospital Britanico\",\r\n    \"direccion\": \"Avenida cabildo 2209\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base-url}}/sedes",
+              "host": [
+                "{{base-url}}"
+              ],
+              "path": [
+                "sedes"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Obtener todos las sedes",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"nombre\": \"Rinoplastia\",\r\n    \"duracionEnMin\": 30,\r\n    \"costo\": 10000,\r\n    \"codigo\": \"1234\",\r\n    \"especialidadPadreId\": \"6a0a3f1c906fda32548664e8\"\r\n}\r\n/* {\r\n    \"nombre\": \"Rinoplastia\",\r\n    \"duracionEnMin\": 30,\r\n    \"costo\": 10000,\r\n    \"codigo\": \"1234\",\r\n    \"especialidadPadreId\": \"6a0a3f1c906fda32548664e8\"\r\n} */"
+            },
+            "url": {
+              "raw": "{{base-url}}/sedes",
+              "host": [
+                "{{base-url}}"
+              ],
+              "path": [
+                "sedes"
+              ],
+              "query": [
+                {
+                  "key": "nombre",
+                  "value": "",
+                  "type": "text",
+                  "disabled": true
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "servicios",
+      "item": [
+        {
+          "name": "Crear servicio",
+          "protocolProfileBehavior": {
+            "disabledSystemHeaders": {
+              "content-type": true
+            }
+          },
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"nombre\": \"Rinoplastia\",\r\n    \"duracionEnMin\": 30,\r\n    \"costo\": 10000,\r\n    \"codigo\": \"1234\",\r\n    \"especialidadPadreId\": \"6a0a7ddbea471e8781182f79\"\r\n}\r\n/* {\r\n    \"nombre\": \"Oftalmologia\",\r\n    \"duracionEnMin\": 30,\r\n    \"costo\": 10000\r\n} */",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base-url}}/servicios",
+              "host": [
+                "{{base-url}}"
+              ],
+              "path": [
+                "servicios"
+              ],
+              "query": [
+                {
+                  "key": "nombre",
+                  "value": "",
+                  "type": "text",
+                  "disabled": true
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Buscar todos los servicios",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base-url}}/servicios",
+              "host": [
+                "{{base-url}}"
+              ],
+              "path": [
+                "servicios"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Eliminar servicio",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"nombre\": \"Traumatologia\",\r\n    \"duracionEnMin\": 30,\r\n    \"costo\": 1000,\r\n    \"codigo\": \"fdvdf33fs\" \r\n}"
+            },
+            "url": {
+              "raw": "http://localhost:3001/servicios/6a08dfbfa6320cd0a7400454",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3001",
+              "path": [
+                "servicios",
+                "6a08dfbfa6320cd0a7400454"
+              ],
+              "query": [
+                {
+                  "key": "nombre",
+                  "value": "",
+                  "type": "text",
+                  "disabled": true
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Modificar servicio",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"nombre\": \"Cardiologia\",\r\n    \"duracionEnMin\": 40,\r\n    \"costo\": 200,\r\n    \"codigo\": null\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:3001/servicios/6a08b3b9b0f7c6799a50a2c1",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3001",
+              "path": [
+                "servicios",
+                "6a08b3b9b0f7c6799a50a2c1"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "requests": {},
+        "exec": [
+          ""
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "requests": {},
+        "exec": [
+          ""
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "base-url",
+      "value": ""
+    }
+  ]
+}
