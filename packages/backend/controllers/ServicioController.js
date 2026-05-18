@@ -9,25 +9,11 @@ export class ServicioController {
         this.servicioService = servicioService;
     }
 
-        findById = async (req, res, next) => {
+    findById = async (req, res, next) => {
         try {
             const { idServicio } = servicioIdParamsSchema.parse(req.params);
             logger.info("[SERVICIOS CONTROLLER]: Obteniendo servicio: " + idServicio);
             const servicio = await this.servicioService.getById(idServicio);
-            logger.info("[SERVICIOS CONTROLLER]: Servicio obtenido: " + servicio);
-            res.status(200).json({
-                status: "success",
-                data: servicio
-            });
-        } catch (error) {
-            next(error);
-        }
-    }
-
-    findAll = async (req, res, next) => {
-        try {
-            logger.info("[SERVICIOS CONTROLLER]: Obteniendo todos los servicios");
-            const servicio = await this.servicioService.getAll();
             logger.info("[SERVICIOS CONTROLLER]: Servicio obtenido: " + servicio);
             res.status(200).json({
                 status: "success",
