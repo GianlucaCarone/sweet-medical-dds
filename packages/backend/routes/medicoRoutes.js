@@ -23,7 +23,7 @@ export default function medicoRoutes(getController) {
     .delete((req, res, next) => medicoController.delete(req, res, next))
     .put((req, res, next) => medicoController.update(req, res, next));
 
-  router.route("/:id/sedes")
+  router.route("/:id/sedes/:sedeId")
     .post((req, res, next) => medicoController.agregarSede(req, res, next));
 
   router.route("/:id/sedes/:sedeId")

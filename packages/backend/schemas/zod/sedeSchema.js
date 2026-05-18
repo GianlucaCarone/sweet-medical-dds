@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { objectIdSchema } from "./objectIdSchema.js";
 
 const MIN_NOMBRE_SEDE = 3;
 const MAX_NOMBRE_SEDE = 50;
@@ -11,7 +12,7 @@ export const nombreSedeSchema = z.string({
   .regex(/^[A-Za-zÁÉÍÓÚáéíóúÑñ0-9 ]+$/, "El nombre solo puede contener letras, números y espacios"); // <-- Agregado el espacio
 
 const MIN_DIRECCION_SEDE = 3;
-const MAX_DIRECCION_SEDE = 150; // <-- Aumentado para direcciones reales
+const MAX_DIRECCION_SEDE = 150;
 
 export const direccionSedeSchema = z.string({
   required_error: "La dirección de la sede es obligatoria",
@@ -38,4 +39,9 @@ export const asociarSedeSchema = z.object({
 
 export const eliminarSedeParamsSchema = z.object({
   sedeId: z.string("El id de la sede debe ser un string")
+});
+
+export const agregarSedeParamsSchema = z.object({
+  id: objectIdSchema("médico"),
+  sedeId: objectIdSchema("sede"),
 });

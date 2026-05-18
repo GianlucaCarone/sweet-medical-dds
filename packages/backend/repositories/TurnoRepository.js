@@ -1,6 +1,7 @@
 import { EstadoTurnoEnum } from "../domain/turnos/estadoTurnoEnum.js";
 import { BadRequestError } from "../errors/AppError.js";
 import { TurnoModel } from "../schemas/dataBase/turnoSchemaDB.js";
+import { TurnoMapper } from "../mappers/turnoMapper.js";
 
 export class TurnoRepository {
     constructor() {
@@ -11,29 +12,35 @@ export class TurnoRepository {
     // se agrega el método dentro de turno repository para llamarlo
     // y no declararlos dos veces
     async crear(turnoDto) {
-        return await this.model.create(turnoDto);
+        const doc = await this.model.create(turnoDto);
+        return TurnoMapper.toDomain(doc.toObject());
     }
 
     async findAll() {
-        return await this.model.find().lean().exec();  // no es necesariamente obligatorio pero mejora el Stack Traces y devuelve una promesa de js 
+        const docs = await this.model.find().exec();  // no es necesariamente obligatorio pero mejora el Stack Traces y devuelve una promesa de js 
+        return docs.map(doc => TurnoMapper.toDomain(doc));
     }
 
     async findByEstado(estado) {
         this.validarEstado(estado);
-        return await this.model.find({ estado }).lean().exec();
+        const docs = await this.model.find({ estado }).lean().exec();
+        return docs.map(doc => TurnoMapper.toDomain(doc));
     }
 
     async findById(id) {
-        return await this.model.findById(id).lean().exec();
+        const doc = await this.model.findById(id).lean().exec();
+        return TurnoMapper.toDomain(doc);
     }
 
     async save(turno) {
-        const nuevoTurno = new this.model(turno);
-        return await nuevoTurno.save();
+        const nuevoTurno = new this.model(TurnoMapper.toPersistence(turno));
+        const saved = await nuevoTurno.save();
+        return TurnoMapper.toDomain(saved.toObject());
     }
 
     async update(id, turno) {
-        return await this.model.findByIdAndUpdate(id, turno, { new: true }).exec();
+        const doc = await this.model.findByIdAndUpdate(id, TurnoMapper.toPersistence(turno), { new: true }).lean().exec();
+        return TurnoMapper.toDomain(doc);
     }
 
     async existeTurno(medicoId, fechaHora) {
@@ -94,51 +101,33 @@ disponible:
             query.medico = filtros.medicoId;
         }
 
-        let medicosQueCumplen = null;
-
-        if (filtros.especialidadId !== undefined) {
-            // Buscamos medicos que tengan esa especialidad
-            const medicos = await this.medicoRepository.findByEspecialidadId(filtros.especialidadId);
-            medicosQueCumplen = medicos.map(m => m._id.toString());
+        if (filtros.servicioId !== undefined) {
+            query.servicio = filtros.servicioId;
         }
 
-        if (filtros.practicaId !== undefined) {
-            // Buscamos medicos que tengan esa practica
-            const medicos = await this.medicoRepository.findByPracticaId(filtros.practicaId);
-            const idsConPractica = medicos.map(m => m._id.toString());
-
-            if (medicosQueCumplen !== null) {
-                medicosQueCumplen = medicosQueCumplen.filter(id => idsConPractica.includes(id)); //si filtro por especialidad y practica verificamos que el medico tenga ambas
-            } else {
-                medicosQueCumplen = idsConPractica;
-            }
+        const ordenamiento = {};
+        if (filtros.ordenPorCosto !== undefined) {
+            ordenamiento.costoBase = filtros.ordenPorCosto === 'desc' ? -1 : 1;
         }
-
-        //Aplicamos el filtro al Turno
-        if (medicosQueCumplen !== null) {
-            if (filtros.medicoId !== undefined) {
-                if (!medicosQueCumplen.includes(filtros.medicoId)) { //si el medico especifico no esta en los que cumplen la especialidad o practica cortamos la ejecucion y devolvemos 0 resultados sin tocar la bd de turnos
-                    return { turnos: [], totalTurnos: 0 };
-                }
-                query.medico = filtros.medicoId;
-            } else {
-                query.medico = { $in: medicosQueCumplen };
-            }
+        if (filtros.ordenPorFecha !== undefined) {
+            ordenamiento.fechaHora = filtros.ordenPorFecha === 'desc' ? -1 : 1;
         }
-
 
         const inicio = (numeroPagina - 1) * limitePorPagina;
 
         // Ejecutar la consulta y el conteo en paralelo
-        const [turnos, totalTurnos] = await Promise.all([
+        const [turnosDoc, totalTurnos] = await Promise.all([
             this.model.find(query)
-                .populate("medico paciente practica especialidad sede")
+                .populate('medico paciente servicio sede')
+                .sort(ordenamiento)
                 .skip(inicio)
                 .limit(limitePorPagina)
                 .lean()
                 .exec(),
             this.model.countDocuments(query).exec()
         ]);
+        
+        const turnos = turnosDoc.map(doc => TurnoMapper.toDomain(doc));
 
         return {
             turnos,

@@ -3,13 +3,13 @@ import { Turno } from "../../domain/turnos/turno.js";
 import { historialEstadoTurnoSchema } from "./historialEstadoTurnoSchema.js";
 
 const turnoSchema = new mongoose.Schema({
-    _id: {
-        type: String,
-        required: true
-    },
     fechaHora: {
         type: Date,
         required: true,
+    },
+    fechaHoraPropuesta: {
+        type: Date,
+        required: false,
     },
     estado: {
         type: String,
@@ -17,28 +17,23 @@ const turnoSchema = new mongoose.Schema({
     },
     historialEstado: [historialEstadoTurnoSchema],
     medico: {
-        type: String, //referenciamos el uuid del medico 
-        ref: "Medico",
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Medico',
         required: true,
     },
     paciente: {
-        type: String,  //referenciamos el uuid del paciente 
-        ref: "Paciente",
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Paciente',
         required: false,
     },
-    practica: {
-        type: String, // referenciamos el uuid de la practica si eligió una practica
-        ref: "Practica",
-        required: false,
-    },
-    especialidad: {
-        type: String, // referenciamos el uuid de la especialidad si eligió una especialidad
-        ref: "Especialidad",
+    servicio: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Servicio',
         required: false,
     },
     sede: {
-        type: String, //referenciamos el uuid de la sede 
-        ref: "Sede",
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Sede',
         required: false,
     },
     costo: {

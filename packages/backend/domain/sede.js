@@ -1,4 +1,3 @@
-import { randomUUID } from "crypto";
 import { ErrorDatosObligatorios } from "./errores.js";
 
 export class Sede {
@@ -10,7 +9,6 @@ export class Sede {
         if (!nombre || !direccion) {
             throw new ErrorDatosObligatorios("Datos obligatorios de la sede incompletos");
         }
-        this.id = randomUUID();
         this.nombre = nombre;
         this.direccion = direccion;
     }

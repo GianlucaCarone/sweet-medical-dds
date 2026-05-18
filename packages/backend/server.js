@@ -35,6 +35,13 @@ export class Server {
     }
 
     configurarRutas() {
+        this.#routes.forEach(({ path, handler }) => this.app.use(path, handler(this.getController.bind(this))));
+
+        this.#app.use(zodErrorHandler);
+        this.#app.use(notFoundHandler);
+        this.#app.use(errorLogger);
+        this.#app.use(errorHandler);
+
         this.#app.use(
             cors({
                 origin: process.env.ALLOWED_ORIGINS
@@ -43,12 +50,6 @@ export class Server {
             }),
         );
 
-        this.#routes.forEach(({ path, handler }) => this.app.use(path, handler(this.getController.bind(this))));
-
-        this.#app.use(notFoundHandler);
-        this.#app.use(errorLogger);
-        this.#app.use(zodErrorHandler);
-        this.#app.use(errorHandler);
     }
 
     start() {

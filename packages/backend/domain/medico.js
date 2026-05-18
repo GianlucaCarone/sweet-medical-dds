@@ -11,12 +11,13 @@ export class Medico {
     usuario;
     matricula;
     nombre;
+    honorario;
     especialidades = [];
     practicas = [];
     sedes = [];
     disponibilidades = [];
 
-    constructor({ usuario, matricula, nombre }) {
+    constructor({ usuario, matricula, nombre, honorario = 0 }) {
         if (!usuario || !matricula || !nombre) {
             throw new ErrorDatosObligatorios();
         }
@@ -26,10 +27,13 @@ export class Medico {
         if (matricula.length > 10) {
             throw new Error("Matricula Demasiado larga");
         }
-        //this.id = randomUUID();
+        if (honorario < 0) {
+            throw new Error("Honorario inválido");
+        }
         this.usuario = usuario;
         this.matricula = matricula;
         this.nombre = nombre;
+        this.honorario = honorario;
     }
 
     definirDisponibilidad(disponibilidad) {

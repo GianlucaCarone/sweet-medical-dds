@@ -1,20 +1,30 @@
 import mongoose from "mongoose";
 import { DisponibilidadHoraria } from "../../domain/disponibilidadHoraria.js";
-import {DiaSemana} from "../../domain/diaSemanaEnum.js";
+import { DiaSemana } from "../../domain/diaSemanaEnum.js";
 
 export const disponibilidadHorariaSchema = new mongoose.Schema({
-    diaSemana: { type: String, required: true, enum: Object.values(DiaSemana) },
-    horaDesde: {
-      type: String,
-      required: true,
-      match: /^([01]\d|2[0-3]):([0-5]\d)$/,
-    }, // formato HH:mm
-    horaHasta: {
-      type: String,
-      required: true,
-      match: /^([01]\d|2[0-3]):([0-5]\d)$/,
-    }, // formato HH:mm
+  diaSemana: { type: String, required: true, enum: Object.values(DiaSemana) },
+  horaDesde: {
+    type: String,
+    required: true,
+    match: /^([01]\d|2[0-3]):([0-5]\d)$/,
+  }, // formato HH:mm
+  horaHasta: {
+    type: String,
+    required: true,
+    match: /^([01]\d|2[0-3]):([0-5]\d)$/,
+  }, // formato HH:mm
+  sede: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Sede",
+    required: true,
+  },
+  servicio: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Servicio",
+    required: true,
+  },
 },
-{ id: false });
+  { id: false });
 
 disponibilidadHorariaSchema.loadClass(DisponibilidadHoraria);
