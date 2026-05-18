@@ -95,6 +95,9 @@ export class TurnoService {
 
         const totalPaginas = totalTurnos === 0 ? 0 : Math.ceil(totalTurnos / limitePorPagina);
 
+
+        let obraSocial = null;
+
         // Solo buscaremos el plan si tenemos un paciente para calcular la cobertura.
         // Si el front pide por medicoId o algo sin paciente, no se calcularán coberturas que no aplican
         if (filtrosValidados.pacienteId) {

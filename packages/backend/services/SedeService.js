@@ -60,6 +60,15 @@ export class SedeService {
     return SedeMapper.toDTO(sede);
   }
 
+  async findEntityById(id) {
+    const sede = await this.sedeRepository.findById(id);
+    if (!sede) {
+      throw new NotFoundError(`No se encontró la sede con ID ${id}`);
+    }
+
+    return sede;
+  }
+
   async findByName(nombre) {
     const sede = await this.sedeRepository.findByName(nombre);
 

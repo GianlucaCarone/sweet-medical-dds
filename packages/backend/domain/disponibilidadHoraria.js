@@ -25,7 +25,7 @@ export class DisponibilidadHoraria {
             throw new Error("La sede no es válida");
         }
         if (
-            !(servicio instanceof Practica || !(servicio instanceof Especialidad))
+            !((servicio instanceof Practica) || (servicio instanceof Especialidad))
         ) {
             throw new Error("El servicio no es válido");
         }

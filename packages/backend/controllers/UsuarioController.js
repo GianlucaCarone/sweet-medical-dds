@@ -41,7 +41,7 @@ export class UsuarioController {
         try {
             logger.info("[USUARIOS CONTROLLER]: Obteniendo todos los usuarios");
             const usuarios = await this.usuarioService.findAll();
-            logger.info("[USUARIOS CONTROLLER]: Usuarios obtenidos: ", usuarios.length(), usuarios);
+            logger.info("[USUARIOS CONTROLLER]: Usuarios obtenidos: ", usuarios.length, usuarios);
             res.status(200).json(usuarios);
         } catch (error) {
             next(error);

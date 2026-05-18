@@ -11,9 +11,16 @@ export class SedeMapper {
         return sede;
     }
 
+    static toPersistence(sede) {
+        return {
+            nombre: sede.nombre,
+            direccion: sede.direccion
+        };
+    }
+
     static toDTO(sede) {
         return {
-            id: sede.id || sede._id, //validacion de if default de mongo
+            id: sede.id || sede._id?.toString(),
             nombre: sede.nombre,
             direccion: sede.direccion
         };

@@ -20,10 +20,11 @@ export class ServicioMapper {
         return {
             id: servicio.id,
             nombre: servicio.nombre,
+            tipo: servicio.tipo,
             duracion: servicio.duracionTurnoEnMins,
-            costo: servicio.getCosto(),
-            codigo: servicio.getCodigo(),
-            especialidadPadre: servicio.getEspecialidadPadre()
+            costo: servicio.costo,
+            codigo: servicio.codigo,
+            especialidadPadre: servicio.especialidadPadre
         };
     }
 
@@ -31,7 +32,7 @@ export class ServicioMapper {
         const especialidad = new Especialidad({
             nombre: especialidadDoc.nombre,
             duracionTurnoEnMins: especialidadDoc.duracionTurnoEnMins,
-            costoConsulta: especialidadDoc.costoConsulta
+            costo: especialidadDoc.costo
         });
         especialidad.id = especialidadDoc._id?.toString() ?? especialidadDoc.id;
         return especialidad;
@@ -53,7 +54,7 @@ export class ServicioMapper {
         return {
             nombre: especialidad.nombre,
             duracionTurnoEnMins: especialidad.duracionTurnoEnMins,
-            costoConsulta: especialidad.costoConsulta
+            costo: especialidad.costo
         };
     }
 

@@ -1,6 +1,6 @@
 import { Medico } from "../domain/medico.js";
 import { UsuarioMapper } from "./usuarioMapper.js";
-//import { DisponibilidadMapper } from "./disponibilidadMapper.js";
+import { DisponibilidadMapper } from "./disponibilidadMapper.js";
 import { SedeMapper } from "./sedeMapper.js";
 import { ServicioMapper } from "./servicioMapper.js";
 
@@ -13,10 +13,11 @@ export class MedicoMapper {
     });
 
     medico.id = medicoDoc._id?.toString() ?? medicoDoc.id;
-    //medico.disponibilidades = (medicoDoc.disponibilidades ?? []).map(DisponibilidadMapper.toDomain);
+    medico.disponibilidades = (medicoDoc.disponibilidades ?? []).map(DisponibilidadMapper.toDomain);
     medico.especialidades = (medicoDoc.especialidades ?? []).map((e) => ServicioMapper.toDomain(e)); //usa metodos privados asi que hay que envolverlos, sin usarlos como referencia directa
     medico.practicas = (medicoDoc.practicas ?? []).map((p) => ServicioMapper.toDomain(p));
     medico.sedes = (medicoDoc.sedes ?? []).map(SedeMapper.toDomain);
+    medico.honorario = medicoDoc.honorario;
 
     return medico;
   }
@@ -26,23 +27,40 @@ export class MedicoMapper {
       nombre: medico.nombre,
       matricula: medico.matricula,
       idUsuario: medico.usuario.id,
-      //disponibilidades: medico.disponibilidades,
+      disponibilidades: medico.disponibilidades.map(DisponibilidadMapper.toPersistence),
       especialidades: medico.especialidades.map(e => e.id),
       practicas: medico.practicas.map(p => p.id),
-      sedes: medico.sedes.map(s => s.id)
+      sedes: medico.sedes.map(s => s.id),
+      honorario: medico.honorario
     };
   }
 
   static toDTO(medico) {
-    return {
-      id: medico.id,
-      nombre: medico.nombre,
-      matricula: medico.matricula,
-      usuario: UsuarioMapper.toDTO(medico.usuario),
-      especialidades: medico.especialidades.map(ServicioMapper.toDTO),
-      practicas: medico.practicas.map(ServicioMapper.toDTO),
-      //disponibilidades: medico.disponibilidades.map(DisponibilidadMapper.toDTO),
-      sedes: medico.sedes.map(SedeMapper.toDTO)
-    };
+    if (medico instanceof Medico) {
+      return {
+        id: medico.id,
+        nombre: medico.nombre,
+        matricula: medico.matricula,
+        usuario: UsuarioMapper.toDTO(medico.usuario),
+        especialidades: medico.especialidades.map(ServicioMapper.toDTO),
+        practicas: medico.practicas.map(ServicioMapper.toDTO),
+        disponibilidades: medico.disponibilidades.map(DisponibilidadMapper.toDTO),
+        sedes: medico.sedes.map(SedeMapper.toDTO),
+        honorario: medico.honorario
+      };
+    } else {
+      return {
+        id: medico._id,
+        nombre: medico.nombre,
+        matricula: medico.matricula,
+        usuario: UsuarioMapper.toDTO(medico.idUsuario),
+        especialidades: medico.especialidades.map(ServicioMapper.toDTO),
+        practicas: medico.practicas.map(ServicioMapper.toDTO),
+        disponibilidades: medico.disponibilidades.map(DisponibilidadMapper.toDTO),
+        sedes: medico.sedes.map(SedeMapper.toDTO),
+        honorario: medico.honorario
+      };
+    }
+
   }
 }

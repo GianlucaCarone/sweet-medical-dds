@@ -9,6 +9,21 @@ export class ServicioController {
         this.servicioService = servicioService;
     }
 
+    findById = async (req, res, next) => {
+        try {
+            const { idServicio } = servicioIdParamsSchema.parse(req.params);
+            logger.info("[SERVICIOS CONTROLLER]: Obteniendo servicio: " + idServicio);
+            const servicio = await this.servicioService.getById(idServicio);
+            logger.info("[SERVICIOS CONTROLLER]: Servicio obtenido: " + servicio);
+            res.status(200).json({
+                status: "success",
+                data: servicio
+            });
+        } catch (error) {
+            next(error);
+        }
+    }
+
     create = async (req, res, next) => {
         try {
             const datosServicio = servicioSchema.parse(req.body);
@@ -24,6 +39,21 @@ export class ServicioController {
             next(error);
         }
     };
+
+    findAll = async (req, res, next) => {
+        try {
+            logger.info("[SERVICIOS CONTROLLER]: Obteniendo todos los servicios");
+            const servicios = await this.servicioService.findAll();
+            logger.info("[SERVICIOS CONTROLLER]: Servicios obtenidos:", servicios.length);
+            res.status(200).json({
+                status: "success",
+                data: servicios
+            });
+        } catch (error) {
+            logger.error("No se pudo crear el servicio.");
+            next(error);
+        }
+    }
 
     update = async (req, res, next) => {
         try {

@@ -17,7 +17,7 @@ export class Medico {
     sedes = [];
     disponibilidades = [];
 
-    constructor({ usuario, matricula, nombre, honorario: honorario }) {
+    constructor({ usuario, matricula, nombre, honorario = 0 }) {
         if (!usuario || !matricula || !nombre) {
             throw new ErrorDatosObligatorios();
         }
@@ -27,7 +27,7 @@ export class Medico {
         if (matricula.length > 10) {
             throw new Error("Matricula Demasiado larga");
         }
-        if (honorario < 0 || !(honorario instanceof Number)) {
+        if (honorario < 0) {
             throw new Error("Honorario inválido");
         }
         this.usuario = usuario;
