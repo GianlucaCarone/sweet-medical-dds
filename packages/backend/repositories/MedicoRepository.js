@@ -8,7 +8,7 @@ export class MedicoRepository {
   constructor() { this.model = MedicoModel; }
 
   async findAll() {
-    return await this.model.find().populate("idUsuario");
+    return await this.model.find().populate("idUsuario especialidades practicas disponibilidades");
   }
 
   async findById(idMedico) {

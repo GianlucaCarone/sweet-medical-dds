@@ -9,16 +9,17 @@ const MaxLengthMatricula = 10;
 export const medicoSchema = z.object({
     nombre: z.string().min(1, "El nombre es obligatorio"),
     //idUsuario: z.string().uuid("El id del usuario debe ser un UUID válido"),
-    idUsuario: objectIdSchema("usuario"),
+    usuarioId: objectIdSchema("usuario"),
     matricula: z.string().max(MaxLengthMatricula),
+    honorario: z.number().positive("El honorario debe ser un número positivo").optional(),
 });
 
 export const disponibilidadSchema = z.object({
     diaSemana: z.enum(Object.values(diaSemanaEnum)),
     horaDesde: timeHH_MMSchema("hora de inicio"),
     horaHasta: timeHH_MMSchema("hora de fin"),
-    idServicio: objectIdSchema("servicio"),
-    idSede: objectIdSchema("sede"),
+    servicioId: objectIdSchema("servicio"),
+    sedeId: objectIdSchema("sede"),
 })
     .superRefine((data, ctx) => {
         if (data.horaDesde >= data.horaHasta) {
@@ -39,9 +40,9 @@ export const disponibilidadConsultaSchema = z.object({
 });
 
 export const medicoIdParamsSchema = z.object({
-  idMedico: z.string()
+    idMedico: z.string()
 });
 
 export const servicioIdSchema = z.object({
-  idServicio: z.string()
+    idServicio: z.string()
 });

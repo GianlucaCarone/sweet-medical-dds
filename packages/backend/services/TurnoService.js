@@ -106,7 +106,6 @@ export class TurnoService {
         return this.toDTO(await this.turnoRepository.update(idTurno, turno));
     }
 
-    // TODO:● Ordenamiento por costo y fecha ascendente/descendente FALTA
     async obtenerTodosPaginados(numeroPagina = 1, limitePorPagina = Number(process.env.ITEMS_PER_PAGE) || 10, filtros = {}) {
         this.validarPaginacion(numeroPagina, limitePorPagina);
         const filtrosValidados = this.validarFiltros(filtros);
@@ -114,6 +113,9 @@ export class TurnoService {
         const { turnos, totalTurnos } = await this.turnoRepository.obtenerPaginados(numeroPagina, limitePorPagina, filtrosValidados);
 
         const totalPaginas = totalTurnos === 0 ? 0 : Math.ceil(totalTurnos / limitePorPagina);
+
+
+        let obraSocial = null;
 
         // Solo buscaremos el plan si tenemos un paciente para calcular la cobertura.
         // Si el front pide por medicoId o algo sin paciente, no se calcularán coberturas que no aplican

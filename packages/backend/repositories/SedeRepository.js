@@ -1,6 +1,7 @@
 import { SedeModel } from "../schemas/dataBase/sedeSchema.js";
 // eslint-disable-next-line no-unused-vars
 import { Model } from "mongoose";
+import { SedeMapper } from "../mappers/sedeMapper.js";
 
 export class SedeRepository {
     /**@type {typeof Model} */
@@ -14,32 +15,39 @@ export class SedeRepository {
     }
 
     async findAll() {
-        return await this.model.find({ eliminado: false }).exec();
+        const sedes = await this.model.find({ eliminado: false }).exec();
+        return sedes.map(SedeMapper.toDomain);
     }
 
     async findById(id) {
-        return await this.model.findById(id).exec();
+        const sede = await this.model.findById(id).exec();
+        return SedeMapper.toDomain(sede);
     }
 
     async findByName(name) {
-        return await this.model.findOne({ name }).exec();
+        const sede = await this.model.findOne({ name }).exec();
+        return SedeMapper.toDomain(sede);
     }
 
     async save(sede) {
-        const nuevaSede = new this.model(sede);
-        return await nuevaSede.save();
+        if (sede.id) {
+            return await this.model.findByIdAndUpdate(sede.id, SedeMapper.toPersistence(sede), { new: true }).exec();
+        }
+        const nuevoSede = new this.model(SedeMapper.toPersistence(sede));
+        const sedeGuardada = await nuevoSede.save();
+        return SedeMapper.toDomain(sedeGuardada);
     }
 
     async update(id, sedeData) {
-        return await this.model.findByIdAndUpdate(id, sedeData, { new: true }).exec();
+        return SedeMapper.toDomain(await this.model.findByIdAndUpdate(id, sedeData, { new: true }).exec());
     }
 
     async delete(id) {
-        return await this.model.findByIdAndDelete(id).exec();
+        return SedeMapper.toDomain(await this.model.findByIdAndDelete(id).exec());
     }
 
     async softDelete(id) {
-        return await this.model.findByIdAndUpdate(id, { eliminado: true }, { new: true }).exec();
+        return SedeMapper.toDomain(await this.model.findByIdAndUpdate(id, { eliminado: true }, { new: true }).exec());
     }
 
 }

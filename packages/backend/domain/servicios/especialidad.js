@@ -4,20 +4,20 @@ export class Especialidad {
     id;
     nombre;
     duracionTurnoEnMins;
-    costoConsulta;
+    costo;
 
-    constructor({ nombre, duracionTurnoEnMins, costoConsulta }) {
-        if (!nombre || !duracionTurnoEnMins || !costoConsulta) {
+    constructor({ nombre, duracionTurnoEnMins, costo }) {
+        if (!nombre || !duracionTurnoEnMins || !costo) {
             throw new ErrorDatosObligatorios();
         }
         //this.id = randomUUID();
         this.nombre = nombre;
         this.duracionTurnoEnMins = duracionTurnoEnMins;
-        this.costoConsulta = costoConsulta;
+        this.costo = costo;
     }
 
     getCosto() {
-        return this.costoConsulta;
+        return this.costo;
     }
 
     getCodigo() {

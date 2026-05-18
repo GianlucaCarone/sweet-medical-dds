@@ -7,7 +7,6 @@ import { Medico } from "../domain/medico.js";
 import { SedeService } from "./SedeService.js";
 import { logger } from "../config/logger.js";
 import { MedicoMapper } from "../mappers/medicoMapper.js";
-import { UsuarioMapper } from "../mappers/usuarioMapper.js";
 
 export class MedicoService {
     constructor({
@@ -37,7 +36,8 @@ export class MedicoService {
         const medicoEntityData = {
             usuario: usuario,
             matricula: medicoData.matricula,
-            nombre: medicoData.nombre
+            nombre: medicoData.nombre,
+            honorario: medicoData.honorario
         };
         const medico = new Medico(medicoEntityData);
 
@@ -91,7 +91,7 @@ export class MedicoService {
 
     async findAll() {
         logger.info("Consultando todos los médicos");
-        return this.medicoRepository.findAll().then(medicos => medicos.map(medico => this.toDto(medico)));
+        return (await this.medicoRepository.findAll()).map(MedicoMapper.toDTO);
     }
 
     async delete(id) {
@@ -152,11 +152,32 @@ export class MedicoService {
         logger.info(`Definiendo disponibilidad para el médico ${id}`);
 
         // Docs de mongoose
-        const medicoDoc = await this.medicoRepository.findById(id);
-        // docs pasados a dominio
-        const medico = MedicoMapper.toDomain(medicoDoc);
+        const medico = await this.medicoRepository.findById(id);
 
-        const disponibilidad = new DisponibilidadHoraria(disponibilidadData);
+        if (!medico) {
+            logger.error(`Médico con ID ${id} no encontrado`);
+            throw new NotFoundError("Médico no encontrado");
+        }
+
+        const sede = await this.sedeService.findEntityById(disponibilidadData.sedeId);
+        if (!sede) {
+            logger.error(`Sede con ID ${disponibilidadData.sedeId} no encontrada`);
+            throw new NotFoundError("Sede no encontrada");
+        }
+        const servicio = await this.servicioService.findEntityById(disponibilidadData.servicioId);
+        if (!servicio) {
+            logger.error(`Servicio con ID ${disponibilidadData.servicioId} no encontrado`);
+            throw new NotFoundError("Servicio no encontrado");
+        }
+
+        const disponibilidadEntityData = {
+            diaSemana: disponibilidadData.diaSemana,
+            horaDesde: disponibilidadData.horaDesde,
+            horaHasta: disponibilidadData.horaHasta,
+            servicio: servicio,
+            sede: sede
+        };
+        const disponibilidad = new DisponibilidadHoraria(disponibilidadEntityData);
 
         medico.definirDisponibilidad(disponibilidad);
 
@@ -221,7 +242,7 @@ export class MedicoService {
     async agregarServicioPara(idMedico, idServicio) {
         logger.info("[MEDICO SERVICE]: Obteniendo datos necesarios para agendar un servicio para el medico ", idMedico);
         const medico = await this.medicoRepository.findById(idMedico);
-        const servicio = await this.servicioService.getEntityById(idServicio);
+        const servicio = await this.servicioService.findEntityById(idServicio);
         if (!medico || !servicio) throw new NotFoundError("Datos no encontrados");
 
         logger.info("[MEDICO SERVICE]: Guardando servicio con id: ", idServicio);
@@ -237,7 +258,7 @@ export class MedicoService {
     async eliminarServicioPara(idMedico, idServicio) {
         logger.info("[MEDICO SERVICE]: Obteniendo datos necesarios para eliminar un servicio para el medico ", idMedico);
         const medico = await this.medicoRepository.findById(idMedico);
-        const servicio = await this.servicioService.getEntityById(idServicio);
+        const servicio = await this.servicioService.findEntityById(idServicio);
         if (!medico || !servicio) throw new NotFoundError("Datos no encontrados");
 
         logger.info("[MEDICO SERVICE]: Eliminando servicio con id: ", idServicio);

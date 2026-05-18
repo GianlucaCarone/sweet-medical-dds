@@ -23,7 +23,7 @@ const ServicioModel = mongoose.model("Servicio", servicioSchema);
 const EspecialidadModel = ServicioModel.discriminator(
   "Especialidad",
   new mongoose.Schema({
-    costoConsulta: {
+    costo: {
       type: Number,
       required: true,
     },
