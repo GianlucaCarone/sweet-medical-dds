@@ -17,6 +17,7 @@ export class MedicoMapper {
     medico.especialidades = (medicoDoc.especialidades ?? []).map((e) => ServicioMapper.toDomain(e)); //usa metodos privados asi que hay que envolverlos, sin usarlos como referencia directa
     medico.practicas = (medicoDoc.practicas ?? []).map((p) => ServicioMapper.toDomain(p));
     medico.sedes = (medicoDoc.sedes ?? []).map(SedeMapper.toDomain);
+    medico.honorario = medicoDoc.honorario;
 
     return medico;
   }
@@ -29,7 +30,8 @@ export class MedicoMapper {
       disponibilidades: medico.disponibilidades.map(DisponibilidadMapper.toPersistence),
       especialidades: medico.especialidades.map(e => e.id),
       practicas: medico.practicas.map(p => p.id),
-      sedes: medico.sedes.map(s => s.id)
+      sedes: medico.sedes.map(s => s.id),
+      honorario: medico.honorario
     };
   }
 
@@ -43,7 +45,8 @@ export class MedicoMapper {
         especialidades: medico.especialidades.map(ServicioMapper.toDTO),
         practicas: medico.practicas.map(ServicioMapper.toDTO),
         disponibilidades: medico.disponibilidades.map(DisponibilidadMapper.toDTO),
-        sedes: medico.sedes.map(SedeMapper.toDTO)
+        sedes: medico.sedes.map(SedeMapper.toDTO),
+        honorario: medico.honorario
       };
     } else {
       return {
@@ -54,7 +57,8 @@ export class MedicoMapper {
         especialidades: medico.especialidades.map(ServicioMapper.toDTO),
         practicas: medico.practicas.map(ServicioMapper.toDTO),
         disponibilidades: medico.disponibilidades.map(DisponibilidadMapper.toDTO),
-        sedes: medico.sedes.map(SedeMapper.toDTO)
+        sedes: medico.sedes.map(SedeMapper.toDTO),
+        honorario: medico.honorario
       };
     }
 

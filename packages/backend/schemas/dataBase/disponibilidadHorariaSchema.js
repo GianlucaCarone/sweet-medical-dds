@@ -21,7 +21,7 @@ export const disponibilidadHorariaSchema = new mongoose.Schema({
   },
   servicio: {
     type: mongoose.Schema.Types.ObjectId,
-    refPath: "servicioTipo",
+    ref: "Servicio",
     required: true,
   },
 },

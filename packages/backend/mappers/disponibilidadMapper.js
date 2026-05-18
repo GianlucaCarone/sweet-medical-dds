@@ -8,8 +8,8 @@ export class DisponibilidadMapper {
       diaSemana: disponibilidadDoc.diaSemana,
       horaDesde: disponibilidadDoc.horaDesde,
       horaHasta: disponibilidadDoc.horaHasta,
-      sede: disponibilidadDoc.sede,
-      servicio: disponibilidadDoc.servicio
+      sede: SedeMapper.toDomain(disponibilidadDoc.sede),
+      servicio: ServicioMapper.toDomain(disponibilidadDoc.servicio)
     });
   }
 

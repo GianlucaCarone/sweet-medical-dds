@@ -5,7 +5,9 @@ import { logger } from "../config/logger.js";
 import { BadRequestError } from "../errors/AppError.js";
 
 export class MedicoRepository {
-  constructor() { this.model = MedicoModel; }
+  constructor() {
+    this.model = MedicoModel;
+  }
 
   async findAll() {
     return await this.model.find().populate([
@@ -13,19 +15,39 @@ export class MedicoRepository {
       "especialidades",
       "practicas",
       { path: "practicas", populate: { path: "especialidadPadreId" } },
-      "disponibilidades", "sedes"]);
+      "disponibilidades",
+      {
+        path: "disponibilidades",
+        populate: [{ path: "sede" }, { path: "servicio" }],
+      },
+      "sedes",
+    ]);
   }
 
   async findById(idMedico) {
     logger.info("[MEDICO REPOSTIRORY]: Buscando medico: por id", idMedico);
-    const medico = await this.model.findById(idMedico)
+    const medico = await this.model
+      .findById(idMedico)
       .populate([
         "idUsuario",
         "especialidades",
-        "practicas",
         { path: "practicas", populate: { path: "especialidadPadreId" } },
-        "disponibilidades", "sedes"]).lean(); //TODO: faltan las sedes
-    const mensaje = (medico) ? ("Medico obtenido: " + medico) : ("No se encontro el medico con id: " + idMedico);
+        {
+          path: "disponibilidades",
+          populate: [
+            { path: "sede" },
+            {
+              path: "servicio",
+              populate: { path: "especialidadPadreId", strictPopulate: false },
+            },
+          ],
+        },
+        "sedes",
+      ])
+      .lean(); //TODO: faltan las sedes
+    const mensaje = medico
+      ? "Medico obtenido: " + medico
+      : "No se encontro el medico con id: " + idMedico;
     logger.info("[MEDICO REPOSTIRORY]: " + mensaje);
 
     if (!medico) return;
@@ -34,32 +56,62 @@ export class MedicoRepository {
 
   async save(medico) {
     logger.info("[MEDICO REPOSTIRORY]: Guardando medico: ", medico);
-    if (!(medico instanceof Medico)) throw new BadRequestError("No es un Medico valido");
+    if (!(medico instanceof Medico))
+      throw new BadRequestError("No es un Medico valido");
 
     let medicoGuardado = null;
     if (medico.id) {
-      medicoGuardado = await this.model.findByIdAndUpdate(medico.id, MedicoMapper.toPersistence(medico), { new: true, runValidators: true });
+      medicoGuardado = await this.model.findByIdAndUpdate(
+        medico.id,
+        MedicoMapper.toPersistence(medico),
+        { new: true, runValidators: true },
+      );
     } else {
-      const nuevoMedico = new this.model(MedicoMapper.toPersistence(medico));//
+      const nuevoMedico = new this.model(MedicoMapper.toPersistence(medico)); //
       medicoGuardado = await nuevoMedico.save();
     }
-    await medicoGuardado.populate(["idUsuario", "especialidades", "practicas", { path: "practicas", populate: { path: "especialidadPadreId" } }, "disponibilidades"]); //TODO: faltan las sedes
+    await medicoGuardado.populate([
+      "idUsuario",
+      "especialidades",
+      { path: "practicas", populate: { path: "especialidadPadreId" } },
+      {
+        path: "disponibilidades",
+        populate: [
+          { path: "sede" },
+          {
+            path: "servicio",
+            populate: { path: "especialidadPadreId", strictPopulate: false },
+          },
+        ],
+      },
+      "sedes",]);
     logger.info("[MEDICO REPOSTIRORY]: Medico guardado: ", medicoGuardado);
 
     return MedicoMapper.toDomain(medicoGuardado);
   }
 
   async findByIdUsuario(idUsuario) {
-    logger.info("[MEDICO REPOSTIRORY]: Buscando medico: por id de usuario", idUsuario);
-    const medico = await this.model.findOne({ "idUsuario": idUsuario })
+    logger.info(
+      "[MEDICO REPOSTIRORY]: Buscando medico: por id de usuario",
+      idUsuario,
+    );
+    const medico = await this.model
+      .findOne({ idUsuario: idUsuario })
       .populate([
         "idUsuario",
         "especialidades",
         "practicas",
         { path: "practicas", populate: { path: "especialidadPadreId" } },
-        "disponibilidades", "sedes"]).lean(); //TODO: faltan las sedes
+        "disponibilidades",
+        { path: "disponibilidades", populate: { path: "sede" } },
+        { path: "disponibilidades", populate: { path: "servicio" } },
+        "sedes",
+      ])
+      .lean(); //TODO: faltan las sedes
 
-    const mensaje = (medico) ? ("Medico obtenido: " + medico) : ("No se encontro el medico con id de usuario: " + idUsuario);
+    const mensaje = medico
+      ? "Medico obtenido: " + medico
+      : "No se encontro el medico con id de usuario: " + idUsuario;
     logger.info("[MEDICO REPOSTIRORY]: " + mensaje);
 
     if (!medico) return;
