@@ -1,8 +1,6 @@
-import { Usuario } from "../domain/usuario.js";
 import { BadRequestError } from "../errors/AppError.js";
 import { UsuarioModel } from "../schemas/dataBase/usuarioSchema.js";
 import { logger } from "../config/logger.js";
-import { UsuarioMapper } from "../mappers/usuarioMapper.js";
 
 export class UsuarioRepository {
     constructor() {
@@ -11,17 +9,13 @@ export class UsuarioRepository {
 
     async save(usuario) {
         logger.info("[USUARIO REPOSITORY]: Guardando usuario: ", usuario);
-        if (!(usuario instanceof Usuario)) throw new BadRequestError("No es un Usuario valido");
         let usuarioGuardado;
-        if (usuario.id) {
-            usuarioGuardado = await this.model.findByIdAndUpdate(usuario.id, UsuarioMapper.toPersistence(usuario), { new: true, runValidators: true });
-        } else {
-            const nuevoUsuario = new this.model(UsuarioMapper.toPersistence(usuario));
-            usuarioGuardado = await nuevoUsuario.save();
-        }
+
+        usuarioGuardado = await this.model.create(usuario);
+
         logger.info("[USUARIO REPOSITORY]: Usuario guardado: ", usuarioGuardado);
 
-        return UsuarioMapper.toDomain(usuarioGuardado);
+        return usuarioGuardado;
     }
 
     async findById(id) {
@@ -30,7 +24,13 @@ export class UsuarioRepository {
         if (!usuario) throw new BadRequestError("Usuario no encontrado");
         logger.info("[USUARIO REPOSITORY]: Usuario obtenido: ", usuario);
 
-        return UsuarioMapper.toDomain(usuario);
+        return usuario;
+    }
+
+    async findByUsername(nombreUsuarioBuscado) {
+        logger.info("[USUARIO REPOSITORY]: Buscando usuario por nombre: " + nombreUsuarioBuscado);
+        const usuario = await this.model.findOne({ nombreUsuario: nombreUsuarioBuscado });
+        return usuario;
     }
 
     /* TODO VER SI FUNCIONAN
@@ -54,7 +54,7 @@ export class UsuarioRepository {
         return await this.model.find();
     }
 
-    async delete(id) {
+    async deleteByID(id) {
         await this.model.findByIdAndDelete(id);
     }
 
