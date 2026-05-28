@@ -1,10 +1,6 @@
 import { ObraSocialModel } from "../schemas/dataBase/obraSocialSchema.js";
-// eslint-disable-next-line no-unused-vars
-import { Model } from "mongoose";
 
 export class ObraSocialRepository {
-    /**@type {typeof Model} */
-    model;
     constructor() {
         this.model = ObraSocialModel;
     }
@@ -15,7 +11,7 @@ export class ObraSocialRepository {
     }
 
     async findAll() {
-        return await this.model.find({eliminado: false}).lean().exec();
+        return await this.model.find({ eliminado: false }).exec();
     }
 
     async save(obraSocial) {
@@ -28,7 +24,7 @@ export class ObraSocialRepository {
     }
 
     async findByNombre(nombre) {
-        return await this.model.findOne({nombre}).exec();
+        return await this.model.findOne({ nombre }).exec();
     }
 
     async delete(id) {
@@ -47,17 +43,17 @@ export class ObraSocialRepository {
             { new: true }
         ).exec();
     }
- 
-    async update(id,obraSocialData){
-        return await this.model.findByIdAndUpdate(id, 
-            {$set: obraSocialData},
+
+    async update(id, obraSocialData) {
+        return await this.model.findByIdAndUpdate(id,
+            { $set: obraSocialData },
             { new: true })
             .exec();
     }
 
 
     //crud plan 
-    async findPlan(obraSocialId, planId){
+    async findPlan(obraSocialId, planId) {
         const obraSocial = await this.model.findOne(
             { _id: obraSocialId, "planes._id": planId },
             { "planes.$": 1 }
@@ -67,7 +63,7 @@ export class ObraSocialRepository {
         return obraSocial.planes[0];
     }
 
-    async addPlan(obraSocialId, plan){
+    async addPlan(obraSocialId, plan) {
         return await this.model.findByIdAndUpdate(
             obraSocialId,
             { $push: { planes: plan } },
@@ -91,7 +87,9 @@ export class ObraSocialRepository {
         ).exec();
     }
 
-    async updatePlan(obraSocialId, planId, planData){
+
+
+    async updatePlan(obraSocialId, planId, planData) {
         const updateData = {};
         for (const key in planData) {
             updateData[`planes.$[plan].${key}`] = planData[key];
@@ -108,7 +106,7 @@ export class ObraSocialRepository {
         ).exec();
     }
 
-    async findAllPlans(obraSocialId){
+    async findAllPlans(obraSocialId) {
         const obraSocial = await this.model.findOne({ _id: obraSocialId, eliminado: false },
             {
                 planes: {
@@ -142,8 +140,8 @@ export class ObraSocialRepository {
         const obraSocial = await this.model.findOne(
             { _id: obraSocialId, "planes._id": planId },
             { "planes.$": 1 })
-            // .populate("planes.coberturaEspecialidad.especialidad")
-            // .populate("planes.coberturaPractica.practica")
+            .populate("planes.coberturaEspecialidad.especialidad")
+            .populate("planes.coberturaPractica.practica")
             .exec();
 
         if (!obraSocial || !obraSocial.planes || obraSocial.planes.length === 0) return null;
