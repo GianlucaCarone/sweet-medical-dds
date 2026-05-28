@@ -1,11 +1,6 @@
 import { SedeModel } from "../schemas/dataBase/sedeSchema.js";
-// eslint-disable-next-line no-unused-vars
-import { Model } from "mongoose";
-import { SedeMapper } from "../mappers/sedeMapper.js";
 
 export class SedeRepository {
-    /**@type {typeof Model} */
-    model;
     constructor() {
         this.model = SedeModel;
     }
@@ -16,7 +11,7 @@ export class SedeRepository {
 
     async findAll() {
         const sedes = await this.model.find({ eliminado: false }).exec();
-        return sedes.map(SedeMapper.toDomain);
+        return sedes;
     }
 
     async findById(id) {
@@ -24,7 +19,7 @@ export class SedeRepository {
         if (!sede) {
             return null;
         }
-        return SedeMapper.toDomain(sede);
+        return sede;
     }
 
     async findByName(nombre) {
@@ -32,28 +27,27 @@ export class SedeRepository {
         if (!sede) {
             return null;
         }
-        return SedeMapper.toDomain(sede);
+        return sede;
     }
 
     async save(sede) {
         if (sede._id) {
-            return await this.model.findByIdAndUpdate(sede._id, SedeMapper.toPersistence(sede), { new: true }).exec();
+            return await this.model.findByIdAndUpdate(sede._id, sede, { new: true }).exec();
         }
-        const nuevoSede = new this.model(SedeMapper.toPersistence(sede));
-        const sedeGuardada = await nuevoSede.save();
-        return SedeMapper.toDomain(sedeGuardada);
+
+        return this.model.create(sede);
     }
 
     async update(id, sedeData) {
-        return SedeMapper.toDomain(await this.model.findByIdAndUpdate(id, sedeData, { new: true }).exec());
+        return await this.model.findByIdAndUpdate(id, sedeData, { new: true }).exec();
     }
 
     async delete(id) {
-        return SedeMapper.toDomain(await this.model.findByIdAndDelete(id).exec());
+        return await this.model.findByIdAndDelete(id).exec();
     }
 
     async softDelete(id) {
-        return SedeMapper.toDomain(await this.model.findByIdAndUpdate(id, { eliminado: true }, { new: true }).exec());
+        return await this.model.findByIdAndUpdate(id, { eliminado: true }, { new: true }).exec();
     }
 
 }

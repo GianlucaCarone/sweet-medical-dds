@@ -1,11 +1,18 @@
 import { SedeRepository } from "../repositories/SedeRepository.js";
 import { ConflictError, NotFoundError, UnprocessableEntityError } from "../errors/AppError.js";
 import { Sede } from "../domain/sede.js";
-import { SedeMapper } from "../mappers/sedeMapper.js";
 
 export class SedeService {
   constructor({ sedeRepository = new SedeRepository() } = {}) {
     this.sedeRepository = sedeRepository;
+  }
+
+  toDto(sede) {
+    return {
+      id: sede.id || sede._id,
+      nombre: sede.nombre,
+      direccion: sede.direccion,
+    };
   }
 
   async findAll() {
@@ -13,7 +20,7 @@ export class SedeService {
     if (sedes.length === 0) {
       throw new NotFoundError("No se encontró ninguna sede");
     }
-    return sedes.map(sede => SedeMapper.toDTO(sede));
+    return sedes.map(sede => this.toDto(sede));
   }
 
   async create(data) {
@@ -28,7 +35,7 @@ export class SedeService {
       throw new ConflictError("Ya existe una sede con ese nombre");
     }
     const sede = new Sede({ nombre, direccion });
-    return SedeMapper.toDTO(await this.sedeRepository.save(sede));
+    return this.toDto(await this.sedeRepository.save(sede));
   }
 
   async update(id, sede) {
@@ -38,7 +45,7 @@ export class SedeService {
       throw new NotFoundError(`No se encontró la sede con ID ${id}`);
     }
 
-    return SedeMapper.toDTO(sedeActualizada);
+    return this.toDto(sedeActualizada);
   }
   async delete(id) {
     const sedeEliminada = await this.sedeRepository.delete(id);
@@ -47,7 +54,7 @@ export class SedeService {
       throw new NotFoundError(`No se encontró la sede con ID ${id}`);
     }
 
-    return SedeMapper.toDTO(sedeEliminada);
+    return this.toDto(sedeEliminada);
   }
 
   async findById(id) {
@@ -57,7 +64,7 @@ export class SedeService {
       throw new NotFoundError(`No se encontró la sede con ID ${id}`);
     }
 
-    return SedeMapper.toDTO(sede);
+    return this.toDto(sede);
   }
 
   async findEntityById(id) {
@@ -76,8 +83,7 @@ export class SedeService {
       throw new NotFoundError(`No se encontró la sede con nombre ${nombre}`);
     }
 
-    return SedeMapper.toDTO(sede);
+    return this.toDto(sede);
   }
-
 
 }
