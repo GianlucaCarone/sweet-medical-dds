@@ -63,19 +63,19 @@ export class ObraSocialRepository {
         return obraSocial.planes[0];
     }
 
-    async addPlan(obraSocialId, plan) {
-        return await this.model.findByIdAndUpdate(
-            obraSocialId,
-            { $push: { planes: plan } },
-            { new: true }
-        ).exec();
+    async addPlan(obraSocial, plan) {      
+        obraSocial.planes.push(plan);
+        return await obraSocial.save();
     }
 
     async deletePlan(obraSocialId, planId) {
         return await this.model.findByIdAndUpdate(
             obraSocialId,
             { $pull: { planes: { _id: planId } } },
-            { new: true }
+            {
+                new: true,
+                runValidators: true
+            }
         ).exec();
     }
 
@@ -83,7 +83,10 @@ export class ObraSocialRepository {
         return await this.model.findOneAndUpdate(
             { _id: obraSocialId, "planes._id": planId },
             { $set: { "planes.$.eliminado": true } },
-            { new: true }
+            {
+                new: true,
+                runValidators: true
+            }
         ).exec();
     }
 
@@ -140,8 +143,8 @@ export class ObraSocialRepository {
         const obraSocial = await this.model.findOne(
             { _id: obraSocialId, "planes._id": planId },
             { "planes.$": 1 })
-            .populate("planes.coberturaEspecialidad.especialidad")
-            .populate("planes.coberturaPractica.practica")
+            .populate("planes.coberturaEspecialidad")
+            .populate("planes.coberturaPractica")
             .exec();
 
         if (!obraSocial || !obraSocial.planes || obraSocial.planes.length === 0) return null;

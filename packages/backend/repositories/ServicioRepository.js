@@ -63,4 +63,10 @@ export class ServicioRepository {
         await this.model.findByIdAndDelete(idServicio);
         logger.info("[SERVICIO REPOSTIRORY]: Servicio eliminado");
     }
+
+    // Busca todos los que coincidan con el array de ids, y devuelve un array con los que no se encontraron
+    async findByIds(ids) {
+        logger.info("[SERVICIO REPOSTIRORY]: Obteniendo servicios de ids: " + ids.join(', '));
+        return await this.model.find({ _id: { $in: ids } }); 
+}
 }

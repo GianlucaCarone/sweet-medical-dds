@@ -24,7 +24,8 @@ export class Agenda {
                         fechaHora,
                         sede: disponibilidad.sede,
                         servicio: disponibilidad.servicio,
-                        estado: EstadoTurnoEnum.DISPONIBLE
+                        estado: EstadoTurnoEnum.DISPONIBLE,
+                        costo: disponibilidad.servicio.costo + medico.honorario,
                     }));
                 }
             }
