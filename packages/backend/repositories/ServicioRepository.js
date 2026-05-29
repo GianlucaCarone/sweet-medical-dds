@@ -20,22 +20,21 @@ export class ServicioRepository {
         const modelo = this.#resolverModelo(servicio);
         let servicioGuardado;
         if (servicio.id) {
-            servicioGuardado = await modelo.findByIdAndUpdate(servicio.id, ServicioMapper.toPersistence(servicio), { new: true, runValidators: true });
+            servicioGuardado = await modelo.findByIdAndUpdate(servicio.id, servicio, { new: true, runValidators: true });
         } else {
-            const nuevoServicio = new modelo(ServicioMapper.toPersistence(servicio));
+            const nuevoServicio = new modelo(servicio);
             servicioGuardado = await nuevoServicio.save();
         }
-        if (servicioGuardado.tipo === "Practica") await servicioGuardado.populate("especialidadPadreId");
+        if (servicioGuardado.tipo === "Practica") await servicioGuardado.populate("especialidadPadre");
         logger.info("[SERVICIO REPOSTIRORY]: Servicio guardado: ", servicioGuardado);
 
-        return ServicioMapper.toDomain(servicioGuardado);
+        return servicioGuardado;
     }
 
     async findAll() {
         logger.info("[SERVICIO REPOSTIRORY]: Obteniendo todos los servicios");
         const servicios = await this.model.find();
-        logger.info("[SERVICIO REPOSTIRORY]: Todos los servicios obtenidos: " + servicios);
-        return servicios.map(s => ServicioMapper.toDomain(s));
+        return servicios;
     }
 
     async findById(idServicio) {
@@ -43,9 +42,9 @@ export class ServicioRepository {
         const servicio = await this.model.findById(idServicio);
         const mensaje = (servicio) ? ("Servicio obtenido: " + servicio) : ("No se encontro el servicio con id: " + idServicio);
         logger.info("[SERVICIO REPOSTIRORY]: " + mensaje);
-        if (servicio && servicio.tipo === "Practica") await servicio.populate("especialidadPadreId");
+        if (servicio && servicio.tipo === "Practica") await servicio.populate("especialidadPadre");
 
-        return ServicioMapper.toDomain(servicio);
+        return servicio;
     }
 
     async findByNombre(nombreServicio) {
@@ -53,9 +52,9 @@ export class ServicioRepository {
         const servicio = await this.model.findOne({ nombre: nombreServicio });
         const mensaje = (servicio) ? ("Servicio obtenido: " + servicio) : ("No se encontro el servicio con nombre: " + nombreServicio);
         logger.info("[SERVICIO REPOSTIRORY]: " + mensaje);
-        if (servicio && servicio.tipo === "Practica") await servicio.populate("especialidadPadreId");
+        if (servicio && servicio.tipo === "Practica") await servicio.populate("especialidadPadre");
 
-        return ServicioMapper.toDomain(servicio);
+        return servicio;
     }
 
     async deleteById(idServicio) { //TODO: faltaria ver que hacer cuando borramos una especialidad con practicas hijas (si se borran tambien o que hacemos)

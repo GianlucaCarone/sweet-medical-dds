@@ -24,7 +24,7 @@ export class ServicioService {
         logger.info("[SERVICIO SERVICE]: Obteniendo todos los servicios",);
         const servicios = await this.serviciosRepository.findAll();
         logger.info("[SERVICIO SERVICE]:Todos los servicios obtenidos: " + servicios);
-        return servicios.map(servicio => ServicioMapper.toDTO(servicio));
+        return servicios.map(servicio => this.toDto(servicio));
     }
 
     async getEntityById(idServicio) {
@@ -43,7 +43,7 @@ export class ServicioService {
         const servicio = await this.#crearEntidad(datosServicio);
         const servicioGuardado = await this.serviciosRepository.save(servicio);
         logger.info("[SERVICIO SERVICE]: Servicio creado:", servicioGuardado);
-        return ServicioMapper.toDTO(servicioGuardado);
+        return this.toDto(servicioGuardado);
     }
 
     async update(idServicio, datosServicio) {
@@ -70,7 +70,7 @@ export class ServicioService {
             logger.info("[SERVICIO SERVICE]: Creando especialidad.");
             const especialidadData = {
                 nombre: datosServicio.nombre,
-                duracionTurnoEnMins: datosServicio.duracionEnMin,
+                duracionTurnoEnMins: datosServicio.duracionEnMins,
                 costo: datosServicio.costo
             };
             const especialidad = new Especialidad(especialidadData);
@@ -79,18 +79,40 @@ export class ServicioService {
         } else {
             logger.info("[SERVICIO SERVICE]: Creando practica; obteniendo especialidad padre.");
             const especialidadPadre = await this.serviciosRepository.findById(datosServicio.especialidadPadreId);
-            if (!(especialidadPadre instanceof Especialidad)) throw new BadRequestError("El id de especialidad padre no corresponde a una especialidad");
+
             logger.info("[SERVICIO SERVICE]: Creando practica.");
             const practicaData = {
                 codigo: datosServicio.codigo,
                 nombre: datosServicio.nombre,
-                duracionTurnoEnMins: datosServicio.duracionEnMin,
+                duracionTurnoEnMins: datosServicio.duracionEnMins,
                 costo: datosServicio.costo,
                 especialidadPadre: especialidadPadre
             };
             const practica = new Practica(practicaData);
             logger.info("[SERVICIO SERVICE]: Practica creada: ", practica);
             return practica;
+        }
+    }
+
+    toDto(servicio) {
+        if (servicio.tipo == "Practica") {
+            return {
+                id: servicio.id,
+                nombre: servicio.nombre,
+                tipo: servicio.tipo,
+                duracionEnMins: servicio.duracionTurnoEnMins,
+                costo: servicio.costo,
+                codigo: servicio.codigo,
+                especialidadPadreId: servicio.especialidadPadre ? servicio.especialidadPadre._id : null
+            };
+        } else {
+            return {
+                id: servicio.id,
+                nombre: servicio.nombre,
+                tipo: servicio.tipo,
+                duracionEnMins: servicio.duracionTurnoEnMins,
+                costo: servicio.costo
+            };
         }
     }
 }
