@@ -35,8 +35,6 @@ const coberturaEspecialidadSchema = z.object({
     }, "El ID debe ser un ObjectId válido"),
   nivel: z.enum(NivelCobertura, { error: "Nivel de cobertura inválido" }),
   porcentajeCobertura: z.number().min(0, "El porcentaje debe ser >= 0").max(1, "El porcentaje debe ser <= 1"),
-  duracionTurnoEnMins: z.number("La duracion del turno debe ser un número").min(1, "La duracion del turno debe tener un mínimos de minutos"),
-  costoConsulta: z.number("El costo de la consulta debe ser un número").min(0, "El costo de la consulta no puede ser un valor negativo")
 });
 
 const coberturaPracticaSchema = z.object({
@@ -48,8 +46,6 @@ const coberturaPracticaSchema = z.object({
     }, "El ID debe ser un ObjectId válido"),
   nivel: z.enum(NivelCobertura, { error: "Nivel de cobertura inválido" }),
   porcentajeCobertura: z.number().min(0, "El porcentaje debe ser >= 0").max(1, "El porcentaje debe ser <= 1"),
-  duracionTurnoEnMins: z.number("La duracion del turno debe ser un número").min(1, "La duracion del turno debe tener un mínimos de minutos"),
-  costo: z.number("El costo de la consulta debe ser un número").min(0, "El costo de la consulta no puede ser un valor negativo")
 });
 
 export const crearPlanObraSocialSchema = z.object({

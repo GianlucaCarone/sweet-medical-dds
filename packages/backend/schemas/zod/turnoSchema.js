@@ -41,7 +41,7 @@ export const filtrosTurnoSchema = z.object({
 });
 
 export const turnoBaseSchema = z.object({
-    pacienteId: objectIdSchema("paciente"),
+    pacienteId: objectIdSchema("paciente").optional(),
     medicoId: objectIdSchema("medico"),
     sedeId: objectIdSchema("sede"),
     servicioId: objectIdSchema("servicio"),
