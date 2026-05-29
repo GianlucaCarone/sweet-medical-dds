@@ -46,7 +46,8 @@ export const turnoBaseSchema = z.object({
     sedeId: objectIdSchema("sede"),
     servicioId: objectIdSchema("servicio"),
     estado: z.enum(EstadoTurnoEnum, { error: "El estado del turno no es válido" }),
-    fechaHora: z.coerce.date({ invalid_type_error: "Fecha inválida" })
+    fechaHora: z.coerce.date({ invalid_type_error: "Fecha inválida" }),
+    costo: z.number("El costo del turno debe ser un número").positive("El costo del turno debe ser un número positivo").optional(),
 });
 
 export const bodySolicitarCambioFechaSchema = z.object({

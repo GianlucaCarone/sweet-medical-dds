@@ -30,7 +30,8 @@ export class TurnoController {
 
   cambiarEstadoTurno = async (req, res, next) => {
     try {
-      const idTurno = idParamsSchema.parse(req.params);
+      // idParamsSchema devuelve un objeto { id: "..." }, tenemos que extraer el .id
+      const idTurno = idParamsSchema.parse(req.params).id;
       const cambioTurnoData = bodyCambioEstadoTurnoSchema.parse(req.body);
 
       logger.info(`[TURNOS CONTROLLER]: Cambiando estado del turno a ${cambioTurnoData.nuevoEstado}`);
@@ -51,7 +52,8 @@ export class TurnoController {
 
   asignarTurno = async (req, res, next) => {
     try {
-      const idTurno = idParamsSchema.parse(req.params);
+      // De nuevo extraemos el .id del objeto retornado por Zod
+      const idTurno = idParamsSchema.parse(req.params).id;
       const turnoData = bodyAsignarTurnoSchema.parse(req.body);
 
       logger.info(`[TURNOS CONTROLLER]: Asignando turno a paciente: ${turnoData.pacienteId}`);
@@ -163,7 +165,7 @@ export class TurnoController {
 
   update = async (req, res, next) => {
     try {
-      const idTurno = idParamsSchema.parse(req.params);
+      const idTurno = idParamsSchema.parse(req.params).id;
       const turnoData = bodyUpdateTurnoSchema.parse(req.body);
 
       logger.info("[TURNOS CONTROLLER]: Actualizando turno: ", turnoData);

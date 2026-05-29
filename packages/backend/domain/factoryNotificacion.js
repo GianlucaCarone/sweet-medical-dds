@@ -54,7 +54,7 @@ export class FactoryNotificacion {
           destinatario: destinatario,
           remitente: remitente,
           mensaje:
-            `El turno fue reservado por el paciente ${turno.paciente.nombre} 
+            `El turno fue reservado por el paciente ${remitente.nombre} 
             ${turno.servicio instanceof Especialidad ? "para la especialidad" : "con la practica"} ${turno.servicio.nombre} 
             en la sede ${turno.sede.nombre}`
         });
@@ -63,7 +63,7 @@ export class FactoryNotificacion {
           destinatario: destinatario,
           remitente: remitente,
           mensaje:
-            `El turno fue cancelado por el paciente ${turno.paciente.nombre} 
+            `El turno fue cancelado por el paciente ${remitente.nombre} 
             ${turno.servicio instanceof Especialidad ? "para la especialidad" : "con la practica"} ${turno.servicio.nombre} 
             en la sede ${turno.sede.nombre}`
         });
@@ -72,7 +72,7 @@ export class FactoryNotificacion {
           destinatario: destinatario,
           remitente: remitente,
           mensaje:
-            `El turno fue confirmado por el medico ${turno.medico.nombre}
+            `El turno fue confirmado por ${remitente.nombre}
             ${turno.servicio instanceof Especialidad ? "para la especialidad" : "con la practica"} ${turno.servicio.nombre} 
             en la sede ${turno.sede.nombre}`
         });

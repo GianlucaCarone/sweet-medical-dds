@@ -53,15 +53,14 @@ export class MedicoRepository {
           ],
         },
         "sedes",
-      ])
-      .lean();
+      ]);
     const mensaje = medico
       ? "Medico obtenido: " + medico
       : "No se encontro el medico con id: " + idMedico;
     logger.info("[MEDICO REPOSTIRORY]: " + mensaje);
 
     if (!medico) return;
-    return MedicoMapper.toDomain(medico);
+    return medico;
   }
 
   async save(medico) {

@@ -45,7 +45,7 @@ export class ServicioRepository {
         logger.info("[SERVICIO REPOSTIRORY]: " + mensaje);
         if (servicio && servicio.tipo === "Practica") await servicio.populate("especialidadPadreId");
 
-        return ServicioMapper.toDomain(servicio);
+        return servicio;
     }
 
     async findByNombre(nombreServicio) {

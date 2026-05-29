@@ -21,14 +21,6 @@ export class DisponibilidadHoraria {
         if (horaDesde >= horaHasta) {
             throw new Error("La hora desde debe ser menor a la hora hasta");
         }
-        if (!(sede instanceof Sede)) {
-            throw new Error("La sede no es válida");
-        }
-        if (
-            !((servicio instanceof Practica) || (servicio instanceof Especialidad))
-        ) {
-            throw new Error("El servicio no es válido");
-        }
         this.diaSemana = diaSemana;
         this.horaDesde = horaDesde;
         this.horaHasta = horaHasta;
