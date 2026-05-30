@@ -17,7 +17,7 @@ export class ServicioService {
         const servicio = await this.serviciosRepository.findById(idServicio);
         if (!servicio) throw new NotFoundError("No se encontro el servicio con el id " + idServicio);
         logger.info("[SERVICIO SERVICE]: Servicio encontrado: ", servicio);
-        return ServicioMapper.toDTO(servicio);
+        return this.toDto(servicio);
     }
 
     async findAll() {
