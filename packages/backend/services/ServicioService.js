@@ -56,7 +56,7 @@ export class ServicioService {
         logger.info("[SERVICIO SERVICE]: Servicio actualizado: ", servicioActualizado);
         const servicioGuardado = await this.serviciosRepository.save(servicioActualizado);
         logger.info("[SERVICIO SERVICE]: Servicio guardado luego de actualizarse: ", servicioGuardado);
-        return ServicioMapper.toDTO(servicioActualizado);
+        return this.toDto(servicioActualizado);
     }
 
     async delete(id) {
