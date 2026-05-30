@@ -64,7 +64,7 @@ server.setController(MedicoController, medicoController);
 
 const turnoService = new TurnoService();
 
-//iniciarGeneracionTurnosBatch(turnoService);
+iniciarGeneracionTurnosBatch(turnoService);
 
 /* -------------------------------------------------------------------------- */
 /*                                    RUTAS                                   */

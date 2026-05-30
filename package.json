@@ -32,6 +32,8 @@
     "supertest": "^7.2.2"
   },
   "dependencies": {
+    "argon2": "^0.44.0",
+    "bcryptjs": "^3.0.3",
     "i18next": "^26.2.0",
     "jest": "^30.4.2",
     "mongoose": "^8.23.1",

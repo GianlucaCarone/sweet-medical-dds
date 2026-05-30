@@ -241,9 +241,6 @@ export class TurnoController {
     if (query.estado !== undefined) {
       filtros.estado = query.estado;
     }
-    if (query.medicoId !== undefined) {
-      filtros.medicoId = query.medicoId;
-    }
     if (query.especialidadId !== undefined) {
       filtros.especialidadId = query.especialidadId;
     }
@@ -272,7 +269,7 @@ export class TurnoController {
   extraerPaginacion(query) {
     const numeroPagina = query?.page === undefined ? 1 : Number(query.page);
     const limitePorPagina =
-      query?.limit === undefined ? 10 : Number(query.limit);
+      query?.limit === undefined ? Number(process.env.ITEMS_PER_PAGE) : Number(query.limit);
 
     this.turnoService.validarEnteroPositivo(numeroPagina, "page");
     this.turnoService.validarEnteroPositivo(limitePorPagina, "limit");

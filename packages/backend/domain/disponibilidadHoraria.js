@@ -37,9 +37,6 @@ export class DisponibilidadHoraria {
     }
 
     seSuperponeCon(otroHorario) {
-        if (!(otroHorario instanceof DisponibilidadHoraria)) {
-            throw new Error("Se debe comparar con otra DisponibilidadHoraria");
-        }
         if (this.diaSemana !== otroHorario.diaSemana) {
             return false;
         }

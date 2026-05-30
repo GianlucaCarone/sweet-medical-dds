@@ -94,6 +94,21 @@ export class ServicioService {
         }
     }
 
+    async obtenerServiciosFaltantes(servicios) {
+        const idsUnicos = [...new Set(servicios.map(id => id.toString()))];
+        logger.info("[SERVICIO SERVICE]: Obteniendo servicios faltantes: ", idsUnicos);
+
+        const serviciosEncontrados = await this.serviciosRepository.findByIds(idsUnicos);
+
+        const idsEncontradosSet = new Set(serviciosEncontrados.map(s => s._id.toString()));
+
+        // filtro usando has al haber usado set y es mucho mas rapido, es por clave 
+        const faltantes = idsUnicos.filter(id => !idsEncontradosSet.has(id));
+        logger.info("[SERVICIO SERVICE]: Servicios faltantes encontrados: ", faltantes);
+
+        return faltantes;
+    }
+
     toDto(servicio) {
         if (servicio.tipo == "Practica") {
             return {
