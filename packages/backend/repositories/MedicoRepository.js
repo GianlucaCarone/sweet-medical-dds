@@ -66,8 +66,8 @@ export class MedicoRepository {
 
   async save(medico) {
     logger.info("[MEDICO REPOSTIRORY]: Guardando medico: ", medico);
-    if (!(medico instanceof Medico))
-      throw new BadRequestError("No es un Medico valido");
+
+    if (!(medico instanceof Medico)) throw new BadRequestError("No es un Medico valido");
 
     let medicoGuardado = null;
     if (medico.id) {
@@ -97,7 +97,7 @@ export class MedicoRepository {
       "sedes",]);
     logger.info("[MEDICO REPOSTIRORY]: Medico guardado: ", medicoGuardado);
 
-    return MedicoMapper.toDomain(medicoGuardado);
+    return medicoGuardado;
   }
 
   async findByIdUsuario(idUsuario) {
