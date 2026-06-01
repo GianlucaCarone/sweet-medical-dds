@@ -304,8 +304,8 @@ export class MedicoService {
         diaSemana: d.diaSemana,
         horaDesde: d.horaDesde,
         horaHasta: d.horaHasta,
-        servicio: d.servicio ? this.servicioService.toDto(d.servicio) : null,
-        sede: d.sede ? this.sedeService.toDto(d.sede) : null,
+        servicioId: d.servicio ? d.servicio : null,
+        sedeId: d.sede ? d.sede : null,
       })),
       sedes: (medicoDoc.sedes || []).map(s => this.sedeService.toDto(s)),
       honorario: medicoDoc.honorario

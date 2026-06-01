@@ -33,7 +33,7 @@ const POPULATE_MEDICO_CONFIG = [
   },
   {
     path: "disponibilidades",
-    populate: [
+    /* populate: [
       { path: "sede" },
       {
         path: "servicio",
@@ -42,7 +42,7 @@ const POPULATE_MEDICO_CONFIG = [
           strictPopulate: false
         }
       }
-    ],
+    ], */
   },
   "sedes",
 ];
@@ -82,7 +82,6 @@ export class MedicoRepository {
         { new: true, runValidators: true },
       );
     } else {
-      if (!(medico instanceof Medico)) throw new BadRequestError("No es un Medico valido");
       const nuevoMedico = new this.model(medico); //
       medicoGuardado = await nuevoMedico.save();
     }
