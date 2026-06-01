@@ -161,11 +161,14 @@ export class TurnoService {
     const { costoTurno } = data;
 
     const turno = await this.turnoRepository.findByIdPopulate(idTurno);
-    if (!turno) {
+    if (!turno){
       throw new NotFoundError("No se encontro el turno con el id " + idTurno);
     }
+    if(turno.paciente){
+      throw new ConflictError("El turno ya tiene un paciente asignado");
+    }
     const paciente = await this.pacienteRepository.findById(pacienteId);
-    if (!paciente) {
+    if (!paciente){
       throw new NotFoundError(
         "No se encontro el paciente con el id " + pacienteId,
       );
@@ -196,6 +199,12 @@ export class TurnoService {
     // Si buscamos turnos disponibles, quitamos pacienteId para que Mongoose no intente buscar un turno disponible con paciente asignado
     if (filtrosParaBD.estado === EstadoTurnoEnum.DISPONIBLE) {
       delete filtrosParaBD.pacienteId;
+    }
+    // aseguramos que si no viene la fecha desde, que sea desde hoy, para no mostrar pasados
+    if (!filtrosParaBD.fechaHoraInicio) {
+      const hoy = new Date();
+      hoy.setHours(0, 0, 0, 0);
+      filtrosParaBD.fechaHoraInicio = hoy;
     }
 
     const { turnos, totalTurnos } = await this.turnoRepository.obtenerPaginados(numeroPagina, limitePorPagina, filtrosParaBD);
@@ -232,14 +241,9 @@ export class TurnoService {
     };
   }
 
-  async obtenerTurnosDeUsuario(
-    filtros,
-    numeroPagina = 1,
-    limitePorPagina = Number(process.env.ITEMS_PER_PAGE) || 10,
-  ) {
-    logger.info(
-      `[TURNO SERVICE]: Obteniendo turnos de usuario (Pág: ${numeroPagina})`,
-    );
+  async obtenerTurnosDeUsuario(filtros, numeroPagina = 1, limitePorPagina = Number(process.env.ITEMS_PER_PAGE) || 10) {
+    logger.info(`[TURNO SERVICE]: Obteniendo turnos de usuario (Pág: ${numeroPagina})`);
+
     this.validarPaginacion(numeroPagina, limitePorPagina);
     const filtrosValidados = this.validarFiltros(filtros);
 
