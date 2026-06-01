@@ -54,8 +54,6 @@ export class MedicoRepository {
   async save(medico) {
     logger.info("[MEDICO REPOSTIRORY]: Guardando medico: ", medico);
 
-    if (!(medico instanceof Medico)) throw new BadRequestError("No es un Medico valido");
-
     let medicoGuardado = null;
     if (medico.id) {
       medicoGuardado = await this.model.findByIdAndUpdate(
@@ -64,6 +62,7 @@ export class MedicoRepository {
         { new: true, runValidators: true },
       );
     } else {
+      if (!(medico instanceof Medico)) throw new BadRequestError("No es un Medico valido");
       const nuevoMedico = new this.model(medico); //
       medicoGuardado = await nuevoMedico.save();
     }
