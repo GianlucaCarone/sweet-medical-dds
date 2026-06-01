@@ -30,11 +30,11 @@ export class TurnoController {
 
   cambiarEstadoTurno = async (req, res, next) => {
     try {
-      const idTurno = idParamsSchema.parse(req.params);
+      const {id} = idParamsSchema.parse(req.params);
       const cambioTurnoData = bodyCambioEstadoTurnoSchema.parse(req.body);
 
       logger.info(`[TURNOS CONTROLLER]: Cambiando estado del turno a ${cambioTurnoData.nuevoEstado}`);
-      const turnoActualizado = await this.turnoService.cambiarEstadoTurno(idTurno,
+      const turnoActualizado = await this.turnoService.cambiarEstadoTurno(id,
         cambioTurnoData.nuevoEstado,
         cambioTurnoData.quien,
         cambioTurnoData.motivo);
@@ -51,12 +51,12 @@ export class TurnoController {
 
   asignarTurno = async (req, res, next) => {
     try {
-      const idTurno = idParamsSchema.parse(req.params);
+      const {id} = idParamsSchema.parse(req.params);
       const turnoData = bodyAsignarTurnoSchema.parse(req.body);
 
       logger.info(`[TURNOS CONTROLLER]: Asignando turno a paciente: ${turnoData.pacienteId}`);
       const turnoAsignado = await this.turnoService.asignarTurno(
-        idTurno,
+        id,
         turnoData.pacienteId,
         turnoData.costoTurno,
       );
@@ -163,12 +163,12 @@ export class TurnoController {
 
   update = async (req, res, next) => {
     try {
-      const idTurno = idParamsSchema.parse(req.params);
+      const id = idParamsSchema.parse(req.params).id;
       const turnoData = bodyUpdateTurnoSchema.parse(req.body);
 
       logger.info("[TURNOS CONTROLLER]: Actualizando turno: ", turnoData);
       const turnoActualizado = await this.turnoService.update(
-        idTurno,
+        id,
         turnoData,
       );
 
@@ -184,13 +184,13 @@ export class TurnoController {
 
   solicitarCambioFecha = async (req, res, next) => {
     try {
-      const idTurno = idParamsSchema.parse(req.params).id;
+      const id = idParamsSchema.parse(req.params).id;
       const { nuevaFechaHora, usuarioId } =
         bodySolicitarCambioFechaSchema.parse(req.body);
 
-      logger.info(`[TURNOS CONTROLLER]: Solicitando cambio de fecha para turno ${idTurno} a fecha ${nuevaFechaHora}`);
+      logger.info(`[TURNOS CONTROLLER]: Solicitando cambio de fecha para turno ${id} a fecha ${nuevaFechaHora}`);
       const turnoActualizado = await this.turnoService.solicitarCambioFecha(
-        idTurno,
+        id,
         nuevaFechaHora,
         usuarioId,
       );
@@ -207,14 +207,14 @@ export class TurnoController {
 
   responderCambioFecha = async (req, res, next) => {
     try {
-      const idTurno = idParamsSchema.parse(req.params).id;
+      const id = idParamsSchema.parse(req.params).id;
       const { aceptado, usuarioId } = bodyResponderCambioFechaSchema.parse(
         req.body,
       );
 
-      logger.info(`[TURNOS CONTROLLER]: Respondiendo cambio de fecha para turno ${idTurno} (Aceptado: ${aceptado})`);
+      logger.info(`[TURNOS CONTROLLER]: Respondiendo cambio de fecha para turno ${id} (Aceptado: ${aceptado})`);
       const turnoActualizado = await this.turnoService.responderCambioFecha(
-        idTurno,
+        id,
         aceptado,
         usuarioId,
       );

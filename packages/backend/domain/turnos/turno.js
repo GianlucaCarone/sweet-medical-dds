@@ -1,10 +1,6 @@
-import { Medico } from "../medico.js";
 import { ErrorDatosObligatorios } from "../errores.js";
 import { EstadoTurnoEnum } from "./estadoTurnoEnum.js";
 import { CambioEstadoTurno } from "./cambioEstadoTurno.js";
-import { Practica } from "../servicios/practica.js";
-import { Especialidad } from "../servicios/especialidad.js";
-import { Usuario } from "../usuario.js";
 export class Turno {
     id;
     medico;
@@ -17,7 +13,7 @@ export class Turno {
     historialEstado;
     costo;
 
-    constructor({ medico, fechaHora, sede, servicio }) {
+    constructor({ medico, fechaHora, sede, servicio, costo = 0 }) {
         if (!medico || !sede || !fechaHora) {
             throw new ErrorDatosObligatorios();
         }
@@ -26,7 +22,7 @@ export class Turno {
         this.fechaHora = fechaHora;
         this.sede = sede;
         this.servicio = servicio;
-
+        this.costo = costo;
         this.estado = EstadoTurnoEnum.DISPONIBLE;
         this.historialEstado = [];
     }
@@ -50,10 +46,6 @@ export class Turno {
                             throw new Error(`Transición inválida: un turno en estado '${this.estado}' no puede pasar a '${nuevoEstado}'.`);
                         }
                         */
-
-        if (!(quien instanceof Usuario)) {
-            throw new Error("Usuario inválido");
-        }
         if (motivo !== undefined && typeof motivo !== "string") {
             throw new Error("Motivo inválido");
         }

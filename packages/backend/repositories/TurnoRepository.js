@@ -1,7 +1,7 @@
 import { EstadoTurnoEnum } from "../domain/turnos/estadoTurnoEnum.js";
 import { BadRequestError } from "../errors/AppError.js";
 import { TurnoModel } from "../schemas/dataBase/turnoSchemaDB.js";
-import { TurnoMapper } from "../mappers/turnoMapper.js";
+
 
 export class TurnoRepository {
     constructor() {
@@ -12,55 +12,50 @@ export class TurnoRepository {
     // se agrega el método dentro de turno repository para llamarlo
     // y no declararlos dos veces
     async crear(turnoDto) {
-        const doc = await this.model.create(turnoDto);
-        return TurnoMapper.toDomain(doc.toObject());
+        return this.model.create(turnoDto);
     }
 
-    async findAll() {
-        const docs = await this.model.find().exec();  // no es necesariamente obligatorio pero mejora el Stack Traces y devuelve una promesa de js 
-        return docs.map(doc => TurnoMapper.toDomain(doc));
+    async findAll() { 
+        return  await this.model.find().exec();// no es necesariamente obligatorio pero mejora el Stack Traces y devuelve una promesa de js 
     }
 
     async findByEstado(estado) {
         this.validarEstado(estado);
-        const docs = await this.model.find({ estado }).lean().exec();
-        return docs.map(doc => TurnoMapper.toDomain(doc));
+        return await this.model.find({ estado }).exec();
     }
 
     async findById(id) {
-        const doc = await this.model.findById(id).lean().exec();
-        return TurnoMapper.toDomain(doc);
+        return await this.model.findById(id).exec();
     }
 
     async findByIdPopulate(id) {
-        const doc = await this.model.findById(id).populate('medico paciente servicio sede').lean().exec();
-        return TurnoMapper.toDomain(doc);
+        const turno = await this.model.findById(id).populate('medico paciente servicio sede').exec();
+        return turno;
     }
 
     async save(turno) {
-        const nuevoTurno = new this.model(TurnoMapper.toPersistence(turno));
+        const nuevoTurno = new this.model(turno);
         const saved = await nuevoTurno.save();
-        await saved.populate('medico paciente servicio sede');
-        return TurnoMapper.toDomain(saved);
+        return saved.populate('medico paciente servicio sede');
     }
-
 
 
     async update(id, turno) {
-        const doc = await this.model.findByIdAndUpdate(id, TurnoMapper.toPersistence(turno), { new: true }).lean().exec();
-        return TurnoMapper.toDomain(doc);
+        return this.model.findByIdAndUpdate(id, turno, { new: true, runValidators: true }).lean().exec();
     }
+
 
     async existeTurno(medicoId, fechaHora) {
         const fechaNormalizada = new Date(fechaHora);
         fechaNormalizada.setSeconds(0, 0);
 
-        const turnoExistente = await this.model.findOne({
+        // .exists() es mucho más ligero y rápido en la DB que .findOne()
+        const turnoId = await this.model.exists({
             medico: medicoId,
             fechaHora: fechaNormalizada
-        }).exec();
+        }).exec(); 
 
-        return turnoExistente !== null;
+        return turnoId !== null;
     }
     /*
     La plataforma deberá permitir a los pacientes realizar la búsqueda de turnos 
@@ -100,11 +95,6 @@ disponible:
             if (filtros.fechaHoraFin !== undefined) query.fechaHora.$lte = filtros.fechaHoraFin;
         }
 
-        /*
-        TODO: filtro de medico -> No confiamos en el front y esta solucion soluciona esto
-         si esta definido el id de medico y tambien de especialiad o practica o ambas, se pisaria
-         el front deberia poner una restriccion para que si pones el filtro de medico no puedas filtrar por especialida o practica
-        */
         if (filtros.medicoId !== undefined) {
             query.medico = filtros.medicoId;
         }
@@ -124,7 +114,7 @@ disponible:
         const inicio = (numeroPagina - 1) * limitePorPagina;
 
         // Ejecutar la consulta y el conteo en paralelo
-        const [turnosDoc, totalTurnos] = await Promise.all([
+        const [turnos, totalTurnos] = await Promise.all([
             this.model.find(query)
                 .populate('medico paciente servicio sede')
                 .sort(ordenamiento)
@@ -134,8 +124,6 @@ disponible:
                 .exec(),
             this.model.countDocuments(query).exec()
         ]);
-
-        const turnos = turnosDoc.map(doc => TurnoMapper.toDomain(doc));
 
         return {
             turnos,

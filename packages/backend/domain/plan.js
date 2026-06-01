@@ -1,8 +1,5 @@
 import { CoberturaEspecialidad } from "./coberturas/coberturaEspecialidad.js";
 import { CoberturaPractica } from "./coberturas/coberturaPractica.js";
-// import { randomUUID } from "crypto";
-import { Especialidad } from "./servicios/especialidad.js";
-import { Practica } from "./servicios/practica.js";
 import { ErrorDatosObligatorios } from "../domain/errores.js";
 
 export class Plan {
@@ -15,7 +12,6 @@ export class Plan {
     if (!nombre) {
       throw new ErrorDatosObligatorios();
     }
-    // this.id = randomUUID();
     this.nombre = nombre;
   }
 
@@ -42,12 +38,7 @@ export class Plan {
     this.coberturasPractica = this.coberturasPractica.filter(cobertura => cobertura.id !== coberturaPracticaAEliminar.id);
   }
 
-  // TODO se podria usar polimorfismo segun el tipo de cobertura.
-  // Ejemplo: obtenerCobertura(servicio) y que internamente sepa si es una especialidad o practica y busque en el array correspondiente.
-  // Esto evitaria tener dos metodos distintos para cada tipo de cobertura.
-  // Preguntar: se puede usar polimorfismo en este caso? Con un if si el servicio es de un tipo u otro
-
-  obtenerCoberturaServicio(servicio) {
+  /*obtenerCoberturaServicio(servicio) {
     if (servicio instanceof Especialidad) {
       return this.obtenerCoberturaEspecialidad(servicio);
     }
@@ -67,5 +58,31 @@ export class Plan {
       (cp) => cp.practica === practica,
     );
     return cobertura ? { nivel: cobertura.nivel, porcentaje: cobertura.porcentajeCobertura } : null;
+  }*/
+
+    obtenerCoberturaServicio(servicio) {
+    const servicioId = (servicio?._id || servicio?.id || servicio).toString();
+
+    const listaEspecialidades = this.coberturaEspecialidad || this.coberturasEspecialidad || [];
+    const listaPracticas = this.coberturaPractica || this.coberturasPractica || [];
+
+    //Buscamos primero en especialidades.
+    const coberturaEsp = listaEspecialidades.find((ce) => {
+      const idRef = (ce.especialidad?._id || ce.especialidad?.id || ce.especialidad).toString();
+      return idRef === servicioId;
+    });
+
+    if (coberturaEsp) return { nivel: coberturaEsp.nivel, porcentaje: coberturaEsp.porcentajeCobertura };
+
+    //no estaba en especialidades, buscamos en prácticas
+    const coberturaPrac = listaPracticas.find((cp) => {
+      const idRef = (cp.practica?._id || cp.practica?.id || cp.practica).toString();
+      return idRef === servicioId;
+    });
+
+    if (coberturaPrac) return { nivel: coberturaPrac.nivel, porcentaje: coberturaPrac.porcentajeCobertura };
+
+    // 4. Si no se encontró
+    return { nivel: "NO_CUBIERTA", porcentaje: 0 };
   }
 }

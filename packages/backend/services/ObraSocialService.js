@@ -92,6 +92,11 @@ export class ObraSocialService {
         if (!obraSocial) {
             throw new BadRequestError(`No se encontró una obra social con el ID: ${obraSocialId}`);
         }
+        const planExiste = obraSocial.planes.some(plan => plan.nombre === planDto.nombre);
+        if (planExiste) {
+            throw new BadRequestError(`Ya existe un plan con el nombre ${planDto.nombre} en la obra social ${obraSocial.nombre}`);
+        }
+
         const especialidades = planDto.coberturaEspecialidad.map((cobEspecialidad) => cobEspecialidad.especialidad);
         const practicas = planDto.coberturaPractica.map((cobPractica) => cobPractica.practica);
         const servicios = [...especialidades, ...practicas];
