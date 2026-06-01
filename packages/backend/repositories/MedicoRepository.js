@@ -82,6 +82,7 @@ export class MedicoRepository {
         { new: true, runValidators: true },
       );
     } else {
+      if (!(medico instanceof Medico)) throw new BadRequestError("No es un Medico valido");
       const nuevoMedico = new this.model(medico); //
       medicoGuardado = await nuevoMedico.save();
     }
