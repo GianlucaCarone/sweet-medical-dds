@@ -115,7 +115,7 @@ export class MedicoService {
 
     medico.agregarSede(sede);
 
-    const medicoActualizado = await this.medicoRepository.save(medico);
+    const medicoActualizado = await this.medicoRepository.update(medicoId, medico);
     return this.toDto(medicoActualizado);
   }
 

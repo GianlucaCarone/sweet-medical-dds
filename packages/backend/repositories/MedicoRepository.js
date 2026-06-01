@@ -24,6 +24,29 @@ const POPULATE_MEDICO_CONFIG = [
   "sedes",
 ];
 
+const POPULATE_MEDICO_CONFIG = [
+  "usuario",
+  "especialidades",
+  {
+    path: "practicas",
+    populate: { path: "especialidadPadre" }
+  },
+  {
+    path: "disponibilidades",
+    populate: [
+      { path: "sede" },
+      {
+        path: "servicio",
+        populate: {
+          path: "especialidadPadre",
+          strictPopulate: false
+        }
+      }
+    ],
+  },
+  "sedes",
+];
+
 export class MedicoRepository {
   constructor() {
     this.model = MedicoModel;
