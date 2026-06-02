@@ -2,45 +2,57 @@ import { ServicioService } from "./ServicioService.js";
 import { NotFoundError, ConflictError } from "../errors/AppError.js";
 import { MedicoRepository } from "../repositories/MedicoRepository.js";
 import { UsuarioService } from "./UsuarioService.js";
+import { UsuarioRepository } from "../repositories/UsuarioRepository.js";
 import { DisponibilidadHoraria } from "../domain/disponibilidadHoraria.js";
 import { Medico } from "../domain/medico.js";
 import { SedeService } from "./SedeService.js";
 import { logger } from "../config/logger.js";
 import { MedicoMapper } from "../mappers/medicoMapper.js";
 
-
+/**
+ * Clase que se encarga de la logica de negocio de los medicos
+ * @author fandino
+ */
 export class MedicoService {
   constructor({
     medicoRepository = new MedicoRepository(),
     usuarioService = new UsuarioService(),
+    usuarioRepository = new UsuarioRepository(),
     servicioService = new ServicioService(),
     sedeService = new SedeService()
   } = {}) {
     this.medicoRepository = medicoRepository;
     this.usuarioService = usuarioService;
+    this.usuarioRepository = usuarioRepository;
     this.servicioService = servicioService;
     this.sedeService = sedeService;
   }
 
+  /**
+   * crea una lista de medicos
+   * @param {Array<{ usuarioId: string, matricula: string, nombre: string, honorario: number }>} listaMedicos
+   * @returns {Array<{ usuarioId: string, matricula: string, nombre: string, honorario: number }>}
+   */
   async crearMedicos(listaMedicos) {
     return listaMedicos.map((medicoData) => this.create(medicoData));
   }
 
+  /**
+   * crea un medico
+   * @param {{ usuarioId: string, matricula: string, nombre: string, honorario: number }} medicoData
+   * @returns {{ id: string, nombre: string, matricula: string, usuario: Object, especialidades: Array<Object>, practicas: Array<Object>, disponibilidades: Array<Object> }}
+   */
   async create(medicoData) {
-    logger.info(
-      "[MEDICO SERVICE]: Obteniendo los datos necesarios para crear medico",
-    );
-    const usuario = await this.usuarioService.findEntityById(
-      medicoData.usuarioId,
-    );
+    logger.info("[MEDICO SERVICE]: Obteniendo los datos necesarios para crear medico");
+
+    const usuario = await this.usuarioService.findById(medicoData.usuarioId);
     if (!usuario) throw new NotFoundError("Usuario no encontrado");
-    const medicoExistente = await this.medicoRepository.findByIdUsuario(
-      usuario.id,
-    );
-    if (medicoExistente)
-      throw new ConflictError("Ya existe un médico con ese usuario");
+
+    const medicoExistente = await this.medicoRepository.findByIdUsuario(usuario.id);
+    if (medicoExistente) throw new ConflictError("Ya existe un médico con ese usuario");
 
     logger.info("[MEDICO SERVICE]: Creando medico: ", medicoData);
+
     const medicoEntityData = {
       usuario: usuario,
       matricula: medicoData.matricula,
@@ -52,7 +64,7 @@ export class MedicoService {
     const nuevoMedico = await this.medicoRepository.save(medico);
     logger.info("[MEDICO SERVICE]: Médico creado: ", nuevoMedico);
 
-    return MedicoMapper.toDTO(nuevoMedico);
+    return this.toDto(nuevoMedico);
   }
 
   async findById(idMedico) {
@@ -61,14 +73,19 @@ export class MedicoService {
     if (!medico) throw new NotFoundError("Médico no encontrado");
     logger.info("[MEDICO SERVICE]: Medico obtenido: ", medico);
 
-    return MedicoMapper.toDTO(medico);
+    return this.toDto(medico);
   }
 
   async findAll() {
     logger.info("Consultando todos los médicos");
-    return (await this.medicoRepository.findAll()).map(MedicoMapper.toDTO);
+    const medicos = await this.medicoRepository.findAll();
+    return medicos.map(m => this.toDto(m));
   }
 
+  /**
+   * @deprecated
+   * @description Usar findAll()
+   */
   async findAllEntities() {
     logger.info("Consultando todos los médicos como entidades de dominio");
 
@@ -86,7 +103,7 @@ export class MedicoService {
     }
 
     logger.info(`Médico eliminado con ID: ${id}`);
-    return MedicoMapper.toDTO(medicoEliminado);
+    return this.toDto(medicoEliminado);
   }
 
   async agregarSede(medicoId, sedeId) {
@@ -101,7 +118,7 @@ export class MedicoService {
     medico.agregarSede(sede);
 
     const medicoActualizado = await this.medicoRepository.save(medico);
-    return MedicoMapper.toDTO(medicoActualizado);
+    return this.toDto(medicoActualizado);
   }
 
   async eliminarSede(medicoId, sedeId) {
@@ -117,7 +134,7 @@ export class MedicoService {
     medico.eliminarSede(sedeId);
 
     const medicoActualizado = await this.medicoRepository.save(medico);
-    return MedicoMapper.toDTO(medicoActualizado);
+    return this.toDto(medicoActualizado);
   }
 
   async definirDisponibilidadPara(disponibilidadData, id) {
@@ -131,21 +148,20 @@ export class MedicoService {
       throw new NotFoundError("Médico no encontrado");
     }
 
+    const sede = await this.sedeService.findEntityById(disponibilidadData.sedeId);
+    if (!sede) {
+      logger.error(`Sede con ID ${disponibilidadData.sedeId} no encontrada`);
+      throw new NotFoundError("Sede no encontrada");
+    }
+
     //Chequeo que el medico tenga la sede de la disponibilidad
-    if (!medico.sedes.some((s) => s.id === disponibilidadData.sedeId)) {
+    if (!medico.tieneSede(sede)) {
       logger.error(
         `El médico no tiene asignada la sede con ID ${disponibilidadData.sedeId}`,
       );
       throw new ConflictError("El médico no tiene asignada esa sede");
     }
 
-    const sede = await this.sedeService.findEntityById(
-      disponibilidadData.sedeId,
-    );
-    if (!sede) {
-      logger.error(`Sede con ID ${disponibilidadData.sedeId} no encontrada`);
-      throw new NotFoundError("Sede no encontrada");
-    }
     const servicio = await this.servicioService.getEntityById(
       disponibilidadData.servicioId,
     );
@@ -172,7 +188,7 @@ export class MedicoService {
       disponibilidad,
     );
 
-    return MedicoMapper.toDTO(await this.medicoRepository.save(medico));
+    return this.toDto(await this.medicoRepository.save(medico));
   }
 
   async modificarDisponibilidadPara(disponibilidadData, medicoId) {
@@ -207,7 +223,7 @@ export class MedicoService {
     // TODO avisar al turno service que genere los turnos.
     //await this.turnoService.refrescarTurnosDisponiblesDelMedico(medico);
 
-    return MedicoMapper.toDTO(await this.medicoRepository.save(medico));
+    return this.toDto(await this.medicoRepository.save(medico));
   }
 
   async eliminarDisponibilidadPara(medicoId, diaSemana) {
@@ -221,7 +237,7 @@ export class MedicoService {
     // TODO avisar al turno service que genere los turnos.
     //await this.turnoService.regenerarTurnosDisponiblesDelMedico(medico.id);
 
-    return MedicoMapper.toDTO(await this.medicoRepository.save(medico));
+    return this.toDto(await this.medicoRepository.save(medico));
   }
 
   async consultarDisponibilidad(medicoId) {
@@ -249,7 +265,7 @@ export class MedicoService {
     const guardado = await this.medicoRepository.save(medico);
     logger.info("[MEDICO SERVICE]: Servicio guardado: ", guardado);
 
-    return MedicoMapper.toDTO(guardado);
+    return this.toDto(guardado);
   }
 
   async eliminarServicioPara(idMedico, idServicio) {
@@ -267,6 +283,34 @@ export class MedicoService {
     const guardadoGuardado = await this.medicoRepository.save(medico);
     logger.info("[MEDICO SERVICE]: Servicio eliminado con id: ", idServicio);
 
-    return MedicoMapper.toDTO(guardadoGuardado);
+    return this.toDto(guardadoGuardado);
+  }
+
+  /**
+   * Convierte un medicoDocument a DTO
+   * @param {{ id: string, nombre: string, matricula: string, usuario: Object, especialidades: Array<Object>, practicas: Array<Object>, disponibilidades: Array<Object> }} medicoDoc 
+   * @returns {{ id: string, nombre: string, matricula: string, usuario: Object, especialidades: Array<Object>, practicas: Array<Object>, disponibilidades: Array<Object> }}
+   */
+  toDto(medicoDoc) {
+    if (!medicoDoc) return null;
+
+    return {
+      id: medicoDoc.id || medicoDoc._id,
+      nombre: medicoDoc.nombre,
+      matricula: medicoDoc.matricula,
+      usuario: medicoDoc.usuario ? this.usuarioService.toDto(medicoDoc.usuario) : null,
+      especialidades: (medicoDoc.especialidades || []).map(e => this.servicioService.toDto(e)),
+      practicas: (medicoDoc.practicas || []).map(p => this.servicioService.toDto(p)),
+      disponibilidades: (medicoDoc.disponibilidades || []).map((d) => ({
+        id: d.id || d._id,
+        diaSemana: d.diaSemana,
+        horaDesde: d.horaDesde,
+        horaHasta: d.horaHasta,
+        servicioId: d.servicio ? d.servicio : null,
+        sedeId: d.sede ? d.sede : null,
+      })),
+      sedes: (medicoDoc.sedes || []).map(s => this.sedeService.toDto(s)),
+      honorario: medicoDoc.honorario
+    };
   }
 }
