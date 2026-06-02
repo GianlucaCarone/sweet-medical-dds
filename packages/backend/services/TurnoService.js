@@ -490,7 +490,7 @@ export class TurnoService {
   async generarTurnosDisponibles() {
     logger.info("Iniciando generación de turnos disponibles");
 
-    const medicos = await this.medicoService.findAllEntities();
+    const medicos = await this.medicoService.findAll();
 
     for (const medico of medicos) {
       await this.generarTurnosDisponiblesParaMedico(medico);
