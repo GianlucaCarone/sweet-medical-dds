@@ -17,8 +17,8 @@
 .nav-link {
   text-decoration: none; /* Saca el subrayado típico de los enlaces */
   color: #64748b;
-  font-weight: 500;
-  font-size: 0.95rem;
+  font-weight: var(--font-weight-base );
+  font-size: var(--font-size-base);
   transition: color 0.2s ease;
   padding: 0.5rem 0;
 }
@@ -58,8 +58,8 @@
 }
 
 .user-name {
-  font-size: 0.9rem;
-  font-weight: 600;
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-base);
   color: #334155;
 }
 
@@ -70,7 +70,7 @@
   border: 1px solid #ef4444;
   padding: 0.5rem 1rem;
   border-radius: 6px;
-  font-size: 0.875rem;
+  font-size: var(--font-size-base);
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;

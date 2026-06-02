@@ -12,6 +12,26 @@ code {
     source-code-pro, Menlo, Monaco, Consolas, "Courier New", monospace;
 }
 
+:root {
+  
+  /* Colores */
+ /*  --color-primary: #1E3A5F;
+  --color-secondary: #388E3C;
+  --color-accent: #FBC02D;
+  --color-background: #F5F7FA;
+  --color-text: #333333;
+  --color-white: #FFFFFF; */
+
+  
+  /* Tipografía */
+  --font-family-base: 'Inter', sans-serif;
+  --font-size-xlarge: 24px;
+  --font-size-base: 15px;
+  --font-size-medium: 12px;
+  --font-size-small: 11px;
+  --font-weight-base: 500;
+}
+
 /* TODO: definir los colores y fuentes */
 /* :root {
   --primary-blue: rgb(12, 49, 136);

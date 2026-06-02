@@ -43,7 +43,7 @@
 }
 
 .brand-name {
-  font-size: 1.25rem;
-  font-weight: 700;
+  font-size: var(--font-size-xlarge);
+  font-weight: var(--font-weight-base);
   color: #0f172a;
 }
