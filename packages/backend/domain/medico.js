@@ -88,10 +88,10 @@ export class Medico {
         if (!servicio) {
             throw new Error("Servicio invalido");
         }
-        if (servicio instanceof Especialidad) {
+        if (servicio.tipo === "Especialidad") {
             if (this.especialidades.some((e) => e.id === servicio.id)) throw new ConflictError("El medico ya tiene esa especialiad")
             this.especialidades.push(servicio);
-        } else if (servicio instanceof Practica) {
+        } else if (servicio.tipo === "Practica") {
             if (this.practicas.some((p) => p.id === servicio.id)) throw new ConflictError("El medico ya tiene esa practica");
             this.practicas.push(servicio);
         } else {
@@ -103,11 +103,11 @@ export class Medico {
         if (!servicioAEliminar) {
             throw new Error("Servicio invalido");
         }
-        if (servicioAEliminar instanceof Especialidad) {
+        if (servicioAEliminar.tipo === "Especialidad") {
             this.especialidades = this.especialidades.filter(
                 (especialidad) => especialidad.id !== servicioAEliminar.id,
             );
-        } else if (servicioAEliminar instanceof Practica) {
+        } else if (servicioAEliminar.tipo === "Practica") {
             this.practicas = this.practicas.filter(
                 (practica) => practica.id !== servicioAEliminar.id,
             );
@@ -121,10 +121,6 @@ export class Medico {
     }
 
     agregarSede(sede) {
-        if (!(sede instanceof Sede)) {
-            throw new Error("Sede inválida");
-        }
-
         const yaTieneSede = this.sedes.some((s) => s.id === sede.id);
 
         if (yaTieneSede) {
@@ -142,5 +138,9 @@ export class Medico {
         if (cantidadAntes === this.sedes.length) {
             throw new Error("La sede no estaba asociada al médico");
         }
+    }
+
+    tieneSede(sede) {
+        return this.sedes.some((s) => s.id === sede.id);
     }
 }
