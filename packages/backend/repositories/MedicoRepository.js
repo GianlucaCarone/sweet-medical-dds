@@ -46,6 +46,7 @@ export class MedicoRepository {
 
     if (!medico) return;
     return medico;
+    return medico;
   }
 
   async save(medico) {

@@ -16,12 +16,10 @@ import { PacienteRepository } from "../repositories/PacienteRepository.js";
 import { logger } from "../config/logger.js";
 import { MedicoService } from "../services/MedicoService.js";
 import { UsuarioService } from "../services/UsuarioService.js";
-//import { MedicoMapper } from "../mappers/medicoMapper.js";
-import { TurnoMapper } from "../mappers/turnoMapper.js";
 import { NotificacionService } from "./NotificacionService.js";
 import { SedeRepository } from "../repositories/SedeRepository.js";
-import { ServicioService } from "./ServicioService.js";
-import { ServicioMapper } from "../mappers/servicioMapper.js";
+import { ServicioRepository } from "../repositories/ServicioRepository.js";
+
 
 export class TurnoService {
   constructor({
@@ -34,7 +32,7 @@ export class TurnoService {
     usuarioService = new UsuarioService(),
     notificacionService = new NotificacionService(),
     sedeRepository = new SedeRepository(),
-    servicioService = new ServicioService(),
+    servicioRepository = new ServicioRepository(),
   } = {}) {
     this.turnoRepository = turnoRepository;
     this.pacienteRepository = pacienteRepository;
@@ -45,7 +43,23 @@ export class TurnoService {
     this.usuarioService = usuarioService;
     this.notificacionService = notificacionService;
     this.sedeRepository = sedeRepository;
-    this.servicioService = servicioService;
+    this.servicioRepository = servicioRepository;
+  }
+
+  toDto(turno) {
+    return {
+      id: turno.id || turno._id,
+      medico: turno.medico,
+      servicio: turno.servicio,
+      paciente: turno.paciente,
+      fechaHora: turno.fechaHora,
+      fechaHoraPropuesta: turno.fechaHoraPropuesta,
+      sede: turno.sede,
+      estado: turno.estado,
+      historialEstado: turno.historialEstado,
+      costo: turno.costo,
+      estadoCobertura: turno.estadoCobertura,
+    };
   }
 
   async cambiarEstadoTurno(id, nuevoEstado, quien, motivo) {
@@ -60,10 +74,7 @@ export class TurnoService {
     let destinatario;
     let quienObj = null;
 
-    if (
-      turno.paciente &&
-      (turno.paciente.toString() === quien || turno.paciente.id === quien)
-    ) {
+    if (turno.paciente &&(turno.paciente.toString() === quien || turno.paciente.id === quien)) {
       remitente = turno.paciente;
       destinatario = turno.medico;
       quienObj = await this.pacienteRepository.findById(quien);
@@ -99,11 +110,11 @@ export class TurnoService {
     this.notificacionService.crearNotificacionSegunEstadoTurno(turno, remitente, destinatario);
     const turnoActualizado = await this.turnoRepository.update(id, turno);
     logger.info(`[TURNO SERVICE]: Estado de turno ${id} actualizado correctamente`);
-    return TurnoMapper.toDTO(turnoActualizado);
+    return this.toDto(turnoActualizado);
   }
 
   async create(data) {
-    const { fechaHora, medicoId, sedeId, servicioId } = data;
+    const { fechaHora, medicoId, sedeId, servicioId, costo } = data;
     logger.info(`[TURNO SERVICE]: Creando turno para el médico ${medicoId} en fecha ${fechaHora}`);
 
     if (!medicoId || !sedeId || !fechaHora || !servicioId) {
@@ -132,17 +143,17 @@ export class TurnoService {
       throw new NotFoundError("No se encontro la sede con el id " + sedeId);
     }
 
-    const servicio = await this.servicioService.getById(servicioId);
+    const servicio = await this.servicioRepository.findById(servicioId);
     if (!servicio) {
       throw new NotFoundError(
         "No se encontro el servicio con el id " + servicioId,
       );
     }
 
-    const turno = new Turno({ medico, sede, fechaHora, servicio });
+    const turno = new Turno({ medico, sede, fechaHora, servicio, costo });
     const turnoGuardado = await this.turnoRepository.save(turno);
     logger.info(`[TURNO SERVICE]: Turno creado con éxito`);
-    return TurnoMapper.toDTO(turnoGuardado);
+    return this.toDto(turnoGuardado);
   }
 
   async asignarTurno(idTurno, pacienteId, data) {
@@ -150,11 +161,14 @@ export class TurnoService {
     const { costoTurno } = data;
 
     const turno = await this.turnoRepository.findByIdPopulate(idTurno);
-    if (!turno) {
+    if (!turno){
       throw new NotFoundError("No se encontro el turno con el id " + idTurno);
     }
+    if(turno.paciente){
+      throw new ConflictError("El turno ya tiene un paciente asignado");
+    }
     const paciente = await this.pacienteRepository.findById(pacienteId);
-    if (!paciente) {
+    if (!paciente){
       throw new NotFoundError(
         "No se encontro el paciente con el id " + pacienteId,
       );
@@ -171,17 +185,13 @@ export class TurnoService {
 
     const turnoActualizado = await this.turnoRepository.update(idTurno, turno);
     logger.info(`[TURNO SERVICE]: Turno ${idTurno} asignado correctamente`);
-    return TurnoMapper.toDTO(turnoActualizado);
+    return this.toDto(turnoActualizado);
   }
 
-  async obtenerTodosPaginados(
-    numeroPagina = 1,
-    limitePorPagina = Number(process.env.ITEMS_PER_PAGE) || 10,
-    filtros = {},
-  ) {
-    logger.info(
-      `[TURNO SERVICE]: Obteniendo turnos paginados (Pág: ${numeroPagina})`,
-    );
+  async obtenerTodosPaginados(numeroPagina = 1, limitePorPagina = Number(process.env.ITEMS_PER_PAGE) || 10, filtros = {}) {
+
+    logger.info(`[TURNO SERVICE]: Obteniendo turnos paginados (Pág: ${numeroPagina})`);
+
     this.validarPaginacion(numeroPagina, limitePorPagina);
     const filtrosValidados = this.validarFiltros(filtros);
 
@@ -190,39 +200,35 @@ export class TurnoService {
     if (filtrosParaBD.estado === EstadoTurnoEnum.DISPONIBLE) {
       delete filtrosParaBD.pacienteId;
     }
+    // aseguramos que si no viene la fecha desde, que sea desde hoy, para no mostrar pasados
+    if (!filtrosParaBD.fechaHoraInicio) {
+      const hoy = new Date();
+      hoy.setHours(0, 0, 0, 0);
+      filtrosParaBD.fechaHoraInicio = hoy;
+    }
 
-    const { turnos, totalTurnos } = await this.turnoRepository.obtenerPaginados(
-      numeroPagina,
-      limitePorPagina,
-      filtrosParaBD,
-    );
+    const { turnos, totalTurnos } = await this.turnoRepository.obtenerPaginados(numeroPagina, limitePorPagina, filtrosParaBD);
 
-    const totalPaginas =
-      totalTurnos === 0 ? 0 : Math.ceil(totalTurnos / limitePorPagina);
+    const totalPaginas = totalTurnos === 0 ? 0 : Math.ceil(totalTurnos / limitePorPagina);
 
     let obraSocial = null;
     let plan = null;
 
     // Solo buscaremos el plan si tenemos un paciente para calcular la cobertura.
     if (filtrosValidados.pacienteId) {
-      const { obraSocial: osObtenida, plan: planObtenido } =
-        await this.obtenerObraSocialYPlanPorPaciente(
-          filtrosValidados.pacienteId,
-        );
+      const { obraSocial: osObtenida, plan: planObtenido } = await this.obtenerObraSocialYPlanPorPaciente(filtrosValidados.pacienteId);
       obraSocial = osObtenida;
       plan = planObtenido;
     }
 
     //solo se calcula si el turno tiene un servicio y si se filtra por pacienteID para una busqueda de turnos.
     const turnosConCobertura = turnos.map((t) => {
-      const turnoDto = TurnoMapper.toDTO(t);
       if (t.servicio && filtrosValidados.pacienteId) {
-        const servicioCompleto = ServicioMapper.toDomain(t.servicio);
-        const cobertura = this.calcularCostoTurno(obraSocial, plan, t.costo, servicioCompleto);
-        turnoDto.costo = cobertura.costoFinal;
-        turnoDto.estadoCobertura = cobertura.estadoCobertura;
+        const cobertura = this.calcularCostoTurno(obraSocial, plan, t.costo, t.servicio);
+        t.costo = cobertura.costoFinal;
+        t.estadoCobertura = cobertura.estadoCobertura;
       }
-      return turnoDto;
+      return this.toDto(t);
     });
 
     logger.info(`[TURNO SERVICE]: Retornando ${turnosConCobertura.length} turnos`);
@@ -235,14 +241,9 @@ export class TurnoService {
     };
   }
 
-  async obtenerTurnosDeUsuario(
-    filtros,
-    numeroPagina = 1,
-    limitePorPagina = Number(process.env.ITEMS_PER_PAGE) || 10,
-  ) {
-    logger.info(
-      `[TURNO SERVICE]: Obteniendo turnos de usuario (Pág: ${numeroPagina})`,
-    );
+  async obtenerTurnosDeUsuario(filtros, numeroPagina = 1, limitePorPagina = Number(process.env.ITEMS_PER_PAGE) || 10) {
+    logger.info(`[TURNO SERVICE]: Obteniendo turnos de usuario (Pág: ${numeroPagina})`);
+
     this.validarPaginacion(numeroPagina, limitePorPagina);
     const filtrosValidados = this.validarFiltros(filtros);
 
@@ -259,7 +260,7 @@ export class TurnoService {
     const totalPaginas =
       totalTurnos === 0 ? 0 : Math.ceil(totalTurnos / limitePorPagina);
 
-    const turnosDTo = turnos.map((t) => TurnoMapper.toDTO(t));
+    const turnosDTo = turnos.map((t) => this.toDto(t));
 
     logger.info(
       `[TURNO SERVICE]: Retornando ${turnosDTo.length} turnos de usuario`,
@@ -280,29 +281,36 @@ export class TurnoService {
       throw new NotFoundError("No se encontro el turno con el id " + id);
     }
     logger.info(`[TURNO SERVICE]: Turno ${id} encontrado`);
-    return TurnoMapper.toDTO(turno);
+    return this.toDto(turno);
   }
 
   async findByEstado(estado) {
     logger.info(`[TURNO SERVICE]: Buscando turnos por estado ${estado}`);
+
     const turnos = await this.turnoRepository.findByEstado(estado);
+
     if (turnos.length === 0) {
       throw new NotFoundError(
         `No se encontró ningún turno con el estado ${estado}`,
       );
     }
+
     logger.info(`[TURNO SERVICE]: Se encontraron ${turnos.length} turnos con estado ${estado}`);
-    return turnos.map((t) => TurnoMapper.toDTO(t));
+
+    return turnos.map((t) => this.toDto(t));
   }
 
   async update(idTurno, turno) {
     logger.info(`[TURNO SERVICE]: Actualizando turno ${idTurno}`);
     const turnoActualizado = await this.turnoRepository.update(idTurno, turno);
+
     if (!turnoActualizado) {
       throw new NotFoundError("No se encontro el turno con el id " + idTurno);
     }
+
     logger.info(`[TURNO SERVICE]: Turno ${idTurno} actualizado con éxito`);
-    return TurnoMapper.toDTO(turnoActualizado);
+
+    return this.toDto(turnoActualizado);
   }
 
   async solicitarCambioFecha(idTurno, nuevaFechaHora, usuarioId) {
@@ -319,26 +327,24 @@ export class TurnoService {
       quien = await this.pacienteRepository.findById(usuarioId);
       receptor = await this.medicoRepository.findById(turno.medico);
       rol = "paciente";
-    } else if (turno.medico && (turno.medico.toString() === usuarioId || turno.medico.id === usuarioId)) {
+    } 
+    else if (turno.medico && (turno.medico.toString() === usuarioId || turno.medico.id === usuarioId)) {
       quien = await this.medicoRepository.findById(usuarioId);
       receptor = await this.pacienteRepository.findById(turno.paciente);
       rol = "médico";
-    } else {
+    } 
+    else {
       throw new BadRequestError("El turno no pertenece a este usuario");
     }
 
     turno.fechaHoraPropuesta = nuevaFechaHora;
-    turno.actualizarEstadoTurno({
-      nuevoEstado: EstadoTurnoEnum.PENDIENTECAMBIO,
-      quien,
-      motivo: `El ${rol} propone cambio de fecha a ${nuevaFechaHora}`,
-    });
+    turno.actualizarEstadoTurno({nuevoEstado: EstadoTurnoEnum.PENDIENTECAMBIO, quien , motivo: `El ${rol} propone cambio de fecha a ${nuevaFechaHora}`});
 
     this.notificacionService.crearNotificacionSegunFechaTurno(turno, receptor, quien);
 
     const turnoActualizado = await this.turnoRepository.update(idTurno, turno);
     logger.info(`[TURNO SERVICE]: Cambio de fecha solicitado. Turno ${idTurno} actualizado`);
-    return TurnoMapper.toDTO(turnoActualizado);
+    return this.toDto(turnoActualizado);
   }
 
   async responderCambioFecha(idTurno, aceptado, usuarioId) {
@@ -388,12 +394,12 @@ export class TurnoService {
 
     const turnoActualizado = await this.turnoRepository.update(idTurno, turno);
     logger.info(`[TURNO SERVICE]: Respuesta a cambio de fecha procesada. Turno ${idTurno} actualizado`);
-    return TurnoMapper.toDTO(turnoActualizado);
+    return this.toDto(turnoActualizado);
   }
 
   async generarNotificacionesDeTurnosProximos() {
     logger.info("[TURNO SERVICE]: Generando notificaciones para turnos próximos");
-    const turnosProximos = await this.turnoRepository.find({date: { $e: new Date(Date.now()).getDay() + 1}, estado: EstadoTurnoEnum.CONFIRMADO}); //turnos confirmados de mañana
+    const turnosProximos = await this.turnoRepository.find({ date: { $e: new Date(Date.now()).getDay() + 1 }, estado: EstadoTurnoEnum.CONFIRMADO }); //turnos confirmados de mañana
     logger.info(`[TURNO SERVICE]: Se encontraron ${turnosProximos.length} turnos próximos para notificar`);
     for (const turno of turnosProximos) {
       await this.notificacionService.crearNotificacionSegunFechaTurno(turno, turno.medico);
@@ -411,7 +417,7 @@ export class TurnoService {
       return precioFinal; // Si no hay obra social ni plan, el paciente paga el 100%
     }
 
-    const { nivel, porcentaje } = plan.obtenerCoberturaServicio(servicio);
+    const { nivel, porcentaje } = plan.obtenerCoberturaServicio(servicio); // si el servicio no existe en las cobertura se devuelve nivel: "NO_CUBIERTA" y porcentaje: 0
 
     switch (nivel) {
       case NivelCobertura.TOTAL:
@@ -435,15 +441,12 @@ export class TurnoService {
       return { obraSocial: null, plan: null };
     }
 
-    const obraSocial = await this.obraSocialRepository.findById(
-      paciente.obraSocial,
-    );
+    const obraSocial = await this.obraSocialRepository.findById(paciente.obraSocial);
     if (!obraSocial) {
-      throw new NotFoundError(
-        "No se encontro la obra social con el id " + paciente.obraSocialId,
-      );
+      throw new NotFoundError("No se encontro la obra social con el id " + paciente.obraSocialId);
     }
     const plan = obraSocial.obtenerPlanPorId(paciente.plan);
+
     return {
       obraSocial,
       plan,
