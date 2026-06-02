@@ -11,3 +11,24 @@ code {
   font-family:
     source-code-pro, Menlo, Monaco, Consolas, "Courier New", monospace;
 }
+
+/* TODO: definir los colores y fuentes */
+/* :root {
+  --primary-blue: rgb(12, 49, 136);
+  --secondary-blue: rgb(0, 168, 255);
+  --light-blue: rgb(224, 240, 255);
+  --error-red: rgb(255, 0, 0);
+  --success-green: rgb(0, 255, 0);
+  
+  --main-white: rgb(255, 255, 255);
+  --black: rgb(0, 0, 0);
+}
+
+.button-primary {
+  background-color: var(--primary-blue);
+  color: var(--main-white);
+}
+
+.link-primary {
+  color: var(--primary-blue);
+} */
