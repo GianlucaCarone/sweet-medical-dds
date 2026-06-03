@@ -4,6 +4,8 @@
 ========================================= */
 .navbar-menu {
   display: flex;
+  flex: 1;
+  justify-content: center;
 }
 
 .nav-list {

@@ -1,16 +1,27 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
+import "bootstrap/dist/css/bootstrap.min.css";
+import { ThemeProvider, createTheme } from "@mui/material/styles";
+import CssBaseline from "@mui/material/CssBaseline";
 import "./index.css";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 
+const theme = createTheme({
+  palette: {
+    primary: { main: "#0C2340" }, //TODO Los colores de boquita papa (después los cambiamos)
+    secondary: { main: "#FFC200" }
+  }
+})
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
-    <BrowserRouter>
-      <App />
-    </BrowserRouter>
+    <ThemeProvider theme={theme}>
+      <BrowserRouter>
+        <App />
+      </BrowserRouter>
+    </ThemeProvider>
   </React.StrictMode>,
 );
 

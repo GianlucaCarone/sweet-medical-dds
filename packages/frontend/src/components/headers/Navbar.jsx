@@ -2,20 +2,20 @@ import "./Navbar.css";
 
 const Navbar = () => {
   return (
-    <nav class="navbar-menu">
-      <ul class="nav-list">
-        <li class="nav-item">
-          <a href="/" class="nav-link active">
+    <nav className="navbar-menu">
+      <ul className="nav-list">
+        <li className="nav-item">
+          <a href="/" className="nav-link active">
             Inicio
           </a>
         </li>
-        <li class="nav-item">
-          <a href="/" class="nav-link">
+        <li className="nav-item">
+          <a href="/buscador-turnos" className="nav-link">
             Reservar Turno
           </a>
         </li>
-        <li class="nav-item">
-          <a href="/" class="nav-link">
+        <li className="nav-item">
+          <a href="/mis-turnos" className="nav-link">
             Mis Turnos
           </a>
         </li>

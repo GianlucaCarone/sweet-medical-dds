@@ -1,40 +1,46 @@
 import "./Header.css";
 import Navbar from "./Navbar.jsx";
 import { Link } from "react-router-dom";
+import MenuUsuario from "./MenuUsuario.jsx";
+import CampanitaNotificacion from "./CampanitaNotification.jsx";
 
-const Header = (props) => {
+const Header = ({ userName }) => {
   return (
-    <header class="header">
-      <div class="header-container">
-        <div class="header-brand">
-          <Link to="/" class="brand-link">
+    <header className="header">
+      <div className="header-container">
+        <div className="header-brand">
+          <Link to="/" className="brand-link">
             <img
               src="logo.jpg"
               alt="Logo del Centro Médico"
-              class="brand-logo"
+              className="brand-logo"
             />
-            <span class="brand-name">Sweet Medical</span>
+            <span className="brand-name">Sweet Medical</span>
           </Link>
         </div>
 
         <Navbar />
 
-        <div class="navbar-actions">
-          <div class="user-info">
+        <div className="header-actions">
+          <CampanitaNotificacion />
+          <MenuUsuario userName={userName} />
+        </div>
+        {/* <div className="navbar-actions">
+          <div className="user-info">
             <img
               src="/ruta-avatar-usuario.png"
               alt="Avatar del usuario"
-              class="user-avatar"
+              className="user-avatar"
             />
-            <span class="user-name" id="userName">
+            <span className="user-name" id="userName">
               {props.userName}
             </span>
           </div>
 
-          <button type="button" class="btn-logout">
+          <button type="button" className="btn-logout">
             Cerrar Sesión
           </button>
-        </div>
+        </div> */}
       </div>
     </header>
   );
