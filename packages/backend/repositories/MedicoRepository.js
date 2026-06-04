@@ -10,29 +10,6 @@ const POPULATE_MEDICO_CONFIG = [
   },
   {
     path: "disponibilidades",
-    populate: [
-      { path: "sede" },
-      {
-        path: "servicio",
-        populate: {
-          path: "especialidadPadre",
-          strictPopulate: false
-        }
-      }
-    ], 
-  },
-  "sedes",
-];
-
-const POPULATE_MEDICO_CONFIG = [
-  "usuario",
-  "especialidades",
-  {
-    path: "practicas",
-    populate: { path: "especialidadPadre" }
-  },
-  {
-    path: "disponibilidades",
     /* populate: [
       { path: "sede" },
       {

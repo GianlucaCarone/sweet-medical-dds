@@ -3,7 +3,7 @@ import { Routes, Route } from "react-router-dom";
 import Layout from "./features/layout/Layout.jsx";
 import MisTurnos from "./features/misTurnos/MisTurnos.jsx";
 import BusquedaTurnos from "./features/busqueda-turnos/busquedaTurnos.jsx";
-
+import Home from "./features/home/Home.jsx";
 import "./App.css";
 
 function App() {
@@ -57,8 +57,7 @@ function App() {
             path="mis-turnos"
             element={<MisTurnos />}
           />
-    
-          {/* <Route index element={<Home />} /> */}
+          <Route index element={<Home />} />
         </Route>
       </Routes>
     );
