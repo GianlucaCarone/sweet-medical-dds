@@ -10,19 +10,30 @@ import reportWebVitals from "./reportWebVitals";
 
 const theme = createTheme({
   palette: {
-    primary: { main: "#0C2340" }, //TODO Los colores de boquita papa (después los cambiamos)
+    primary: { main: "#1a62b9ff" }, //TODO Los colores de boquita papa (después los cambiamos)
     secondary: { main: "#FFC200" }
+  },
+  typography: {
+    fontFamily: [
+      '"Poppins"', // Cambia "Poppins" por la fuente que hayas elegido para el TP
+      'Roboto',
+      '"Helvetica Neue"',
+      'Arial',
+      'sans-serif'
+    ].join(','),
   }
-})
+});
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
     <ThemeProvider theme={theme}>
+      {/* CssBaseline inyecta los estilos globales, incluyendo el fontFamily al body */}
+      <CssBaseline /> 
       <BrowserRouter>
         <App />
       </BrowserRouter>
     </ThemeProvider>
-  </React.StrictMode>,
+  </React.StrictMode>
 );
 
 // If you want to start measuring performance in your app, pass a function
