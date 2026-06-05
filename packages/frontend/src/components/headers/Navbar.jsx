@@ -16,7 +16,7 @@ const navItems = [
   },
   {
     label: "Reservar Turno",
-    path: "/buscador-turnos",
+    path: "/busqueda-turnos",
     icon: <CalendarMonthRoundedIcon fontSize="small" />,
   },
   {
