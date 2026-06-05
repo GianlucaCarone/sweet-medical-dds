@@ -5,6 +5,7 @@ import StarIcon from '@mui/icons-material/Star';
 import EventNoteIcon from '@mui/icons-material/EventNote';
 import PersonIcon from '@mui/icons-material/Person';
 import MedicalServicesIcon from '@mui/icons-material/MedicalServices';
+import AddCircleIcon from '@mui/icons-material/AddCircle';
 import './tarjetaTurno.css';
 
 export default function TarjetaTurno({ turno }) {
@@ -75,7 +76,8 @@ export default function TarjetaTurno({ turno }) {
                         disabled={turnoSeleccionado === null}
                         onClick={() => { /* reservar */ }}
                     >
-                        Reservar
+                        <AddCircleIcon fontSize="15px" />
+                            Reservar
                     </button>
                 </div>
             </div>

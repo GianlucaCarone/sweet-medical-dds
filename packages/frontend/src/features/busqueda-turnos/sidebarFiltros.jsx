@@ -158,8 +158,21 @@ export default function SidebarFiltros({ sedes, especialidades, practicas, cober
                         <TextField
                             size="small"
                             type="date"
+                            //label="Desde"
+                            //InputLabelProps={{ shrink: true }}
+                            helperText="Desde"
                             value={fechaDesde}
                             onChange={(e) => {
+                                const fechaSeleccionada = new Date(e.target.value);
+                                const hoy = new Date().setHours(0, 0, 0, 0);
+                                if(fechaSeleccionada < hoy) {
+                                    alert("La fecha desde no puede ser anterior a hoy.");
+                                    return;
+                                }
+                                if(fechaHasta && e.target.value > fechaHasta) {
+                                    alert("La fecha desde no puede ser posterior a la fecha hasta.");
+                                    return;
+                                }
                                 setFechaDesde(e.target.value);
                                 nuevosFiltros();
                             }}
@@ -168,8 +181,21 @@ export default function SidebarFiltros({ sedes, especialidades, practicas, cober
                         <TextField
                             size="small"
                             type="date"
+                            //label="Hasta"
+                            //InputLabelProps={{ shrink: true }}
+                            helperText="Hasta"
                             value={fechaHasta}
                             onChange={(e) => {
+                                const fechaSeleccionada = new Date(e.target.value);
+                                const hoy = new Date().setHours(0, 0, 0, 0);
+                                if(fechaSeleccionada <= hoy) {
+                                    alert("La fecha hasta no puede ser anterior a hoy.");
+                                    return;
+                                }
+                                if(fechaDesde && e.target.value < fechaDesde) {
+                                    alert("La fecha hasta no puede ser anterior a la fecha desde.");
+                                    return;
+                                }
                                 setFechaHasta(e.target.value);
                                 nuevosFiltros();
                             }}
