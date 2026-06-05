@@ -15,12 +15,13 @@ import {
 } from '@mui/material';
 
 
-export default function SidebarFiltros() {
+export default function SidebarFiltros({ sedes, especialidades, practicas, coberturas, nuevosFiltros }) {
     // Estados para controlar los filtros (puedes pasarlos como props más adelante)
-    const [cobertura, setCobertura] = useState('OSDE');
-    const [especialidad, setEspecialidad] = useState('Todas');
-    const [practica, setPractica] = useState('Todas');
-    const [sede, setSede] = useState('Todas');
+    const [cobertura, setCobertura] = useState('');
+    const [profesional, setProfesional] = useState('');
+    const [especialidad, setEspecialidad] = useState('');
+    const [practica, setPractica] = useState('');
+    const [sede, setSede] = useState('');
     const [fechaDesde, setFechaDesde] = useState('');
     const [fechaHasta, setFechaHasta] = useState('');
 
@@ -54,11 +55,16 @@ export default function SidebarFiltros() {
                         labelId="cobertura-label"
                         value={cobertura}
                         label="Mi Cobertura"
-                        onChange={(e) => setCobertura(e.target.value)}
+                        onChange={(e) => {
+                            setCobertura(e.target.value)
+                            nuevosFiltros();    
+                        }}
                     >
-                        <MenuItem value="OSDE">OSDE</MenuItem>
-                        <MenuItem value="SMG">Swiss Medical</MenuItem>
-                        <MenuItem value="GALENO">Galeno</MenuItem>
+                        {coberturas.map((cobertura) => (
+                            <MenuItem key={cobertura.id} value={cobertura.nombre}>
+                                {cobertura.nombre}
+                            </MenuItem>
+                        ))}
                     </Select>
                 </FormControl>
 
@@ -69,6 +75,11 @@ export default function SidebarFiltros() {
                     label="Profesional"
                     placeholder="Nombre del médico..."
                     InputLabelProps={{ shrink: true }}
+                    value={profesional}
+                    onChange={(e) => setProfesional(e.target.value)}
+                    onKeyDown={(e) => {
+                        if (e.key === "Enter") nuevosFiltros();
+                    }}
                 />
 
                 {/* Especialidad */}
@@ -76,13 +87,23 @@ export default function SidebarFiltros() {
                     <InputLabel id="especialidad-label">Especialidad</InputLabel>
                     <Select
                         labelId="especialidad-label"
-                        value={especialidad}
+                        value={especialidad?.id ?? ""}
                         label="Especialidad"
-                        onChange={(e) => setEspecialidad(e.target.value)}
+                        onChange={(e) => {
+                            const espSeleccionada = especialidades.find(
+                                esp => esp.id === e.target.value
+                            );
+
+                            setEspecialidad(espSeleccionada);
+                            setPractica("");
+                            nuevosFiltros();
+                        }}
                     >
-                        <MenuItem value="Todas">Todas</MenuItem>
-                        <MenuItem value="Cardiologia">Cardiología</MenuItem>
-                        <MenuItem value="Pediatria">Pediatría</MenuItem>
+                        {especialidades.map((esp) => (
+                            <MenuItem key={esp.id} value={esp.id}>
+                                {esp.nombre}
+                            </MenuItem>
+                        ))}
                     </Select>
                 </FormControl>
 
@@ -93,9 +114,18 @@ export default function SidebarFiltros() {
                         labelId="practica-label"
                         value={practica}
                         label="Práctica"
-                        onChange={(e) => setPractica(e.target.value)}
+                        onChange={(e) => {
+                            setPractica(e.target.value);
+                            nuevosFiltros();
+                        }}
                     >
-                        <MenuItem value="Todas">Todas</MenuItem>
+                        {practicas
+                            .filter((practica) => practica.idEspecialidad === especialidad?.id || practica.idEspecialidad === null)
+                            .map((practica) => (
+                                <MenuItem key={practica.id} value={practica.id}>
+                                    {practica.nombre}
+                                </MenuItem>
+                            ))}
                     </Select>
                 </FormControl>
 
@@ -106,9 +136,16 @@ export default function SidebarFiltros() {
                         labelId="sede-label"
                         value={sede}
                         label="Sede de atención"
-                        onChange={(e) => setSede(e.target.value)}
+                        onChange={(e) => {
+                            setSede(e.target.value);
+                            nuevosFiltros();
+                        }}
                     >
-                        <MenuItem value="Todas">Todas</MenuItem>
+                        {sedes.map((sede) => (
+                            <MenuItem key={sede.id} value={sede.nombre}>
+                                {sede.nombre}
+                            </MenuItem>
+                        ))}
                     </Select>
                 </FormControl>
 
@@ -122,14 +159,20 @@ export default function SidebarFiltros() {
                             size="small"
                             type="date"
                             value={fechaDesde}
-                            onChange={(e) => setFechaDesde(e.target.value)}
+                            onChange={(e) => {
+                                setFechaDesde(e.target.value);
+                                nuevosFiltros();
+                            }}
                             fullWidth
                         />
                         <TextField
                             size="small"
                             type="date"
                             value={fechaHasta}
-                            onChange={(e) => setFechaHasta(e.target.value)}
+                            onChange={(e) => {
+                                setFechaHasta(e.target.value);
+                                nuevosFiltros();
+                            }}
                             fullWidth
                         />
                     </Stack>

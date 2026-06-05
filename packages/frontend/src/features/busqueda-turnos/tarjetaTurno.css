@@ -97,7 +97,7 @@
     font-weight: 700;
 }
 
-.seccion-turnos {
+.seccion-inferior-turnos {
     display: flex;
     flex-direction: column;
     gap: 8px;
@@ -110,7 +110,15 @@
     font-weight: 500;
 }
 
+.seccion-turnos {
+    border-top: 1px solid var(--borde-gris);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
 .grid-turnos {
+    margin-top: 10px;
     display: flex;
     gap: 8px;
     flex-wrap: wrap;
@@ -126,6 +134,11 @@
     border-radius: 8px;
     cursor: pointer;
     transition: all 0.2s ease;
+}
+
+.boton-turno.seleccionado {
+    border-color: var(--verde-texto);
+    background-color: #e1f0e1;
 }
 
 .boton-turno:hover {
@@ -144,4 +157,35 @@
     font-size: 12px;
     font-weight: 700;
     color: var(--verde-texto);
+}
+
+.acciones {
+    display: flex;
+    flex-direction: column;
+    align-items: row-reverse;
+}
+
+.boton-reservar:disabled {
+    background-color: #ccc;
+    border: none;
+    padding: 8px 8px;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: not-allowed;
+    transform: none;
+}
+.boton-reservar:not(:disabled) {
+    background-color: #137333;
+    color: var(--blanco);
+    border: none;
+    padding: 8px 8px;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+}
+.boton-reservar:not(:disabled):hover {
+    background-color: #0e5724;
+    transform: translateY(-1px);
 }

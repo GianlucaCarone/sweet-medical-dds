@@ -1,4 +1,5 @@
 import React from 'react';
+import { useState } from 'react';
 import LocationPinIcon from '@mui/icons-material/LocationPin';
 import StarIcon from '@mui/icons-material/Star';
 import EventNoteIcon from '@mui/icons-material/EventNote';
@@ -7,6 +8,8 @@ import MedicalServicesIcon from '@mui/icons-material/MedicalServices';
 import './tarjetaTurno.css';
 
 export default function TarjetaTurno({ turno }) {
+    const [turnoSeleccionado, setTurnoSeleccionado] = useState(null);
+
     return (
         <div className="tarjeta-turno">
 
@@ -51,19 +54,31 @@ export default function TarjetaTurno({ turno }) {
             </div>
 
             {/* Grid de Turnos inferiores */}
-            <div className="seccion-turnos">
+            <div className="seccion-inferior-turnos">
                 <p className="titulo-turnos">Próximos turnos disponibles</p>
-                <div className="grid-turnos">
-                    {turno.turnos.map((turno, index) => (
-                        <button key={index} className="boton-turno">
-                            <EventNoteIcon fontSize="15px" />
-                            <span className="fecha-turno">{turno.fecha}</span>
-                            <span className="hora-turno">{turno.hora}</span>
-                        </button>
-                    ))}
+                <div className="seccion-turnos">
+                    <div className="grid-turnos">
+                        {turno.turnos.map((turno, index) => (
+                            <button
+                                key={index}
+                                className={`boton-turno ${turnoSeleccionado === index ? "seleccionado" : ""}`}
+                                onClick={() => setTurnoSeleccionado(index)}
+                            >
+                                <EventNoteIcon fontSize="15px" />
+                                <span className="fecha-turno">{turno.fecha}</span>
+                                <span className="hora-turno">{turno.hora}</span>
+                            </button>
+                        ))}
+                    </div>
+                    <button
+                        className="boton-reservar"
+                        disabled={turnoSeleccionado === null}
+                        onClick={() => { /* reservar */ }}
+                    >
+                        Reservar
+                    </button>
                 </div>
             </div>
-
         </div>
     );
 }
