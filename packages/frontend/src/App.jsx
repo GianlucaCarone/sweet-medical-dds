@@ -1,4 +1,7 @@
 import React, { useState, useEffect } from "react";
+import { Routes, Route } from "react-router-dom";
+import Layout from "./features/layout/Layout.jsx";
+
 import "./App.css";
 
 function App() {
@@ -12,12 +15,11 @@ function App() {
   }, []);
 
   return (
-    <div className="App">
-      <header className="App-header">
-        <h1>Monorepo Demo</h1>
-        <p>{message ? message : "Cargando mensaje del backend..."}</p>
-      </header>
-    </div>
+    <Routes>
+      <Route path="/" element={<Layout />}>
+        {/* <Route index element={<Home />} /> */}
+      </Route>
+    </Routes>
   );
 }
 
