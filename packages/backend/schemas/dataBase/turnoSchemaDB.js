@@ -38,7 +38,7 @@ const turnoSchema = new mongoose.Schema({
     },
     costo: {
         type: Number,
-        required: false,
+        required: true,
     },
     eliminado: {
         type: Boolean,

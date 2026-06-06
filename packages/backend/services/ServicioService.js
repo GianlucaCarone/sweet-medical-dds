@@ -1,9 +1,8 @@
 import { Especialidad } from "../domain/servicios/especialidad.js";
 import { Practica } from "../domain/servicios/practica.js";
 import { ServicioRepository } from "../repositories/ServicioRepository.js";
-import { NotFoundError, ConflictError, BadRequestError } from "../errors/AppError.js";
+import { NotFoundError, ConflictError } from "../errors/AppError.js";
 import { logger } from "../config/logger.js";
-import { ServicioMapper } from "../mappers/servicioMapper.js";
 
 export class ServicioService {
     constructor({
@@ -115,7 +114,7 @@ export class ServicioService {
                 id: servicio.id,
                 nombre: servicio.nombre,
                 tipo: servicio.tipo,
-                duracionEnMins: servicio.duracionTurnoEnMins,
+                duracionTurnoEnMins: servicio.duracionTurnoEnMins,
                 costo: servicio.costo,
                 codigo: servicio.codigo,
                 especialidadPadreId: servicio.especialidadPadre ? servicio.especialidadPadre._id : null
@@ -125,7 +124,7 @@ export class ServicioService {
                 id: servicio.id,
                 nombre: servicio.nombre,
                 tipo: servicio.tipo,
-                duracionEnMins: servicio.duracionTurnoEnMins,
+                duracionTurnoEnMins: servicio.duracionTurnoEnMins,
                 costo: servicio.costo
             };
         }

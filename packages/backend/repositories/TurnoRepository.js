@@ -25,12 +25,12 @@ export class TurnoRepository {
     }
 
     async findById(id) {
-        return await this.model.findById(id).exec();
-    }
-
-    async findByIdPopulate(id) {
-        const turno = await this.model.findById(id).populate('medico paciente servicio sede').exec();
-        return turno;
+        return await this.model.findById(id)
+            .populate('medico', 'nombre matricula idUsuario')
+            .populate('paciente', 'nombre dni idUsuario obraSocial plan')
+            .populate('sede', 'nombre direccion')
+            .populate('servicio', 'nombre costo duracionTurnoEnMins')
+            .exec();
     }
 
     async save(turno) {
@@ -85,10 +85,6 @@ disponible:
         if (filtros.sedeId !== undefined) {
             query.sede = filtros.sedeId;
         }
-        if (filtros.pacienteId !== undefined) {
-            query.paciente = filtros.pacienteId;
-        }
-
         if (filtros.fechaHoraInicio !== undefined || filtros.fechaHoraFin !== undefined) {
             query.fechaHora = {};
             if (filtros.fechaHoraInicio !== undefined) query.fechaHora.$gte = filtros.fechaHoraInicio;
@@ -116,7 +112,10 @@ disponible:
         // Ejecutar la consulta y el conteo en paralelo
         const [turnos, totalTurnos] = await Promise.all([
             this.model.find(query)
-                .populate('medico paciente servicio sede')
+                .populate('medico', 'nombre matricula idUsuario')
+                .populate('paciente', 'nombre dni idUsuario obraSocial plan')
+                .populate('sede', 'nombre direccion')
+                .populate('servicio', 'nombre costo duracionTurnoEnMins')
                 .sort(ordenamiento)
                 .skip(inicio)
                 .limit(limitePorPagina)

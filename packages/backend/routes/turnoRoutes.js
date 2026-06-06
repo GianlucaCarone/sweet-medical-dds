@@ -21,7 +21,7 @@ export default function turnoRoutes(getController) {
     router.route("/:id/responder-cambio-fecha")
         .patch((req, res, next) => turnoController.responderCambioFecha(req, res, next));
 
-    router.route("/:estado")
+    router.route("/estado/:estadoId")
         .get((req, res, next) => turnoController.findByEstado(req, res, next));
 
     router.route("/:id")

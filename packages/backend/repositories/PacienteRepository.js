@@ -19,8 +19,7 @@ export class PacienteRepository {
   async findById(idPaciente) {
     logger.info("[PACIENTE REPOSITORY]: Buscando paciente por id: ", idPaciente);
     const paciente = await this.#model.findById(idPaciente)
-      .populate("idUsuario")
-      .populate("obraSocial")
+      .populate("idUsuario obraSocial")
     
     if (!paciente) {
       logger.info("[PACIENTE REPOSITORY]: Paciente no encontrado: ", idPaciente);
