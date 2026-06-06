@@ -15,13 +15,13 @@ import {
 } from '@mui/material';
 
 
-export default function SidebarFiltros({ sedes, especialidades, practicas, coberturas, nuevosFiltros }) {
+export default function SidebarFiltros({ sedes, especialidades, practicas, nuevosFiltros }) {
     // Estados para controlar los filtros (puedes pasarlos como props más adelante)
-    const [cobertura, setCobertura] = useState('');
+    const [pacienteId, setPacienteId] = useState('');
     const [profesional, setProfesional] = useState('');
-    const [especialidad, setEspecialidad] = useState('');
-    const [practica, setPractica] = useState('');
-    const [sede, setSede] = useState('');
+    const [especialidad, setEspecialidad] = useState('Todas');
+    const [practica, setPractica] = useState('Todas');
+    const [sede, setSede] = useState('Todas');
     const [fechaDesde, setFechaDesde] = useState('');
     const [fechaHasta, setFechaHasta] = useState('');
 
@@ -48,25 +48,19 @@ export default function SidebarFiltros({ sedes, especialidades, practicas, cober
             {/* Contenedor vertical de los formularios */}
             <Stack spacing={2.5}>
 
-                {/* Mi Cobertura */}
-                <FormControl fullWidth size="small">
-                    <InputLabel id="cobertura-label">Mi Cobertura</InputLabel>
-                    <Select
-                        labelId="cobertura-label"
-                        value={cobertura}
-                        label="Mi Cobertura"
-                        onChange={(e) => {
-                            setCobertura(e.target.value)
-                            nuevosFiltros();    
-                        }}
-                    >
-                        {coberturas.map((cobertura) => (
-                            <MenuItem key={cobertura.id} value={cobertura.nombre}>
-                                {cobertura.nombre}
-                            </MenuItem>
-                        ))}
-                    </Select>
-                </FormControl>
+                {/* Paciente Id */}
+                <TextField
+                    fullWidth
+                    size="small"
+                    label="Paciente ID"
+                    placeholder="ID del paciente..."
+                    InputLabelProps={{ shrink: true }}
+                    value={pacienteId}
+                    onChange={(e) => setPacienteId(e.target.value)}
+                    onKeyDown={(e) => {
+                        if (e.key === "Enter") nuevosFiltros();
+                    }}
+                />
 
                 {/* Profesional */}
                 <TextField
@@ -99,6 +93,7 @@ export default function SidebarFiltros({ sedes, especialidades, practicas, cober
                             nuevosFiltros();
                         }}
                     >
+                        <MenuItem value="Todas">Todas</MenuItem>
                         {especialidades.map((esp) => (
                             <MenuItem key={esp.id} value={esp.id}>
                                 {esp.nombre}
@@ -119,6 +114,7 @@ export default function SidebarFiltros({ sedes, especialidades, practicas, cober
                             nuevosFiltros();
                         }}
                     >
+                        <MenuItem value="Consulta General">Consulta General</MenuItem>
                         {practicas
                             .filter((practica) => practica.idEspecialidad === especialidad?.id || practica.idEspecialidad === null)
                             .map((practica) => (
@@ -141,6 +137,7 @@ export default function SidebarFiltros({ sedes, especialidades, practicas, cober
                             nuevosFiltros();
                         }}
                     >
+                        <MenuItem value="Todas">Todas</MenuItem>
                         {sedes.map((sede) => (
                             <MenuItem key={sede.id} value={sede.nombre}>
                                 {sede.nombre}
@@ -165,11 +162,11 @@ export default function SidebarFiltros({ sedes, especialidades, practicas, cober
                             onChange={(e) => {
                                 const fechaSeleccionada = new Date(e.target.value);
                                 const hoy = new Date().setHours(0, 0, 0, 0);
-                                if(fechaSeleccionada < hoy) {
+                                if (fechaSeleccionada < hoy) {
                                     alert("La fecha desde no puede ser anterior a hoy.");
                                     return;
                                 }
-                                if(fechaHasta && e.target.value > fechaHasta) {
+                                if (fechaHasta && e.target.value > fechaHasta) {
                                     alert("La fecha desde no puede ser posterior a la fecha hasta.");
                                     return;
                                 }
@@ -188,11 +185,11 @@ export default function SidebarFiltros({ sedes, especialidades, practicas, cober
                             onChange={(e) => {
                                 const fechaSeleccionada = new Date(e.target.value);
                                 const hoy = new Date().setHours(0, 0, 0, 0);
-                                if(fechaSeleccionada <= hoy) {
+                                if (fechaSeleccionada <= hoy) {
                                     alert("La fecha hasta no puede ser anterior a hoy.");
                                     return;
                                 }
-                                if(fechaDesde && e.target.value < fechaDesde) {
+                                if (fechaDesde && e.target.value < fechaDesde) {
                                     alert("La fecha hasta no puede ser anterior a la fecha desde.");
                                     return;
                                 }
@@ -203,74 +200,7 @@ export default function SidebarFiltros({ sedes, especialidades, practicas, cober
                         />
                     </Stack>
                 </Box>
-
             </Stack>
         </Box>
-    );
-}
-
-export function BusquedaTurnos() {
-    return (
-        <div className="container-busqueda">
-
-            {/* SECCIÓN DERECHA: RESULTADOS */}
-            <main className="contenido-resultados">
-                <header className="header-resultados">
-                    <h3>11 turnos disponibles</h3>
-                    <div className="ordenar-por">
-                        <label>Ordenar por:</label>
-                        <select>
-                            <option>Fecha (más próximos)</option>
-                            <option>Mejor calificados</option>
-                        </select>
-                    </div>
-                </header>
-
-                <section className="lista-medicos">
-                    {medicosEjemplo.map((medico) => (
-                        <div key={medico.id} className="tarjeta-medico">
-
-                            {/* Info principal del médico */}
-                            <div className="info-principal">
-                                <div className="avatar-placeholder">👩‍⚕️</div>
-                                <div className="datos-medico">
-                                    <h4>{medico.nombre}</h4>
-                                    <p className="especialidad">{medico.especialidad}</p>
-                                    <p className="detalles">{medico.sede} • {medico.matricula}</p>
-                                    <div className="tags-practicas">
-                                        <span>Ecocardiograma</span>
-                                        <span>Stress Test</span>
-                                    </div>
-                                </div>
-                                <div className="calificacion">
-                                    ⭐ {medico.calificacion} <span className="votos">({medico.votos})</span>
-                                </div>
-                            </div>
-
-                            {/* Cobertura y Link */}
-                            <div className="cobertura-perfil">
-                                <span className="badge-cobertura">{medico.cobertura}</span>
-                                <a href="#perfil" className="link-perfil">Ver perfil &gt;</a>
-                            </div>
-
-                            {/* Selector de Turnos */}
-                            <div className="seccion-turnos">
-                                <p className="titulo-turnos">Próximos turnos disponibles</p>
-                                <div className="grid-turnos">
-                                    {medico.turnos.map((turno, index) => (
-                                        <button key={index} className="boton-turno">
-                                            <span className="fecha-turno">{turno.fecha}</span>
-                                            <span className="hora-turno">{turno.hora}</span>
-                                        </button>
-                                    ))}
-                                </div>
-                            </div>
-
-                        </div>
-                    ))}
-                </section>
-            </main>
-
-        </div>
     );
 }

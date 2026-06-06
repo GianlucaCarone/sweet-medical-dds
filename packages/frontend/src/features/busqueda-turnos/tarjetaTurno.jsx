@@ -8,8 +8,24 @@ import MedicalServicesIcon from '@mui/icons-material/MedicalServices';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import './tarjetaTurno.css';
 
-export default function TarjetaTurno({ turno }) {
+export default function TarjetaTurno({ turno, especialidades, practicas }) {
     const [turnoSeleccionado, setTurnoSeleccionado] = useState(null);
+
+    const formatoServicio = (servicio) => {
+        if (servicio.tipo === "especialidad") {
+            return `${especialidades.find(e => e.id === servicio.id)?.nombre} • Consulta general`;
+        } else {
+            const practica = practicas.find(p => p.id === servicio.id);
+            return `${especialidades.find(e => e.id === practica.idEspecialidad)?.nombre} • ${practica.nombre}`;
+        }
+    };
+    const formatoHorario = (isoString) => {
+    const fecha = new Date(isoString);
+    return {
+        fecha: fecha.toLocaleDateString("es-AR", { day: "2-digit", month: "short" }),
+        hora: fecha.toLocaleTimeString("es-AR", { hour: "2-digit", minute: "2-digit" })
+    };
+};
 
     return (
         <div className="tarjeta-turno">
@@ -21,34 +37,28 @@ export default function TarjetaTurno({ turno }) {
                     </div>
 
                     <div className="datos-turno">
-                        <h4>{turno.nombre}</h4>
+                        <h4>{turno.medico.nombre}</h4>
 
                         <p className="especialidad-practica">
                             <MedicalServicesIcon fontSize="15px" />
-                            {turno.especialidad} • {turno.practica || "Consulta general"}
+                            {formatoServicio(turno.servicio)}
                         </p>
 
-                        <p className="detalles">
+                        <p className="sede">
                             <LocationPinIcon fontSize="15px" />
-                            {turno.sede}
+                            {turno.sede.nombre}
                         </p>
                     </div>
                 </div>
 
                 <div className="info-lateral">
-                    <div className="calificacion">
-                        <StarIcon fontSize="15px" />
-                        {turno.calificacion}
-                        <span className="votos">({turno.votos})</span>
-                    </div>
-
                     <span className="badge-cobertura">
-                        {turno.cobertura}
+                        {turno.estadoCobertura}
                     </span>
 
                     <span className="costo-turno">
-                        {turno.costo !== null
-                            ? `$${turno.costo.toLocaleString()}`
+                        {turno.costo !== 0
+                            ? `$${turno.costo.toLocaleString()} `
                             : "Sin costo"}
                     </span>
                 </div>
@@ -59,17 +69,20 @@ export default function TarjetaTurno({ turno }) {
                 <p className="titulo-turnos">Próximos turnos disponibles</p>
                 <div className="seccion-turnos">
                     <div className="grid-turnos">
-                        {turno.turnos.map((turno, index) => (
-                            <button
-                                key={index}
-                                className={`boton-turno ${turnoSeleccionado === index ? "seleccionado" : ""}`}
-                                onClick={() => setTurnoSeleccionado(index)}
-                            >
-                                <EventNoteIcon fontSize="15px" />
-                                <span className="fecha-turno">{turno.fecha}</span>
-                                <span className="hora-turno">{turno.hora}</span>
-                            </button>
-                        ))}
+                        {turno.turnos.map((turno, index) => {
+                            const { fecha, hora } = formatoHorario(turno.horario);
+                            return (
+                                <button
+                                    key={index}
+                                    className={`boton-turno ${turnoSeleccionado === index ? "seleccionado" : ""}`}
+                                    onClick={() => setTurnoSeleccionado(index)}
+                                >
+                                    <EventNoteIcon fontSize="15px" />
+                                    <span className="fecha-turno">{fecha}</span>
+                                    <span className="hora-turno">{hora}</span>
+                                </button>
+                            );
+                        })}
                     </div>
                     <button
                         className="boton-reservar"
@@ -77,7 +90,7 @@ export default function TarjetaTurno({ turno }) {
                         onClick={() => { /* reservar */ }}
                     >
                         <AddCircleIcon fontSize="15px" />
-                            Reservar
+                        Reservar
                     </button>
                 </div>
             </div>

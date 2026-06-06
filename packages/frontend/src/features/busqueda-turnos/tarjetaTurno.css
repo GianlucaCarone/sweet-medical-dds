@@ -75,7 +75,7 @@
     font-weight: 500;
 }
 
-.datos-turno .detalles {
+.datos-turno .sede {
     margin: 0 0 10px 0;
     font-size: 15px;
     color: var(--texto-mutado);
@@ -175,6 +175,7 @@
     cursor: not-allowed;
     transform: none;
 }
+
 .boton-reservar:not(:disabled) {
     background-color: #137333;
     color: var(--blanco);
@@ -185,6 +186,7 @@
     font-weight: 600;
     cursor: pointer;
 }
+
 .boton-reservar:not(:disabled):hover {
     background-color: #0e5724;
     transform: translateY(-1px);
