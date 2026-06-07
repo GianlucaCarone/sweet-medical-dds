@@ -26,17 +26,17 @@ export class TurnoRepository {
 
     async findById(id) {
         return await this.model.findById(id)
-            .populate('medico', 'nombre matricula idUsuario')
-            .populate('paciente', 'nombre dni idUsuario obraSocial plan')
-            .populate('sede', 'nombre direccion')
-            .populate('servicio', 'nombre costo duracionTurnoEnMins')
+            .populate("medico", "nombre matricula idUsuario")
+            .populate("paciente", "nombre dni idUsuario obraSocial plan")
+            .populate("sede", "nombre direccion")
+            .populate("servicio", "nombre costo duracionTurnoEnMins")
             .exec();
     }
 
     async save(turno) {
         const nuevoTurno = new this.model(turno);
         const saved = await nuevoTurno.save();
-        return saved.populate('medico paciente servicio sede');
+        return saved.populate("medico paciente servicio sede");
     }
 
 
@@ -101,10 +101,10 @@ disponible:
 
         const ordenamiento = {};
         if (filtros.ordenPorCosto !== undefined) {
-            ordenamiento.costoBase = filtros.ordenPorCosto === 'desc' ? -1 : 1;
+            ordenamiento.costoBase = filtros.ordenPorCosto === "desc" ? -1 : 1;
         }
         if (filtros.ordenPorFecha !== undefined) {
-            ordenamiento.fechaHora = filtros.ordenPorFecha === 'desc' ? -1 : 1;
+            ordenamiento.fechaHora = filtros.ordenPorFecha === "desc" ? -1 : 1;
         }
 
         const inicio = (numeroPagina - 1) * limitePorPagina;
@@ -112,10 +112,10 @@ disponible:
         // Ejecutar la consulta y el conteo en paralelo
         const [turnos, totalTurnos] = await Promise.all([
             this.model.find(query)
-                .populate('medico', 'nombre matricula idUsuario')
-                .populate('paciente', 'nombre dni idUsuario obraSocial plan')
-                .populate('sede', 'nombre direccion')
-                .populate('servicio', 'nombre costo duracionTurnoEnMins')
+                .populate("medico", "nombre matricula idUsuario")
+                .populate("paciente", "nombre dni idUsuario obraSocial plan")
+                .populate("sede", "nombre direccion")
+                .populate("servicio", "nombre costo duracionTurnoEnMins")
                 .sort(ordenamiento)
                 .skip(inicio)
                 .limit(limitePorPagina)

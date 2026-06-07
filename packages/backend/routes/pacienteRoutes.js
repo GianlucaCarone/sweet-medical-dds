@@ -8,12 +8,12 @@ export function pacienteRoutes(getController) {
     
     router.route("/")
         .get((req, res, next) => pacienteController.buscarTodos(req, res, next))
-        .post((req, res, next) => pacienteController.crear(req, res, next))
+        .post((req, res, next) => pacienteController.crear(req, res, next));
         
     router.route("/:id")
         .get((req, res, next) => pacienteController.buscarPorId(req, res, next))
         .put((req, res, next) => pacienteController.modificar(req, res, next))
-        .delete((req, res, next) => pacienteController.eliminar(req, res, next))
+        .delete((req, res, next) => pacienteController.eliminar(req, res, next));
 
     return router;
 }
