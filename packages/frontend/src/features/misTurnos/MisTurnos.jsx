@@ -5,8 +5,11 @@ import CalendarMonthRoundedIcon from "@mui/icons-material/CalendarMonthRounded";
 import CheckCircleRoundedIcon from "@mui/icons-material/CheckCircleRounded";
 import CancelRoundedIcon from "@mui/icons-material/CancelRounded";
 import NotificationsRoundedIcon from "@mui/icons-material/NotificationsRounded";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import TurnosEmptyState from "../../components/turnos/TurnosEmptyState";
+import TurnoCardSkeleton from "../../components/turnos/TurnoCardSkeleton";
+import EstadisticaTurnoCardSkeleton from "../../components/turnos/EstadisticaTurnoCardSkeleton";
+import TurnoHistorialSkeleton from "../../components/turnos/TurnoHistorialSkeleton";
 
 const proximosTurnos = [
     {
@@ -20,31 +23,9 @@ const proximosTurnos = [
         cobertura: "OSDE 210 - Sin cargo",
         estado: "CONFIRMADO",
     },
-    {
-        id: 2,
-        doctor: "Dra. Camila Ibáñez",
-        foto: "https://randomuser.me/api/portraits/women/44.jpg",
-        especialidad: "Dermatología",
-        fecha: "Lunes, 15 de Junio de 2026",
-        hora: "12:00 hs",
-        sede: "Sede Palermo",
-        cobertura: "Cobertura parcial · Abonás $4.200",
-        estado: "RESERVADO",
-    },
-    {
-        id: 3,
-        doctor: "Dra. Ana López",
-        foto: "https://randomuser.me/api/portraits/women/68.jpg",
-        especialidad: "Cardiología",
-        fecha: "Lunes, 1 de Junio de 2026",
-        hora: "10:00 hs",
-        sede: "Av. Cabildo 1234, CABA",
-        cobertura: "OSDE 210 - Sin cargo",
-        estado: "CONFIRMADO",
-    },
     /*
 {
-    id: 4,
+    id: 2,
     doctor: "Dra. Camila Ibáñez",
     foto: "https://randomuser.me/api/portraits/women/44.jpg",
     especialidad: "Dermatología",
@@ -55,7 +36,7 @@ const proximosTurnos = [
     estado: "RESERVADO",
 },
 {
-    id: 5,
+    id: 3,
     doctor: "Dra. Ana López",
     foto: "https://randomuser.me/api/portraits/women/68.jpg",
     especialidad: "Cardiología",
@@ -66,26 +47,48 @@ const proximosTurnos = [
     estado: "CONFIRMADO",
 },
 {
-    id: 6,
-    doctor: "Dra. Camila Ibáñez",
-    foto: "https://randomuser.me/api/portraits/women/44.jpg",
-    especialidad: "Dermatología",
-    fecha: "Lunes, 15 de Junio de 2026",
-    hora: "12:00 hs",
-    sede: "Sede Palermo",
-    cobertura: "Cobertura parcial · Abonás $4.200",
-    estado: "RESERVADO",
+id: 4,
+doctor: "Dra. Camila Ibáñez",
+foto: "https://randomuser.me/api/portraits/women/44.jpg",
+especialidad: "Dermatología",
+fecha: "Lunes, 15 de Junio de 2026",
+hora: "12:00 hs",
+sede: "Sede Palermo",
+cobertura: "Cobertura parcial · Abonás $4.200",
+estado: "RESERVADO",
 },
 {
-    id: 7,
-    doctor: "Dra. Camila Ibáñez",
-    foto: "https://randomuser.me/api/portraits/women/44.jpg",
-    especialidad: "Dermatología",
-    fecha: "Lunes, 15 de Junio de 2026",
-    hora: "12:00 hs",
-    sede: "Sede Palermo",
-    cobertura: "Cobertura parcial · Abonás $4.200",
-    estado: "RESERVADO",
+id: 5,
+doctor: "Dra. Ana López",
+foto: "https://randomuser.me/api/portraits/women/68.jpg",
+especialidad: "Cardiología",
+fecha: "Lunes, 1 de Junio de 2026",
+hora: "10:00 hs",
+sede: "Av. Cabildo 1234, CABA",
+cobertura: "OSDE 210 - Sin cargo",
+estado: "CONFIRMADO",
+},
+{
+id: 6,
+doctor: "Dra. Camila Ibáñez",
+foto: "https://randomuser.me/api/portraits/women/44.jpg",
+especialidad: "Dermatología",
+fecha: "Lunes, 15 de Junio de 2026",
+hora: "12:00 hs",
+sede: "Sede Palermo",
+cobertura: "Cobertura parcial · Abonás $4.200",
+estado: "RESERVADO",
+},
+{
+id: 7,
+doctor: "Dra. Camila Ibáñez",
+foto: "https://randomuser.me/api/portraits/women/44.jpg",
+especialidad: "Dermatología",
+fecha: "Lunes, 15 de Junio de 2026",
+hora: "12:00 hs",
+sede: "Sede Palermo",
+cobertura: "Cobertura parcial · Abonás $4.200",
+estado: "RESERVADO",
 }
 */
 ];
@@ -152,6 +155,7 @@ const historialTurnos = [
 export default function MisTurnos() {
     const [paginaProximos, setPaginaProximos] = useState(1);
     const [paginaHistorial, setPaginaHistorial] = useState(1);
+    const [loading, setLoading] = useState(true);
     const turnosPorPagina = 3;
 
     const totalPaginasProximos = Math.ceil(proximosTurnos.length / turnosPorPagina);
@@ -167,6 +171,12 @@ export default function MisTurnos() {
         (paginaHistorial - 1) * turnosPorPagina,
         paginaHistorial * turnosPorPagina
     );
+
+    useEffect(() => {
+        setTimeout(() => {
+            setLoading(false);
+        }, 2000);
+    }, []);
 
     return (
         <section className="mis-turnos-page">
@@ -190,15 +200,55 @@ export default function MisTurnos() {
             </div>
 
             <div className="stats-grid">
-                <EstadisticaTurnoCard numero="2" texto="Turnos próximos" tipo="azul" icono={<CalendarMonthRoundedIcon />} />
-                <EstadisticaTurnoCard numero="1" texto="Turnos realizados" tipo="verde" icono={<CalendarMonthRoundedIcon />} />
-                <EstadisticaTurnoCard numero="1" texto="Cancelados" tipo="rojo" icono={<CalendarMonthRoundedIcon />} />
-                <EstadisticaTurnoCard numero="2" texto="Notif. sin leer" tipo="naranja" icono={<CalendarMonthRoundedIcon />} />
+                {loading ? (
+                    <>
+                        <EstadisticaTurnoCardSkeleton />
+                        <EstadisticaTurnoCardSkeleton />
+                        <EstadisticaTurnoCardSkeleton />
+                        <EstadisticaTurnoCardSkeleton />
+                    </>
+                ) : (
+                    <>
+                        <EstadisticaTurnoCard
+                            numero="2"
+                            texto="Turnos próximos"
+                            tipo="azul"
+                            icono={<CalendarMonthRoundedIcon />}
+                        />
+
+                        <EstadisticaTurnoCard
+                            numero="1"
+                            texto="Turnos realizados"
+                            tipo="verde"
+                            icono={<CheckCircleRoundedIcon />}
+                        />
+
+                        <EstadisticaTurnoCard
+                            numero="1"
+                            texto="Cancelados"
+                            tipo="rojo"
+                            icono={<CancelRoundedIcon />}
+                        />
+
+                        <EstadisticaTurnoCard
+                            numero="2"
+                            texto="Notif. sin leer"
+                            tipo="naranja"
+                            icono={<NotificationsRoundedIcon />}
+                        />
+                    </>
+                )}
             </div>
 
             <h2 className="section-title">Próximos Turnos</h2>
 
-            {proximosTurnos.length === 0 ? (
+            {loading ? (
+                <>
+                    <TurnoCardSkeleton />
+                    <TurnoCardSkeleton />
+                    <TurnoCardSkeleton />
+                </>
+            ) : proximosTurnos.length === 0 ? (
                 <TurnosEmptyState
                     titulo="No tenés turnos próximos"
                     descripcion="Cuando reserves un turno, lo vas a ver listado en esta sección."
@@ -238,7 +288,13 @@ export default function MisTurnos() {
 
             <h2 className="section-title historial-title">Historial</h2>
 
-            {historialTurnos.length === 0 ? (
+            {loading ? (
+                <>
+                    <TurnoHistorialSkeleton />
+                    <TurnoHistorialSkeleton />
+                    <TurnoHistorialSkeleton />
+                </>
+            ) : historialTurnos.length === 0 ? (
                 <div className="historial-empty-state">
                     <span>📋</span>
                     <p>No tenés turnos previos.</p>

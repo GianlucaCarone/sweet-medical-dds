@@ -1,6 +1,6 @@
 .turno-card {
     background: white;
-    border: 1px solid #dbe7e5;
+    border: 2px solid #bac4c2;
     border-radius: 22px;
     padding: 18px 24px;
     box-shadow: 0 6px 18px rgba(15, 23, 42, 0.05);
@@ -108,7 +108,7 @@
 
 .turno-detalles span {
     background: #f8fafc;
-    border: 1px solid #e2e8f0;
+    border: 2px solid #bac4c2;
     border-radius: 999px;
     padding: 6px 10px;
 }
@@ -154,7 +154,7 @@
 }
 
 .btn-secundario {
-    border: 1px solid #dbe7e5;
+    border: 2px solid #bac4c2;
     color: #526173;
 }
 
@@ -164,18 +164,18 @@
 }
 
 .btn-cancelar {
-    border: 1px solid #fecaca;
-    color: #dc2626;
+    border: 2px solid #f36969;
+    color: #f10808;
 }
 
 .btn-cancelar:hover {
-    background: #fef2f2;
+    background: #f39696;
     transform: translateY(-1px);
 }
 
 .turno-card-historial {
     background: white;
-    border: 1px solid #dbe7e5;
+    border: 2px solid #bac4c2;
     border-radius: 18px;
     padding: 18px 22px;
 
