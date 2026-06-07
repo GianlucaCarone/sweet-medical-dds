@@ -15,14 +15,24 @@ import {
 } from '@mui/material';
 
 
-export default function SidebarFiltros({ pacientes, medicos, sedes, especialidades, practicas, nuevosFiltros }) {
+export default function SidebarFiltros({ medicos, sedes, especialidades, practicas, nuevosFiltros }) {
     // Estados para controlar los filtros (puedes pasarlos como props más adelante)
-    const [profesional, setProfesional] = useState('');
+    const [profesional, setProfesional] = useState('Todos');
     const [especialidad, setEspecialidad] = useState('Todas');
     const [practica, setPractica] = useState('Todas');
     const [sede, setSede] = useState('Todas');
     const [fechaDesde, setFechaDesde] = useState('');
     const [fechaHasta, setFechaHasta] = useState('');
+
+    const filtros = {
+        'medicoId': profesional.id,
+        'estado': 'DISPONIBLE',
+        'especialidadId': especialidad.id,
+        'practicaId': practica.id,
+        'sedeId': sede.id,
+        'fechaHoraInicio': fechaDesde,
+        'fechaHoraFin': fechaHasta
+    }
 
     return (
         <Box
