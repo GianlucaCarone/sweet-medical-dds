@@ -8,7 +8,7 @@ import MedicalServicesIcon from "@mui/icons-material/MedicalServices";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 import "./tarjetaTurno.css";
 
-export default function TarjetaTurno({ turno, especialidades, practicas, onReservar }) {
+export default function TarjetaTurno({ turno, especialidades, practicas, carrito, onReservar }) {
   const [turnoSeleccionado, setTurnoSeleccionado] = useState(null);
   const [turnosReservados, setTurnosReservados] = useState(new Set());
 
@@ -76,9 +76,9 @@ export default function TarjetaTurno({ turno, especialidades, practicas, onReser
                 <button
                   key={turno.id}
                   className={`boton-turno ${turnoSeleccionado === turno.id ? "seleccionado" : ""}`}
-                  disabled={turnosReservados.has(turno.id)}
+                  disabled={carrito.some((item) => item.id === turno.id)}
                   onClick={() =>
-                    !turnosReservados.has(turno.id) &&
+                    !carrito.some((item) => item.id === turno.id) &&
                     setTurnoSeleccionado(turno.id)
                   }
                 >
