@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Routes, Route } from "react-router-dom";
 import Layout from "./features/layout/Layout.jsx";
+import MisTurnos from "./features/misTurnos/MisTurnos.jsx";
 
 import "./App.css";
 
@@ -17,6 +18,7 @@ function App() {
   return (
     <Routes>
       <Route path="/" element={<Layout />}>
+        <Route path="mis-turnos" element={<MisTurnos />} />
         {/* <Route index element={<Home />} /> */}
       </Route>
     </Routes>
