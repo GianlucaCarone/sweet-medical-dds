@@ -1,9 +1,18 @@
 import "./TurnoCard.css";
 import { useState } from "react";
 import CancelarTurnoModal from "./CancelarTurnoModal";
+import ReprogramarTurnoModal from "./ReprogramarTurnoModal";
+import { useNavigate } from "react-router-dom";
 
 export default function TurnoCard({ turno, esHistorial = false }) {
     const [modalCancelarAbierto, setModalCancelarAbierto] = useState(false);
+    const [modalReprogramarAbierto, setModalReprogramarAbierto] = useState(false);
+    const navigate = useNavigate();
+
+    const confirmarReprogramacion = (turnoId, nuevoTurno) => {
+        console.log("Reprogramando turno:", turnoId);
+        console.log("Nuevo horario:", nuevoTurno);
+    };
 
     const confirmarCancelacion = (motivo) => {
         console.log("Cancelando turno:", turno.id);
@@ -27,7 +36,18 @@ export default function TurnoCard({ turno, esHistorial = false }) {
                     </div>
                 </div>
 
-                <button className="btn-secundario">
+                <button
+                    className="btn-secundario"
+                    onClick={() =>
+                        navigate("/busqueda-turnos", {
+                            state: {
+                                doctor: turno.doctor,
+                                especialidad: turno.especialidad,
+                                sede: turno.sede,
+                            },
+                        })
+                    }
+                >
                     Volver a pedir
                 </button>
             </article>
@@ -70,7 +90,10 @@ export default function TurnoCard({ turno, esHistorial = false }) {
 
                             {!esHistorial ? (
                                 <div className="turno-actions">
-                                    <button className="btn-secundario">
+                                    <button
+                                        className="btn-secundario"
+                                        onClick={() => setModalReprogramarAbierto(true)}
+                                    >
                                         Cambiar fecha
                                     </button>
 
@@ -83,7 +106,10 @@ export default function TurnoCard({ turno, esHistorial = false }) {
                                 </div>
                             ) : (
                                 <div className="turno-actions">
-                                    <button className="btn-secundario">
+                                    <button
+                                        className="btn-secundario"
+                                        onClick={() => navigate("/busqueda-turnos")}
+                                    >
                                         Volver a pedir
                                     </button>
                                 </div>
@@ -92,6 +118,13 @@ export default function TurnoCard({ turno, esHistorial = false }) {
                     </div>
                 </div>
             </article>
+
+            <ReprogramarTurnoModal
+                abierto={modalReprogramarAbierto}
+                turno={turno}
+                onCerrar={() => setModalReprogramarAbierto(false)}
+                onConfirmar={confirmarReprogramacion}
+            />
 
             <CancelarTurnoModal
                 abierto={modalCancelarAbierto}

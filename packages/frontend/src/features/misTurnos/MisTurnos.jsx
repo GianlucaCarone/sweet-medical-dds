@@ -10,8 +10,10 @@ import TurnosEmptyState from "../../components/turnos/TurnosEmptyState";
 import TurnoCardSkeleton from "../../components/turnos/TurnoCardSkeleton";
 import EstadisticaTurnoCardSkeleton from "../../components/turnos/EstadisticaTurnoCardSkeleton";
 import TurnoHistorialSkeleton from "../../components/turnos/TurnoHistorialSkeleton";
+import { useNavigate } from "react-router-dom";
 
 const proximosTurnos = [
+
     {
         id: 1,
         doctor: "Dra. Ana López",
@@ -23,51 +25,52 @@ const proximosTurnos = [
         cobertura: "OSDE 210 - Sin cargo",
         estado: "CONFIRMADO",
     },
+    {
+        id: 2,
+        doctor: "Dra. Camila Ibáñez",
+        foto: "https://randomuser.me/api/portraits/women/44.jpg",
+        especialidad: "Dermatología",
+        fecha: "Lunes, 15 de Junio de 2026",
+        hora: "12:00 hs",
+        sede: "Sede Palermo",
+        cobertura: "Cobertura parcial · Abonás $4.200",
+        estado: "RESERVADO",
+    },
+    {
+        id: 3,
+        doctor: "Dra. Ana López",
+        foto: "https://randomuser.me/api/portraits/women/68.jpg",
+        especialidad: "Cardiología",
+        fecha: "Lunes, 1 de Junio de 2026",
+        hora: "10:00 hs",
+        sede: "Av. Cabildo 1234, CABA",
+        cobertura: "OSDE 210 - Sin cargo",
+        estado: "CONFIRMADO",
+    },
     /*
-{
-    id: 2,
-    doctor: "Dra. Camila Ibáñez",
-    foto: "https://randomuser.me/api/portraits/women/44.jpg",
-    especialidad: "Dermatología",
-    fecha: "Lunes, 15 de Junio de 2026",
-    hora: "12:00 hs",
-    sede: "Sede Palermo",
-    cobertura: "Cobertura parcial · Abonás $4.200",
-    estado: "RESERVADO",
-},
-{
-    id: 3,
-    doctor: "Dra. Ana López",
-    foto: "https://randomuser.me/api/portraits/women/68.jpg",
-    especialidad: "Cardiología",
-    fecha: "Lunes, 1 de Junio de 2026",
-    hora: "10:00 hs",
-    sede: "Av. Cabildo 1234, CABA",
-    cobertura: "OSDE 210 - Sin cargo",
-    estado: "CONFIRMADO",
-},
-{
-id: 4,
-doctor: "Dra. Camila Ibáñez",
-foto: "https://randomuser.me/api/portraits/women/44.jpg",
-especialidad: "Dermatología",
-fecha: "Lunes, 15 de Junio de 2026",
-hora: "12:00 hs",
-sede: "Sede Palermo",
-cobertura: "Cobertura parcial · Abonás $4.200",
-estado: "RESERVADO",
-},
-{
-id: 5,
-doctor: "Dra. Ana López",
-foto: "https://randomuser.me/api/portraits/women/68.jpg",
-especialidad: "Cardiología",
-fecha: "Lunes, 1 de Junio de 2026",
-hora: "10:00 hs",
-sede: "Av. Cabildo 1234, CABA",
-cobertura: "OSDE 210 - Sin cargo",
-estado: "CONFIRMADO",
-},
+    {
+        id: 4,
+        doctor: "Dra. Camila Ibáñez",
+        foto: "https://randomuser.me/api/portraits/women/44.jpg",
+        especialidad: "Dermatología",
+        fecha: "Lunes, 15 de Junio de 2026",
+        hora: "12:00 hs",
+        sede: "Sede Palermo",
+        cobertura: "Cobertura parcial · Abonás $4.200",
+        estado: "RESERVADO",
+    },
+    {
+        id: 5,
+        doctor: "Dra. Ana López",
+        foto: "https://randomuser.me/api/portraits/women/68.jpg",
+        especialidad: "Cardiología",
+        fecha: "Lunes, 1 de Junio de 2026",
+        hora: "10:00 hs",
+        sede: "Av. Cabildo 1234, CABA",
+        cobertura: "OSDE 210 - Sin cargo",
+        estado: "CONFIRMADO",
+    },
+    
 {
 id: 6,
 doctor: "Dra. Camila Ibáñez",
@@ -157,6 +160,7 @@ export default function MisTurnos() {
     const [paginaHistorial, setPaginaHistorial] = useState(1);
     const [loading, setLoading] = useState(true);
     const turnosPorPagina = 3;
+    const navigate = useNavigate();
 
     const totalPaginasProximos = Math.ceil(proximosTurnos.length / turnosPorPagina);
 
@@ -195,7 +199,12 @@ export default function MisTurnos() {
                 </div>
 
                 <div className="header-actions">
-                    <button className="nuevo-turno-btn">Nuevo turno</button>
+                    <button
+                        className="nuevo-turno-btn"
+                        onClick={() => navigate("/busqueda-turnos")}
+                    >
+                        Nuevo turno
+                    </button>
                 </div>
             </div>
 
@@ -253,6 +262,7 @@ export default function MisTurnos() {
                     titulo="No tenés turnos próximos"
                     descripcion="Cuando reserves un turno, lo vas a ver listado en esta sección."
                     textoBoton="Reservar un turno"
+                    onClick={() => navigate("/busqueda-turnos")}
                 />
             ) : (
                 <>
