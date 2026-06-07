@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-const API_BASE_URL= process.env.REACT_APP_API_URL
+const API_BASE_URL = process.env.REACT_APP_API_URL
 
 export const getPacienteByIdUsuario = async (idUsuario) => {
     try {
@@ -69,5 +69,5 @@ export const reservarTurno = async (turnoId, pacienteId, costo) => {
     } catch (e) {
         console.error("Error reservando el turno de id: " + turnoId);
         throw e;
-    } 
+    }
 }
