@@ -7,6 +7,19 @@ import "./App.css";
 
 function App() {
   const [message, setMessage] = useState("");
+  const [carrito, setCarrito] = useState([]);
+
+  const agregarAlCarrito = (turno) => {
+    setCarrito([...carrito, turno]);
+  };
+
+  const eliminarDelCarrito = (id) => {
+    setCarrito(prev => prev.filter((_, i) => i !== id));
+  }
+
+  const limpiarCarrito = () => {
+    setCarrito([]);
+  }
 
   useEffect(() => {
     fetch("http://localhost:8000/hello")
@@ -17,9 +30,17 @@ function App() {
 
   return (
     <Routes>
-      <Route path="/" element={<Layout />}>
-        {/* <Route index element={<Home />} /> */}
-        <Route path="busqueda-turnos" element={<BusquedaTurnos />} />
+      <Route path="/" element={<Layout carrito={carrito}/>}>
+        <Route 
+          path="busqueda-turnos" 
+          element={
+            <BusquedaTurnos 
+              carrito={carrito}
+              agregarTurnoAlCarrito={agregarAlCarrito}
+              eliminarTurnoDelCarrito={eliminarDelCarrito}
+            />
+          }
+        />
       </Route>
     </Routes>
   );

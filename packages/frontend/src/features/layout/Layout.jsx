@@ -3,11 +3,11 @@ import Header from "../../components/headers/Header.jsx";
 import Footer from "../../components/footers/Footer.jsx"
 import "./Layout.css"
 
-const Layout = () => {
+const Layout = ({ carrito }) => {
   return (
     <>
       <div className="app-grid">
-        <Header className="app-header" userName="Andino Franco" />
+        <Header className="app-header" userName="Andino Franco" carrito={carrito} />
         <main className="app-main">
           <Outlet />
         </main>

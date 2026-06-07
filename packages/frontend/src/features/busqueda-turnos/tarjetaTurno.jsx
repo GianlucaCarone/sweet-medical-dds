@@ -8,8 +8,9 @@ import MedicalServicesIcon from '@mui/icons-material/MedicalServices';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import './tarjetaTurno.css';
 
-export default function TarjetaTurno({ turno, especialidades, practicas }) {
+export default function TarjetaTurno({ turno, especialidades, practicas, onReservar }) {
     const [turnoSeleccionado, setTurnoSeleccionado] = useState(null);
+    const [turnosReservados, setTurnosReservados] = useState(new Set());
 
     const formatoServicio = (servicio) => {
         if (servicio.tipo === "especialidad") {
@@ -73,9 +74,10 @@ export default function TarjetaTurno({ turno, especialidades, practicas }) {
                             const { fecha, hora } = formatoHorario(turno.horario);
                             return (
                                 <button
-                                    key={index}
-                                    className={`boton-turno ${turnoSeleccionado === index ? "seleccionado" : ""}`}
-                                    onClick={() => setTurnoSeleccionado(index)}
+                                    key={turno.id}
+                                    className={`boton-turno ${turnoSeleccionado === turno.id ? "seleccionado" : ""}`}
+                                    disabled={turnosReservados.has(turno.id)}
+                                    onClick={() => !turnosReservados.has(turno.id) && setTurnoSeleccionado(turno.id)}
                                 >
                                     <EventNoteIcon fontSize="15px" />
                                     <span className="fecha-turno">{fecha}</span>
@@ -87,7 +89,11 @@ export default function TarjetaTurno({ turno, especialidades, practicas }) {
                     <button
                         className="boton-reservar"
                         disabled={turnoSeleccionado === null}
-                        onClick={() => { /* reservar */ }}
+                        onClick={() => {
+                            onReservar(turnoSeleccionado);
+                            setTurnosReservados(prev => new Set(prev).add(turnoSeleccionado));
+                            setTurnoSeleccionado(null);
+                        }}
                     >
                         <AddCircleIcon fontSize="15px" />
                         Reservar

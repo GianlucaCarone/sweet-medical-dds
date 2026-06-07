@@ -15,9 +15,8 @@ import {
 } from '@mui/material';
 
 
-export default function SidebarFiltros({ sedes, especialidades, practicas, nuevosFiltros }) {
+export default function SidebarFiltros({ pacientes, medicos, sedes, especialidades, practicas, nuevosFiltros }) {
     // Estados para controlar los filtros (puedes pasarlos como props más adelante)
-    const [pacienteId, setPacienteId] = useState('');
     const [profesional, setProfesional] = useState('');
     const [especialidad, setEspecialidad] = useState('Todas');
     const [practica, setPractica] = useState('Todas');
@@ -48,33 +47,30 @@ export default function SidebarFiltros({ sedes, especialidades, practicas, nuevo
             {/* Contenedor vertical de los formularios */}
             <Stack spacing={2.5}>
 
-                {/* Paciente Id */}
-                <TextField
-                    fullWidth
-                    size="small"
-                    label="Paciente ID"
-                    placeholder="ID del paciente..."
-                    InputLabelProps={{ shrink: true }}
-                    value={pacienteId}
-                    onChange={(e) => setPacienteId(e.target.value)}
-                    onKeyDown={(e) => {
-                        if (e.key === "Enter") nuevosFiltros();
-                    }}
-                />
-
                 {/* Profesional */}
-                <TextField
-                    fullWidth
-                    size="small"
-                    label="Profesional"
-                    placeholder="Nombre del médico..."
-                    InputLabelProps={{ shrink: true }}
-                    value={profesional}
-                    onChange={(e) => setProfesional(e.target.value)}
-                    onKeyDown={(e) => {
-                        if (e.key === "Enter") nuevosFiltros();
-                    }}
-                />
+                <FormControl fullWidth size="small">
+                    <InputLabel id="profesional-label">Profesional</InputLabel>
+                    <Select
+                        labelId="profesional-label"
+                        value={profesional?.id ?? ""}
+                        label="Profesional"
+                        onChange={(e) => {
+                            const proSeleccionado = medicos.find(
+                                pro => pro.id === e.target.value
+                            );
+
+                            setProfesional(proSeleccionado);
+                            nuevosFiltros();
+                        }}
+                    >
+                        <MenuItem value="Todos">Todos</MenuItem>
+                        {medicos.map((pro) => (
+                            <MenuItem key={pro.id} value={pro.id}>
+                                {pro.nombre}
+                            </MenuItem>
+                        ))}
+                    </Select>
+                </FormControl>
 
                 {/* Especialidad */}
                 <FormControl fullWidth size="small">
@@ -114,7 +110,7 @@ export default function SidebarFiltros({ sedes, especialidades, practicas, nuevo
                             nuevosFiltros();
                         }}
                     >
-                        <MenuItem value="Consulta General">Consulta General</MenuItem>
+                        <MenuItem value="Todas">Todas</MenuItem>
                         {practicas
                             .filter((practica) => practica.idEspecialidad === especialidad?.id || practica.idEspecialidad === null)
                             .map((practica) => (

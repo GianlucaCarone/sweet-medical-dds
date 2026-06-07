@@ -3,6 +3,8 @@ import { useEffect, useState, useCallback } from "react";
 import SidebarFiltros from './sidebarFiltros.jsx';
 import TarjetaTurno from './tarjetaTurno.jsx';
 import TarjetaTurnoSkeleton from './tarjetaTurnoSkeleton.jsx';
+import CarritoTurnos from './carritoTurnos.jsx';
+import Drawer from '@mui/material/Drawer';
 import Pagination from '@mui/material/Pagination';
 import './busquedaTurnos.css';
 
@@ -11,6 +13,7 @@ const turnosEjemplo = [
     {
         id: 1,
         medico: {
+            id: 1,
             nombre: "Dra. María Gómez"
         },
         servicio: {
@@ -19,6 +22,7 @@ const turnosEjemplo = [
             tipo: "practica"
         },
         sede: {
+            id: 1,
             nombre: "Sede Belgrano"
         },
         fechaHora: "2024-06-04T08:00:00",
@@ -28,7 +32,27 @@ const turnosEjemplo = [
     {
         id: 2,
         medico: {
-            nombre: "Dra. Valentina Cruz"
+            id: 1,
+            nombre: "Dra. María Gómez"
+        },
+        servicio: {
+            id: 2,
+            nombre: "Ecocardiograma",
+            tipo: "practica"
+        },
+        sede: {
+            id: 1,
+            nombre: "Sede Belgrano"
+        },
+        fechaHora: "2024-06-04T08:45:00",
+        costo: 0,
+        estadoCobertura: "TOTALMENTE CUBIERTA"
+    },
+    {
+        id: 3,
+        medico: {
+            id: 1,
+            nombre: "Dra. María Gómez"
         },
         servicio: {
             id: 1,
@@ -36,6 +60,45 @@ const turnosEjemplo = [
             tipo: "practica"
         },
         sede: {
+            id: 1,
+            nombre: "Sede Belgrano"
+        },
+        fechaHora: "2024-06-04T09:30:00",
+        costo: 0,
+        estadoCobertura: "TOTALMENTE CUBIERTA"
+    },
+    {
+        id: 4,
+        medico: {
+            id: 1,
+            nombre: "Dra. María Gómez"
+        },
+        servicio: {
+            id: 1,
+            nombre: "Electrocardiograma",
+            tipo: "practica"
+        },
+        sede: {
+            id: 1,
+            nombre: "Sede Belgrano"
+        },
+        fechaHora: "2024-06-04T10:45:00",
+        costo: 0,
+        estadoCobertura: "TOTALMENTE CUBIERTA"
+    },
+    {
+        id: 5,
+        medico: {
+            id: 2,
+            nombre: "Dra. Valentina Cruz"
+        },
+        servicio: {
+            id: 5,
+            nombre: "Neurofisiología",
+            tipo: "practica"
+        },
+        sede: {
+            id: 1,
             nombre: "Sede Belgrano"
         },
         fechaHora: "2024-06-04T08:30:00",
@@ -43,22 +106,105 @@ const turnosEjemplo = [
         estadoCobertura: "PARCIALMENTE CUBIERTA"
     },
     {
-        id: 3,
+        id: 6,
         medico: {
+            id: 2,
+            nombre: "Dra. Valentina Cruz"
+        },
+        servicio: {
+            id: 5,
+            nombre: "Neurofisiología",
+            tipo: "practica"
+        },
+        sede: {
+            id: 1,
+            nombre: "Sede Belgrano"
+        },
+        fechaHora: "2024-06-04T09:00:00",
+        costo: 18000,
+        estadoCobertura: "PARCIALMENTE CUBIERTA"
+    },
+    {
+        id: 7,
+        medico: {
+            id: 2,
+            nombre: "Dra. Valentina Cruz"
+        },
+        servicio: {
+            id: 5,
+            nombre: "Neurofisiología",
+            tipo: "practica"
+        },
+        sede: {
+            id: 1,
+            nombre: "Sede Belgrano"
+        },
+        fechaHora: "2024-06-04T09:30:00",
+        costo: 18000,
+        estadoCobertura: "PARCIALMENTE CUBIERTA"
+    },
+    {
+        id: 8,
+        medico: {
+            id: 3,
             nombre: "Dr. Juan Pérez"
         },
         servicio: {
-            id: 3,
+            id: 2,
             nombre: "Dermatología",
             tipo: "especialidad"
         },
         sede: {
+            id: 2,
             nombre: "Sede Vicente López"
         },
         fechaHora: "2024-06-04T14:00:00",
         costo: 25000,
         estadoCobertura: "NO CUBIERTA"
+    },
+    {
+        id: 9,
+        medico: {
+            id: 3,
+            nombre: "Dr. Juan Pérez"
+        },
+        servicio: {
+            id: 2,
+            nombre: "Dermatología",
+            tipo: "especialidad"
+        },
+        sede: {
+            id: 2,
+            nombre: "Sede Vicente López"
+        },
+        fechaHora: "2024-06-04T14:30:00",
+        costo: 25000,
+        estadoCobertura: "NO CUBIERTA"
+    },
+    {
+        id: 10,
+        medico: {
+            id: 3,
+            nombre: "Dr. Juan Pérez"
+        },
+        servicio: {
+            id: 2,
+            nombre: "Dermatología",
+            tipo: "especialidad"
+        },
+        sede: {
+            id: 2,
+            nombre: "Sede Vicente López"
+        },
+        fechaHora: "2024-06-04T16:30:00",
+        costo: 25000,
+        estadoCobertura: "NO CUBIERTA"
     }
+];
+const medicosEjemplo = [
+    { id: 1, nombre: "Dra. María Gómez"},
+    { id: 2, nombre: "Dra. Valentina Cruz"},
+    { id: 3, nombre: "Dr. Juan Perez"}
 ];
 const especialidadesEjemplo = [
     { id: 1, nombre: "Cardiología" },
@@ -79,7 +225,7 @@ const sedesEjemplo = [
 const datosPaginacionEjemplo = {
     paginaActual: 1,
     limitePorPagina: 10,
-    totalPaginas: 5,
+    totalPaginas: 4,
     totalResultados: 32
 };
 
@@ -115,8 +261,11 @@ function agruparTurnos(turnos) {
     return Array.from(mapa.values());
 }
 
-export default function BusquedaTurnos() {
-    const [turnos, setTurnos] = useState(agruparTurnos(turnosEjemplo));
+export default function BusquedaTurnos({ carrito, agregarTurnoAlCarrito, eliminarTurnoDelCarrito }) {
+    const [pacienteID, setPacienteID] = useState(1);
+    const [turnos, setTurnos] = useState(turnosEjemplo);
+    const [conjuntosTurnos, setConjuntosTurnos] = useState(agruparTurnos(turnosEjemplo));
+    const [carritoAbierto, setCarritoAbierto] = useState(false);
     const [loading, setLoading] = useState(true);
     const [paginaActual, setPaginaActual] = useState(datosPaginacionEjemplo.paginaActual);
     const [ordenarPor, setOrdenarPor] = useState("proximos");
@@ -131,6 +280,15 @@ export default function BusquedaTurnos() {
         // setLoading(false);
     }, [ordenarPor]);
 
+    const agregarAlCarrito = (id) => {
+        const turno = turnos.find(t => t.id === id);
+        agregarTurnoAlCarrito(turno);
+        setCarritoAbierto(true);
+    };
+    const eliminarDelCarrito = (id) => {
+        eliminarTurnoDelCarrito(id);
+    };
+
     useEffect(() => {
         cargarTurnos();
     }, [cargarTurnos]);
@@ -140,6 +298,7 @@ export default function BusquedaTurnos() {
 
             {/* Sidebar de filtros desarrollado con Material UI */}
             <SidebarFiltros
+                medicos={medicosEjemplo}
                 sedes={sedesEjemplo}
                 especialidades={especialidadesEjemplo}
                 practicas={practicasEjemplo}
@@ -165,12 +324,14 @@ export default function BusquedaTurnos() {
                         ? Array.from({ length: datosPaginacionEjemplo.limitePorPagina }).map((_, i) => ( //que la cantidad de skeletons sea igual al tamaño de pagina
                             <TarjetaTurnoSkeleton key={i} />
                         ))
-                        : turnos.map((turno) => (
+                        : conjuntosTurnos.map((turno) => (
                             <TarjetaTurno
                                 key={turno.id}
                                 turno={turno}
                                 especialidades={especialidadesEjemplo}
                                 practicas={practicasEjemplo}
+                                carrito={carrito}
+                                onReservar={agregarAlCarrito}
                             />
                         ))}
                 </section>
@@ -182,7 +343,18 @@ export default function BusquedaTurnos() {
                     }}
                 />
             </main>
-
+            
+            <Drawer
+                anchor="right"
+                open={carritoAbierto}
+                onClose={() => setCarritoAbierto(false)}
+            >
+                <CarritoTurnos
+                    items={carrito}
+                    onEliminar={eliminarDelCarrito}
+                    onCerrar={() => setCarritoAbierto(false)}
+                />
+            </Drawer>
         </div>
     );
 }

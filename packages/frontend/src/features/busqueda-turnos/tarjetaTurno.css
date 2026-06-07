@@ -147,6 +147,12 @@
     transform: translateY(-1px);
 }
 
+.boton-turno:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    transform: none;
+}
+
 .fecha-turno {
     font-size: 10px;
     color: #1e4620;
