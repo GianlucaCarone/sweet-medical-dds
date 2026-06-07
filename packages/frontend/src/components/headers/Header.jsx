@@ -13,11 +13,7 @@ const Header = ({ userName, carrito, eliminarDelCarrito }) => {
   const [carritoAbierto, setCarritoAbierto] = useState(false);
 
   const cantUnidadesEnCarrito = () => {
-    let suma = 0;
-    for (const producto of carrito) {
-      suma += producto.unidades;
-    }
-    return suma;
+    return carrito.length; //por ahora, cada turno es una unidad. Si en el futuro se permite agregar más de un turno a la vez, habría que cambiar esto.
   };
 
   useEffect(() => {
