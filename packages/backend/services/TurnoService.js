@@ -156,12 +156,12 @@ export class TurnoService {
 
     const turno = new Turno({ medico, sede, fechaHora, servicio, costo });
     const turnoGuardado = await this.turnoRepository.save(turno);
-    logger.info(`[TURNO SERVICE]: Turno creado con éxito`);
+    logger.info("[TURNO SERVICE]: Turno creado con éxito");
     return this.toDto(turnoGuardado);
   }
 
   async asignarTurno(idTurno, pacienteId, costoTurno) {
-    logger.info(`[TURNO SERVICE]: Intentando asignar el turno ${idTurno} al paciente ${pacienteId}`);
+    logger.info("[TURNO SERVICE]: Intentando asignar el turno " + idTurno + " al paciente " + pacienteId);
 
     const turno = await this.turnoRepository.findById(idTurno);
     if (!turno){

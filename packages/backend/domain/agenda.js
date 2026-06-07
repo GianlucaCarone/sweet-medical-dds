@@ -89,7 +89,7 @@ export class Agenda {
     }
 
 
-    refresacarTurnosSegunDisponibilidad({ medico }) {
+    refresacarTurnosSegunDisponibilidad({medico}) {
         return [];
     }
 }

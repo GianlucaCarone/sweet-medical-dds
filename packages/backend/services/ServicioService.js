@@ -109,7 +109,7 @@ export class ServicioService {
     }
 
     toDto(servicio) {
-        if (servicio.tipo == "Practica") {
+        if (servicio.tipo === "Practica") {
             return {
                 id: servicio.id,
                 nombre: servicio.nombre,
