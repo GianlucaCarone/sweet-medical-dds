@@ -2,14 +2,10 @@
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": "explicit"
   },
-  "eslint.validate": [
-    "javascript",
-    "javascriptreact"
-  ],
-  "eslint.workingDirectories": [
-    "./packages/backend",
-    "./packages/frontend"
-  ],
+  "eslint.validate": ["javascript", "javascriptreact"],
+  "eslint.workingDirectories": ["./packages/backend", "./packages/frontend"],
   "eslint.experimental.useFlatConfig": true,
-  "editor.formatOnSave": true
+  "editor.formatOnSave": false,
+  "editor.formatOnSaveMode": "modifications",
+  "editor.defaultFormatter": "rvest.vs-code-prettier-eslint"
 }
