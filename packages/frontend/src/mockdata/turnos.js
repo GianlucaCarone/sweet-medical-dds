@@ -191,7 +191,7 @@ const turnosEjemplo = [
     }
 ];
 const datosPaginacionEjemplo = {
-    paginaActual: 1,
+    numeroPagina: 1,
     limitePorPagina: 10,
     totalPaginas: 4,
     totalResultados: 32
