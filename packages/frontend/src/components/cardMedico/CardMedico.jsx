@@ -14,7 +14,7 @@ export default function CardMedico({ medico, color = "primary" }) {
     const irAVerTurnos = (e) => {
         if (e) e.stopPropagation();
         // evaluar si agregarle estado
-        navigate("/busqueda.turnos");
+        navigate("/busqueda-turnos");
     }
 
     return (
