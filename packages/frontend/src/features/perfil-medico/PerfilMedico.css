@@ -63,9 +63,15 @@
 .tabs-header-container {
   display: flex;
   overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: none; /* Firefox */
   border-bottom: 2px solid var(--color-border-gray);
   background-color: #ffffff;
   border-radius: 12px 12px 0 0;
+}
+
+.tabs-header-container::-webkit-scrollbar {
+  display: none;
 }
 
 .tab-nav-btn {
@@ -287,3 +293,26 @@
     opacity: 1;
   }
 }
+
+.disp-slot-edit-btn {
+  position: absolute;
+  top: 6px;
+  right: 28px;
+  background: #ffffff;
+  border: 1px solid var(--color-border-gray);
+  border-radius: 6px;
+  padding: 3px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-primary-blue);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.disp-slot-edit-btn:hover {
+  background: #f0f7ff;
+  border-color: #93c5fd;
+  transform: scale(1.05);
+}
+

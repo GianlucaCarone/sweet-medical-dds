@@ -1,7 +1,7 @@
 import React from 'react';
-import { Plus, Clock, MapPin, Trash2 } from 'lucide-react';
+import { Plus, Clock, MapPin, Trash2, Edit } from 'lucide-react';
 
-export default function DisponibilidadesTab({ disponibilidades, onAdd, onEliminar }) {
+export default function DisponibilidadesTab({ disponibilidades, onAdd, onEdit, onEliminar }) {
   const diasSemana = ['LUNES', 'MARTES', 'MIERCOLES', 'JUEVES', 'VIERNES', 'SABADO', 'DOMINGO'];
 
   return (
@@ -52,6 +52,14 @@ export default function DisponibilidadesTab({ disponibilidades, onAdd, onElimina
                         <MapPin size={9} /> {disp.sede.nombre}
                       </div>
                       
+                      <button 
+                        onClick={() => onEdit(disp)} 
+                        className="disp-slot-edit-btn" 
+                        title="Editar Horario"
+                      >
+                        <Edit size={10} />
+                      </button>
+
                       <button 
                         onClick={() => onEliminar(disp._id)} 
                         className="disp-slot-delete-btn" 
