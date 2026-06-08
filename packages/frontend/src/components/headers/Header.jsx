@@ -42,7 +42,7 @@ const Header = ({ userName, carrito, limpiarCarrito, eliminarDelCarrito, toggleT
             <ShoppingCartIcon color="white" />
             <span className="cart-count">{cantUnidades}</span>
           </button>
-          <Button onClick={toggleTheme} />
+          {/* <Button onClick={toggleTheme} /> */}
           <CampanitaNotificacion />
           <MenuUsuario userName={userName} />
         </div>
