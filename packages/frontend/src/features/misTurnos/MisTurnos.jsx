@@ -179,7 +179,7 @@ export default function MisTurnos() {
     useEffect(() => {
         setTimeout(() => {
             setLoading(false);
-        }, 2000);
+        }, 500);
     }, []);
 
     return (

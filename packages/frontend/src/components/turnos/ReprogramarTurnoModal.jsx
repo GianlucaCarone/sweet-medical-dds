@@ -32,7 +32,7 @@ export default function ReprogramarTurnoModal({
 
         const timer = setTimeout(() => {
             setLoadingSlots(false);
-        }, 1400);
+        }, 500);
 
         return () => clearTimeout(timer);
     }, [abierto]);

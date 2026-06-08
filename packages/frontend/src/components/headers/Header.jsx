@@ -3,8 +3,23 @@ import Navbar from "./Navbar.jsx";
 import { Link } from "react-router-dom";
 import MenuUsuario from "./MenuUsuario.jsx";
 import CampanitaNotificacion from "./CampanitaNotification.jsx";
+import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
+import Drawer from "@mui/material/Drawer";
+import { useState, useEffect } from "react";
+import CarritoTurnos from "../../features/busqueda-turnos/carritoTurnos.jsx";
 
-const Header = ({ userName }) => {
+const Header = ({ userName, carrito, eliminarDelCarrito }) => {
+  const [cantUnidades, setCantUnidades] = useState(0);
+  const [carritoAbierto, setCarritoAbierto] = useState(false);
+
+  const cantUnidadesEnCarrito = () => {
+    return carrito.length; //por ahora, cada turno es una unidad. Si en el futuro se permite agregar más de un turno a la vez, habría que cambiar esto.
+  };
+
+  useEffect(() => {
+    setCantUnidades(cantUnidadesEnCarrito());
+  }, [carrito]);
+
   return (
     <header className="header">
       <div className="header-container">
@@ -22,7 +37,10 @@ const Header = ({ userName }) => {
         <Navbar />
 
         <div className="header-actions">
-          <CampanitaNotificacion />
+          <button className="cart" onClick={() => setCarritoAbierto(true)}>
+            <ShoppingCartIcon color="white" />
+            <span className="cart-count">{cantUnidades}</span>
+          </button>
           <MenuUsuario userName={userName} />
         </div>
         {/* <div className="navbar-actions">
@@ -41,6 +59,17 @@ const Header = ({ userName }) => {
             Cerrar Sesión
           </button>
         </div> */}
+        <Drawer
+          anchor="right"
+          open={carritoAbierto}
+          onClose={() => setCarritoAbierto(false)}
+        >
+          <CarritoTurnos
+            items={carrito}
+            onEliminar={eliminarDelCarrito}
+            onCerrar={() => setCarritoAbierto(false)}
+          />
+        </Drawer>
       </div>
     </header>
   );
