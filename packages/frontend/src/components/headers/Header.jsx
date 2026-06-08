@@ -6,7 +6,8 @@ import CampanitaNotificacion from "./CampanitaNotification.jsx";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import Drawer from "@mui/material/Drawer";
 import { useState, useEffect } from "react";
-import CarritoTurnos from "./carritoTurnos.jsx";
+import CarritoTurnos from "../../features/busqueda-turnos/carritoTurnos.jsx";
+import { Button } from "@mui/material";
 
 const Header = ({ userName, carrito, limpiarCarrito, eliminarDelCarrito, toggleTheme }) => {
   const [cantUnidades, setCantUnidades] = useState(0);
@@ -45,22 +46,6 @@ const Header = ({ userName, carrito, limpiarCarrito, eliminarDelCarrito, toggleT
           <CampanitaNotificacion />
           <MenuUsuario userName={userName} />
         </div>
-        {/* <div className="navbar-actions">
-          <div className="user-info">
-            <img
-              src="/ruta-avatar-usuario.png"
-              alt="Avatar del usuario"
-              className="user-avatar"
-            />
-            <span className="user-name" id="userName">
-              {props.userName}
-            </span>
-          </div>
-
-          <button type="button" className="btn-logout">
-            Cerrar Sesión
-          </button>
-        </div> */}
         <Drawer
           anchor="right"
           open={carritoAbierto}

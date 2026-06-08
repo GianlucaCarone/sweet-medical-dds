@@ -38,6 +38,7 @@ function App({ toggleTheme }) {
               carrito={carrito}
               eliminarTurnoDelCarrito={eliminarDelCarrito}
               limpiarElCarrito={limpiarCarrito}
+              toggleTheme={toggleTheme}
             />
           }
         >

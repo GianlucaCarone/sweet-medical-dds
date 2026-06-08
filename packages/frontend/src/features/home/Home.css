@@ -33,17 +33,30 @@
     background: var(--color-primary);
     color: white
 }
-.infoEstadistica { grid-area: infoEstadistica; }
+.infoEstadistica {
+    grid-area: infoEstadistica;
+}
 .especialidades { grid-area: especialidades; }
 .profesionales { grid-area: profesionales; }
-.funcionamiento { grid-area: funcionamiento; }
-.tieneObraSocial { grid-area: tieneObraSocial; }
+.funcionamiento {
+    grid-area: funcionamiento;
+}
+.tieneObraSocial {
+    grid-area: tieneObraSocial;
+    background-color: var(--color-primary);
+    color: white;
+}
+.tieneObraSocialSubtitulo {
+    color: rgb(230, 230, 230);
+    font-weight: bold;
+}
 
 .spanEstadistica {
     font-weight: bold;
     font-family: Verdana, Geneva, Tahoma, sans-serif;
-    color: #57C785;
-    font-size: 2em;
+    color: var(--color-secondary);
+    font-size: 1.5rem;
+    text-align: center;
 }
 
 .text-muted {
@@ -54,4 +67,7 @@
 .banner .banner-subtitulo {
     color: rgb(230, 230, 230);
     font-weight: bold;
+}
+.titulo {
+    font-size: 3.5rem;
 }
