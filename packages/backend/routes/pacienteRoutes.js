@@ -83,7 +83,7 @@ export function pacienteRoutes(getController) {
          *       500:
          *         $ref: '#/components/responses/E500'
          */
-        .post((req, res, next) => pacienteController.crear(req, res, next))
+        .post((req, res, next) => pacienteController.crear(req, res, next));
         
     router.route("/:id")
         // GET /pacientes/:id
@@ -185,7 +185,7 @@ export function pacienteRoutes(getController) {
          *       500:
          *         $ref: '#/components/responses/E500'
          */
-        .delete((req, res, next) => pacienteController.eliminar(req, res, next))
+        .delete((req, res, next) => pacienteController.eliminar(req, res, next));
 
     return router;
 }

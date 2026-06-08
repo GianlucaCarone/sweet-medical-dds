@@ -1,0 +1,109 @@
+
+/* =========================================
+   2. Navegación Principal
+========================================= */
+.navbar-menu {
+  display: flex;
+  flex: 1;
+  justify-content: center;
+}
+
+.nav-list {
+  display: flex;
+  list-style-type: none; /* Saca los puntitos de la lista HTML */
+  margin: 0;
+  padding: 0;
+  gap: 2rem; /* Espacio entre cada enlace */
+}
+
+.nav-link {
+  text-decoration: none;
+  color: #64748b;
+  font-weight: var(--font-weight-base);
+  font-size: var(--font-size-base);
+  transition: color 0.2s ease;
+  padding: 0.5rem 0;
+  display: flex;
+  align-items: center; /* Centra el ícono con el texto verticalmente */
+  gap: 0.4rem; /* Agrega un pequeño espacio entre el ícono y la palabra */
+}
+
+/* Opcional: Un pequeño ajuste para que el contenedor del ícono no rompa el diseño */
+.nav-icon {
+  display: flex;
+  align-items: center;
+}
+
+/* Efecto al pasar el mouse */
+.nav-link:hover {
+  color: #2563eb; /* Azul médico */
+}
+
+/* Estado activo (la página donde estoy parado) */
+.nav-link.active {
+  color: #2563eb;
+  border-bottom: 2px solid #2563eb;
+}
+
+/* =========================================
+   3. Sección de Usuario y Acciones
+========================================= */
+.navbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.user-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%; /* Hace que la imagen sea circular */
+  object-fit: cover;
+  border: 2px solid #e2e8f0;
+}
+
+.user-name {
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-base);
+  color: #334155;
+}
+
+/* Botón de Cerrar Sesión */
+.btn-logout {
+  background-color: transparent;
+  color: #ef4444; /* Rojo para acción destructiva/salida */
+  border: 1px solid #ef4444;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  font-size: var(--font-size-base);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-logout:hover {
+  background-color: #ef4444;
+  color: #ffffff;
+}
+
+/* =========================================
+   Diseño Responsivo Básico (Mobile)
+========================================= */
+@media (max-width: 768px) {
+  /* En celulares, ocultamos los links del medio por ahora para que no se rompa todo. 
+     Más adelante pueden agregar un menú hamburguesa */
+  .navbar-menu {
+    display: none; 
+  }
+  
+  /* Ocultamos el nombre para dejar solo la foto de perfil en pantallas chicas */
+  .user-name {
+    display: none; 
+  }
+}

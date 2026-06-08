@@ -1,0 +1,61 @@
+/* =========================================
+   Estilos generales del Header
+========================================= */
+.header {
+  background-color: #ffffff;
+  border-bottom: 1px solid #e2e8f0; /* Una línea sutil para separar el header del contenido */
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); /* Sombreado muy suave */
+  font-family: system-ui, -apple-system, sans-serif;
+}
+
+/* Contenedor principal para limitar el ancho y centrar */
+.header-container {
+  display: flex;
+  justify-content: space-between; /* Separa los 3 bloques: izquierda, centro y derecha */
+  align-items: center; /* Centra verticalmente los elementos */
+  max-width: 100%; /* Ancho máximo para que no se estire demasiado en pantallas gigantes */
+  margin: 0 auto;
+  padding: 0.75rem 1.5rem; 
+  height: 70px;
+  box-sizing: border-box;
+}
+
+/* =========================================
+   1. Sección del Logo
+========================================= */
+.header-brand {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex: 0 0 auto;
+}
+
+.brand-link {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem; /* Espacio entre el loquito y el texto */
+  text-decoration: none; /* Elimina el subrayado por defecto de los links */
+}
+
+.brand-logo {
+  height: 36px;
+  width: auto;
+}
+
+.brand-name {
+  font-size: var(--font-size-xlarge);
+  font-weight: var(--font-weight-base);
+  color: #0f172a;
+}
+
+/* Contenedor derecho con campanita y usuario */
+.header-actions {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  flex: 0 0 auto;
+}

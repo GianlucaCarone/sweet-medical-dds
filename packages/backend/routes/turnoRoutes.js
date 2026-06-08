@@ -273,7 +273,7 @@ export default function turnoRoutes(getController) {
          */
         .patch((req, res, next) => turnoController.responderCambioFecha(req, res, next));
 
-    router.route("/:estado")
+    router.route("/:estadoId")
         /**
          * @swagger
          * /turno/{estado}:
