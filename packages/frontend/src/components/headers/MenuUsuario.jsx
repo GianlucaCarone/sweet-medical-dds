@@ -80,6 +80,9 @@ export default function MenuUsuario({ userName = "Andino Franco" }) {
         <MenuItem onClick={handleOpenProfileModal}>
           <Avatar /> Mi Perfil
         </MenuItem>
+        <MenuItem onClick={() => { navigate("/perfil-medico"); handleMenuClose(); }}>
+          <Avatar /> Perfil Médico
+        </MenuItem>
         <Divider />
         <MenuItem onClick={handleLogout}>
           <ListItemIcon>

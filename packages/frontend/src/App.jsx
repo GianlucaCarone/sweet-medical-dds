@@ -3,6 +3,7 @@ import { Routes, Route } from "react-router-dom";
 import Layout from "./features/layout/Layout.jsx";
 import MisTurnos from "./features/misTurnos/MisTurnos.jsx";
 import BusquedaTurnos from "./features/busqueda-turnos/busquedaTurnos.jsx";
+import PerfilMedico from "./features/perfil-medico/PerfilMedico.jsx";
 
 import "./App.css";
 
@@ -54,6 +55,11 @@ function App() {
           <Route
             path="mis-turnos"
             element={<MisTurnos />}
+          />
+
+          <Route
+            path="perfil-medico"
+            element={<PerfilMedico />}
           />
     
           {/* <Route index element={<Home />} /> */}
