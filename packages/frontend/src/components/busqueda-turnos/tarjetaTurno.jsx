@@ -17,7 +17,7 @@ export default function TarjetaTurno({ turno, especialidades, practicas, carrito
       return `${servicio?.nombre} • Consulta general`;
     } else {
       const practica = practicas.find((p) => p.id === servicio.id);
-      return `${especialidades.find((e) => e.id === practica.idEspecialidadPadre)?.nombre} • ${practica.nombre}`;
+      return `${especialidades.find((e) => e.id === practica.especialidadPadre)?.nombre} • ${practica.nombre}`;
     }
   };
   const formatoHorario = (isoString) => {
@@ -94,7 +94,7 @@ export default function TarjetaTurno({ turno, especialidades, practicas, carrito
             disabled={turnoSeleccionado === null}
             onClick={() => {
               onReservar(turnoSeleccionado);
-                            setTurnosReservados(prev => new Set(prev).add(turnoSeleccionado));
+              setTurnosReservados(prev => new Set(prev).add(turnoSeleccionado));
               setTurnoSeleccionado(null);
             }}
           >

@@ -5,7 +5,7 @@ import MenuUsuario from "./MenuUsuario.jsx";
 import CampanitaNotificacion from "./CampanitaNotification.jsx";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import { useState, useEffect } from "react";
-import CarritoTurnos from "../../features/busqueda-turnos/carritoTurnos.jsx";
+import CarritoTurnos from "./carritoTurnos.jsx";
 import ModalLogin from "../login/ModalLogin.jsx";
 import { useAuth } from "../../context/AuthContext.jsx"; // Importamos el hook del contexto de autenticación
 import {
@@ -18,7 +18,7 @@ import {
   Button,
 } from "@mui/material";
 
-const Header = ({ carrito, eliminarDelCarrito }) => {
+const Header = ({ carrito, limpiarCarrito, eliminarDelCarrito }) => {
   const { user } = useAuth(); // Traemos al usuario logueado
 
   const [cantUnidades, setCantUnidades] = useState(0);
@@ -140,6 +140,7 @@ const Header = ({ carrito, eliminarDelCarrito }) => {
           <CarritoTurnos
             items={carrito}
             onEliminar={eliminarDelCarrito}
+            onConfirmar={limpiarCarrito}
             onCerrar={() => setCarritoAbierto(false)}
           />
         </Drawer>

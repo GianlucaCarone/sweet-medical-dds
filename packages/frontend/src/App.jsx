@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Routes, Route } from "react-router-dom";
 import Layout from "./features/layout/Layout.jsx";
 import Login from "./components/login/Login.jsx";
+import MisTurnos from "./features/misTurnos/MisTurnos.jsx";
 import BusquedaTurnos from "./features/busqueda-turnos/busquedaTurnos.jsx";
 
 import "./App.css";
@@ -29,31 +30,40 @@ function App() {
       .catch((error) => console.error("Error cargando mensaje.", error));
   }, []);
 
-  return (
-    <Routes>
-      <Route
-        path="/"
-        element={
-          <Layout
-            carrito={carrito}
-            eliminarTurnoDelCarrito={eliminarDelCarrito}
-          />
-        }
-      >
+      return (
+      <Routes>
         <Route
-          path="busqueda-turnos"
+          path="/"
           element={
-            <BusquedaTurnos
+            <Layout
               carrito={carrito}
-              agregarTurnoAlCarrito={agregarAlCarrito}
               eliminarTurnoDelCarrito={eliminarDelCarrito}
+              limpiarElCarrito={limpiarCarrito}
             />
           }
-        />
-      </Route>
+        >
+          <Route
+            path="busqueda-turnos"
+            element={
+              <BusquedaTurnos
+                carrito={carrito}
+                agregarTurnoAlCarrito={agregarAlCarrito}
+                eliminarTurnoDelCarrito={eliminarDelCarrito}
+                limpiarElCarrito={limpiarCarrito}
+              />
+            }
+          />
+    
+          <Route
+            path="mis-turnos"
+            element={<MisTurnos />}
+          />
+    
+          {/* <Route index element={<Home />} /> */}
+        </Route>
       <Route path="/login" element={<Login />} />
-    </Routes>
-  );
-}
+      </Routes>
+    );
+  }
 
 export default App;

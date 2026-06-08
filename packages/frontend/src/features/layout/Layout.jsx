@@ -3,7 +3,7 @@ import Header from "../../components/headers/Header.jsx";
 import Footer from "../../components/footers/Footer.jsx";
 import "./Layout.css";
 
-const Layout = ({ carrito, eliminarTurnoDelCarrito }) => {
+const Layout = ({ carrito, eliminarTurnoDelCarrito, limpiarElCarrito }) => {
   return (
     <>
       <div className="app-grid">
@@ -12,6 +12,7 @@ const Layout = ({ carrito, eliminarTurnoDelCarrito }) => {
           userName={null} //aún no tenemos autenticación, así que por ahora lo dejamos como null
           carrito={carrito}
           eliminarDelCarrito={eliminarTurnoDelCarrito}
+          limpiarCarrito={limpiarElCarrito}
         />
         <main className="app-main">
           <Outlet />
