@@ -6,7 +6,7 @@ import CampanitaNotificacion from "./CampanitaNotification.jsx";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import Drawer from "@mui/material/Drawer";
 import { useState, useEffect } from "react";
-import CarritoTurnos from "../../features/busqueda-turnos/carritoTurnos.jsx";
+import CarritoTurnos from "../../components/headers/carritoTurnos.jsx"
 import { Button } from "@mui/material";
 
 const Header = ({ userName, carrito, limpiarCarrito, eliminarDelCarrito, toggleTheme }) => {
