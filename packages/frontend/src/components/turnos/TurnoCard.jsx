@@ -4,7 +4,7 @@ import CancelarTurnoModal from "./CancelarTurnoModal";
 import ReprogramarTurnoModal from "./ReprogramarTurnoModal";
 import { useNavigate } from "react-router-dom";
 
-export default function TurnoCard({ turno, esHistorial = false }) {
+export default function TurnoCard({ turno, esHistorial = false, onCancelar }) {
     const [modalCancelarAbierto, setModalCancelarAbierto] = useState(false);
     const [modalReprogramarAbierto, setModalReprogramarAbierto] = useState(false);
     const navigate = useNavigate();
@@ -17,6 +17,10 @@ export default function TurnoCard({ turno, esHistorial = false }) {
     const confirmarCancelacion = (motivo) => {
         console.log("Cancelando turno:", turno.id);
         console.log("Motivo:", motivo);
+
+        if (onCancelar) {
+            onCancelar(turno.id, motivo);
+        }
     };
     if (esHistorial) {
         return (

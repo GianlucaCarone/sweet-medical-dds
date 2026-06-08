@@ -11,6 +11,7 @@ import TurnoCardSkeleton from "../../components/turnos/TurnoCardSkeleton";
 import EstadisticaTurnoCardSkeleton from "../../components/turnos/EstadisticaTurnoCardSkeleton";
 import TurnoHistorialSkeleton from "../../components/turnos/TurnoHistorialSkeleton";
 import { useNavigate } from "react-router-dom";
+import Toast from "../../components/turnos/Toast";
 
 const proximosTurnos = [
 
@@ -159,6 +160,7 @@ export default function MisTurnos() {
     const [paginaProximos, setPaginaProximos] = useState(1);
     const [paginaHistorial, setPaginaHistorial] = useState(1);
     const [loading, setLoading] = useState(true);
+    const [toastVisible, setToastVisible] = useState(false);
     const turnosPorPagina = 3;
     const navigate = useNavigate();
 
@@ -168,6 +170,16 @@ export default function MisTurnos() {
         (paginaProximos - 1) * turnosPorPagina,
         paginaProximos * turnosPorPagina
     );
+
+    const handleTurnoCancelado = (turnoId, motivo) => {
+        console.log("Turno cancelado:", turnoId, motivo);
+
+        setToastVisible(true);
+
+        setTimeout(() => {
+            setToastVisible(false);
+        }, 1500);
+    };
 
     const totalPaginasHistorial = Math.ceil(historialTurnos.length / turnosPorPagina);
 
@@ -207,6 +219,11 @@ export default function MisTurnos() {
                     </button>
                 </div>
             </div>
+
+            <Toast
+                visible={toastVisible}
+                mensaje="Turno cancelado correctamente."
+            />
 
             <div className="stats-grid">
                 {loading ? (
@@ -268,7 +285,7 @@ export default function MisTurnos() {
                 <>
                     <div className="turnos-lista">
                         {proximosTurnosAMostrar.map((turno) => (
-                            <TurnoCard key={turno.id} turno={turno} />
+                            <TurnoCard key={turno.id} turno={turno} onCancelar={handleTurnoCancelado} />
                         ))}
                     </div>
 
