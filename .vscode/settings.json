@@ -2,26 +2,10 @@
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": "explicit"
   },
+  "eslint.validate": ["javascript", "javascriptreact"],
+  "eslint.workingDirectories": ["./packages/backend", "./packages/frontend"],
+  "eslint.experimental.useFlatConfig": true,
+  "editor.formatOnSave": false,
   "editor.formatOnSaveMode": "modifications",
-  "editor.defaultFormatter": "rvest.vs-code-prettier-eslint",
-  "eslint.validate": [
-    "javascript",
-    "javascriptreact"
-  ],
-  "eslint.workingDirectories": [
-    "./packages/backend",
-    "./packages/frontend"
-  ],
-  "eslint.useFlatConfig": true,
-  "editor.formatOnSave": true,
-  "files.watcherExclude": {
-    "**/node_modules/**": true,
-    "**/dist/**": true,
-    "**/build/**": true
-  },
-  "search.exclude": {
-    "**/node_modules": true,
-    "**/dist": true,
-    "**/build": true
-  }
+  "editor.defaultFormatter": "rvest.vs-code-prettier-eslint"
 }

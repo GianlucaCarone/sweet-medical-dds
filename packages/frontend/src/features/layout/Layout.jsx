@@ -3,7 +3,7 @@ import Header from "../../components/headers/Header.jsx";
 import Footer from "../../components/footers/Footer.jsx";
 import "./Layout.css";
 
-const Layout = ({ carrito, eliminarTurnoDelCarrito, limpiarElCarrito, toggleTheme }) => {
+const Layout = ({ carrito, eliminarTurnoDelCarrito, limpiarElCarrito }) => {
   return (
     <>
       <div className="app-grid">
@@ -13,7 +13,6 @@ const Layout = ({ carrito, eliminarTurnoDelCarrito, limpiarElCarrito, toggleThem
           carrito={carrito}
           eliminarDelCarrito={eliminarTurnoDelCarrito}
           limpiarCarrito={limpiarElCarrito}
-          toggleTheme={toggleTheme}
         />
         <main className="app-main">
           <Outlet />
