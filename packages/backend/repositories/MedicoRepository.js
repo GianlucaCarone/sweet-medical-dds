@@ -10,7 +10,7 @@ const POPULATE_MEDICO_CONFIG = [
   },
   {
     path: "disponibilidades",
-    populate: [
+    /* populate: [
       { path: "sede" },
       {
         path: "servicio",
@@ -19,7 +19,7 @@ const POPULATE_MEDICO_CONFIG = [
           strictPopulate: false
         }
       }
-    ], 
+    ], */
   },
   "sedes",
 ];
