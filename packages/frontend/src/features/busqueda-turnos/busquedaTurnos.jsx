@@ -43,7 +43,7 @@ function agruparTurnos(turnos) {
     return Array.from(mapa.values());
 }
 
-export default function BusquedaTurnos({ idUsuario, carrito, agregarTurnoAlCarrito, eliminarTurnoDelCarrito, limpiarElCarrito }) {
+export default function BusquedaTurnos({ idUsuario, carrito, agregarTurnoAlCarrito, eliminarTurnoDelCarrito, limpiarElCarrito, manejoCarrito }) {
     //datos para los filtros:
     const [pacienteID, setPacienteID] = useState(""); //por ahora; hasta tener el login
     const [medicos, setMedicos] = useState(medicosEjemplo);
@@ -94,7 +94,7 @@ export default function BusquedaTurnos({ idUsuario, carrito, agregarTurnoAlCarri
     const agregarAlCarrito = (id) => {
         const turno = turnos.find(t => t.id === id);
         agregarTurnoAlCarrito(turno);
-        setCarritoAbierto(true);
+        manejoCarrito.abrir();
     };
     const eliminarDelCarrito = (id) => {
         eliminarTurnoDelCarrito(id);
@@ -154,19 +154,6 @@ export default function BusquedaTurnos({ idUsuario, carrito, agregarTurnoAlCarri
                     }}
                 />
             </main>
-            
-            <Drawer
-                anchor="right"
-                open={carritoAbierto}
-                onClose={() => setCarritoAbierto(false)}
-            >
-                <CarritoTurnos
-                    items={carrito}
-                    onEliminar={eliminarDelCarrito}
-                    onConfirmar={limpiarElCarrito}
-                    onCerrar={() => setCarritoAbierto(false)}
-                />
-            </Drawer>
         </div>
     );
 }

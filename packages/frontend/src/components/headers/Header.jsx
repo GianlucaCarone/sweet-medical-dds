@@ -18,7 +18,7 @@ import {
   Button,
 } from "@mui/material";
 
-const Header = ({ carrito, limpiarCarrito, eliminarDelCarrito }) => {
+const Header = ({ carrito, limpiarCarrito,  eliminarDelCarrito, manejoCarrito}) => {
   const { user } = useAuth(); // Traemos al usuario logueado
 
   const [cantUnidades, setCantUnidades] = useState(0);
@@ -82,7 +82,7 @@ const Header = ({ carrito, limpiarCarrito, eliminarDelCarrito }) => {
 
         <div className="header-actions">
           <IconButton
-            onClick={() => setCarritoAbierto(true)}
+            onClick={() => manejoCarrito.abrir()}
             aria-label="carrito de turnos"
             sx={{ marginRight: 2 }} // Un poco de margen a la derecha
           >
@@ -101,14 +101,14 @@ const Header = ({ carrito, limpiarCarrito, eliminarDelCarrito }) => {
               onLogoutSuccess={handleLogoutExitoso}
             />
           ) : (
-            <Button 
-              variant="contained" 
-              color="primary" 
+            <Button
+              variant="contained"
+              color="primary"
               onClick={() => setLoginAbierto(true)}
-              sx={{ 
-                textTransform: 'none', // Evita que el texto se ponga todo en mayúsculas
-                borderRadius: '20px',  // Le da un borde más redondeado y amigable
-                fontWeight: 'bold'
+              sx={{
+                textTransform: "none", // Evita que el texto se ponga todo en mayúsculas
+                borderRadius: "20px", // Le da un borde más redondeado y amigable
+                fontWeight: "bold",
               }}
             >
               Iniciar Sesión
@@ -132,18 +132,20 @@ const Header = ({ carrito, limpiarCarrito, eliminarDelCarrito }) => {
           </button>
         </div> */}
         {/* --- DRAWER DEL CARRITO --- */}
-        <Drawer
-          anchor="right"
-          open={carritoAbierto}
-          onClose={() => setCarritoAbierto(false)}
-        >
-          <CarritoTurnos
-            items={carrito}
-            onEliminar={eliminarDelCarrito}
-            onConfirmar={limpiarCarrito}
-            onCerrar={() => setCarritoAbierto(false)}
-          />
-        </Drawer>
+        {
+          <Drawer
+            anchor="right"
+            open={manejoCarrito.getCarritoAbierto()}
+            onClose={() => manejoCarrito.cerrar()}
+          >
+            <CarritoTurnos
+              items={carrito}
+              onEliminar={eliminarDelCarrito}
+              onConfirmar={limpiarCarrito}
+              onCerrar={() => manejoCarrito.cerrar()}
+            />
+          </Drawer>
+        }
 
         {/* ---Modal DE LOGIN --- */}
         <ModalLogin

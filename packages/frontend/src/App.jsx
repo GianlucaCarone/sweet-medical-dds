@@ -10,6 +10,14 @@ import "./App.css";
 function App() {
   const [message, setMessage] = useState("");
   const [carrito, setCarrito] = useState([]); //lista de turnos
+  const [carritoAbierto, setCarritoAbierto] = useState(false);
+
+  const manejoCarrito = {
+    getCarritoAbierto: () => carritoAbierto,
+    abrir: () => setCarritoAbierto(true),
+    cerrar: () => setCarritoAbierto(false),
+    toggle: () => setCarritoAbierto((prev) => !prev),
+  }
 
   const agregarAlCarrito = (turno) => {
     setCarrito([...carrito, turno]);
@@ -34,11 +42,12 @@ function App() {
       <Routes>
         <Route
           path="/"
-          element={
+          element={ 
             <Layout
               carrito={carrito}
               eliminarTurnoDelCarrito={eliminarDelCarrito}
               limpiarElCarrito={limpiarCarrito}
+              manejoCarrito={manejoCarrito}
             />
           }
         >
@@ -50,6 +59,7 @@ function App() {
                 agregarTurnoAlCarrito={agregarAlCarrito}
                 eliminarTurnoDelCarrito={eliminarDelCarrito}
                 limpiarElCarrito={limpiarCarrito}
+                manejoCarrito={manejoCarrito}
               />
             }
           />
