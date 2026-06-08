@@ -37,6 +37,7 @@ function App() {
             <Layout
               carrito={carrito}
               eliminarTurnoDelCarrito={eliminarDelCarrito}
+              limpiarElCarrito={limpiarCarrito}
             />
           }
         >
@@ -47,6 +48,7 @@ function App() {
                 carrito={carrito}
                 agregarTurnoAlCarrito={agregarAlCarrito}
                 eliminarTurnoDelCarrito={eliminarDelCarrito}
+                limpiarElCarrito={limpiarCarrito}
               />
             }
           />

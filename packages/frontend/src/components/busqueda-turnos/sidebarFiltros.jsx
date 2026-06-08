@@ -122,7 +122,7 @@ export default function SidebarFiltros({ medicos, sedes, especialidades, practic
                     >
                         <MenuItem value="Todas">Todas</MenuItem>
                         {practicas
-                            .filter((practica) => practica.idEspecialidad === especialidad?.id || practica.idEspecialidad === null)
+                            .filter((practica) => practica.especialidadPadre === especialidad?.id || practica.especialidadPadre === null)
                             .map((practica) => (
                                 <MenuItem key={practica.id} value={practica.id}>
                                     {practica.nombre}

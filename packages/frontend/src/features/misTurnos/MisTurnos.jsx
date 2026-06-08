@@ -1,160 +1,18 @@
 import "./MisTurnos.css";
-import TurnoCard from "../../components/turnos/TurnoCard";
-import EstadisticaTurnoCard from "../../components/turnos/EstadisticaTurnoCard";
+import TurnoCard from "../../components/mis-turnos/TurnoCard";
+import EstadisticaTurnoCard from "../../components/mis-turnos/EstadisticaTurnoCard";
 import CalendarMonthRoundedIcon from "@mui/icons-material/CalendarMonthRounded";
 import CheckCircleRoundedIcon from "@mui/icons-material/CheckCircleRounded";
 import CancelRoundedIcon from "@mui/icons-material/CancelRounded";
 import NotificationsRoundedIcon from "@mui/icons-material/NotificationsRounded";
 import { useState, useEffect } from "react";
-import TurnosEmptyState from "../../components/turnos/TurnosEmptyState";
-import TurnoCardSkeleton from "../../components/turnos/TurnoCardSkeleton";
-import EstadisticaTurnoCardSkeleton from "../../components/turnos/EstadisticaTurnoCardSkeleton";
-import TurnoHistorialSkeleton from "../../components/turnos/TurnoHistorialSkeleton";
+import TurnosEmptyState from "../../components/mis-turnos/TurnosEmptyState";
+import TurnoCardSkeleton from "../../components/mis-turnos/TurnoCardSkeleton";
+import EstadisticaTurnoCardSkeleton from "../../components/mis-turnos/EstadisticaTurnoCardSkeleton";
+import TurnoHistorialSkeleton from "../../components/mis-turnos/TurnoHistorialSkeleton";
 import { useNavigate } from "react-router-dom";
-import Toast from "../../components/turnos/Toast";
-
-const proximosTurnos = [
-
-    {
-        id: 1,
-        doctor: "Dra. Ana López",
-        foto: "https://randomuser.me/api/portraits/women/68.jpg",
-        especialidad: "Cardiología",
-        fecha: "Lunes, 1 de Junio de 2026",
-        hora: "10:00 hs",
-        sede: "Av. Cabildo 1234, CABA",
-        cobertura: "OSDE 210 - Sin cargo",
-        estado: "CONFIRMADO",
-    },
-    {
-        id: 2,
-        doctor: "Dra. Camila Ibáñez",
-        foto: "https://randomuser.me/api/portraits/women/44.jpg",
-        especialidad: "Dermatología",
-        fecha: "Lunes, 15 de Junio de 2026",
-        hora: "12:00 hs",
-        sede: "Sede Palermo",
-        cobertura: "Cobertura parcial · Abonás $4.200",
-        estado: "RESERVADO",
-    },
-    {
-        id: 3,
-        doctor: "Dra. Ana López",
-        foto: "https://randomuser.me/api/portraits/women/68.jpg",
-        especialidad: "Cardiología",
-        fecha: "Lunes, 1 de Junio de 2026",
-        hora: "10:00 hs",
-        sede: "Av. Cabildo 1234, CABA",
-        cobertura: "OSDE 210 - Sin cargo",
-        estado: "CONFIRMADO",
-    },
-    /*
-    {
-        id: 4,
-        doctor: "Dra. Camila Ibáñez",
-        foto: "https://randomuser.me/api/portraits/women/44.jpg",
-        especialidad: "Dermatología",
-        fecha: "Lunes, 15 de Junio de 2026",
-        hora: "12:00 hs",
-        sede: "Sede Palermo",
-        cobertura: "Cobertura parcial · Abonás $4.200",
-        estado: "RESERVADO",
-    },
-    {
-        id: 5,
-        doctor: "Dra. Ana López",
-        foto: "https://randomuser.me/api/portraits/women/68.jpg",
-        especialidad: "Cardiología",
-        fecha: "Lunes, 1 de Junio de 2026",
-        hora: "10:00 hs",
-        sede: "Av. Cabildo 1234, CABA",
-        cobertura: "OSDE 210 - Sin cargo",
-        estado: "CONFIRMADO",
-    },
-    
-{
-id: 6,
-doctor: "Dra. Camila Ibáñez",
-foto: "https://randomuser.me/api/portraits/women/44.jpg",
-especialidad: "Dermatología",
-fecha: "Lunes, 15 de Junio de 2026",
-hora: "12:00 hs",
-sede: "Sede Palermo",
-cobertura: "Cobertura parcial · Abonás $4.200",
-estado: "RESERVADO",
-},
-{
-id: 7,
-doctor: "Dra. Camila Ibáñez",
-foto: "https://randomuser.me/api/portraits/women/44.jpg",
-especialidad: "Dermatología",
-fecha: "Lunes, 15 de Junio de 2026",
-hora: "12:00 hs",
-sede: "Sede Palermo",
-cobertura: "Cobertura parcial · Abonás $4.200",
-estado: "RESERVADO",
-}
-*/
-];
-
-const historialTurnos = [
-
-    {
-        id: 10,
-        doctor: "Dra. María Fernández",
-        foto: "https://randomuser.me/api/portraits/women/48.jpg",
-        especialidad: "Pediatría",
-        fecha: "15/11/2025",
-        hora: "09:30 hs",
-        sede: "Sede Centro",
-        cobertura: "Turno realizado",
-        estado: "REALIZADO",
-    },
-    {
-        id: 11,
-        doctor: "Dra. María Fernández",
-        foto: "https://randomuser.me/api/portraits/women/48.jpg",
-        especialidad: "Pediatría",
-        fecha: "15/11/2025",
-        hora: "09:30 hs",
-        sede: "Sede Centro",
-        cobertura: "Turno realizado",
-        estado: "REALIZADO",
-    },
-    {
-        id: 12,
-        doctor: "Dra. María Fernández",
-        foto: "https://randomuser.me/api/portraits/women/48.jpg",
-        especialidad: "Pediatría",
-        fecha: "15/11/2025",
-        hora: "09:30 hs",
-        sede: "Sede Centro",
-        cobertura: "Turno realizado",
-        estado: "REALIZADO",
-    },
-    {
-        id: 13,
-        doctor: "Dra. María Fernández",
-        foto: "https://randomuser.me/api/portraits/women/48.jpg",
-        especialidad: "Pediatría",
-        fecha: "15/11/2025",
-        hora: "09:30 hs",
-        sede: "Sede Centro",
-        cobertura: "Turno realizado",
-        estado: "REALIZADO",
-    },
-    {
-        id: 14,
-        doctor: "Dra. María Fernández",
-        foto: "https://randomuser.me/api/portraits/women/48.jpg",
-        especialidad: "Pediatría",
-        fecha: "15/11/2025",
-        hora: "09:30 hs",
-        sede: "Sede Centro",
-        cobertura: "Turno realizado",
-        estado: "REALIZADO",
-    },
-];
+import Toast from "../../components/mis-turnos/Toast";
+import { proximosTurnos, historialTurnos } from "../../mockdata/turnos";
 
 export default function MisTurnos() {
     const [paginaProximos, setPaginaProximos] = useState(1);

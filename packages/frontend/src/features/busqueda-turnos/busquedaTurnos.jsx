@@ -1,9 +1,9 @@
-import React from 'react';
+import React, { use } from 'react';
 import { useEffect, useState, useCallback } from "react";
-import SidebarFiltros from './sidebarFiltros.jsx';
-import TarjetaTurno from './tarjetaTurno.jsx';
-import TarjetaTurnoSkeleton from './tarjetaTurnoSkeleton.jsx';
-import CarritoTurnos from './carritoTurnos.jsx';
+import SidebarFiltros from '../../components/busqueda-turnos/sidebarFiltros.jsx';
+import TarjetaTurno from '../../components/busqueda-turnos/tarjetaTurno.jsx';
+import TarjetaTurnoSkeleton from '../../components/busqueda-turnos/tarjetaTurnoSkeleton.jsx';
+import CarritoTurnos from '../../components/headers/carritoTurnos.jsx';
 import Drawer from '@mui/material/Drawer';
 import Pagination from '@mui/material/Pagination';
 import { turnosEjemplo, datosPaginacionEjemplo } from '../../mockdata/turnos.js';
@@ -43,7 +43,7 @@ function agruparTurnos(turnos) {
     return Array.from(mapa.values());
 }
 
-export default function BusquedaTurnos({ carrito, agregarTurnoAlCarrito, eliminarTurnoDelCarrito }) {
+export default function BusquedaTurnos({ idUsuario, carrito, agregarTurnoAlCarrito, eliminarTurnoDelCarrito, limpiarElCarrito }) {
     //datos para los filtros:
     const [pacienteID, setPacienteID] = useState(""); //por ahora; hasta tener el login
     const [medicos, setMedicos] = useState(medicosEjemplo);
@@ -53,7 +53,8 @@ export default function BusquedaTurnos({ carrito, agregarTurnoAlCarrito, elimina
     //los turnos en si:
     const [turnos, setTurnos] = useState(turnosEjemplo);
     const [conjuntosTurnos, setConjuntosTurnos] = useState(agruparTurnos(turnosEjemplo));
-    const [numeroPagina, setNumeroPagina] = useState(datosPaginacionEjemplo.numeroPagina);
+    const [dataPaginacion, setDataPaginacion] = useState(datosPaginacionEjemplo);
+    const [numeroPagina, setNumeroPagina] = useState(1);
     //funcionamiento general de la vista:
     const [ordenarPor, setOrdenarPor] = useState("ordenarPorFecha");
     const [carritoAbierto, setCarritoAbierto] = useState(false);
@@ -83,12 +84,12 @@ export default function BusquedaTurnos({ carrito, agregarTurnoAlCarrito, elimina
                 'pacienteId': pacienteID,
                 ordenarPor: 'asc'
             };
-            const paginacion = { numeroPagina }
+            const dataPaginacion = { numeroPagina };
             //const turnosFiltrados = getTurnosDisponiblesFiltradoPaginado(filtros, paginacion);
             //setTurnos(response.turnos);
-            //setPaginacion(response.paginacion);
+            //setDataPaginacion(response.paginacion);
             //setLoading(false);
-    }, [ordenarPor]);
+    }, [ordenarPor, numeroPagina]);
 
     const agregarAlCarrito = (id) => {
         const turno = turnos.find(t => t.id === id);
@@ -118,7 +119,7 @@ export default function BusquedaTurnos({ carrito, agregarTurnoAlCarrito, elimina
             {/* Contenedor de Resultados del lado derecho */}
             <main className="contenido-resultados">
                 <header className="header-resultados">
-                    <h3>{datosPaginacionEjemplo.totalResultados} turnos disponibles</h3>
+                    <h3>{dataPaginacion.totalResultados} turnos disponibles</h3>
                     <div className="ordenar-por">
                         <label>Ordenar por:</label>
                         <select defaultValue="ordenarPorFecha" onChange={(e) => setOrdenarPor(e.target.value)}>
@@ -131,7 +132,7 @@ export default function BusquedaTurnos({ carrito, agregarTurnoAlCarrito, elimina
                 {/* Listado dinámico de las tarjetas médicas */}
                 <section className="lista-turno">
                     {loading
-                        ? Array.from({ length: datosPaginacionEjemplo.limitePorPagina }).map((_, i) => ( //que la cantidad de skeletons sea igual al tamaño de pagina
+                        ? Array.from({ length: dataPaginacion.limitePorPagina }).map((_, i) => ( //que la cantidad de skeletons sea igual al tamaño de pagina
                             <TarjetaTurnoSkeleton key={i} />
                         ))
                         : conjuntosTurnos.map((turno) => (
@@ -145,7 +146,7 @@ export default function BusquedaTurnos({ carrito, agregarTurnoAlCarrito, elimina
                             />
                         ))}
                 </section>
-                <Pagination count={datosPaginacionEjemplo.totalPaginas} color="#137333"
+                <Pagination count={dataPaginacion.totalPaginas} color="#137333"
                     page={numeroPagina}
                     onChange={(e, page) => {
                         setNumeroPagina(page);
@@ -162,6 +163,7 @@ export default function BusquedaTurnos({ carrito, agregarTurnoAlCarrito, elimina
                 <CarritoTurnos
                     items={carrito}
                     onEliminar={eliminarDelCarrito}
+                    onConfirmar={limpiarElCarrito}
                     onCerrar={() => setCarritoAbierto(false)}
                 />
             </Drawer>

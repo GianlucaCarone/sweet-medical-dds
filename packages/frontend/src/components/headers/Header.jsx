@@ -6,9 +6,9 @@ import CampanitaNotificacion from "./CampanitaNotification.jsx";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import Drawer from "@mui/material/Drawer";
 import { useState, useEffect } from "react";
-import CarritoTurnos from "../../features/busqueda-turnos/carritoTurnos.jsx";
+import CarritoTurnos from "./carritoTurnos.jsx";
 
-const Header = ({ userName, carrito, eliminarDelCarrito }) => {
+const Header = ({ userName, carrito, limpiarCarrito, eliminarDelCarrito }) => {
   const [cantUnidades, setCantUnidades] = useState(0);
   const [carritoAbierto, setCarritoAbierto] = useState(false);
 
@@ -67,6 +67,7 @@ const Header = ({ userName, carrito, eliminarDelCarrito }) => {
           <CarritoTurnos
             items={carrito}
             onEliminar={eliminarDelCarrito}
+            onConfirmar={limpiarCarrito}
             onCerrar={() => setCarritoAbierto(false)}
           />
         </Drawer>
