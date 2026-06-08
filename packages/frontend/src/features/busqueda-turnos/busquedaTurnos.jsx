@@ -62,7 +62,7 @@ export default function BusquedaTurnos({ idUsuario, carrito, agregarTurnoAlCarri
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        const {user} = useAuth(); //obtenemos el id del usuario logueado desde el contexto de autenticación
+        //const {user} = useAuth(); //obtenemos el id del usuario logueado desde el contexto de autenticación
         const cargarListados = async () => {
             /*
             const pacienteId = await getPacienteByIdUsuario(user.id)

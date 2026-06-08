@@ -42,7 +42,7 @@ function App() {
       <Routes>
         <Route
           path="/"
-          element={ 
+          element={
             <Layout
               carrito={carrito}
               eliminarTurnoDelCarrito={eliminarDelCarrito}
