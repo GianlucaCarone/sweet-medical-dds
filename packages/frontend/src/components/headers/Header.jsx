@@ -8,7 +8,7 @@ import Drawer from "@mui/material/Drawer";
 import { useState, useEffect } from "react";
 import CarritoTurnos from "./carritoTurnos.jsx";
 
-const Header = ({ userName, carrito, limpiarCarrito, eliminarDelCarrito }) => {
+const Header = ({ userName, carrito, limpiarCarrito, eliminarDelCarrito, toggleTheme }) => {
   const [cantUnidades, setCantUnidades] = useState(0);
   const [carritoAbierto, setCarritoAbierto] = useState(false);
 
@@ -41,6 +41,8 @@ const Header = ({ userName, carrito, limpiarCarrito, eliminarDelCarrito }) => {
             <ShoppingCartIcon color="white" />
             <span className="cart-count">{cantUnidades}</span>
           </button>
+          <Button onClick={toggleTheme} />
+          <CampanitaNotificacion />
           <MenuUsuario userName={userName} />
         </div>
         {/* <div className="navbar-actions">

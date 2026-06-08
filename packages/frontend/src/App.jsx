@@ -6,7 +6,7 @@ import BusquedaTurnos from "./features/busqueda-turnos/busquedaTurnos.jsx";
 import Home from "./features/home/Home.jsx";
 import "./App.css";
 
-function App() {
+function App({ toggleTheme }) {
   const [message, setMessage] = useState("");
   const [carrito, setCarrito] = useState([]); //lista de turnos
 

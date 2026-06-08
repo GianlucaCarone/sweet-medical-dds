@@ -13,6 +13,7 @@ const Layout = ({ carrito, eliminarTurnoDelCarrito, limpiarElCarrito }) => {
           carrito={carrito}
           eliminarDelCarrito={eliminarTurnoDelCarrito}
           limpiarCarrito={limpiarElCarrito}
+          toggleTheme={toggleTheme}
         />
         <main className="app-main">
           <Outlet />
