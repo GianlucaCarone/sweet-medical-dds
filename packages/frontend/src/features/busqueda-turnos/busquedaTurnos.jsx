@@ -10,6 +10,7 @@ import { turnosEjemplo, datosPaginacionEjemplo } from '../../mockdata/turnos.js'
 import { medicosEjemplo, especialidadesEjemplo, practicasEjemplo, sedesEjemplo } from '../../mockdata/busquedaTurnos.js';
 import { getTurnosDisponiblesFiltradoPaginado, getListadoMedicos, getListadoEspecialidades, getListadoPracticas, getListadoSedes } from '../../api/api.js';
 import './busquedaTurnos.css';
+import { useAuth } from '../../context/AuthContext.jsx';
 
 function agruparTurnos(turnos) {
     const mapa = new Map();
@@ -43,7 +44,7 @@ function agruparTurnos(turnos) {
     return Array.from(mapa.values());
 }
 
-export default function BusquedaTurnos({ idUsuario, carrito, agregarTurnoAlCarrito, eliminarTurnoDelCarrito, limpiarElCarrito }) {
+export default function BusquedaTurnos({ idUsuario, carrito, agregarTurnoAlCarrito, eliminarTurnoDelCarrito, limpiarElCarrito, manejoCarrito }) {
     //datos para los filtros:
     const [pacienteID, setPacienteID] = useState(""); //por ahora; hasta tener el login
     const [medicos, setMedicos] = useState(medicosEjemplo);
@@ -61,9 +62,10 @@ export default function BusquedaTurnos({ idUsuario, carrito, agregarTurnoAlCarri
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
+        //const {user} = useAuth(); //obtenemos el id del usuario logueado desde el contexto de autenticación
         const cargarListados = async () => {
             /*
-            const pacienteId = await getPacienteByIdUsuario(idUsuario)
+            const pacienteId = await getPacienteByIdUsuario(user.id)
             setPacienteID(pacienteId)
             const listadoMedicos = await getListadoMedicos();
             setMedicos(listadoMedicos);
@@ -94,7 +96,7 @@ export default function BusquedaTurnos({ idUsuario, carrito, agregarTurnoAlCarri
     const agregarAlCarrito = (id) => {
         const turno = turnos.find(t => t.id === id);
         agregarTurnoAlCarrito(turno);
-        setCarritoAbierto(true);
+        manejoCarrito.abrir();
     };
     const eliminarDelCarrito = (id) => {
         eliminarTurnoDelCarrito(id);
@@ -154,19 +156,6 @@ export default function BusquedaTurnos({ idUsuario, carrito, agregarTurnoAlCarri
                     }}
                 />
             </main>
-            
-            <Drawer
-                anchor="right"
-                open={carritoAbierto}
-                onClose={() => setCarritoAbierto(false)}
-            >
-                <CarritoTurnos
-                    items={carrito}
-                    onEliminar={eliminarDelCarrito}
-                    onConfirmar={limpiarElCarrito}
-                    onCerrar={() => setCarritoAbierto(false)}
-                />
-            </Drawer>
         </div>
     );
 }

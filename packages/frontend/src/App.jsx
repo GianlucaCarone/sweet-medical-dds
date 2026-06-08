@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Routes, Route } from "react-router-dom";
 import Layout from "./features/layout/Layout.jsx";
+import Login from "./components/login/Login.jsx";
 import MisTurnos from "./features/misTurnos/MisTurnos.jsx";
 import BusquedaTurnos from "./features/busqueda-turnos/busquedaTurnos.jsx";
 
@@ -9,6 +10,14 @@ import "./App.css";
 function App() {
   const [message, setMessage] = useState("");
   const [carrito, setCarrito] = useState([]); //lista de turnos
+  const [carritoAbierto, setCarritoAbierto] = useState(false);
+
+  const manejoCarrito = {
+    getCarritoAbierto: () => carritoAbierto,
+    abrir: () => setCarritoAbierto(true),
+    cerrar: () => setCarritoAbierto(false),
+    toggle: () => setCarritoAbierto((prev) => !prev),
+  }
 
   const agregarAlCarrito = (turno) => {
     setCarrito([...carrito, turno]);
@@ -38,6 +47,7 @@ function App() {
               carrito={carrito}
               eliminarTurnoDelCarrito={eliminarDelCarrito}
               limpiarElCarrito={limpiarCarrito}
+              manejoCarrito={manejoCarrito}
             />
           }
         >
@@ -49,6 +59,7 @@ function App() {
                 agregarTurnoAlCarrito={agregarAlCarrito}
                 eliminarTurnoDelCarrito={eliminarDelCarrito}
                 limpiarElCarrito={limpiarCarrito}
+                manejoCarrito={manejoCarrito}
               />
             }
           />
@@ -60,6 +71,7 @@ function App() {
     
           {/* <Route index element={<Home />} /> */}
         </Route>
+      <Route path="/login" element={<Login />} />
       </Routes>
     );
   }
