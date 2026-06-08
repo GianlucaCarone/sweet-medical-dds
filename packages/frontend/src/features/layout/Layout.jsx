@@ -9,7 +9,7 @@ const Layout = ({ carrito, eliminarTurnoDelCarrito }) => {
       <div className="app-grid">
         <Header
           className="app-header"
-          userName="Andino Franco"
+          userName={null} //aún no tenemos autenticación, así que por ahora lo dejamos como null
           carrito={carrito}
           eliminarDelCarrito={eliminarTurnoDelCarrito}
         />

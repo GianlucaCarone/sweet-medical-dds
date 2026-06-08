@@ -7,6 +7,7 @@ import CssBaseline from "@mui/material/CssBaseline";
 import "./index.css";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
+import { AuthProvider } from "./context/AuthContext.jsx"; // Importamos el Provider del contexto de autenticación
 
 const theme = createTheme({
   palette: {
@@ -26,6 +27,7 @@ const theme = createTheme({
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
+    <AuthProvider>
     <ThemeProvider theme={theme}>
       {/* CssBaseline inyecta los estilos globales, incluyendo el fontFamily al body */}
       <CssBaseline /> 
@@ -33,6 +35,7 @@ root.render(
         <App />
       </BrowserRouter>
     </ThemeProvider>
+    </AuthProvider>
   </React.StrictMode>
 );
 

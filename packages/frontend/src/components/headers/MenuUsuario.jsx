@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom"; // Importamos react-router-dom
 import "./MenuUsuario.css"; // Importamos nuestro nuevo CSS
+import { useAuth } from "../../context/AuthContext"; // Importamos nuestro contexto
 
 // Importaciones de Material UI agrupadas para mayor limpieza
 import {
@@ -16,8 +17,9 @@ import {
 import Logout from "@mui/icons-material/Logout";
 import ModalPerfil from "./ModalPerfil";
 
-export default function MenuUsuario({ userName = "Andino Franco" }) {
+export default function MenuUsuario({ userName = "Andino Franco", onLogoutSuccess }) {
   const navigate = useNavigate(); // Hook para navegar por las rutas
+  const { logout } = useAuth(); // Traemos la función de deslogueo global
 
   // Estados
   const [anchorEl, setAnchorEl] = useState(null);
@@ -37,11 +39,10 @@ export default function MenuUsuario({ userName = "Andino Franco" }) {
 
   // Acción de Cerrar Sesión usando React Router
   const handleLogout = () => {
-    handleMenuClose();
-    // Aquí a futuro puedes limpiar el localStorage o los tokens de sesión:
-    // localStorage.removeItem("token");
-
-    navigate("/login"); // Redirige al inicio o al login
+    handleMenuClose();   // 1. Cerramos el menú desplegable
+    logout();            // 2. Borramos token y usuario del estado global
+    onLogoutSuccess();   // 3. Le avisamos al Header que dispare el Snackbar
+    navigate("/");       // 4. Redirigimos a la landing page (home)
   };
 
   return (
@@ -55,6 +56,8 @@ export default function MenuUsuario({ userName = "Andino Franco" }) {
             aria-controls={openMenu ? "account-menu" : undefined}
             aria-haspopup="true"
             aria-expanded={openMenu}
+            // el bloque es flexible para que puedas agregar más cosas al header sin que se rompa el diseño del menú desplegable
+            display="flex"
           >
             <Avatar className="menu-user-avatar">
               {userName[0].toUpperCase()}

@@ -71,3 +71,15 @@ export const reservarTurno = async (turnoId, pacienteId, costo) => {
         throw e;
     }
 }
+
+export const login = async (email, password) => {
+    return new Promise((resolve, reject) => {
+      setTimeout(() => {
+        if (email === 'user@example.com' && password === 'password') {
+          resolve({ user: { id: 1, email: email }, token: 'mock-jwt-token' });
+        } else {
+          reject(new Error('Credenciales inválidas'));
+        }
+      }, 1000);
+    });
+  }; 
