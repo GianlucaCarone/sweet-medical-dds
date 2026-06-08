@@ -10,6 +10,7 @@ import { turnosEjemplo, datosPaginacionEjemplo } from '../../mockdata/turnos.js'
 import { medicosEjemplo, especialidadesEjemplo, practicasEjemplo, sedesEjemplo } from '../../mockdata/busquedaTurnos.js';
 import { getTurnosDisponiblesFiltradoPaginado, getListadoMedicos, getListadoEspecialidades, getListadoPracticas, getListadoSedes } from '../../api/api.js';
 import './busquedaTurnos.css';
+import { useAuth } from '../../context/AuthContext.jsx';
 
 function agruparTurnos(turnos) {
     const mapa = new Map();
@@ -61,9 +62,10 @@ export default function BusquedaTurnos({ idUsuario, carrito, agregarTurnoAlCarri
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
+        const {user} = useAuth(); //obtenemos el id del usuario logueado desde el contexto de autenticación
         const cargarListados = async () => {
             /*
-            const pacienteId = await getPacienteByIdUsuario(idUsuario)
+            const pacienteId = await getPacienteByIdUsuario(user.id)
             setPacienteID(pacienteId)
             const listadoMedicos = await getListadoMedicos();
             setMedicos(listadoMedicos);

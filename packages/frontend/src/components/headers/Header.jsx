@@ -39,7 +39,7 @@ const Header = ({ carrito, limpiarCarrito,  eliminarDelCarrito, manejoCarrito}) 
     setLoginAbierto(false);
     // 2. Seteamos el mensaje personalizado (asumiendo que tu usuario tiene un 'nombre')
     setMensajeSnackbar(
-      `¡Bienvenido/a de nuevo, ${usuario.nombre || "usuario"}!`,
+      `¡Bienvenido/a de nuevo, ${user.email || "usuario"}!`,
     );
     // 3. Disparamos el Snackbar
     setSnackbarAbierto(true);
