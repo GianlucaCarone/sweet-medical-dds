@@ -60,17 +60,20 @@ export default function TurnoCard({ turno, esHistorial = false, onCancelar }) {
     return (
         <>
             <article className={`turno-card ${esHistorial ? "turno-card-historial" : ""}`}>
+
+                <MedicoCard turno={turno}/>
+
                 <div className="turno-main">
-                    <div className="doctor-avatar">
+                    {/* <div className="doctor-avatar">
                         {turno.foto ? (
                             <img src={turno.foto} alt={turno.doctor} />
                         ) : (
                             <span>{turno.doctor.slice(0, 2).toUpperCase()}</span>
                         )}
-                    </div>
+                    </div> */}
 
                     <div className="turno-info">
-                        <div className="turno-title-row">
+                        {/* <div className="turno-title-row">
                             <div>
                                 <h3>{turno.doctor}</h3>
                                 <p className="especialidad">{turno.especialidad}</p>
@@ -85,7 +88,7 @@ export default function TurnoCard({ turno, esHistorial = false, onCancelar }) {
                             <span>📅 {turno.fecha}</span>
                             <span>🕒 {turno.hora}</span>
                             <span>📍 {turno.sede}</span>
-                        </div>
+                        </div> */}
 
                         <div className="turno-footer">
                             <div className="cobertura-chip">

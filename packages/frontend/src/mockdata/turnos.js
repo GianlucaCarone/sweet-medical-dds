@@ -16,7 +16,7 @@ const turnosEjemplo = [
         },
         fechaHora: "2024-06-04T08:00:00",
         costo: 0,
-        estadoCobertura: "TOTALMENTE CUBIERTA"
+        estadoCobertura: "total"
     },
     {
         id: 2,
@@ -35,7 +35,7 @@ const turnosEjemplo = [
         },
         fechaHora: "2024-06-04T08:45:00",
         costo: 0,
-        estadoCobertura: "TOTALMENTE CUBIERTA"
+        estadoCobertura: "total"
     },
     {
         id: 3,
@@ -54,7 +54,7 @@ const turnosEjemplo = [
         },
         fechaHora: "2024-06-04T09:30:00",
         costo: 0,
-        estadoCobertura: "TOTALMENTE CUBIERTA"
+        estadoCobertura: "total"
     },
     {
         id: 4,
@@ -73,7 +73,7 @@ const turnosEjemplo = [
         },
         fechaHora: "2024-06-04T10:45:00",
         costo: 0,
-        estadoCobertura: "TOTALMENTE CUBIERTA"
+        estadoCobertura: "total"
     },
     {
         id: 5,
@@ -92,7 +92,7 @@ const turnosEjemplo = [
         },
         fechaHora: "2024-06-04T08:30:00",
         costo: 18000,
-        estadoCobertura: "PARCIALMENTE CUBIERTA"
+        estadoCobertura: "parcial"
     },
     {
         id: 6,
@@ -111,7 +111,7 @@ const turnosEjemplo = [
         },
         fechaHora: "2024-06-04T09:00:00",
         costo: 18000,
-        estadoCobertura: "PARCIALMENTE CUBIERTA"
+        estadoCobertura: "parcial"
     },
     {
         id: 7,
@@ -130,7 +130,7 @@ const turnosEjemplo = [
         },
         fechaHora: "2024-06-04T09:30:00",
         costo: 18000,
-        estadoCobertura: "PARCIALMENTE CUBIERTA"
+        estadoCobertura: "parcial"
     },
     {
         id: 8,
@@ -149,7 +149,7 @@ const turnosEjemplo = [
         },
         fechaHora: "2024-06-04T14:00:00",
         costo: 25000,
-        estadoCobertura: "NO CUBIERTA"
+        estadoCobertura: "no_cubierta"
     },
     {
         id: 9,
@@ -168,7 +168,7 @@ const turnosEjemplo = [
         },
         fechaHora: "2024-06-04T14:30:00",
         costo: 25000,
-        estadoCobertura: "NO CUBIERTA"
+        estadoCobertura: "no_cubierta"
     },
     {
         id: 10,
@@ -187,7 +187,7 @@ const turnosEjemplo = [
         },
         fechaHora: "2024-06-04T16:30:00",
         costo: 25000,
-        estadoCobertura: "NO CUBIERTA"
+        estadoCobertura: "no_cubierta"
     }
 ];
 const datosPaginacionEjemplo = {

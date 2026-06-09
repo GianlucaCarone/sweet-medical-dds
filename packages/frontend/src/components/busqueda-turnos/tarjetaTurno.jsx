@@ -8,6 +8,7 @@ import MedicalServicesIcon from "@mui/icons-material/MedicalServices";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 import "./tarjetaTurno.css";
 import { useCart } from "../../context/CartContext.jsx";
+import MedicoCard from "../../shared/MedicoCard/MedicoCard";
 
 export default function TarjetaTurno({ turno, especialidades, practicas, onReservar }) {
   const [turnoSeleccionado, setTurnoSeleccionado] = useState(null);
@@ -34,39 +35,7 @@ export default function TarjetaTurno({ turno, especialidades, practicas, onReser
   return (
     <div className="tarjeta-turno">
 
-      <div className="info-principal">
-        <div className="info-medico">
-          <div className="avatar-placeholder">
-            <PersonIcon fontSize="24px" />
-          </div>
-
-          <div className="datos-turno">
-            <h4>{turno.medico.nombre}</h4>
-
-            <p className="especialidad-practica">
-              <MedicalServicesIcon fontSize="15px" />
-              {formatoServicio(turno.servicio)}
-            </p>
-
-            <p className="sede">
-              <LocationPinIcon fontSize="15px" />
-              {turno.sede.nombre}
-            </p>
-          </div>
-        </div>
-
-        <div className="info-lateral">
-                    <span className="badge-cobertura">
-                        {turno.estadoCobertura}
-                    </span>
-
-          <span className="costo-turno">
-            {turno.costo !== 0
-              ? `$${turno.costo.toLocaleString()} `
-              : "Sin costo"}
-          </span>
-        </div>
-      </div>
+      <MedicoCard turno={turno} especialidades={especialidades} practicas={practicas}/>
 
       {/* Grid de Turnos inferiores */}
       <div className="seccion-inferior-turnos">
