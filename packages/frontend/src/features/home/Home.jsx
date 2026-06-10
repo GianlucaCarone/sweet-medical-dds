@@ -1,6 +1,13 @@
-import ProductSearchBar from "../../components/productSearchBar/ProductSearchBar";
-import ProductCarousel from "../../components/productCarousel/ProductCarousel";
+import { useNavigate } from "react-router-dom";
 import "./Home.css";
+import { Button, CardContent, Chip, Typography, Box } from "@mui/material";
+import ShieldOutlinedIcon from '@mui/icons-material/ShieldOutlined';
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
+import SearchIcon from '@mui/icons-material/Search';
+import EventAvailableIcon from '@mui/icons-material/EventAvailable';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import TituloSeccion from "../../shared/TituloSeccion/TituloSeccion";
+import CardGen from "../../shared/CardGen/CardGen"
 
 const Home = () => {
 
@@ -70,122 +77,89 @@ const Home = () => {
         </Button>
       </div>
     </div>
-    
-    <div className="infoEstadistica mx-5">  
-      <div className="d-flex justify-content-around align-items-center p-3">
-        <div className="d-flex flex-column">
-          <span className="spanEstadistica">500+</span>
-          <span>Profesionales</span>
-        </div>
-        <div className="d-flex flex-column">
-          <span className="spanEstadistica">35+</span>
-          <span>Obras Sociales</span>
-        </div>
-        <div className="d-flex flex-column">
-          <span className="spanEstadistica">12.000+</span>
-          <span>Turnos reservados</span>
-        </div>
-        <div className="d-flex flex-column">
-          <span className="spanEstadistica">+18</span>
-          <span>Sedes en AMBA</span>
-        </div>
-      </div>
-    </div>
-
-    <div className="profesionales">
-      <div className="d-flex justify-content-between bg-white p-5">
-        <div className="d-flex flex-column">
-          <h3>Profesionales</h3>
-          <h6 className="text-muted">Los mejores valorados por nuestros pacientes</h6>
-        </div>
-        <Button onClick={irAVerTurnos}>Ver todos</Button>
-      </div>
-      <Box className="d-flex justify-content-around mt-2 p-4 w-100" sx={{ display: 'flex', flexWrap: 'wrap', gap: 2}}>
-        {medicos.map((m, i) => (
-          <CardMedico key={i} medico={m} />
-        ))}
-      </Box>
-    </div>
 
     <div className="funcionamiento">
       <div className="d-flex flex-column bg-white p-5">
-        <h3>¿Cómo funciona?</h3>
+        <TituloSeccion>¿Cómo funciona?</TituloSeccion>
         <h6 className="text-muted">Reservá tu turno en tres simples pasos</h6>
       </div>
-      <div className="d-flex justify-content-around w-100 mt-2 p-5">
-        <CardContent className="w-25 bg-white rounded">
-          <Typography sx={{ color: 'text.secondary', fontSize: 40 }}>
-            01
-          </Typography>
-          <Box
-            sx={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              backgroundColor: 'secondary.main', // Color del tema (puedes usar un hex de tu paleta, ej: '#1976d2')
-              color: 'white',                // Color del icono blanco para que contraste
-              borderRadius: '12px',            // Bordes rounded (usa '50%' si quieres un círculo perfecto)
-              padding: '12px',                 // Espaciado interno para darle tamaño al bloque
-              boxShadow: 2                     // Sombra sutil opcional de MUI
-            }}
-          >
-            <SearchIcon fontSize="medium" />
-          </Box>
-          <Typography variant="h5" component="div">
-            Buscá tu especialidad
-          </Typography>
-          <Typography sx={{ color: 'text.secondary', mb: 1.5 }}>
-            Filtrá por especialidad, práctica, sede o rango de fechas. El sistema muestra tu cobertura automáticamente.
-          </Typography>
-        </CardContent>
+      <div className="d-flex justify-content-around w-100 mt-2 p-5 gap-5">
+        <CardGen className="w-25 bg-white rounded">
+          <CardContent>
+            <Box sx={{ display: "inline-flex"}}>
+              <Typography sx={{ color: 'text.secondary', fontSize: 40 }}>
+                01
+              </Typography>
+              <Box
+                sx={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  color: 'primary.main',
+                  padding: '12px'
+                }}
+              >
+                <SearchIcon fontSize="medium" />
+              </Box>
+            </Box>
+            <Typography variant="h5" component="div">
+              Buscá tu especialidad
+            </Typography>
+            <Typography sx={{ color: 'text.secondary', mb: 1.5 }}>
+              Filtrá por especialidad, práctica, sede o rango de fechas. El sistema muestra tu cobertura automáticamente.
+            </Typography>
+          </CardContent>
+        </CardGen>
 
-        <CardContent className="w-25 bg-white rounded">
-          <Typography sx={{ color: 'text.secondary', fontSize: 40 }}>
-            02
-          </Typography>
-          <Box
-            sx={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              backgroundColor: 'secondary.main', // Color del tema (puedes usar un hex de tu paleta, ej: '#1976d2')
-              color: 'white',                // Color del icono blanco para que contraste
-              borderRadius: '12px',            // Bordes rounded (usa '50%' si quieres un círculo perfecto)
-              padding: '12px',                 // Espaciado interno para darle tamaño al bloque
-              boxShadow: 2                     // Sombra sutil opcional de MUI
-            }}
-          >
-            <EventAvailableIcon fontSize="medium" />
-          </Box>
-          <Typography variant="h5" component="div">
-            Elegí tu turno
-          </Typography>
-          <Typography sx={{ color: 'text.secondary', mb: 1.5 }}>Visualizá el costo estimado según tu plan de obra social antes de confirmar la reserva.</Typography>
-        </CardContent>
+        <CardGen className="w-25 bg-white rounded">
+          <CardContent>
+            <Box sx={{ display: "inline-flex"}}>
+              <Typography sx={{ color: 'text.secondary', fontSize: 40 }}>
+                02
+              </Typography>
+              <Box
+                sx={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  color: 'primary.main',
+                  padding: '12px'
+                }}
+              >
+                <EventAvailableIcon fontSize="medium" />
+              </Box>
+            </Box>
+            <Typography variant="h5" component="div">
+              Elegí tu turno
+            </Typography>
+            <Typography sx={{ color: 'text.secondary', mb: 1.5 }}>Visualizá el costo estimado según tu plan de obra social antes de confirmar la reserva.</Typography>
+          </CardContent>
+        </CardGen>
 
-        <CardContent className="w-25 bg-white rounded">
-          <Typography sx={{ color: 'text.secondary', fontSize: 40 }}>
-            03
-          </Typography>
-          <Box
-            sx={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              backgroundColor: 'secondary.main', // Color del tema (puedes usar un hex de tu paleta, ej: '#1976d2')
-              color: 'white',                // Color del icono blanco para que contraste
-              borderRadius: '12px',            // Bordes rounded (usa '50%' si quieres un círculo perfecto)
-              padding: '12px',                 // Espaciado interno para darle tamaño al bloque
-              boxShadow: 2                     // Sombra sutil opcional de MUI
-            }}
-          >
-            <CheckCircleIcon fontSize="medium" />
-          </Box>
-          <Typography variant="h5" component="div">
-            Confirmá y listo
-          </Typography>
-          <Typography sx={{ color: 'text.secondary', mb: 1.5 }}>Recibís una notificación al instante. El día previo te enviamos un recordatorio automático.</Typography>
-        </CardContent>
+        <CardGen className="w-25 bg-white rounded">
+          <CardContent>
+            <Box sx={{ display: "inline-flex"}}>
+              <Typography sx={{ color: 'text.secondary', fontSize: 40 }}>
+                03
+              </Typography>
+              <Box
+                sx={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  color: 'primary.main',
+                  padding: '12px',
+                }}
+              >
+                <CheckCircleIcon fontSize="medium" />
+              </Box>
+            </Box>
+            <Typography variant="h5" component="div">
+              Confirmá y listo
+            </Typography>
+            <Typography sx={{ color: 'text.secondary', mb: 1.5 }}>Recibís una notificación al instante. El día previo te enviamos un recordatorio automático.</Typography>
+          </CardContent>
+        </CardGen>
       </div>
     </div>
 

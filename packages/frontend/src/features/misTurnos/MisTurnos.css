@@ -15,7 +15,6 @@
 .saludo {
     display: block;
 
-    color: #087f73;
 
     font-size: 20px;
     font-weight: 700;
@@ -24,7 +23,7 @@
 }
 
 .saludo strong {
-    color: #0f172a;
+    color: #087f73;
 }
 
 .mis-turnos-header {
@@ -40,7 +39,7 @@
     align-items: center;
 }
 
-.mis-turnos-header h1 {
+.tarjeta-turno h1 {
     font-size: 45px;
     font-weight: 800;
 
@@ -49,16 +48,16 @@
     margin: 0 0 14px;
 }
 
-.mis-turnos-header p {
+/* .tarjeta-turno p {
     color: #64748b;
 
     font-size: 18px;
     line-height: 1.7;
 
     margin: 0;
-}
+} */
 
-.mis-turnos-header strong {
+.tarjeta-turno strong {
     color: #087f73;
 }
 

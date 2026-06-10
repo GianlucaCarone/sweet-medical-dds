@@ -10,6 +10,7 @@ import { getTurnosDisponiblesFiltradoPaginado, getListadoMedicos, getListadoEspe
 import './busquedaTurnos.css';
 import { useAuth } from '../../context/AuthContext.jsx';
 import { useCart } from '../../context/CartContext.jsx';
+import TituloSeccion from "../../shared/TituloSeccion/TituloSeccion.jsx"
 
 function agruparTurnos(turnos) {
     const mapa = new Map();
@@ -121,7 +122,7 @@ export default function BusquedaTurnos() {
             {/* Contenedor de Resultados del lado derecho */}
             <main className="contenido-resultados">
                 <header className="header-resultados">
-                    <h3>{dataPaginacion.totalResultados} turnos disponibles</h3>
+                    <TituloSeccion>{dataPaginacion.totalResultados} turnos disponibles</TituloSeccion>
                     <div className="ordenar-por">
                         <label>Ordenar por:</label>
                         <select defaultValue="ordenarPorFecha" onChange={(e) => setOrdenarPor(e.target.value)}>

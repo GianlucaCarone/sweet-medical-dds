@@ -3,6 +3,9 @@ import { useState } from "react";
 import CancelarTurnoModal from "./CancelarTurnoModal";
 import ReprogramarTurnoModal from "./ReprogramarTurnoModal";
 import { useNavigate } from "react-router-dom";
+import MedicoCard from "../../shared/MedicoCard/MedicoCard";
+import CardGen from "../../shared/CardGen/CardGen";
+import { Button } from "@mui/material";
 
 export default function TurnoCard({ turno, esHistorial = false, onCancelar }) {
     const [modalCancelarAbierto, setModalCancelarAbierto] = useState(false);
@@ -24,7 +27,7 @@ export default function TurnoCard({ turno, esHistorial = false, onCancelar }) {
     };
     if (esHistorial) {
         return (
-            <article className="turno-card-historial">
+            <CardGen>
                 <div className="historial-info">
                     <div className="doctor-avatar historial-avatar">
                         {turno.foto ? (
@@ -40,7 +43,8 @@ export default function TurnoCard({ turno, esHistorial = false, onCancelar }) {
                     </div>
                 </div>
 
-                <button
+                <Button
+                    sx={{ width: "25%", alignSelf: "flex-end", backgroundColor: "primary.main", color: "background.paper" }}
                     className="btn-secundario"
                     onClick={() =>
                         navigate("/busqueda-turnos", {
@@ -53,13 +57,13 @@ export default function TurnoCard({ turno, esHistorial = false, onCancelar }) {
                     }
                 >
                     Volver a pedir
-                </button>
-            </article>
+                </Button>
+            </CardGen>
         );
     }
     return (
         <>
-            <article className={`turno-card ${esHistorial ? "turno-card-historial" : ""}`}>
+            <CardGen>
 
                 <MedicoCard turno={turno}/>
 
@@ -97,34 +101,35 @@ export default function TurnoCard({ turno, esHistorial = false, onCancelar }) {
 
                             {!esHistorial ? (
                                 <div className="turno-actions">
-                                    <button
+                                    <Button
                                         className="btn-secundario"
                                         onClick={() => setModalReprogramarAbierto(true)}
                                     >
                                         Cambiar fecha
-                                    </button>
+                                    </Button>
 
-                                    <button
+                                    <Button
+                                        sx={{ backgroundColor: "error.main", color: "background.paper" }}
                                         className="btn-cancelar"
                                         onClick={() => setModalCancelarAbierto(true)}
                                     >
                                         Cancelar
-                                    </button>
+                                    </Button>
                                 </div>
                             ) : (
                                 <div className="turno-actions">
-                                    <button
+                                    <Button
                                         className="btn-secundario"
                                         onClick={() => navigate("/busqueda-turnos")}
                                     >
                                         Volver a pedir
-                                    </button>
+                                    </Button>
                                 </div>
                             )}
                         </div>
                     </div>
                 </div>
-            </article>
+            </CardGen>
 
             <ReprogramarTurnoModal
                 abierto={modalReprogramarAbierto}

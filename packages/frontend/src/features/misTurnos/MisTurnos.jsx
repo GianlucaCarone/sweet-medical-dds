@@ -13,6 +13,9 @@ import TurnoHistorialSkeleton from "../../components/mis-turnos/TurnoHistorialSk
 import { useNavigate } from "react-router-dom";
 import Toast from "../../components/mis-turnos/Toast";
 import { proximosTurnos, historialTurnos } from "../../mockdata/turnos";
+import TituloSeccion from "../../shared/TituloSeccion/TituloSeccion";
+import CardGen from "../../shared/CardGen/CardGen";
+import { Button } from "@mui/material";
 
 export default function MisTurnos() {
     const [paginaProximos, setPaginaProximos] = useState(1);
@@ -54,13 +57,13 @@ export default function MisTurnos() {
 
     return (
         <section className="mis-turnos-page">
-            <div className="mis-turnos-header">
+            <TituloSeccion>Mis Turnos</TituloSeccion>
+            <CardGen>
                 <div className="header-content">
                     <span className="saludo">
-                        👋 Hola, <strong>Usuario</strong>
+                        👋 Hola, <strong color="primary">Usuario</strong>
                     </span>
 
-                    <h1>Mis Turnos</h1>
 
                     <p>
                         Tenés <strong>2 turnos próximos</strong> programados. Desde acá podés
@@ -68,15 +71,14 @@ export default function MisTurnos() {
                     </p>
                 </div>
 
-                <div className="header-actions">
-                    <button
-                        className="nuevo-turno-btn"
-                        onClick={() => navigate("/busqueda-turnos")}
-                    >
-                        Nuevo turno
-                    </button>
-                </div>
-            </div>
+                <Button
+                    sx={{ alignSelf: "flex-end", backgroundColor: "primary.main", color:"background.paper"}}
+                    className="nuevo-turno-btn"
+                    onClick={() => navigate("/busqueda-turnos")}
+                >
+                    Nuevo turno
+                </Button>
+            </CardGen>
 
             <Toast
                 visible={toastVisible}
@@ -124,7 +126,7 @@ export default function MisTurnos() {
                 )}
             </div>
 
-            <h2 className="section-title">Próximos Turnos</h2>
+            <TituloSeccion>Próximos Turnos</TituloSeccion>
 
             {loading ? (
                 <>
@@ -171,7 +173,7 @@ export default function MisTurnos() {
                 </>
             )}
 
-            <h2 className="section-title historial-title">Historial</h2>
+            <TituloSeccion>Historial</TituloSeccion>
 
             {loading ? (
                 <>

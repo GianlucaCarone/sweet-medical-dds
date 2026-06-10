@@ -159,7 +159,7 @@
 }
 
 .btn-secundario:hover {
-    background: #f8fafc;
+    background: #066158;
     transform: translateY(-1px);
 }
 
@@ -171,35 +171,6 @@
 .btn-cancelar:hover {
     background: #f39696;
     transform: translateY(-1px);
-}
-
-.turno-card-historial {
-    background: white;
-    border: 2px solid #bac4c2;
-    border-radius: 18px;
-    padding: 18px 22px;
-
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-
-    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.04);
-
-    position: relative;
-    overflow: hidden;
-}
-
-.turno-card-historial::before {
-    content: "";
-
-    position: absolute;
-    left: 0;
-    top: 0;
-
-    width: 5px;
-    height: 100%;
-
-    background: #087f73;
 }
 
 .historial-info {
@@ -214,14 +185,14 @@
     border-radius: 14px;
 }
 
-.turno-card-historial h3 {
+.tarjeta-turno h3 {
     margin: 0;
     font-size: 18px;
     color: #0f172a;
 }
 
-.turno-card-historial p {
+/* .tarjeta-turno p {
     margin: 4px 0 0;
     color: #64748b;
     font-size: 14px;
-}
+} */

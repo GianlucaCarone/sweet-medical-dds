@@ -6,6 +6,7 @@ import MisTurnos from "./features/misTurnos/MisTurnos.jsx";
 import BusquedaTurnos from "./features/busqueda-turnos/busquedaTurnos.jsx";
 import PerfilMedico from "./features/perfil-medico/PerfilMedico.jsx";
 import { CartProvider} from './context/CartContext.jsx';
+import Home from "./features/home/Home.jsx"
 
 import "./App.css";
 
@@ -42,9 +43,8 @@ function App() {
           <Route
             path="perfil-medico"
             element={<PerfilMedico />}
-          />
-
-          {/* <Route index element={<Home />} /> */}
+          />    
+          <Route index element={<Home />} />
         </Route>
         <Route path="/login" element={<Login />} />
       </Routes>
