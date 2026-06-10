@@ -1,0 +1,17 @@
+:root {
+    --blanco: #ffffff;
+    --texto-oscuro: #1e293b;
+    --texto-mutado: #64748b;
+    --verde-badge: #e6f4ea;
+    --verde-texto: #137333;
+    --borde-gris: #e2e8f0;
+}
+
+.tarjeta-turno {
+    background-color: var(--blanco);
+    border: 1px solid var(--borde-gris);
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 16px;
+    box-shadow: 1px 1px 1px grey;
+}

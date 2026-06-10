@@ -5,7 +5,7 @@ import PersonIcon from "@mui/icons-material/Person";
 import MedicalServicesIcon from "@mui/icons-material/MedicalServices";
 import "./MedicoCard.css"
 
-export default function MedicoCard({ turno, especialidades = {}, practicas = {} }) {
+export default function MedicoCard({ turno, especialidades = [{}], practicas = [{}] }) {
     
     const formatoServicio = (servicio = {}) => {
       if (servicio?.tipo === "especialidad") {
@@ -25,7 +25,7 @@ export default function MedicoCard({ turno, especialidades = {}, practicas = {} 
                     </div>
 
                     <div className="datos-turno">
-                        <h4>{turno.medico.nombre}</h4>
+                        <h4>{turno.medico?.nombre}</h4>
 
                         <p className="especialidad-practica">
                         <MedicalServicesIcon fontSize="15px" />
@@ -34,7 +34,7 @@ export default function MedicoCard({ turno, especialidades = {}, practicas = {} 
 
                         <p className="sede">
                         <LocationPinIcon fontSize="15px" />
-                        {turno.sede.nombre}
+                        {turno.sede?.nombre}
                         </p>
                     </div>
                 </div>
@@ -44,11 +44,12 @@ export default function MedicoCard({ turno, especialidades = {}, practicas = {} 
 
                     <span className="costo-turno">
                         {turno.costo !== 0
-                        ? `$${turno.costo.toLocaleString()} `
+                        ? `$${turno?.costo?.toLocaleString()} `
                         : "Sin costo"}
                     </span>
                 </div>
             </div>
+            <div className="divisor"></div>
         </>
     )
 }

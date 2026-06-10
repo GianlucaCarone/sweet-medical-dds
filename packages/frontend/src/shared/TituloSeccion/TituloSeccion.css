@@ -1,0 +1,14 @@
+.seccion-titulo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.seccion-titulo::before {
+    content: "";
+    width: 6px;
+    height: 26px;
+    border-radius: 999px;
+    background: #087f73;
+}

@@ -57,3 +57,9 @@
     color: var(--texto-oscuro);
     font-weight: 700;
 }
+
+.divisor {
+    border-top: 1px solid #e2e8f0;
+    margin-bottom: 1em;
+    margin-top: 1em;
+}
