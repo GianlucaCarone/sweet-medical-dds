@@ -7,10 +7,13 @@ import PersonIcon from "@mui/icons-material/Person";
 import MedicalServicesIcon from "@mui/icons-material/MedicalServices";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 import "./tarjetaTurno.css";
+import { useCart } from "../../context/CartContext.jsx";
 
-export default function TarjetaTurno({ turno, especialidades, practicas, carrito, onReservar }) {
+export default function TarjetaTurno({ turno, especialidades, practicas, onReservar }) {
   const [turnoSeleccionado, setTurnoSeleccionado] = useState(null);
   const [turnosReservados, setTurnosReservados] = useState(new Set());
+
+  const {estaEnCarrito } = useCart();
 
   const formatoServicio = (servicio) => {
     if (servicio.tipo === "especialidad") {
@@ -76,9 +79,9 @@ export default function TarjetaTurno({ turno, especialidades, practicas, carrito
                 <button
                   key={turno.id}
                   className={`boton-turno ${turnoSeleccionado === turno.id ? "seleccionado" : ""}`}
-                  disabled={carrito.some((item) => item.id === turno.id)}
+                  disabled={estaEnCarrito(turno.id)}
                   onClick={() =>
-                    !carrito.some((item) => item.id === turno.id) &&
+                    !estaEnCarrito(turno.id) &&
                     setTurnoSeleccionado(turno.id)
                   }
                 >

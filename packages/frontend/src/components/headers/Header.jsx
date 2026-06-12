@@ -8,6 +8,7 @@ import { useState, useEffect } from "react";
 import CarritoTurnos from "./carritoTurnos.jsx";
 import ModalLogin from "../login/ModalLogin.jsx";
 import { useAuth } from "../../context/AuthContext.jsx"; // Importamos el hook del contexto de autenticación
+import { useCart } from '../../context/CartContext.jsx';
 import {
   Drawer,
   Alert,
@@ -18,11 +19,11 @@ import {
   Button,
 } from "@mui/material";
 
-const Header = ({ carrito, limpiarCarrito,  eliminarDelCarrito, manejoCarrito}) => {
+const Header = () => {
   const { user } = useAuth(); // Traemos al usuario logueado
+  const { carrito, limpiarCarrito,  eliminarDelCarrito, manejoCarritoDrawer } = useCart();
 
   const [cantUnidades, setCantUnidades] = useState(0);
-  const [carritoAbierto, setCarritoAbierto] = useState(false);
   //estado para controlar si el Pop-up de Login está abierto o cerrado
   const [loginAbierto, setLoginAbierto] = useState(false);
   const [userName, setUserName] = useState(null); // Estado local para el nombre de usuario
@@ -82,7 +83,7 @@ const Header = ({ carrito, limpiarCarrito,  eliminarDelCarrito, manejoCarrito}) 
 
         <div className="header-actions">
           <IconButton
-            onClick={() => manejoCarrito.abrir()}
+            onClick={() => manejoCarritoDrawer.abrir()}
             aria-label="carrito de turnos"
             sx={{ marginRight: 2 }} // Un poco de margen a la derecha
           >
@@ -135,14 +136,14 @@ const Header = ({ carrito, limpiarCarrito,  eliminarDelCarrito, manejoCarrito}) 
         {
           <Drawer
             anchor="right"
-            open={manejoCarrito.getCarritoAbierto()}
-            onClose={() => manejoCarrito.cerrar()}
+            open={manejoCarritoDrawer.getCarritoAbierto()}
+            onClose={() => manejoCarritoDrawer.cerrar()}
           >
             <CarritoTurnos
               items={carrito}
               onEliminar={eliminarDelCarrito}
               onConfirmar={limpiarCarrito}
-              onCerrar={() => manejoCarrito.cerrar()}
+              onCerrar={() => manejoCarritoDrawer.cerrar()}
             />
           </Drawer>
         }

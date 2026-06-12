@@ -3,14 +3,13 @@ import { useEffect, useState, useCallback } from "react";
 import SidebarFiltros from '../../components/busqueda-turnos/sidebarFiltros.jsx';
 import TarjetaTurno from '../../components/busqueda-turnos/tarjetaTurno.jsx';
 import TarjetaTurnoSkeleton from '../../components/busqueda-turnos/tarjetaTurnoSkeleton.jsx';
-import CarritoTurnos from '../../components/headers/carritoTurnos.jsx';
-import Drawer from '@mui/material/Drawer';
 import Pagination from '@mui/material/Pagination';
 import { turnosEjemplo, datosPaginacionEjemplo } from '../../mockdata/turnos.js';
 import { medicosEjemplo, especialidadesEjemplo, practicasEjemplo, sedesEjemplo } from '../../mockdata/busquedaTurnos.js';
 import { getTurnosDisponiblesFiltradoPaginado, getListadoMedicos, getListadoEspecialidades, getListadoPracticas, getListadoSedes } from '../../api/api.js';
 import './busquedaTurnos.css';
 import { useAuth } from '../../context/AuthContext.jsx';
+import { useCart } from '../../context/CartContext.jsx';
 
 function agruparTurnos(turnos) {
     const mapa = new Map();
@@ -44,7 +43,9 @@ function agruparTurnos(turnos) {
     return Array.from(mapa.values());
 }
 
-export default function BusquedaTurnos({ idUsuario, carrito, agregarTurnoAlCarrito, eliminarTurnoDelCarrito, limpiarElCarrito, manejoCarrito }) {
+export default function BusquedaTurnos() {
+    const { user } = useAuth();
+
     //datos para los filtros:
     const [pacienteID, setPacienteID] = useState(""); //por ahora; hasta tener el login
     const [medicos, setMedicos] = useState(medicosEjemplo);
@@ -58,11 +59,13 @@ export default function BusquedaTurnos({ idUsuario, carrito, agregarTurnoAlCarri
     const [numeroPagina, setNumeroPagina] = useState(1);
     //funcionamiento general de la vista:
     const [ordenarPor, setOrdenarPor] = useState("ordenarPorFecha");
-    const [carritoAbierto, setCarritoAbierto] = useState(false);
     const [loading, setLoading] = useState(true);
+
+    const  {manejoCarritoDrawer, agregarAlCarrito} = useCart();
 
     useEffect(() => {
         //const {user} = useAuth(); //obtenemos el id del usuario logueado desde el contexto de autenticación
+        
         const cargarListados = async () => {
             /*
             const pacienteId = await getPacienteByIdUsuario(user.id)
@@ -93,13 +96,10 @@ export default function BusquedaTurnos({ idUsuario, carrito, agregarTurnoAlCarri
             //setLoading(false);
     }, [ordenarPor, numeroPagina]);
 
-    const agregarAlCarrito = (id) => {
+    const agregarAlCarritoTurno = (id) => {
         const turno = turnos.find(t => t.id === id);
-        agregarTurnoAlCarrito(turno);
-        manejoCarrito.abrir();
-    };
-    const eliminarDelCarrito = (id) => {
-        eliminarTurnoDelCarrito(id);
+        agregarAlCarrito(turno);
+        manejoCarritoDrawer.abrir();
     };
 
     useEffect(() => {
@@ -143,8 +143,7 @@ export default function BusquedaTurnos({ idUsuario, carrito, agregarTurnoAlCarri
                                 turno={turno}
                                 especialidades={especialidades}
                                 practicas={practicas}
-                                carrito={carrito}
-                                onReservar={agregarAlCarrito}
+                                onReservar={agregarAlCarritoTurno}
                             />
                         ))}
                 </section>

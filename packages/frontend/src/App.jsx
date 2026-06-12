@@ -5,32 +5,12 @@ import Login from "./components/login/Login.jsx";
 import MisTurnos from "./features/misTurnos/MisTurnos.jsx";
 import BusquedaTurnos from "./features/busqueda-turnos/busquedaTurnos.jsx";
 import PerfilMedico from "./features/perfil-medico/PerfilMedico.jsx";
+import { CartProvider} from './context/CartContext.jsx';
 
 import "./App.css";
 
 function App() {
   const [message, setMessage] = useState("");
-  const [carrito, setCarrito] = useState([]); //lista de turnos
-  const [carritoAbierto, setCarritoAbierto] = useState(false);
-
-  const manejoCarrito = {
-    getCarritoAbierto: () => carritoAbierto,
-    abrir: () => setCarritoAbierto(true),
-    cerrar: () => setCarritoAbierto(false),
-    toggle: () => setCarritoAbierto((prev) => !prev),
-  }
-
-  const agregarAlCarrito = (turno) => {
-    setCarrito([...carrito, turno]);
-  };
-
-  const eliminarDelCarrito = (id) => {
-    setCarrito((prev) => prev.filter((_, i) => i !== id));
-  };
-
-  const limpiarCarrito = () => {
-    setCarrito([]);
-  };
 
   useEffect(() => {
     fetch("http://localhost:8000/hello")
@@ -39,32 +19,21 @@ function App() {
       .catch((error) => console.error("Error cargando mensaje.", error));
   }, []);
 
-      return (
+  return (
+    <CartProvider>
       <Routes>
         <Route
           path="/"
           element={
-            <Layout
-              carrito={carrito}
-              eliminarTurnoDelCarrito={eliminarDelCarrito}
-              limpiarElCarrito={limpiarCarrito}
-              manejoCarrito={manejoCarrito}
-            />
-          }
-        >
+            <Layout/>
+          }>
           <Route
             path="busqueda-turnos"
             element={
-              <BusquedaTurnos
-                carrito={carrito}
-                agregarTurnoAlCarrito={agregarAlCarrito}
-                eliminarTurnoDelCarrito={eliminarDelCarrito}
-                limpiarElCarrito={limpiarCarrito}
-                manejoCarrito={manejoCarrito}
-              />
+              <BusquedaTurnos/>
             }
           />
-    
+
           <Route
             path="mis-turnos"
             element={<MisTurnos />}
@@ -74,12 +43,13 @@ function App() {
             path="perfil-medico"
             element={<PerfilMedico />}
           />
-    
+
           {/* <Route index element={<Home />} /> */}
         </Route>
-      <Route path="/login" element={<Login />} />
+        <Route path="/login" element={<Login />} />
       </Routes>
-    );
-  }
+    </CartProvider>
+  );
+}
 
 export default App;
