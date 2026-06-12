@@ -1,7 +1,6 @@
 import React from "react";
 import { useState } from "react";
 import LocationPinIcon from "@mui/icons-material/LocationPin";
-import StarIcon from "@mui/icons-material/Star";
 import EventNoteIcon from "@mui/icons-material/EventNote";
 import PersonIcon from "@mui/icons-material/Person";
 import MedicalServicesIcon from "@mui/icons-material/MedicalServices";
