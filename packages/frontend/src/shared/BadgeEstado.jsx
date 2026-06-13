@@ -1,8 +1,8 @@
 import Chip from '@mui/material/Chip'
 const configs = {
-  total: { label: '✓ Cubierto', color: 'success' },
-  parcial: { label: '◑ Parcial', color: 'warning' },
-  no_cubierta: { label: '✗ Sin cobertura', color: 'error' },
+  TOTAL: { label: '✓ Cubierto', color: 'success' },
+  PARCIAL: { label: '◑ Parcial', color: 'warning' },
+  NO_CUBIERTA: { label: '✗ Sin cobertura', color: 'error' },
   disponible: { label: 'Disponible', color: 'primary' },
   reservado: { label: 'Reservado', color: 'warning' },
   realizado: { label: 'Realizado', color: 'success' },

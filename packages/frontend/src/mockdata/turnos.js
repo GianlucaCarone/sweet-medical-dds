@@ -16,7 +16,7 @@ const turnosEjemplo = [
         },
         fechaHora: "2024-06-04T08:00:00",
         costo: 0,
-        estadoCobertura: "total"
+        estadoCobertura: "TOTAL"
     },
     {
         id: 2,
@@ -35,7 +35,7 @@ const turnosEjemplo = [
         },
         fechaHora: "2024-06-04T08:45:00",
         costo: 0,
-        estadoCobertura: "total"
+        estadoCobertura: "TOTAL"
     },
     {
         id: 3,
@@ -54,7 +54,7 @@ const turnosEjemplo = [
         },
         fechaHora: "2024-06-04T09:30:00",
         costo: 0,
-        estadoCobertura: "total"
+        estadoCobertura: "TOTAL"
     },
     {
         id: 4,
@@ -73,7 +73,7 @@ const turnosEjemplo = [
         },
         fechaHora: "2024-06-04T10:45:00",
         costo: 0,
-        estadoCobertura: "total"
+        estadoCobertura: "TOTAL"
     },
     {
         id: 5,
@@ -92,7 +92,7 @@ const turnosEjemplo = [
         },
         fechaHora: "2024-06-04T08:30:00",
         costo: 18000,
-        estadoCobertura: "parcial"
+        estadoCobertura: "PARCIAL"
     },
     {
         id: 6,
@@ -111,7 +111,7 @@ const turnosEjemplo = [
         },
         fechaHora: "2024-06-04T09:00:00",
         costo: 18000,
-        estadoCobertura: "parcial"
+        estadoCobertura: "PARCIAL"
     },
     {
         id: 7,
@@ -130,7 +130,7 @@ const turnosEjemplo = [
         },
         fechaHora: "2024-06-04T09:30:00",
         costo: 18000,
-        estadoCobertura: "parcial"
+        estadoCobertura: "PARCIAL"
     },
     {
         id: 8,
@@ -149,7 +149,7 @@ const turnosEjemplo = [
         },
         fechaHora: "2024-06-04T14:00:00",
         costo: 25000,
-        estadoCobertura: "no_cubierta"
+        estadoCobertura: "NO_CUBIERTA"
     },
     {
         id: 9,
@@ -168,7 +168,7 @@ const turnosEjemplo = [
         },
         fechaHora: "2024-06-04T14:30:00",
         costo: 25000,
-        estadoCobertura: "no_cubierta"
+        estadoCobertura: "NO_CUBIERTA"
     },
     {
         id: 10,
@@ -187,7 +187,7 @@ const turnosEjemplo = [
         },
         fechaHora: "2024-06-04T16:30:00",
         costo: 25000,
-        estadoCobertura: "no_cubierta"
+        estadoCobertura: "NO_CUBIERTA"
     }
 ];
 const datosPaginacionEjemplo = {
@@ -197,6 +197,31 @@ const datosPaginacionEjemplo = {
     totalResultados: 32
 };
 const proximosTurnos = [
+
+    /**
+     * En el backend, el get de turnos devuelve:
+      
+      "_id": "507f1f77bcf86cd799439011",
+      "fechaHora": "2026-06-13T14:22:45.954Z",
+      "fechaHoraPropuesta": "2026-06-13T14:22:45.954Z",
+      "estado": "DISPONIBLE",
+      "historialEstado": [
+        {
+          "fechaHoraIngreso": "2026-06-13T14:22:45.954Z",
+          "estado": "DISPONIBLE",
+          "usuario": "string",
+          "motivo": "string"
+        }
+      ],
+      "medico": "507f1f77bcf86cd799439011",
+      "paciente": "507f1f77bcf86cd799439011",
+      "servicio": "507f1f77bcf86cd799439011",
+      "sede": "507f1f77bcf86cd799439011",
+      "costo": 0,
+      "eliminado": true
+
+      TODO Habría que probar una populación chica de medico, servicio, sede
+     */
 
     {
         id: 1,
@@ -217,7 +242,7 @@ const proximosTurnos = [
         fecha: "Lunes, 15 de Junio de 2026",
         hora: "12:00 hs",
         sede: "Sede Palermo",
-        cobertura: "Cobertura parcial · Abonás $4.200",
+        cobertura: "Cobertura PARCIAL · Abonás $4.200",
         estado: "RESERVADO",
     },
     {
