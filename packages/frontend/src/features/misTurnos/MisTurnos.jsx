@@ -11,16 +11,20 @@ import TurnoCardSkeleton from "../../components/mis-turnos/TurnoCardSkeleton";
 import EstadisticaTurnoCardSkeleton from "../../components/mis-turnos/EstadisticaTurnoCardSkeleton";
 import TurnoHistorialSkeleton from "../../components/mis-turnos/TurnoHistorialSkeleton";
 import { useNavigate } from "react-router-dom";
-import Toast from "../../components/mis-turnos/Toast";
 import { proximosTurnos, historialTurnos } from "../../mockdata/turnos";
+
+// Contextos y hooks
+import { useAlert } from "../../context/AlertContext.jsx";
 
 export default function MisTurnos() {
     const [paginaProximos, setPaginaProximos] = useState(1);
     const [paginaHistorial, setPaginaHistorial] = useState(1);
     const [loading, setLoading] = useState(true);
-    const [toastVisible, setToastVisible] = useState(false);
     const turnosPorPagina = 3;
     const navigate = useNavigate();
+
+    // accionees alertaContext
+    const {showAlert} = useAlert(); 
 
     const totalPaginasProximos = Math.ceil(proximosTurnos.length / turnosPorPagina);
 
@@ -28,16 +32,6 @@ export default function MisTurnos() {
         (paginaProximos - 1) * turnosPorPagina,
         paginaProximos * turnosPorPagina
     );
-
-    const handleTurnoCancelado = (turnoId, motivo) => {
-        console.log("Turno cancelado:", turnoId, motivo);
-
-        setToastVisible(true);
-
-        setTimeout(() => {
-            setToastVisible(false);
-        }, 1500);
-    };
 
     const totalPaginasHistorial = Math.ceil(historialTurnos.length / turnosPorPagina);
 
@@ -77,11 +71,6 @@ export default function MisTurnos() {
                     </button>
                 </div>
             </div>
-
-            <Toast
-                visible={toastVisible}
-                mensaje="Turno cancelado correctamente."
-            />
 
             <div className="stats-grid">
                 {loading ? (
@@ -143,7 +132,7 @@ export default function MisTurnos() {
                 <>
                     <div className="turnos-lista">
                         {proximosTurnosAMostrar.map((turno) => (
-                            <TurnoCard key={turno.id} turno={turno} onCancelar={handleTurnoCancelado} />
+                            <TurnoCard key={turno.id} turno={turno} onCancelar={() => showAlert("Solicitud de cancelación enviada correctamente.", "success")} />
                         ))}
                     </div>
 
