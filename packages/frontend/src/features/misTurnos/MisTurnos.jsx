@@ -14,7 +14,7 @@ import { useNavigate } from "react-router-dom";
 import Toast from "../../components/mis-turnos/Toast";
 import { proximosTurnos, historialTurnos } from "../../mockdata/turnos";
 import TituloSeccion from "../../shared/TituloSeccion/TituloSeccion";
-import CardGen from "../../shared/CardGen/CardGen";
+import CardBase from "../../shared/CardBase/CardBase";
 import { Button } from "@mui/material";
 
 export default function MisTurnos() {
@@ -58,7 +58,7 @@ export default function MisTurnos() {
     return (
         <section className="mis-turnos-page">
             <TituloSeccion>Mis Turnos</TituloSeccion>
-            <CardGen>
+            <CardBase>
                 <div className="header-content">
                     <span className="saludo">
                         👋 Hola, <strong color="primary">Usuario</strong>
@@ -78,7 +78,7 @@ export default function MisTurnos() {
                 >
                     Nuevo turno
                 </Button>
-            </CardGen>
+            </CardBase>
 
             <Toast
                 visible={toastVisible}

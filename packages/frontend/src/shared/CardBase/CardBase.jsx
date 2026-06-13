@@ -1,7 +1,7 @@
 import { Card } from "@mui/material";
-import "./CardGen.css"
+import "./CardBase.css"
 
-export default function CardGen({children, className=""}) {
+export default function CardBase({children, className=""}) {
     return (
         <>
             <Card className={`tarjeta-turno ${className}`} sx={{ display: "flex", flexDirection: "column", justifyContent: "space-between"}}>
