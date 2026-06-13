@@ -2,7 +2,6 @@
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": "explicit"
   },
-  // Añadimos typescript y typescriptreact para que el linter los analice
   "eslint.validate": [
     "javascript",
     "javascriptreact",
@@ -12,8 +11,8 @@
   "eslint.workingDirectories": ["./packages/backend", "./packages/frontend"],
   "eslint.useFlatConfig": true,
 
-  // CAMBIO CLAVE: Activamos el auto-formateo al guardar
-  "editor.formatOnSave": false,
+  // Activa el auto-formateo al guardar
+  "editor.formatOnSave": true,
   "editor.formatOnSaveMode": "modifications",
   "editor.defaultFormatter": "esbenp.prettier-vscode",
 
