@@ -12,7 +12,7 @@
   "eslint.useFlatConfig": true,
 
   // Activa el auto-formateo al guardar
-  "editor.formatOnSave": false,
+  "editor.formatOnSave": true,
   "editor.formatOnSaveMode": "modifications",
   "editor.defaultFormatter": "esbenp.prettier-vscode",
 
