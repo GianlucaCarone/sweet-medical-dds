@@ -1,149 +1,118 @@
-import "./TurnoCard.css";
 import { useState } from "react";
+import styled from "styled-components";
+import { Button } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 import CancelarTurnoModal from "./CancelarTurnoModal";
 import ReprogramarTurnoModal from "./ReprogramarTurnoModal";
-import { useNavigate } from "react-router-dom";
 import MedicoCard from "../../shared/MedicoCard/MedicoCard";
-import CardBase from "../../shared/CardBase/CardBase";
-import { Button } from "@mui/material";
+import CardDivider from "../cards/CardDivider";
 
-export default function TurnoCard({ turno, esHistorial = false, onCancelar }) {
-    const [modalCancelarAbierto, setModalCancelarAbierto] = useState(false);
-    const [modalReprogramarAbierto, setModalReprogramarAbierto] = useState(false);
-    const navigate = useNavigate();
+// --- 1. Styled Components ---
+const TurnoFooter = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+`;
 
-    const confirmarReprogramacion = (turnoId, nuevoTurno) => {
-        console.log("Reprogramando turno:", turnoId);
-        console.log("Nuevo horario:", nuevoTurno);
-    };
+const CoberturaChip = styled.div`
+  display: inline-flex;
+  background: #e7f7f4;
+  color: #087f73;
+  border-radius: 999px;
+  padding: 7px 12px;
+  font-size: 14px;
+  font-weight: 800;
+`;
 
-    const confirmarCancelacion = (motivo) => {
-        console.log("Cancelando turno:", turno.id);
-        console.log("Motivo:", motivo);
+const TurnoActions = styled.div`
+  display: flex;
+  gap: 12px;
+`;
 
-        if (onCancelar) {
-            onCancelar(turno.id, motivo);
-        }
-    };
-    if (esHistorial) {
-        return (
-            <CardBase>
-                <div className="historial-info">
-                    <div className="doctor-avatar historial-avatar">
-                        {turno.foto ? (
-                            <img src={turno.foto} alt={turno.doctor} />
-                        ) : (
-                            <span>{turno.doctor.slice(0, 2).toUpperCase()}</span>
-                        )}
-                    </div>
+// Pro-tip: Así se estilizan componentes de librerías externas (MUI) con styled-components
+const BtnSecundario = styled(Button)`
+  && {
+    border-radius: 999px;
+    border: 2px solid #bac4c2;
+    color: #526173;
+    text-transform: none;
+    font-weight: 600;
+    padding: 6px 18px;
 
-                    <div>
-                        <h3>{turno.doctor}</h3>
-                        <p>{turno.fecha} · {turno.especialidad}</p>
-                    </div>
-                </div>
-
-                <Button
-                    sx={{ width: "25%", alignSelf: "flex-end", backgroundColor: "primary.main", color: "background.paper" }}
-                    className="btn-secundario"
-                    onClick={() =>
-                        navigate("/busqueda-turnos", {
-                            state: {
-                                doctor: turno.doctor,
-                                especialidad: turno.especialidad,
-                                sede: turno.sede,
-                            },
-                        })
-                    }
-                >
-                    Volver a pedir
-                </Button>
-            </CardBase>
-        );
+    &:hover {
+      background: #f8fafc;
+      transform: translateY(-1px);
     }
-    return (
-        <>
-            <CardBase>
+  }
+`;
 
-                <MedicoCard turno={turno}/>
+const BtnCancelar = styled(Button)`
+  && {
+    border-radius: 999px;
+    background-color: #f36969;
+    color: white;
+    text-transform: none;
+    font-weight: 600;
+    padding: 6px 18px;
 
-                <div className="turno-main">
-                    {/* <div className="doctor-avatar">
-                        {turno.foto ? (
-                            <img src={turno.foto} alt={turno.doctor} />
-                        ) : (
-                            <span>{turno.doctor.slice(0, 2).toUpperCase()}</span>
-                        )}
-                    </div> */}
+    &:hover {
+      background-color: #dc2626;
+      transform: translateY(-1px);
+    }
+  }
+`;
 
-                    <div className="turno-info">
-                        {/* <div className="turno-title-row">
-                            <div>
-                                <h3>{turno.doctor}</h3>
-                                <p className="especialidad">{turno.especialidad}</p>
-                            </div>
+// --- 2. Componente Principal ---
+export default function TurnoCard({ turno, onCancelar }) {
+  const [modalCancelarAbierto, setModalCancelarAbierto] = useState(false);
+  const [modalReprogramarAbierto, setModalReprogramarAbierto] = useState(false);
 
-                            <span className={`estado-badge ${turno.estado.toLowerCase()}`}>
-                                {turno.estado}
-                            </span>
-                        </div>
+  const confirmarReprogramacion = (turnoId, nuevoTurno) => {
+    console.log("Reprogramando turno:", turnoId, "Nuevo horario:", nuevoTurno);
+    setModalReprogramarAbierto(false);
+  };
 
-                        <div className="turno-detalles">
-                            <span>📅 {turno.fecha}</span>
-                            <span>🕒 {turno.hora}</span>
-                            <span>📍 {turno.sede}</span>
-                        </div> */}
+  const confirmarCancelacion = (motivo) => {
+    if (onCancelar) onCancelar(turno.id, motivo);
+    setModalCancelarAbierto(false);
+  };
 
-                        <div className="turno-footer">
-                            <div className="cobertura-chip">
-                                {turno.cobertura}
-                            </div>
+  return (
+    <>
+      <CardDivider>
+        <CardDivider.Top>
+          <MedicoCard turno={turno} />
+        </CardDivider.Top>
 
-                            {!esHistorial ? (
-                                <div className="turno-actions">
-                                    <Button
-                                        className="btn-secundario"
-                                        onClick={() => setModalReprogramarAbierto(true)}
-                                    >
-                                        Cambiar fecha
-                                    </Button>
+        <CardDivider.Bottom>
+          <TurnoFooter>
+            <CoberturaChip>{turno.cobertura}</CoberturaChip>
 
-                                    <Button
-                                        sx={{ backgroundColor: "error.main", color: "background.paper" }}
-                                        className="btn-cancelar"
-                                        onClick={() => setModalCancelarAbierto(true)}
-                                    >
-                                        Cancelar
-                                    </Button>
-                                </div>
-                            ) : (
-                                <div className="turno-actions">
-                                    <Button
-                                        className="btn-secundario"
-                                        onClick={() => navigate("/busqueda-turnos")}
-                                    >
-                                        Volver a pedir
-                                    </Button>
-                                </div>
-                            )}
-                        </div>
-                    </div>
-                </div>
-            </CardBase>
+            <TurnoActions>
+              <BtnSecundario variant="outlined" onClick={() => setModalReprogramarAbierto(true)}>
+                Cambiar fecha
+              </BtnSecundario>
 
-            <ReprogramarTurnoModal
-                abierto={modalReprogramarAbierto}
-                turno={turno}
-                onCerrar={() => setModalReprogramarAbierto(false)}
-                onConfirmar={confirmarReprogramacion}
-            />
+              <BtnCancelar variant="contained" onClick={() => setModalCancelarAbierto(true)}>
+                Cancelar
+              </BtnCancelar>
+            </TurnoActions>
+          </TurnoFooter>
+        </CardDivider.Bottom>
+      </CardDivider>
 
-            <CancelarTurnoModal
-                abierto={modalCancelarAbierto}
-                onCerrar={() => setModalCancelarAbierto(false)}
-                onConfirmar={confirmarCancelacion}
-            />
-        </>
+      <ReprogramarTurnoModal
+        abierto={modalReprogramarAbierto}
+        turno={turno}
+        onCerrar={() => setModalReprogramarAbierto(false)}
+        onConfirmar={confirmarReprogramacion}
+      />
 
-    );
+      <CancelarTurnoModal
+        abierto={modalCancelarAbierto}
+        onCerrar={() => setModalCancelarAbierto(false)}
+        onConfirmar={confirmarCancelacion}
+      />
+    </>
+  );
 }
