@@ -56,21 +56,33 @@ const BtnSecundario = styled.button`
 export default function TurnoHistorialCard({ turno }) {
   const navigate = useNavigate();
 
+  const transformarFecha = (fechaHora) => {
+    const opciones = { year: 'numeric', month: 'long', day: 'numeric' };
+    return new Date(fechaHora).toLocaleDateString('es-AR', opciones);
+  };
+
+  const nombreMedico =
+    typeof turno.medico === 'string' ? turno.medico : turno.medico?.nombre || 'Médico';
+
+  const especialidad = turno.servicio?.nombre || turno.servicio?.tipo || 'Consulta';
+
+  const fecha = transformarFecha(turno.fechaHora);
+
   return (
     <BaseCard>
       <HistorialInfo>
         <DoctorAvatar>
           {turno.foto ? (
-            <img src={turno.foto} alt={turno.doctor} />
+            <img src={turno.foto} alt={nombreMedico} />
           ) : (
-            <span>{turno.doctor.slice(0, 2).toUpperCase()}</span>
+            <span>{nombreMedico.slice(0, 2).toUpperCase()}</span>
           )}
         </DoctorAvatar>
 
         <div>
-          <h3>{turno.doctor}</h3>
+          <h3>{nombreMedico}</h3>
           <p>
-            {turno.fecha} · {turno.especialidad}
+            {transformarFecha(fecha)} · {especialidad}
           </p>
         </div>
       </HistorialInfo>
@@ -79,7 +91,7 @@ export default function TurnoHistorialCard({ turno }) {
         onClick={() =>
           navigate('/busqueda-turnos', {
             state: {
-              doctor: turno.doctor,
+              medico: turno.medico,
               especialidad: turno.especialidad,
               sede: turno.sede,
             },

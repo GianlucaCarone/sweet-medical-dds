@@ -8,7 +8,7 @@ import MedicalServicesIcon from "@mui/icons-material/MedicalServices";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 import "./tarjetaTurno.css";
 import { useCart } from "../../context/CartContext.jsx";
-import MedicoCard from "../../shared/MedicoCard/MedicoCard";
+import TurnoCardHeader from '../cards/CardTurno/TurnoCardHeader.jsx';
 import CardBase from "../../shared/CardBase/CardBase";
 
 export default function TarjetaTurno({ turno, especialidades, practicas, onReservar }) {
@@ -35,8 +35,7 @@ export default function TarjetaTurno({ turno, especialidades, practicas, onReser
 
   return (
     <CardBase>
-
-      <MedicoCard turno={turno} especialidades={especialidades} practicas={practicas}/>
+      <TurnoCardHeader turno={turno} especialidades={especialidades} practicas={practicas} />
 
       {/* Grid de Turnos inferiores */}
       <div className="seccion-inferior-turnos">
@@ -48,12 +47,9 @@ export default function TarjetaTurno({ turno, especialidades, practicas, onReser
               return (
                 <button
                   key={turno.id}
-                  className={`boton-turno ${turnoSeleccionado === turno.id ? "seleccionado" : ""}`}
+                  className={`boton-turno ${turnoSeleccionado === turno.id ? 'seleccionado' : ''}`}
                   disabled={estaEnCarrito(turno.id)}
-                  onClick={() =>
-                    !estaEnCarrito(turno.id) &&
-                    setTurnoSeleccionado(turno.id)
-                  }
+                  onClick={() => !estaEnCarrito(turno.id) && setTurnoSeleccionado(turno.id)}
                 >
                   <EventNoteIcon fontSize="15px" />
                   <span className="fecha-turno">{fecha}</span>
@@ -67,7 +63,7 @@ export default function TarjetaTurno({ turno, especialidades, practicas, onReser
             disabled={turnoSeleccionado === null}
             onClick={() => {
               onReservar(turnoSeleccionado);
-              setTurnosReservados(prev => new Set(prev).add(turnoSeleccionado));
+              setTurnosReservados((prev) => new Set(prev).add(turnoSeleccionado));
               setTurnoSeleccionado(null);
             }}
           >

@@ -1,5 +1,4 @@
 import React from 'react';
-import './CardBase.css';
 import styled from 'styled-components';
 
 const StyledArticle = styled.article`
@@ -28,7 +27,7 @@ const StyledArticle = styled.article`
     margin: 0;
     font-size: 18px;
     color: #0f172a;
-}
+  }
   p {
     margin: 4px 0 0;
     color: #64748b;
@@ -52,9 +51,5 @@ const ActionsContainer = styled.div`
 `;
 
 export default function BaseCard({ children, className = '' }) {
-  return (
-    <StyledArticle className={className}>
-      {children}
-    </StyledArticle>
-  );
+  return <StyledArticle className={className}>{children}</StyledArticle>;
 }

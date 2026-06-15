@@ -1,11 +1,12 @@
-import { useState } from "react";
-import styled from "styled-components";
-import { Button } from "@mui/material";
-import { useNavigate } from "react-router-dom";
-import CancelarTurnoModal from "./CancelarTurnoModal";
-import ReprogramarTurnoModal from "./ReprogramarTurnoModal";
-import MedicoCard from "../../shared/MedicoCard/MedicoCard";
-import CardDivider from "../cards/CardDivider";
+import { useState } from 'react';
+import styled from 'styled-components';
+import { Button } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
+import CancelarTurnoModal from '../../mis-turnos/CancelarTurnoModal.jsx';
+import ReprogramarTurnoModal from '../../mis-turnos/ReprogramarTurnoModal.jsx';
+import TurnoCardHeader from './TurnoCardHeader.jsx';
+import CardDivider from '../CardDivider.jsx';
+import CardBase from '../../../shared/CardBase/CardBase.jsx';
 
 // --- 1. Styled Components ---
 const TurnoFooter = styled.div`
@@ -14,14 +15,13 @@ const TurnoFooter = styled.div`
   align-items: center;
 `;
 
-const CoberturaChip = styled.div`
+const CoberturaLabel = styled.div`
   display: inline-flex;
-  background: #e7f7f4;
-  color: #087f73;
-  border-radius: 999px;
-  padding: 7px 12px;
+  color: #2d8077;
+  padding: 4px;
   font-size: 14px;
   font-weight: 800;
+  justify-content: space-between;
 `;
 
 const TurnoActions = styled.div`
@@ -63,12 +63,12 @@ const BtnCancelar = styled(Button)`
 `;
 
 // --- 2. Componente Principal ---
-export default function TurnoCard({ turno, onCancelar }) {
+export default function CardTurno({ turno, onCancelar }) {
   const [modalCancelarAbierto, setModalCancelarAbierto] = useState(false);
   const [modalReprogramarAbierto, setModalReprogramarAbierto] = useState(false);
 
   const confirmarReprogramacion = (turnoId, nuevoTurno) => {
-    console.log("Reprogramando turno:", turnoId, "Nuevo horario:", nuevoTurno);
+    console.log('Reprogramando turno:', turnoId, 'Nuevo horario:', nuevoTurno);
     setModalReprogramarAbierto(false);
   };
 
@@ -79,27 +79,26 @@ export default function TurnoCard({ turno, onCancelar }) {
 
   return (
     <>
-      <CardDivider>
-        <CardDivider.Top>
-          <MedicoCard turno={turno} />
-        </CardDivider.Top>
+      <CardBase>
+        <TurnoCardHeader turno={turno} />
 
-        <CardDivider.Bottom>
-          <TurnoFooter>
-            <CoberturaChip>{turno.cobertura}</CoberturaChip>
+        <TurnoFooter>
+          <CoberturaLabel>
+            {'Cobertura: '}
+            {turno.estadoCobertura}
+          </CoberturaLabel>
 
-            <TurnoActions>
-              <BtnSecundario variant="outlined" onClick={() => setModalReprogramarAbierto(true)}>
-                Cambiar fecha
-              </BtnSecundario>
+          <TurnoActions>
+            <BtnSecundario variant="outlined" onClick={() => setModalReprogramarAbierto(true)}>
+              Cambiar fecha
+            </BtnSecundario>
 
-              <BtnCancelar variant="contained" onClick={() => setModalCancelarAbierto(true)}>
-                Cancelar
-              </BtnCancelar>
-            </TurnoActions>
-          </TurnoFooter>
-        </CardDivider.Bottom>
-      </CardDivider>
+            <BtnCancelar variant="contained" onClick={() => setModalCancelarAbierto(true)}>
+              Cancelar
+            </BtnCancelar>
+          </TurnoActions>
+        </TurnoFooter>
+      </CardBase>
 
       <ReprogramarTurnoModal
         abierto={modalReprogramarAbierto}

@@ -1,5 +1,5 @@
 import './MisTurnos.css';
-import TurnoCard from '../../components/mis-turnos/TurnoCard';
+import CardTurno from '../../components/cards/CardTurno/CardTurno';
 import EstadisticaTurnoCard from '../../components/mis-turnos/EstadisticaTurnoCard';
 import CalendarMonthRoundedIcon from '@mui/icons-material/CalendarMonthRounded';
 import CheckCircleRoundedIcon from '@mui/icons-material/CheckCircleRounded';
@@ -12,7 +12,7 @@ import EstadisticaTurnoCardSkeleton from '../../components/mis-turnos/Estadistic
 import TurnoHistorialSkeleton from '../../components/mis-turnos/TurnoHistorialSkeleton';
 import { useNavigate } from 'react-router-dom';
 import Toast from '../../components/mis-turnos/Toast';
-import { proximosTurnos, historialTurnos } from '../../mockdata/turnos';
+import { mockRespuestaPaginada, historialTurnos } from '../../mockdata/turnos';
 import TituloSeccion from '../../shared/TituloSeccion/TituloSeccion';
 import BaseCard from '../../shared/BaseCard/BaseCard';
 import { Button } from '@mui/material';
@@ -42,17 +42,16 @@ export default function MisTurnos() {
   const turnosPorPagina = 3;
   const navigate = useNavigate();
 
-  const totalPaginasProximos = Math.ceil(proximosTurnos.length / turnosPorPagina);
-
-  const proximosTurnosAMostrar = proximosTurnos.slice(
-    (paginaProximos - 1) * turnosPorPagina,
-    paginaProximos * turnosPorPagina
+  const totalPaginasProximos = Math.ceil(
+    mockRespuestaPaginada.paginacion.totalTurnos / turnosPorPagina
   );
+
+  const proximosTurnosAMostrar = mockRespuestaPaginada.data;
 
   const estadisticasData = [
     {
       id: 1,
-      numero: proximosTurnos.length.toString(),
+      numero: proximosTurnosAMostrar.length.toString(),
       texto: 'Turnos próximos',
       tipo: 'azul',
       icono: <CalendarMonthRoundedIcon />,
@@ -113,8 +112,8 @@ export default function MisTurnos() {
           </span>
 
           <p>
-            Tenés <strong>2 turnos próximos</strong> programados. Desde acá podés consultar,
-            reprogramar o cancelar tus citas médicas.
+            Tenés <strong>{proximosTurnosAMostrar.length}</strong> turnos próximos programados.
+            Desde acá podés consultar, reprogramar o cancelar tus citas médicas.
           </p>
         </div>
       </StyledTarjetaWrapper>
@@ -148,7 +147,7 @@ export default function MisTurnos() {
           <TurnoCardSkeleton />
           <TurnoCardSkeleton />
         </>
-      ) : proximosTurnos.length === 0 ? (
+      ) : proximosTurnosAMostrar.length === 0 ? (
         <TurnosEmptyState
           titulo="No tenés turnos próximos"
           descripcion="Cuando reserves un turno, lo vas a ver listado en esta sección."
@@ -159,7 +158,7 @@ export default function MisTurnos() {
         <>
           <div className="turnos-lista">
             {proximosTurnosAMostrar.map((turno) => (
-              <TurnoCard key={turno.id} turno={turno} onCancelar={handleTurnoCancelado} />
+              <CardTurno key={turno.id} turno={turno} onCancelar={handleTurnoCancelado} />
             ))}
           </div>
 
