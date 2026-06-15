@@ -10,6 +10,8 @@ import "./tarjetaTurno.css";
 import { useCart } from "../../context/CartContext.jsx";
 import TurnoCardHeader from '../cards/CardTurno/TurnoCardHeader.jsx';
 import CardBase from "../../shared/CardBase/CardBase";
+import CardDivider from '../cards/CardDivider.jsx';
+import { Ca } from 'zod/v4/locales';
 
 export default function TarjetaTurno({ turno, especialidades, practicas, onReservar }) {
   const [turnoSeleccionado, setTurnoSeleccionado] = useState(null);
@@ -35,43 +37,46 @@ export default function TarjetaTurno({ turno, especialidades, practicas, onReser
 
   return (
     <CardBase>
-      <TurnoCardHeader turno={turno} especialidades={especialidades} practicas={practicas} />
-
-      {/* Grid de Turnos inferiores */}
-      <div className="seccion-inferior-turnos">
-        <p className="titulo-turnos">Próximos turnos disponibles</p>
-        <div className="seccion-turnos">
-          <div className="grid-turnos">
-            {turno.turnos.map((turno, index) => {
-              const { fecha, hora } = formatoHorario(turno.horario);
-              return (
-                <button
-                  key={turno.id}
-                  className={`boton-turno ${turnoSeleccionado === turno.id ? 'seleccionado' : ''}`}
-                  disabled={estaEnCarrito(turno.id)}
-                  onClick={() => !estaEnCarrito(turno.id) && setTurnoSeleccionado(turno.id)}
-                >
-                  <EventNoteIcon fontSize="15px" />
-                  <span className="fecha-turno">{fecha}</span>
-                  <span className="hora-turno">{hora}</span>
-                </button>
-              );
-            })}
+      <CardDivider.Top>
+        <TurnoCardHeader turno={turno} especialidades={especialidades} practicas={practicas} />
+      </CardDivider.Top>
+      <CardDivider.Bottom>
+        {/* Grid de Turnos inferiores */}
+        <div className="seccion-inferior-turnos">
+          <p className="titulo-turnos">Próximos turnos disponibles</p>
+          <div className="seccion-turnos">
+            <div className="grid-turnos">
+              {turno.turnos.map((turno, index) => {
+                const { fecha, hora } = formatoHorario(turno.horario);
+                return (
+                  <button
+                    key={turno.id}
+                    className={`boton-turno ${turnoSeleccionado === turno.id ? 'seleccionado' : ''}`}
+                    disabled={estaEnCarrito(turno.id)}
+                    onClick={() => !estaEnCarrito(turno.id) && setTurnoSeleccionado(turno.id)}
+                  >
+                    <EventNoteIcon fontSize="15px" />
+                    <span className="fecha-turno">{fecha}</span>
+                    <span className="hora-turno">{hora}</span>
+                  </button>
+                );
+              })}
+            </div>
+            <button
+              className="boton-reservar"
+              disabled={turnoSeleccionado === null}
+              onClick={() => {
+                onReservar(turnoSeleccionado);
+                setTurnosReservados((prev) => new Set(prev).add(turnoSeleccionado));
+                setTurnoSeleccionado(null);
+              }}
+            >
+              <AddCircleIcon fontSize="15px" />
+              Reservar
+            </button>
           </div>
-          <button
-            className="boton-reservar"
-            disabled={turnoSeleccionado === null}
-            onClick={() => {
-              onReservar(turnoSeleccionado);
-              setTurnosReservados((prev) => new Set(prev).add(turnoSeleccionado));
-              setTurnoSeleccionado(null);
-            }}
-          >
-            <AddCircleIcon fontSize="15px" />
-            Reservar
-          </button>
         </div>
-      </div>
+      </CardDivider.Bottom>
     </CardBase>
   );
 }
