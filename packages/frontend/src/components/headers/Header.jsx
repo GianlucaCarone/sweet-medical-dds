@@ -19,7 +19,7 @@ import {
   Button,
 } from "@mui/material";
 
-const Header = () => {
+const Header = ({ toggleTheme }) => {
   const { user } = useAuth(); // Traemos al usuario logueado
   const { carrito, limpiarCarrito,  eliminarDelCarrito, manejoCarritoDrawer } = useCart();
 
@@ -82,6 +82,7 @@ const Header = () => {
         <Navbar />
 
         <div className="header-actions">
+          <Button onClick={toggleTheme} sx={{height: "20px"}} aria-label="Cambiar modo claro/osuro"></Button>
           <IconButton
             onClick={() => manejoCarritoDrawer.abrir()}
             aria-label="carrito de turnos"

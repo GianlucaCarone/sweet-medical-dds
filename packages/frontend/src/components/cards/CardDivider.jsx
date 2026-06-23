@@ -1,8 +1,8 @@
 import React from 'react';
 import styled from 'styled-components';
-import BaseCard from '../../shared/BaseCard/BaseCard';
+import CardBase from '../../shared/CardBase/CardBase'
 
-const StyledCardDivider = styled(BaseCard)`
+const StyledCardDivider = styled(CardBase)`
   display: flex;
   flex-direction: column;
   align-items: stretch;

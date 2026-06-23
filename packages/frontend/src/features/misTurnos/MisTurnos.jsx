@@ -14,13 +14,13 @@ import { useNavigate } from 'react-router-dom';
 import Toast from '../../components/mis-turnos/Toast';
 import { mockRespuestaPaginada, historialTurnos } from '../../mockdata/turnos';
 import TituloSeccion from '../../shared/TituloSeccion/TituloSeccion';
-import BaseCard from '../../shared/BaseCard/BaseCard';
 import { Button } from '@mui/material';
+import CardBase from '../../shared/CardBase/CardBase'
 
 import TurnoHistorialCard from '../../components/cards/TurnoHistorialCard';
 import styled from 'styled-components';
 
-const StyledTarjetaWrapper = styled(BaseCard)`
+const StyledTarjetaWrapper = styled(CardBase)`
   flex-direction: column;
   align-items: stretch;
   gap: 20px;

@@ -1,7 +1,8 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import BaseCard from '../../shared/BaseCard/BaseCard';
 import styled from 'styled-components';
+import CardBase from '../../shared/CardBase/CardBase'
+import { Box, Typography } from '@mui/material';
 
 const HistorialInfo = styled.div`
   display: flex;
@@ -45,6 +46,8 @@ const BtnSecundario = styled.button`
   background: transparent;
   cursor: pointer;
   transition: all 0.2s ease-in-out;
+  width: fit-content;
+  align-self: end;
 
   &:hover {
     background: #bcc5cfc7;
@@ -69,7 +72,7 @@ export default function TurnoHistorialCard({ turno }) {
   const fecha = transformarFecha(turno.fechaHora);
 
   return (
-    <BaseCard>
+    <CardBase>
       <HistorialInfo>
         <DoctorAvatar>
           {turno.foto ? (
@@ -79,12 +82,12 @@ export default function TurnoHistorialCard({ turno }) {
           )}
         </DoctorAvatar>
 
-        <div>
-          <h3>{nombreMedico}</h3>
-          <p>
+        <Box>
+          <Typography variant='h3'>{nombreMedico}</Typography>
+          <Typography>
             {transformarFecha(fecha)} · {especialidad}
-          </p>
-        </div>
+          </Typography>
+        </Box>
       </HistorialInfo>
 
       <BtnSecundario
@@ -100,6 +103,6 @@ export default function TurnoHistorialCard({ turno }) {
       >
         Volver a pedir
       </BtnSecundario>
-    </BaseCard>
+    </CardBase>
   );
 }

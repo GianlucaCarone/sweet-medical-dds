@@ -10,7 +10,7 @@ import Home from "./features/home/Home.jsx"
 
 import "./App.css";
 
-function App() {
+function App({toggleTheme}) {
   const [message, setMessage] = useState("");
 
   useEffect(() => {
@@ -26,7 +26,7 @@ function App() {
         <Route
           path="/"
           element={
-            <Layout/>
+            <Layout toggleTheme={toggleTheme}/>
           }>
           <Route
             path="busqueda-turnos"

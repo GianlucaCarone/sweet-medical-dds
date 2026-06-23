@@ -1,6 +1,6 @@
 import React from "react";
 import styled, { keyframes } from "styled-components";
-import BaseCard from "../../shared/BaseCard/BaseCard";
+import CardBase from "../../shared/CardBase/CardBase";
 
 // 1. Diccionario de colores (Configuration Object)
 // Esto es clave para escalar: si mañana te piden un nuevo tipo, solo lo agregás acá.
@@ -24,7 +24,7 @@ const slideFadeIn = keyframes`
 `;
 
 // 3. Definición de Styled Components
-const StatCardWrapper = styled(BaseCard)`
+const StatCardWrapper = styled(CardBase)`
   min-height: 120px;
   display: flex;
   flex-direction: column;
