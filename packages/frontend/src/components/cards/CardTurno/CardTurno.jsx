@@ -40,9 +40,10 @@ const BtnSecundario = styled(Button)`
     font-weight: 600;
     padding: 6px 18px;
 
-    &:hover {
-      background: #f8fafc;
+        &:hover {
+      background: #e8f5e9;
       transform: translateY(-1px);
+      box-shadow: 0 4px 6px rgba(19, 115, 51, 0.15);
     }
   }
 `;
