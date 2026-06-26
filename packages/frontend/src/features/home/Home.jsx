@@ -10,7 +10,27 @@ import TituloSeccion from "../../shared/TituloSeccion/TituloSeccion";
 import CardBase from "../../shared/CardBase/CardBase";
 
 const Home = () => {
-
+  
+  const cardsFuncionamiento = [
+    {
+      numero: "01",
+      icono: <SearchIcon fontSize="medium" />,
+      titulo: "Buscá tu especialidad",
+      descripcion: "Filtrá por especialidad, práctica, sede o rango de fechas. El sistema muestra tu cobertura automáticamente."
+    },
+    {
+      numero: "02",
+      icono: <EventAvailableIcon fontSize="medium" />,
+      titulo: "Elegí tu turno",
+      descripcion: "Visualizá el costo estimado según tu plan de obra social antes de confirmar la reserva."
+    },
+    {
+      numero: "03",
+      icono: <CheckCircleIcon fontSize="medium" />,
+      titulo: "Confirmá y listo",
+      descripcion: "Recibís una notificación al instante. El día previo te enviamos un recordatorio automático."
+    }
+  ];
   const navigate = useNavigate();
   const irAVerTurnos = (e) => {
     if (e) e.stopPropagation();
@@ -42,82 +62,34 @@ const Home = () => {
         <h6 className="text-muted">Reservá tu turno en tres simples pasos</h6>
       </div>
       <div className="d-flex justify-content-around w-100 mt-2 p-5 gap-5">
-        <CardBase className="w-25 bg-white ">
+        {cardsFuncionamiento.map((paso, index) => (
+          <CardBase key={index} className="w-25 bg-white">
           <CardContent>
-            <Box sx={{ display: "inline-flex"}}>
-              <Typography sx={{ color: 'text.secondary', fontSize: 40 }}>
-                01
-              </Typography>
-              <Box
-                sx={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  color: 'primary.main',
-                  padding: '12px'
-                }}
-              >
-                <SearchIcon fontSize="medium" />
+              <Box sx={{ display: "inline-flex"}}>
+                <Typography sx={{ color: 'text.secondary', fontSize: 40 }}>
+                  {paso.numero}
+                </Typography>
+                <Box
+                  sx={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    color: 'primary.main',
+                    padding: '12px'
+                  }}
+                >
+                  {paso.icono}
+                </Box>
               </Box>
-            </Box>
-            <Typography variant="h5" component="div">
-              Buscá tu especialidad
-            </Typography>
-            <Typography sx={{ color: 'text.secondary', mb: 1.5 }}>
-              Filtrá por especialidad, práctica, sede o rango de fechas. El sistema muestra tu cobertura automáticamente.
-            </Typography>
-          </CardContent>
-        </CardBase>
-
-        <CardBase className="w-25 bg-white rounded">
-          <CardContent>
-            <Box sx={{ display: "inline-flex"}}>
-              <Typography sx={{ color: 'text.secondary', fontSize: 40 }}>
-                02
+              <Typography variant="h5" component="div">
+              {paso.titulo}
               </Typography>
-              <Box
-                sx={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  color: 'primary.main',
-                  padding: '12px'
-                }}
-              >
-                <EventAvailableIcon fontSize="medium" />
-              </Box>
-            </Box>
-            <Typography variant="h5" component="div">
-              Elegí tu turno
-            </Typography>
-            <Typography sx={{ color: 'text.secondary', mb: 1.5 }}>Visualizá el costo estimado según tu plan de obra social antes de confirmar la reserva.</Typography>
-          </CardContent>
-        </CardBase>
-
-        <CardBase className="w-25 bg-white rounded">
-          <CardContent>
-            <Box sx={{ display: "inline-flex"}}>
-              <Typography sx={{ color: 'text.secondary', fontSize: 40 }}>
-                03
+              <Typography sx={{ color: 'text.secondary', mb: 1.5 }}>
+                {paso.descripcion}
               </Typography>
-              <Box
-                sx={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  color: 'primary.main',
-                  padding: '12px',
-                }}
-              >
-                <CheckCircleIcon fontSize="medium" />
-              </Box>
-            </Box>
-            <Typography variant="h5" component="div">
-              Confirmá y listo
-            </Typography>
-            <Typography sx={{ color: 'text.secondary', mb: 1.5 }}>Recibís una notificación al instante. El día previo te enviamos un recordatorio automático.</Typography>
-          </CardContent>
-        </CardBase>
+              </CardContent>
+          </CardBase>
+        ))}
       </div>
     </div>
 
