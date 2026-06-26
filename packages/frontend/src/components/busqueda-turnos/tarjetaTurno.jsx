@@ -1,17 +1,10 @@
 import React from "react";
 import { useState } from "react";
-import LocationPinIcon from "@mui/icons-material/LocationPin";
-import StarIcon from "@mui/icons-material/Star";
 import EventNoteIcon from "@mui/icons-material/EventNote";
-import PersonIcon from "@mui/icons-material/Person";
-import MedicalServicesIcon from "@mui/icons-material/MedicalServices";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 import "./tarjetaTurno.css";
 import { useCart } from "../../context/CartContext.jsx";
-import TurnoCardHeader from '../cards/CardTurno/TurnoCardHeader.jsx';
-import CardBase from "../../shared/CardBase/CardBase";
-import CardDivider from '../cards/CardDivider.jsx';
-import { Ca } from 'zod/v4/locales';
+import TurnoCardLayout from '../../shared/TurnoCardLayout.jsx';
 
 export default function TarjetaTurno({ turno, especialidades, practicas, onReservar }) {
   const [turnoSeleccionado, setTurnoSeleccionado] = useState(null);
@@ -19,14 +12,6 @@ export default function TarjetaTurno({ turno, especialidades, practicas, onReser
 
   const {estaEnCarrito } = useCart();
 
-  const formatoServicio = (servicio) => {
-    if (servicio.tipo === "especialidad") {
-      return `${servicio?.nombre} • Consulta general`;
-    } else {
-      const practica = practicas.find((p) => p.id === servicio.id);
-      return `${especialidades.find((e) => e.id === practica.especialidadPadre)?.nombre} • ${practica.nombre}`;
-    }
-  };
   const formatoHorario = (isoString) => {
     const fecha = new Date(isoString);
     return {
@@ -36,11 +21,7 @@ export default function TarjetaTurno({ turno, especialidades, practicas, onReser
   };
 
   return (
-    <CardBase>
-      <CardDivider.Top>
-        <TurnoCardHeader turno={turno} especialidades={especialidades} practicas={practicas} />
-      </CardDivider.Top>
-      <CardDivider.Bottom>
+    <TurnoCardLayout turno={turno} especialidades={especialidades} practicas={practicas}>
         {/* Grid de Turnos inferiores */}
         <div className="seccion-inferior-turnos">
           <p className="titulo-turnos">Próximos turnos disponibles</p>
@@ -76,7 +57,6 @@ export default function TarjetaTurno({ turno, especialidades, practicas, onReser
             </button>
           </div>
         </div>
-      </CardDivider.Bottom>
-    </CardBase>
+    </TurnoCardLayout>
   );
 }

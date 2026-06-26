@@ -164,23 +164,23 @@ export default function MisTurnos() {
 
           {totalPaginasProximos > 1 && (
             <div className="paginacion-turnos">
-              <button
+              <Button
                 disabled={paginaProximos === 1}
                 onClick={() => setPaginaProximos(paginaProximos - 1)}
               >
                 Anterior
-              </button>
+              </Button>
 
               <span>
                 Página {paginaProximos} de {totalPaginasProximos}
               </span>
 
-              <button
+              <Button
                 disabled={paginaProximos === totalPaginasProximos}
                 onClick={() => setPaginaProximos(paginaProximos + 1)}
               >
                 Siguiente
-              </button>
+              </Button>
             </div>
           )}
         </>

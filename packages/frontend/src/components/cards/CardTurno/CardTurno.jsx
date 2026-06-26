@@ -1,12 +1,9 @@
 import { useState } from 'react';
 import styled from 'styled-components';
 import { Button } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
 import CancelarTurnoModal from '../../mis-turnos/CancelarTurnoModal.jsx';
 import ReprogramarTurnoModal from '../../mis-turnos/ReprogramarTurnoModal.jsx';
-import TurnoCardHeader from './TurnoCardHeader.jsx';
-import CardDivider from '../CardDivider.jsx';
-import CardBase from '../../../shared/CardBase/CardBase.jsx';
+import TurnoCardLayout from '../../../shared/TurnoCardLayout.jsx';
 
 // --- 1. Styled Components ---
 const TurnoFooter = styled.div`
@@ -81,9 +78,7 @@ export default function CardTurno({ turno, onCancelar }) {
 
   return (
     <>
-      <CardBase>
-        <TurnoCardHeader turno={turno} />
-
+      <TurnoCardLayout turno={turno}>
         <TurnoFooter>
           <CoberturaLabel>
             {'Cobertura: '}
@@ -100,7 +95,7 @@ export default function CardTurno({ turno, onCancelar }) {
             </BtnCancelar>
           </TurnoActions>
         </TurnoFooter>
-      </CardBase>
+      </TurnoCardLayout>
 
       <ReprogramarTurnoModal
         abierto={modalReprogramarAbierto}

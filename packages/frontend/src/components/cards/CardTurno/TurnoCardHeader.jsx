@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { Avatar } from '@mui/material';
+import { Avatar, Typography } from '@mui/material';
 import HealingRoundedIcon from '@mui/icons-material/HealingRounded';
 import BusinessRoundedIcon from '@mui/icons-material/BusinessRounded';
 import BadgeEstado from '../../../shared/BadgeEstado';
@@ -75,13 +75,20 @@ const CostoTurno = styled.span`
 
 // --- Componente Principal ---
 
-export default function TurnoCardHeader({ turno }) {
+export default function TurnoCardHeader({ turno, especialidades = [], practicas = [] }) {
   const formatoServicio = (servicio = {}) => {
-    if (servicio?.tipo === 'Especialidad') {
+    const tipo = servicio?.tipo?.toLowerCase?.();
+    if (tipo === 'especialidad') {
       return `${servicio?.nombre} • Consulta general`;
-    } else {
-      return `${servicio?.nombre || 'Especialidad'} • ${servicio?.especialidadPadre || 'Consulta'}`;
     }
+    if (practicas.length > 0) {
+      const practica = practicas.find((p) => p.id === servicio.id);
+      if (practica) {
+        const especialidad = especialidades.find((e) => e.id === practica.especialidadPadre);
+        return `${especialidad?.nombre || ''} • ${practica.nombre}`;
+      }
+    }
+    return `${servicio?.nombre || 'Especialidad'} • ${servicio?.especialidadPadre || 'Consulta'}`;
   };
 
   // Función helper para obtener la inicial del médico (ej: "Dr. Franco" -> "F")
@@ -98,7 +105,7 @@ export default function TurnoCardHeader({ turno }) {
         <StyledAvatar>{getInicialMedico(turno.medico?.nombre)}</StyledAvatar>
 
         <DatosTurno>
-          <h4>{turno.medico?.nombre}</h4>
+          <Typography variant='h4'>{turno.medico?.nombre}</Typography>
 
           <DetailRow>
             <HealingRoundedIcon />

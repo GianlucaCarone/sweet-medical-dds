@@ -9,11 +9,8 @@
 
 .tarjeta-turno {
     background-color: var(--blanco);
-    border: 1px solid var(--borde-gris);
-    border-radius: 12px;
     padding: 20px;
     margin-bottom: 16px;
-    box-shadow: 1px 1px 1px grey;
 }
 
 .info-lateral {

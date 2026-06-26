@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import CardBase from '../../shared/CardBase/CardBase'
+import CardBase from '../../../shared/CardBase/CardBase'
 
 const StyledCardDivider = styled(CardBase)`
   display: flex;
