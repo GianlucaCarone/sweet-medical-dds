@@ -33,8 +33,9 @@ const TurnoActions = styled.div`
 const BtnSecundario = styled(Button)`
   && {
     border-radius: 999px;
-    border: 2px solid #bac4c2;
-    color: #526173;
+   border: 2px solid #137333;
+    color: #137333;
+    transition: all 0.2s ease-in-out;
     text-transform: none;
     font-weight: 600;
     padding: 6px 18px;
