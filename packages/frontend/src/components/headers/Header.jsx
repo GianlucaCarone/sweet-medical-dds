@@ -88,7 +88,7 @@ const Header = ({ toggleTheme }) => {
             aria-label="carrito de turnos"
             sx={{ marginRight: 2 }} // Un poco de margen a la derecha
           >
-            <Badge badgeContent={cantUnidades} color="error">
+            <Badge badgeContent={cantUnidades} color="primary">
               {/* Le puse color 'inherit' asumiendo que el fondo de tu header es oscuro. 
                   Si es blanco, borrale el sx y usá color="primary" */}
               <ShoppingCartIcon sx={{ color: "primary" }} />
