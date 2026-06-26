@@ -42,7 +42,7 @@ const Home = () => {
         <h6 className="text-muted">Reservá tu turno en tres simples pasos</h6>
       </div>
       <div className="d-flex justify-content-around w-100 mt-2 p-5 gap-5">
-        <CardBase className="w-25 bg-white rounded">
+        <CardBase className="w-25 bg-white ">
           <CardContent>
             <Box sx={{ display: "inline-flex"}}>
               <Typography sx={{ color: 'text.secondary', fontSize: 40 }}>
