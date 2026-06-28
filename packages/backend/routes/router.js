@@ -8,9 +8,11 @@ import servicioRoutes from "./servicioRoutes.js";
 import turnoRoutes from "./turnoRoutes.js";
 import usuarioRoutes from "./usuarioRoutes.js";
 import { pacienteRoutes } from "./pacienteRoutes.js";
+import authRoutes from "./authRoutes.js";
 
 const routes = [
   { path: "/health", handler: healthRoutes },
+  { path: "/auth", handler: authRoutes },
   { path: "/medicos", handler: medicoRoutes },
   //{ path: "/usuarios/:idUsuario/notificaciones", handler: notificacionesRoutes },
   //{ path: "/notificaciones", handler: notificacionRoutes }, esta en el usuarioRoutes

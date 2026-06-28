@@ -1,0 +1,88 @@
+import jwt from "jsonwebtoken";
+import { UsuarioService } from "../services/UsuarioService.js";
+import { logger } from "../config/logger.js";
+
+export class AuthController {
+    constructor({
+        usuarioService = new UsuarioService()
+    } = {}) {
+        this.usuarioService = usuarioService;
+    }
+
+    /**
+     * POST /auth/login
+     * Body: { nombreUsuario, password }
+     * Responde con los datos del usuario y setea la cookie HttpOnly con el JWT.
+     */
+    login = async (req, res, next) => {
+        try {
+          const { nombreUsuario, password } = req.body;
+
+          if (!nombreUsuario || !password) {
+            return res
+              .status(400)
+              .json({ message: "nombreUsuario y password son requeridos" });
+          }
+
+          logger.info(
+            "[AUTH CONTROLLER]: Intento de login para: ",
+            nombreUsuario,
+          );
+
+          const usuario = await this.usuarioService.login(
+            nombreUsuario,
+            password,
+          );
+          // Firmar el JWT con los datos del usuario
+          const token = jwt.sign(
+            { id: usuario.id, nombreUsuario: usuario.nombreUsuario },
+            process.env.JWT_SECRET,
+            { expiresIn: process.env.JWT_EXPIRATION || "7d" },
+          );
+
+          // Setear la cookie HttpOnly — JavaScript del cliente no puede leerla
+          res.cookie("token", token, {
+            httpOnly: true, // no accesible por JS
+            secure: process.env.NODE_ENV === "production", // solo HTTPS en prod
+            sameSite: "strict", // previene CSRF
+            maxAge: 7 * 24 * 60 * 60 * 1000, // 7 días en ms
+          });
+
+          logger.info("[AUTH CONTROLLER]: Login exitoso para: ", nombreUsuario);
+          return res.status(200).json({ usuario });
+        } catch (error) {
+          // UnauthorizedError (y cualquier otro AppError) es manejado automáticamente
+          // por el errorHandler global, que responde con el statusCode correcto.
+          next(error);
+        }
+    };
+
+    /**
+     * POST /auth/logout
+     * Borra la cookie del browser.
+     */
+    logout = async (req, res) => {
+        res.clearCookie("token", {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
+            sameSite: "strict",
+        });
+        logger.info("[AUTH CONTROLLER]: Logout exitoso");
+        return res.status(200).json({ message: "Sesión cerrada correctamente" });
+    };
+
+    /**
+     * GET /auth/me
+     * Protegido por authMiddleware. Devuelve los datos del usuario autenticado.
+     * req.user es seteado por el middleware con los datos del JWT.
+     */
+    me = async (req, res, next) => {
+        try {
+            logger.info("[AUTH CONTROLLER]: Consultando usuario autenticado: ", req.user.id);
+            const usuario = await this.usuarioService.findById(req.user.id);
+            return res.status(200).json({ usuario });
+        } catch (error) {
+            next(error);
+        }
+    };
+}
