@@ -24,7 +24,6 @@ const Header = () => {
   const [cantUnidades, setCantUnidades] = useState(0);
   //estado para controlar si el Pop-up de Login está abierto o cerrado
   const [loginAbierto, setLoginAbierto] = useState(false);
-  const [userName, setUserName] = useState(null); // Estado local para el nombre de usuario
 
 
 
@@ -32,7 +31,7 @@ const Header = () => {
     setLoginAbierto(false);
     // 2. Seteamos el mensaje personalizado (asumiendo que tu usuario tiene un 'nombre')
     showAlert(
-      `¡Bienvenido/a de nuevo, ${user.email || "usuario"}!`,
+      `¡Bienvenido/a de nuevo, ${user.nombreUsuario || "usuario"}!`,
       "success"
     );
     // 4. Actualizamos el estado local del Header para mostrar el menú en lugar del botón
@@ -76,11 +75,11 @@ const Header = () => {
             </Badge>
           </IconButton>
           {/* 2. Renderizado Condicional: 
-              Si tenemos 'userName', mostramos el Menú. 
+              Si tenemos 'user' en el contexto, mostramos el Menú. 
               Si es null/undefined, mostramos el botón que abre el pop-up */}
-          {userName ? (
+          {user ? (
             <MenuUsuario
-              userName={userName}
+              userName={user.nombreUsuario || "Usuario"}
               onLogoutSuccess={handleLogoutExitoso}
             />
           ) : (
