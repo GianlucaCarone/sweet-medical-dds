@@ -80,8 +80,8 @@ export default function CardTurno({ turno, onCancelar }) {
       <TurnoCardLayout turno={turno}>
         <TurnoFooter>
           <CoberturaLabel>
-            {'Cobertura: '}
-            {turno.estadoCobertura}
+            {'Estado: '}
+            {turno.estado.toLowerCase()}
           </CoberturaLabel>
 
           <TurnoActions>
