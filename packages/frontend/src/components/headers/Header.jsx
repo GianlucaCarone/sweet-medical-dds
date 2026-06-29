@@ -6,18 +6,22 @@ import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import { useState, useEffect } from "react";
 import CarritoTurnos from "./carritoTurnos.jsx";
 import ModalLogin from "../login/ModalLogin.jsx";
-import { useAuth } from "../../context/AuthContext.jsx"; // Importamos el hook del contexto de autenticación
+import { useAuth } from "../../context/AuthContext.jsx";
 import { useCart } from '../../context/CartContext.jsx';
+import { useThemeContext } from '../../context/ThemeContext.jsx';
 import {
   Drawer,
   Badge,
   IconButton,
   Button,
 } from "@mui/material";
+import DarkModeIcon from '@mui/icons-material/DarkMode';
+import LightModeIcon from '@mui/icons-material/LightMode';
 import { useAlert } from "../../context/AlertContext.jsx";
 
-const Header = ({ toggleTheme }) => {
+const Header = () => {
   const { user } = useAuth(); // Traemos al usuario logueado
+  const { mode, toggleTheme } = useThemeContext();
   const { carrito, limpiarCarrito,  eliminarDelCarrito, manejoCarritoDrawer, counterCarrito } = useCart();
   const {showAlert} = useAlert();
 
@@ -63,7 +67,9 @@ const Header = ({ toggleTheme }) => {
         <Navbar />
 
         <div className="header-actions">
-          <Button onClick={toggleTheme} sx={{height: "20px"}} aria-label="Cambiar modo claro/osuro"></Button>
+          <IconButton onClick={toggleTheme} aria-label="Cambiar modo claro/oscuro">
+            { mode == 'light' ? <LightModeIcon sx={{ color: "primary" }}></LightModeIcon> : <DarkModeIcon sx={{ color: "primary" }}></DarkModeIcon>}
+          </IconButton>
           <IconButton
             onClick={() => manejoCarritoDrawer.abrir()}
             aria-label="carrito de turnos"
