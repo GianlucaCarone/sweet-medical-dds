@@ -171,7 +171,7 @@ export default function BusquedaTurnos() {
                             />
                         ))}
                 </section>
-                <Pagination count={dataPaginacion.totalPaginas} color="#137333"
+                <Pagination count={dataPaginacion.totalPaginas} color="primary"
                     page={numeroPagina}
                     onChange={(e, page) => {
                         setNumeroPagina(page);

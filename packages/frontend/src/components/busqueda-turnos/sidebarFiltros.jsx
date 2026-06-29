@@ -52,17 +52,17 @@ export default function SidebarFiltros({ medicos, sedes, especialidades, practic
             component="aside"
             sx={{
                 width: 280,
-                backgroundColor: '#ffffff',
+                backgroundColor: 'var(--color-surface)',
                 borderRadius: 3,
                 padding: 3,
-                border: '1px solid #e2e8f0',
+                border: '1px solid var(--color-divider)',
                 boxShadow: '0 4px 6px rgba(0,0,0,0.01)'
             }}
         >
             {/* Título de la sección */}
             <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: 3 }}>
-                <FilterAltIcon sx={{ color: '#475569', fontSize: 20 }} />
-                <Typography variant="h6" sx={{ fontSize: 16, fontWeight: 700, color: '#1e293b' }}>
+                <FilterAltIcon sx={{ color: 'var(--color-text-muted)', fontSize: 20 }} />
+                <Typography variant="h6" sx={{ fontSize: 16, fontWeight: 700, color: 'var(--color-text)' }}>
                     Búsqueda de Turnos
                 </Typography>
             </Stack>
@@ -177,7 +177,7 @@ export default function SidebarFiltros({ medicos, sedes, especialidades, practic
 
                 {/* Rango de Fechas */}
                 <Box>
-                    <Typography variant="caption" sx={{ display: 'block', fontWeight: 600, mb: 1, color: '#1e293b' }}>
+                    <Typography variant="caption" sx={{ display: 'block', fontWeight: 600, mb: 1, color: 'var(--color-text)' }}>
                         Rango de Fechas
                     </Typography>
                     <Stack direction="row" spacing={1}>

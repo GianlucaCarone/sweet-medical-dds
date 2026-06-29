@@ -15,7 +15,7 @@ export default function SedesTab({ sedesAsignadas, onAsociar, onDesvincular }) {
       <div className="row g-4">
         {/* Columna Izquierda: Mis Sedes */}
         <div className="col-12 col-md-6">
-          <div className="bg-light p-4 rounded" style={{ border: '1px solid #e2e8f0', minHeight: '300px' }}>
+          <div className="bg-light p-4 rounded" style={{ border: '1px solid var(--color-divider)', minHeight: '300px' }}>
             <h5 className="font-weight-bold text-dark mb-4 d-flex align-items-center gap-2" style={{ fontSize: '1.1rem' }}>
               <MapPin size={20} className="text-primary"/> Sedes Vinculadas
             </h5>
@@ -45,7 +45,7 @@ export default function SedesTab({ sedesAsignadas, onAsociar, onDesvincular }) {
 
         {/* Columna Derecha: Catálogo Disponible */}
         <div className="col-12 col-md-6">
-          <div className="bg-white p-4 rounded" style={{ border: '1px solid #e2e8f0', minHeight: '300px' }}>
+          <div className="bg-white p-4 rounded" style={{ border: '1px solid var(--color-divider)', minHeight: '300px' }}>
             <h5 className="font-weight-bold text-dark mb-4" style={{ fontSize: '1.1rem' }}>Disponibles en el Sistema</h5>
             <div className="space-y-2">
               {sedesDisponibles.map(sede => (

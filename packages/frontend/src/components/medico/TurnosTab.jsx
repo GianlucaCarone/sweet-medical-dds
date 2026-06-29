@@ -181,8 +181,8 @@ export default function TurnosTab({
             className={`btn btn-sm font-weight-bold px-3 py-2 position-relative d-flex align-items-center gap-2`}
             style={{
               borderRadius: '8px',
-              backgroundColor: subTab === tab.key ? '#e0f2fe' : '#f1f5f9',
-              color: subTab === tab.key ? '#0369a1' : '#475569',
+              backgroundColor: subTab === tab.key ? 'var(--color-info-light)' : 'var(--color-neutral-light)',
+              color: subTab === tab.key ? 'var(--color-info-dark)' : 'var(--color-text-muted)',
               border: 'none',
               transition: 'all 0.2s'
             }}
@@ -208,7 +208,7 @@ export default function TurnosTab({
           {turnos.length > 0 ? (
             turnos.map(turno => (
               <div key={turno.id} className="col-12 col-md-6">
-                <div className="servicio-card h-100 d-flex flex-column justify-content-between p-3 bg-white" style={{ border: '1px solid #e2e8f0', borderRadius: '12px' }}>
+                <div className="servicio-card h-100 d-flex flex-column justify-content-between p-3" style={{ border: '1px solid var(--color-divider)', borderRadius: '12px', backgroundColor: 'var(--color-surface)' }}>
                   <div>
                     {/* Cabecera del Turno */}
                     <div className="d-flex justify-content-between align-items-start border-bottom pb-2 mb-3">
@@ -253,7 +253,7 @@ export default function TurnosTab({
                       </span>
 
                     {['RESERVADO', 'CONFIRMADO', 'PENDIENTECAMBIO'].includes(turno.estado) && (
-                          <div className={`d-flex align-items-center gap-1 mt-2 p-2 rounded-3 ${puedesCancelar(turno.fechaHora) ? 'text-muted' : 'text-danger font-weight-bold'}`} style={{ fontSize: '11px', backgroundColor: puedesCancelar(turno.fechaHora) ? '#f8fafc' : '#fef2f2', border: puedesCancelar(turno.fechaHora) ? '1px dashed #e2e8f0' : '1px solid #fee2e2' }}>
+                          <div className={`d-flex align-items-center gap-1 mt-2 p-2 rounded-3 ${puedesCancelar(turno.fechaHora) ? 'text-muted' : 'text-danger font-weight-bold'}`} style={{ fontSize: '11px', backgroundColor: puedesCancelar(turno.fechaHora) ? 'var(--color-bg)' : 'var(--color-error-light)', border: puedesCancelar(turno.fechaHora) ? '1px dashed var(--color-divider)' : '1px solid var(--color-error-light)' }}>
                         <AlertTriangle size={12} className={puedesCancelar(turno.fechaHora) ? 'text-warning' : 'text-danger'} />
                         <span>
                           {puedesCancelar(turno.fechaHora) 
@@ -280,7 +280,7 @@ export default function TurnosTab({
 
                     {/* Estado CANCELADO Detalles */}
                     {turno.estado === 'CANCELADO' && (
-                      <div className="alert alert-danger p-2.5 rounded-3 mb-3" style={{ fontSize: '12px', backgroundColor: '#FEF2F2', border: '1px solid #FEE2E2', color: '#991B1B' }}>
+                      <div className="alert alert-danger p-2.5 rounded-3 mb-3" style={{ fontSize: '12px', backgroundColor: 'var(--color-error-light)', border: '1px solid var(--color-error-light)', color: 'var(--color-error-dark)' }}>
                         <strong>Motivo de Cancelación:</strong> {turno.historialEstado?.find(h => h.estado === 'CANCELADO')?.motivo || 'No indicado.'}
                       </div>
                     )}
@@ -512,7 +512,7 @@ export default function TurnosTab({
             </div>
 
             <h6 className="font-weight-bold mb-3 text-primary" style={{ fontSize: '13px' }}>Estados del turno</h6>
-            <div className="position-relative ps-4 border-start py-1" style={{ borderColor: '#cbd5e1' }}>
+            <div className="position-relative ps-4 border-start py-1" style={{ borderColor: 'var(--color-divider)' }}>
               {turnoHistorial.historialEstado && turnoHistorial.historialEstado.length > 0 ? (
                 turnoHistorial.historialEstado.map((hist, idx) => {
                   const badgeColor = hist.estado === 'REALIZADO' ? 'bg-success'
@@ -531,9 +531,9 @@ export default function TurnosTab({
                           width: '12px', 
                           height: '12px', 
                           borderRadius: '50%', 
-                          backgroundColor: hist.estado === 'CANCELADO' ? '#ef4444' : hist.estado === 'REALIZADO' ? '#10b981' : '#3b82f6',
-                          border: '2px solid #fff',
-                          boxShadow: '0 0 0 2px #e2e8f0'
+                          backgroundColor: hist.estado === 'CANCELADO' ? 'var(--color-error)' : hist.estado === 'REALIZADO' ? 'var(--color-success)' : 'var(--color-info)',
+                          border: '2px solid var(--color-surface)',
+                          boxShadow: '0 0 0 2px var(--color-divider)'
                         }}
                       />
                       <div className="d-flex align-items-center gap-2 mb-1">
@@ -543,7 +543,7 @@ export default function TurnosTab({
                         </span>
                       </div>
                       {hist.motivo && (
-                        <p className="text-secondary m-0 border-start ps-2 py-0.5 italic" style={{ fontSize: '12px', borderLeftColor: '#cbd5e1' }}>
+                        <p className="text-secondary m-0 border-start ps-2 py-0.5 italic" style={{ fontSize: '12px', borderLeftColor: 'var(--color-divider)' }}>
                           "{hist.motivo}"
                         </p>
                       )}

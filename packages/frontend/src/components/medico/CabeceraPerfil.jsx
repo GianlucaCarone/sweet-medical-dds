@@ -23,7 +23,7 @@ export default function CabeceraPerfil({
                 height: '64px',
                 fontSize: '22px',
                 flexShrink: 0,
-                background: 'linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%)',
+                background: 'linear-gradient(135deg, var(--color-info) 0%, var(--color-info-dark) 100%)',
                 letterSpacing: '0.5px'
               }}
             >
@@ -37,7 +37,7 @@ export default function CabeceraPerfil({
                 style={{
                   fontSize: '20px',
                   fontWeight: '700',
-                  color: '#1E293B',
+                  color: 'var(--color-text)',
                   letterSpacing: '-0.3px'
                 }}
               >
