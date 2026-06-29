@@ -75,6 +75,7 @@ export class TurnoController {
       const filtros = this.extraerFiltros(req.query);
 
       logger.info(`[TURNOS CONTROLLER]: Obteniendo turnos paginados con estos filtros: ${JSON.stringify(filtros)}`);
+      logger.info(`[TURNOS CONTROLLER]: Obteniendo turnos paginados con esta paginacion: ${JSON.stringify(paginacion)}`);
       const resultado = await this.turnoService.obtenerTodosPaginados(
         paginacion.numeroPagina,
         paginacion.limitePorPagina,
@@ -241,12 +242,17 @@ export class TurnoController {
     if (query.estado !== undefined) {
       filtros.estado = query.estado;
     }
+    if (query.servicioId !== undefined) {
+      filtros.servicioId = query.servicioId;
+    }
+    /* en el repo espera servicio id, no especialidad o practica (el turno tiene servicio)
     if (query.especialidadId !== undefined) {
       filtros.especialidadId = query.especialidadId;
     }
     if (query.practicaId !== undefined) {
       filtros.practicaId = query.practicaId;
     }
+    */
     if (query.sedeId !== undefined) {
       filtros.sedeId = query.sedeId;
     }

@@ -84,11 +84,11 @@ export default function TurnoCardHeader({ turno, especialidades = [], practicas 
     if (practicas.length > 0) {
       const practica = practicas.find((p) => p.id === servicio.id);
       if (practica) {
-        const especialidad = especialidades.find((e) => e.id === practica.especialidadPadre);
+        const especialidad = especialidades.find((e) => e.id === practica.especialidadPadreId);
         return `${especialidad?.nombre || ''} • ${practica.nombre}`;
       }
     }
-    return `${servicio?.nombre || 'Especialidad'} • ${servicio?.especialidadPadre || 'Consulta'}`;
+    return `${servicio?.nombre || 'Especialidad'} • ${servicio?.especialidadPadreId || 'Consulta'}`;
   };
 
   // Función helper para obtener la inicial del médico (ej: "Dr. Franco" -> "F")
@@ -120,7 +120,7 @@ export default function TurnoCardHeader({ turno, especialidades = [], practicas 
       </InfoMedico>
 
       <InfoLateral>
-        <BadgeEstado status={turno.estado} />
+        <BadgeEstado status={turno.estadoCobertura} />
 
         <CostoTurno>
           {turno.costo !== 0 ? `$${turno?.costo?.toLocaleString()} ` : 'Sin costo'}
