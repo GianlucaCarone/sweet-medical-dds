@@ -22,7 +22,7 @@ const StyledTypography = styled(Typography)`
     width: 6px;
     height: 26px;
     border-radius: 999px;
-    background: #087f73;
+    background: var(--color-primary);
   }
 `;
 

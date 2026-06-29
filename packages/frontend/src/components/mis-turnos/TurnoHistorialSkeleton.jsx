@@ -7,9 +7,8 @@ const HistorialArticle = styled.article`
   justify-content: space-between;
   align-items: center;
 
-  /* Le agregamos unos estilos básicos de tarjeta para mantener consistencia */
-  background: white;
-  border: 2px solid #e2e8f0;
+  background: var(--color-surface);
+  border: 2px solid var(--color-divider);
   border-radius: 18px;
   padding: 16px 20px;
   margin-bottom: 12px;

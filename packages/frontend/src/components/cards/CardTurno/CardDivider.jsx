@@ -15,7 +15,7 @@ const TopSection = styled.div`
 
 const BottomSection = styled.div`
   width: 100%;
-  border-top: 1px solid #e2e8f0;
+  border-top: 1px solid var(--color-divider);
   padding-top: 16px;
 `;
 

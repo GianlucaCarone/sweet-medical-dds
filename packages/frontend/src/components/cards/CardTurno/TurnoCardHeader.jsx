@@ -19,13 +19,12 @@ const InfoMedico = styled.div`
   flex: 1;
 `;
 
-// Estilizamos el Avatar nativo de MUI para que tenga los colores de tu marca
 const StyledAvatar = styled(Avatar)`
   && {
     width: 56px;
     height: 56px;
-    background-color: #f0fdf4; /* Un verde muy sutil */
-    color: #16a34a; /* Verde principal para el texto */
+    background-color: var(--color-primary-light);
+    color: var(--color-primary);
     font-size: 24px;
     font-weight: 600;
   }
@@ -39,24 +38,22 @@ const DatosTurno = styled.div`
   h4 {
     margin: 0;
     font-size: 20px;
-    color: #1e293b;
+    color: var(--color-text);
     font-weight: 600;
   }
 `;
 
-// Usamos props transitorias ($muted) de styled-components para cambiar
-// dinámicamente el estilo sin que React se queje en la consola.
 const DetailRow = styled.div`
   display: flex;
   align-items: center;
   gap: 6px;
   font-size: 14px;
-  color: ${(props) => (props.$muted ? '#64748b' : '#334155')};
+  color: ${(props) => (props.$muted ? 'var(--color-text-muted)' : 'var(--color-text)')};
   font-weight: ${(props) => (props.$muted ? '400' : '500')};
 
   svg {
     font-size: 18px;
-    color: #94a3b8;
+    color: var(--color-text-muted);
   }
 `;
 
@@ -69,7 +66,7 @@ const InfoLateral = styled.div`
 
 const CostoTurno = styled.span`
   font-size: 20px;
-  color: #1e293b;
+  color: var(--color-text);
   font-weight: 700;
 `;
 
