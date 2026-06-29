@@ -26,7 +26,6 @@ const Header = () => {
   const [cantUnidades, setCantUnidades] = useState(0);
   //estado para controlar si el Pop-up de Login está abierto o cerrado
   const [loginAbierto, setLoginAbierto] = useState(false);
-  const [userName, setUserName] = useState(null); // Estado local para el nombre de usuario
 
   // Estados para el Snackbar de bienvenida
   const [snackbarAbierto, setSnackbarAbierto] = useState(false);
@@ -38,19 +37,16 @@ const Header = () => {
 
   const handleLoginExitoso = (usuario) => {
     setLoginAbierto(false);
-    // 2. Seteamos el mensaje personalizado (asumiendo que tu usuario tiene un 'nombre')
+    // 2. Seteamos el mensaje personalizado (asumiendo que tu usuario tiene un 'nombreUsuario')
     setMensajeSnackbar(
-      `¡Bienvenido/a de nuevo, ${user.email || "usuario"}!`,
+      `¡Bienvenido/a de nuevo, ${usuario.nombreUsuario || "usuario"}!`,
     );
     // 3. Disparamos el Snackbar
     setSnackbarAbierto(true);
-    // 4. Actualizamos el estado local del Header para mostrar el menú en lugar del botón
-    setUserName(usuario.nombre || "Usuario");
   };
   const handleLogoutExitoso = () => {
     setMensajeSnackbar("Sesión cerrada correctamente.");
     setSnackbarAbierto(true);
-    setUserName(null); // Volvemos a mostrar el botón de login
   };
 
   const handleCerrarSnackbar = (event, reason) => {
@@ -94,11 +90,11 @@ const Header = () => {
             </Badge>
           </IconButton>
           {/* 2. Renderizado Condicional: 
-              Si tenemos 'userName', mostramos el Menú. 
+              Si tenemos 'user' en el contexto, mostramos el Menú. 
               Si es null/undefined, mostramos el botón que abre el pop-up */}
-          {userName ? (
+          {user ? (
             <MenuUsuario
-              userName={userName}
+              userName={user.nombreUsuario || "Usuario"}
               onLogoutSuccess={handleLogoutExitoso}
             />
           ) : (

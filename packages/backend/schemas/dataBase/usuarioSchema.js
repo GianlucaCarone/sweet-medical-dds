@@ -9,14 +9,14 @@ const UsuarioSchema = new mongoose.Schema(
       required: true,
       unique: true, // asegura a nivel DB que no haya duplicados
       trim: true, // Limpia espacios en blanco al principio y al final
-      minlength: 4,
-      maxlength: 20,
+      minlength: 3,
+      maxlength: 254,
     },
     password: {
-    type: String,
-    required: true
-    // NO ponemos el minlength de 8 ni las regex, ya que se hashea antes de guardar
-  },
+      type: String,
+      required: true,
+      // NO ponemos el minlength de 8 ni las regex, ya que se hashea antes de guardar
+    },
   },
   { timestamps: true },
 );
