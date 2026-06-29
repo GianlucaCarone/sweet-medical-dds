@@ -44,6 +44,7 @@ function Root() {
     r.setProperty('--color-divider', theme.palette.divider);
     r.setProperty('--color-avatar-bg', theme.palette.primary.main);
     r.setProperty('--color-avatar-text', theme.palette.primary.contrastText);
+    r.setProperty('--color-divider', theme.palette.divider);
 
     document.documentElement.setAttribute('data-theme', mode);
   }, [mode, theme]);

@@ -257,7 +257,7 @@
 
     border-radius: 50%;
 
-    border: 5px solid var(--color-divider);
+    border: 2px solid var(--color-divider);
     border-top-color: var(--color-primary);
 
     animation: medicalSpin 0.8s linear infinite;
