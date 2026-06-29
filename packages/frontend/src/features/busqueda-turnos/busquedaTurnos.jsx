@@ -16,7 +16,8 @@ export default function BusquedaTurnos() {
     const { user } = useAuth();
 
     //datos para los filtros:
-    const [pacienteID, setPacienteID] = useState("6a0b720ada9b7c8a035d96a9"); //por ahora; hasta tener el login
+                                        // TODO usar el auth context para recuperar al usuario
+    const [pacienteID, setPacienteID] = useState("6a42c49da279cfb5b99ef572"); //por ahora; hasta tener el login
     const [medicos, setMedicos] = useState([]);
     const [especialidades, setEspecialidades] = useState([]);
     const [practicas, setPracticas] = useState([]);
@@ -24,7 +25,7 @@ export default function BusquedaTurnos() {
     //los turnos en si:
     const [turnos, setTurnos] = useState([]);
     const [conjuntosTurnos, setConjuntosTurnos] = useState([]);
-    const [dataPaginacion, setDataPaginacion] = useState([]);
+    const [dataPaginacion, setDataPaginacion] = useState({limitePorPagina: 5});
     const [numeroPagina, setNumeroPagina] = useState(1);
     //funcionamiento general de la vista:
     const yaCargado = useRef(false);
@@ -88,7 +89,7 @@ export default function BusquedaTurnos() {
 
     const cargarTurnos = useCallback(async (filtrosInput = {}, pagina = numeroPagina, orden = ordenarPor) => {
         setLoading(true);
-        setTimeout(() => setLoading(false), 500);
+        setTimeout(() => setLoading(false), 200);
         setSinResultados(false);
         const page = { 
             'page': pagina
