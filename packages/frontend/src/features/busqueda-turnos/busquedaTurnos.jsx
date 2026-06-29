@@ -142,7 +142,7 @@ export default function BusquedaTurnos() {
             {/* Contenedor de Resultados */}
             <main className="contenido-resultados">
                 <header className="header-resultados">
-                    <TituloSeccion>{dataPaginacion.totalTurnos} turno/s disponible/s</TituloSeccion>
+                    <TituloSeccion>{dataPaginacion.totalTurnos} {dataPaginacion.totalTurnos > 1 ? 'Turnos disponibles' : 'Turno disponible'}</TituloSeccion>
                     <div className="ordenar-por">
                         <label>Ordenar por:</label>
                         <select defaultValue="ordenPorFecha" onChange={(e) => {
