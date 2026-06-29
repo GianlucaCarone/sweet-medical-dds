@@ -9,7 +9,7 @@ export default function ServiciosTab({ servicios, onAdd, onEliminar }) {
   return (
     <div className="fade-in">
       <div className="d-flex justify-content-between align-items-center mb-4">
-        <h4 className="font-weight-bold text-dark m-0">Mis Servicios Activos</h4>
+        <h4 className="font-weight-bold text-default m-0">Mis Servicios Activos</h4>
         <button 
           onClick={onAdd} 
           className="btn btn-success d-flex align-items-center gap-2 font-weight-bold px-3 py-2"

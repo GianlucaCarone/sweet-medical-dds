@@ -29,7 +29,7 @@ export default function DatosPersonales({ doctor, handleGuardarDatosPersonales }
     <form onSubmit={onGuardar} className="col-12 col-lg-4 col-border-right d-flex flex-column justify-content-center px-4">
       {/* Cabecera de la sección */}
       <div className="d-flex justify-content-between align-items-center mb-4 border-bottom pb-2">
-        <h5 className="font-weight-bold text-dark m-0 d-flex align-items-center gap-2" style={{ fontSize: '13px', letterSpacing: '0.8px', color: 'var(--color-text)' }}>
+        <h5 className="font-weight-bold text-default m-0 d-flex align-items-center gap-2" style={{ fontSize: '13px', letterSpacing: '0.8px', color: 'var(--color-text)' }}>
           <User size={16} className="text-primary" style={{ opacity: 0.8 }} /> MIS DATOS PERSONALES
         </h5>
 
@@ -58,7 +58,7 @@ export default function DatosPersonales({ doctor, handleGuardarDatosPersonales }
       </div>
 
       {/* Cuerpo de Datos */}
-      <div className="row g-3 text-dark" style={{ fontSize: '13px' }}>
+      <div className="row g-3 text-default" style={{ fontSize: '13px' }}>
 
         {/* Fila de Nombre y Apellido (Solo visible/editable si está en modo edición) */}
         {isEditingDatos && (
@@ -68,7 +68,7 @@ export default function DatosPersonales({ doctor, handleGuardarDatosPersonales }
                 <span className="d-block text-muted mb-0.5" style={{ fontSize: '10px', textTransform: 'uppercase', fontWeight: '600', letterSpacing: '0.5px' }}>Nombre</span>
                 <input
                   type="text"
-                  className="form-control form-control-sm border-0 p-0 bg-transparent font-weight-bold text-dark"
+                  className="form-control form-control-sm border-0 p-0 bg-transparent font-weight-bold text-default"
                   style={{ fontSize: '13px', boxShadow: 'none', height: 'auto' }}
                   value={formDatos.nombre}
                   onChange={e => setFormDatos({ ...formDatos, nombre: e.target.value })}
@@ -81,7 +81,7 @@ export default function DatosPersonales({ doctor, handleGuardarDatosPersonales }
                 <span className="d-block text-muted mb-0.5" style={{ fontSize: '10px', textTransform: 'uppercase', fontWeight: '600', letterSpacing: '0.5px' }}>Apellido</span>
                 <input
                   type="text"
-                  className="form-control form-control-sm border-0 p-0 bg-transparent font-weight-bold text-dark"
+                  className="form-control form-control-sm border-0 p-0 bg-transparent font-weight-bold text-default"
                   style={{ fontSize: '13px', boxShadow: 'none', height: 'auto' }}
                   value={formDatos.apellido}
                   onChange={e => setFormDatos({ ...formDatos, apellido: e.target.value })}
@@ -96,7 +96,7 @@ export default function DatosPersonales({ doctor, handleGuardarDatosPersonales }
         <div className="col-6">
           <div className="p-2 border border-transparent rounded-3" style={{ background: isEditingDatos ? 'var(--color-bg)' : 'transparent' }}>
             <span className="d-block text-muted mb-0.5" style={{ fontSize: '10px', textTransform: 'uppercase', fontWeight: '600', letterSpacing: '0.5px' }}>Usuario</span>
-            <span className="font-weight-bold d-block text-truncate text-secondary" title={doctor.usuario} style={{ fontSize: '13px' }}>{doctor.usuario}</span>
+            <span className="font-weight-bold d-block text-truncate text-muted" title={doctor.usuario} style={{ fontSize: '13px' }}>{doctor.usuario}</span>
           </div>
         </div>
 
@@ -131,7 +131,7 @@ export default function DatosPersonales({ doctor, handleGuardarDatosPersonales }
         <div className="col-6">
           <div className="p-2 border border-transparent rounded-3" style={{ background: isEditingDatos ? 'var(--color-bg)' : 'transparent' }}>
             <span className="d-block text-muted mb-0.5" style={{ fontSize: '10px', textTransform: 'uppercase', fontWeight: '600', letterSpacing: '0.5px' }}>Documento</span>
-            <span className="font-weight-bold d-block text-secondary" style={{ fontSize: '13px' }}>{doctor.documento}</span>
+            <span className="font-weight-bold d-block text-muted" style={{ fontSize: '13px' }}>{doctor.documento}</span>
           </div>
         </div>
 
@@ -139,7 +139,7 @@ export default function DatosPersonales({ doctor, handleGuardarDatosPersonales }
         <div className="col-6">
           <div className="p-2 border border-transparent rounded-3" style={{ background: isEditingDatos ? 'var(--color-bg)' : 'transparent' }}>
             <span className="d-block text-muted mb-0.5" style={{ fontSize: '10px', textTransform: 'uppercase', fontWeight: '600', letterSpacing: '0.5px' }}>Matrícula</span>
-            <span className="font-weight-bold d-block text-secondary" style={{ fontSize: '13px' }}>{doctor.matricula}</span>
+            <span className="font-weight-bold d-block text-muted" style={{ fontSize: '13px' }}>{doctor.matricula}</span>
           </div>
         </div>
 

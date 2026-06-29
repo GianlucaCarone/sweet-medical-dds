@@ -159,7 +159,7 @@ export default function TurnosTab({
   return (
     <div className="fade-in">
       <div className="d-flex justify-content-between align-items-center mb-4">
-        <h4 className="font-weight-bold text-dark m-0">Gestión de Turnos</h4>
+        <h4 className="font-weight-bold text-default m-0">Gestión de Turnos</h4>
       </div>
 
       {/* Sub-navegación de estados */}
@@ -188,7 +188,7 @@ export default function TurnosTab({
             }}
           >
             {tab.label}
-            <span className="badge bg-secondary text-white" style={{ fontSize: '10px' }}>{tab.count}</span>
+            <span className="badge bg-neutral text-white" style={{ fontSize: '10px' }}>{tab.count}</span>
           </button>
         ))}
       </div>
@@ -213,7 +213,7 @@ export default function TurnosTab({
                     {/* Cabecera del Turno */}
                     <div className="d-flex justify-content-between align-items-start border-bottom pb-2 mb-3">
                       <div>
-                        <span className="font-weight-bold text-dark d-block" style={{ fontSize: '15px' }}>
+                        <span className="font-weight-bold text-default d-block" style={{ fontSize: '15px' }}>
                           {turno.paciente.nombre}
                         </span>
                         <span className="text-muted d-block" style={{ fontSize: '11px' }}>
@@ -230,7 +230,7 @@ export default function TurnosTab({
                     </div>
                     
                     {/* Detalles de la cita */}
-                    <div className="d-flex flex-column gap-2 text-dark mb-3" style={{ fontSize: '13px' }}>
+                    <div className="d-flex flex-column gap-2 text-default mb-3" style={{ fontSize: '13px' }}>
                       <div className="d-flex align-items-center gap-2">
                         <Calendar size={14} className="text-primary" />
                       <span className="text-capitalize">{formatearFecha(turno.fechaHora)}</span>
@@ -248,7 +248,7 @@ export default function TurnosTab({
                         <span>Costo: ${turno.costo || 'No especificado'}</span>
                       </div>
                       <div className="mt-1 d-flex flex-column gap-1">
-                        <span className="badge bg-light text-dark border px-2 py-1 font-weight-bold me-auto" style={{ fontSize: '11px' }}>
+                        <span className="badge bg-neutral-light text-default border px-2 py-1 font-weight-bold me-auto" style={{ fontSize: '11px' }}>
                         {turno.servicio.nombre}
                       </span>
 
@@ -268,7 +268,7 @@ export default function TurnosTab({
                     {/* Estado PENDIENTECAMBIO Detalles */}
                     {turno.estado === 'PENDIENTECAMBIO' && turno.fechaHoraPropuesta && (
                       <div className="alert alert-warning p-2.5 rounded-3 mb-3 d-flex flex-column gap-1" style={{ fontSize: '12px' }}>
-                        <span className="font-weight-bold text-dark d-flex align-items-center gap-1">
+                        <span className="font-weight-bold text-default d-flex align-items-center gap-1">
                           <AlertTriangle size={13} className="text-warning" /> Propuesta de Cambio
                         </span>
                         <span>Fecha Propuesta: <strong>{formatearFecha(turno.fechaHoraPropuesta)} - {formatearHora(turno.fechaHoraPropuesta)}</strong></span>
@@ -289,8 +289,8 @@ export default function TurnosTab({
                   {/* Acciones */}
                   <div className="border-top pt-3 mt-auto">
                     {cancelingId === turno.id ? (
-                      <div className="p-2 bg-light rounded-3 border">
-                        <label className="form-label small font-weight-bold text-dark mb-1">Indica el Motivo de Cancelación</label>
+                      <div className="p-2 bg-neutral-light rounded-3 border">
+                        <label className="form-label small font-weight-bold text-default mb-1">Indica el Motivo de Cancelación</label>
                         <textarea
                           className="form-control form-control-sm mb-2"
                           rows="2"
@@ -305,8 +305,8 @@ export default function TurnosTab({
                         </div>
                       </div>
                     ) : reprogrammingId === turno.id ? (
-                      <div className="p-2 bg-light rounded-3 border">
-                        <label className="form-label small font-weight-bold text-dark mb-1">Selecciona Fecha y Hora Propuesta</label>
+                      <div className="p-2 bg-neutral-light rounded-3 border">
+                        <label className="form-label small font-weight-bold text-default mb-1">Selecciona Fecha y Hora Propuesta</label>
                         <input
                           type="datetime-local"
                           className="form-control form-control-sm mb-2"
@@ -423,7 +423,7 @@ export default function TurnosTab({
             ))
           ) : (
             <div className="col-12">
-              <div className="text-center py-5 border rounded-3 bg-light">
+              <div className="text-center py-5 border rounded-3 bg-neutral-light">
                 <p className="text-muted italic m-0">No se encontraron turnos en este estado.</p>
               </div>
             </div>
@@ -467,11 +467,11 @@ export default function TurnosTab({
       >
         {pacienteHistorial && (
           <div className="p-3" style={{ maxHeight: '450px', overflowY: 'auto' }}>
-            <div className="mb-3 p-2 bg-light rounded" style={{ fontSize: '12px' }}>
-              <span className="d-block text-dark"><strong>Paciente:</strong> {pacienteHistorial.paciente.nombre}</span>
-              <span className="d-block text-dark"><strong>DNI:</strong> {pacienteHistorial.paciente.dni}</span>
-              <span className="d-block text-dark"><strong>Obra Social / Plan:</strong> {obtenerObraSocialText(pacienteHistorial.paciente)} {obtenerPlanText(pacienteHistorial.paciente) ? `/ ${obtenerPlanText(pacienteHistorial.paciente)}` : ''}</span>
-              <span className="d-block text-dark"><strong>Usuario:</strong> {pacienteHistorial.paciente.usuario}</span>
+            <div className="mb-3 p-2 bg-neutral-light rounded" style={{ fontSize: '12px' }}>
+              <span className="d-block text-default"><strong>Paciente:</strong> {pacienteHistorial.paciente.nombre}</span>
+              <span className="d-block text-default"><strong>DNI:</strong> {pacienteHistorial.paciente.dni}</span>
+              <span className="d-block text-default"><strong>Obra Social / Plan:</strong> {obtenerObraSocialText(pacienteHistorial.paciente)} {obtenerPlanText(pacienteHistorial.paciente) ? `/ ${obtenerPlanText(pacienteHistorial.paciente)}` : ''}</span>
+              <span className="d-block text-default"><strong>Usuario:</strong> {pacienteHistorial.paciente.usuario}</span>
             </div>
             
             <h6 className="font-weight-bold mb-2 text-primary" style={{ fontSize: '13px' }}>Turnos del Paciente</h6>
@@ -480,12 +480,12 @@ export default function TurnosTab({
                 const badgeColor = histTurno.estado === 'REALIZADO' ? 'bg-success'
                                  : histTurno.estado === 'CANCELADO' ? 'bg-danger'
                                  : histTurno.estado === 'CONFIRMADO' ? 'bg-primary'
-                                 : histTurno.estado === 'PENDIENTECAMBIO' ? 'bg-warning text-dark'
-                                 : 'bg-secondary';
+                                 : histTurno.estado === 'PENDIENTECAMBIO' ? 'bg-warning text-default'
+                                 : 'bg-neutral';
                 return (
                   <div key={idx} className="p-2 border rounded d-flex justify-content-between align-items-center" style={{ fontSize: '12px' }}>
                     <div>
-                      <span className="d-block text-dark font-weight-bold">{formatearFecha(histTurno.fechaHora)} - {formatearHora(histTurno.fechaHora)}</span>
+                      <span className="d-block text-default font-weight-bold">{formatearFecha(histTurno.fechaHora)} - {formatearHora(histTurno.fechaHora)}</span>
                       <span className="text-muted text-xs">{histTurno.servicio.nombre} ({histTurno.sede.nombre || histTurno.sede})</span>
                     </div>
                     <span className={`badge ${badgeColor} text-white px-2 py-1`}>{histTurno.estado}</span>
@@ -505,10 +505,10 @@ export default function TurnosTab({
       >
         {turnoHistorial && (
           <div className="p-3">
-            <div className="mb-3 p-2.5 bg-light rounded-3" style={{ fontSize: '12px' }}>
-              <span className="d-block text-dark"><strong>Paciente:</strong> {turnoHistorial.paciente.nombre}</span>
-              <span className="d-block text-dark"><strong>Servicio:</strong> {turnoHistorial.servicio.nombre}</span>
-              <span className="d-block text-dark"><strong>Fecha/Hora original:</strong> {formatearFecha(turnoHistorial.fechaHora)} - {formatearHora(turnoHistorial.fechaHora)}</span>
+            <div className="mb-3 p-2.5 bg-neutral-light rounded-3" style={{ fontSize: '12px' }}>
+              <span className="d-block text-default"><strong>Paciente:</strong> {turnoHistorial.paciente.nombre}</span>
+              <span className="d-block text-default"><strong>Servicio:</strong> {turnoHistorial.servicio.nombre}</span>
+              <span className="d-block text-default"><strong>Fecha/Hora original:</strong> {formatearFecha(turnoHistorial.fechaHora)} - {formatearHora(turnoHistorial.fechaHora)}</span>
             </div>
 
             <h6 className="font-weight-bold mb-3 text-primary" style={{ fontSize: '13px' }}>Estados del turno</h6>
@@ -518,8 +518,8 @@ export default function TurnosTab({
                   const badgeColor = hist.estado === 'REALIZADO' ? 'bg-success'
                                    : hist.estado === 'CANCELADO' ? 'bg-danger'
                                    : hist.estado === 'CONFIRMADO' ? 'bg-primary'
-                                   : hist.estado === 'PENDIENTECAMBIO' ? 'bg-warning text-dark'
-                                   : 'bg-secondary';
+                                   : hist.estado === 'PENDIENTECAMBIO' ? 'bg-warning text-default'
+                                   : 'bg-neutral';
                   return (
                     <div key={idx} className="mb-4 position-relative">
                       {/* Indicador del punto en la línea de tiempo */}
@@ -543,7 +543,7 @@ export default function TurnosTab({
                         </span>
                       </div>
                       {hist.motivo && (
-                        <p className="text-secondary m-0 border-start ps-2 py-0.5 italic" style={{ fontSize: '12px', borderLeftColor: 'var(--color-divider)' }}>
+                        <p className="text-muted m-0 border-start ps-2 py-0.5 italic" style={{ fontSize: '12px', borderLeftColor: 'var(--color-divider)' }}>
                           "{hist.motivo}"
                         </p>
                       )}
@@ -565,11 +565,11 @@ export default function TurnosTab({
         title={customAlert.title}
       >
         <div className="p-4 text-center">
-          <div className="d-inline-flex p-3 bg-light rounded-circle mb-3 text-warning">
+          <div className="d-inline-flex p-3 bg-neutral-light rounded-circle mb-3 text-warning">
             <AlertTriangle size={32} />
           </div>
-          <h5 className="font-weight-bold text-dark mb-2">{customAlert.title}</h5>
-          <p className="text-secondary mb-4" style={{ fontSize: '13.5px' }}>{customAlert.message}</p>
+          <h5 className="font-weight-bold text-default mb-2">{customAlert.title}</h5>
+          <p className="text-muted mb-4" style={{ fontSize: '13.5px' }}>{customAlert.message}</p>
           <button
             className="btn btn-primary px-4 py-2 font-weight-bold"
             style={{ borderRadius: '8px', fontSize: '13px' }}

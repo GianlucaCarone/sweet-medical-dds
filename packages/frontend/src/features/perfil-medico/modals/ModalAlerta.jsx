@@ -17,8 +17,8 @@ export default function ModalAlerta({ isOpen, onClose, title, message, type = 'i
         }`}>
           {type === 'success' ? <CheckCircle2 size={32} /> : <AlertTriangle size={32} />}
         </div>
-        <h5 className="font-weight-bold text-dark mb-2">{title}</h5>
-        <p className="text-secondary mb-4" style={{ fontSize: '13.5px' }}>{message}</p>
+        <h5 className="font-weight-bold text-default mb-2">{title}</h5>
+        <p className="text-muted mb-4" style={{ fontSize: '13.5px' }}>{message}</p>
         <button
           className={`btn px-4 py-2 font-weight-bold ${
             type === 'success' ? 'btn-success' :

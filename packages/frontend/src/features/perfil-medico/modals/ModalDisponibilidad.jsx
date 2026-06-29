@@ -72,7 +72,7 @@ export default function ModalDisponibilidad({ isOpen, onClose, doctor, handleAgr
 
         <div className="row g-2">
           <div className="col-6">
-            <label className="form-label font-weight-bold text-dark small mb-1">Día</label>
+            <label className="form-label font-weight-bold text-default small mb-1">Día</label>
             <select
               className="form-select form-select-sm"
               value={formDispDia}
@@ -91,7 +91,7 @@ export default function ModalDisponibilidad({ isOpen, onClose, doctor, handleAgr
             </select>
           </div>
           <div className="col-6">
-            <label className="form-label font-weight-bold text-dark small mb-1">Sede</label>
+            <label className="form-label font-weight-bold text-default small mb-1">Sede</label>
             <select
               required
               className="form-select form-select-sm"
@@ -119,7 +119,7 @@ export default function ModalDisponibilidad({ isOpen, onClose, doctor, handleAgr
         )}
 
         <div>
-          <label className="form-label font-weight-bold text-dark small mb-1">Especialidad / Práctica</label>
+          <label className="form-label font-weight-bold text-default small mb-1">Especialidad / Práctica</label>
           <select
             required
             className="form-select form-select-sm"
@@ -136,10 +136,10 @@ export default function ModalDisponibilidad({ isOpen, onClose, doctor, handleAgr
           </select>
         </div>
 
-        <div className="bg-light p-3 rounded" style={{ border: '1px solid var(--color-divider)' }}>
+        <div className="bg-neutral-light p-3 rounded" style={{ border: '1px solid var(--color-divider)' }}>
           <div className="row g-2">
             <div className="col-6">
-              <label className="form-label font-weight-bold text-dark small mb-1">Hora de Inicio</label>
+              <label className="form-label font-weight-bold text-default small mb-1">Hora de Inicio</label>
               <input
                 type="time"
                 required
@@ -152,7 +152,7 @@ export default function ModalDisponibilidad({ isOpen, onClose, doctor, handleAgr
               />
             </div>
             <div className="col-6">
-              <label className="form-label font-weight-bold text-dark small mb-1">Hora de Fin</label>
+              <label className="form-label font-weight-bold text-default small mb-1">Hora de Fin</label>
               <input
                 type="time"
                 required
@@ -171,7 +171,7 @@ export default function ModalDisponibilidad({ isOpen, onClose, doctor, handleAgr
           <button
             type="button"
             onClick={handleClose}
-            className="btn btn-light btn-sm font-weight-bold text-secondary"
+            className="btn btn-light btn-sm font-weight-bold text-muted"
           >
             Cancelar
           </button>

@@ -20,3 +20,19 @@ code {
   --font-size-small: 11px;
   --font-weight-base: 500;
 }
+
+.bg-surface { background-color: var(--color-surface) !important; }
+.bg-neutral-light { background-color: var(--color-neutral-light) !important; }
+.bg-success { background-color: var(--color-success) !important; }
+.bg-danger { background-color: var(--color-error) !important; }
+.bg-warning { background-color: var(--color-warning) !important; }
+.bg-primary { background-color: var(--color-primary) !important; }
+.bg-neutral { background-color: var(--color-neutral) !important; }
+
+.text-default { color: var(--color-text) !important; }
+.text-muted { color: var(--color-text-muted) !important; }
+.text-primary { color: var(--color-primary) !important; }
+.text-success { color: var(--color-success) !important; }
+.text-danger { color: var(--color-error) !important; }
+.text-warning { color: var(--color-warning) !important; }
+.text-white { color: #ffffff !important; }
