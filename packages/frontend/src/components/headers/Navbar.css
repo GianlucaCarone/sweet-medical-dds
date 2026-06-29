@@ -10,22 +10,22 @@
 
 .nav-list {
   display: flex;
-  list-style-type: none; /* Saca los puntitos de la lista HTML */
+  list-style-type: none;
   margin: 0;
   padding: 0;
-  gap: 2rem; /* Espacio entre cada enlace */
+  gap: 2rem;
 }
 
 .nav-link {
   text-decoration: none;
-  color: #64748b;
+  color: var(--color-text-muted);
   font-weight: var(--font-weight-base);
   font-size: var(--font-size-base);
   transition: color 0.2s ease;
   padding: 0.5rem 0;
   display: flex;
-  align-items: center; /* Centra el ícono con el texto verticalmente */
-  gap: 0.4rem; /* Agrega un pequeño espacio entre el ícono y la palabra */
+  align-items: center;
+  gap: 0.4rem;
 }
 
 /* Opcional: Un pequeño ajuste para que el contenedor del ícono no rompa el diseño */
@@ -36,13 +36,13 @@
 
 /* Efecto al pasar el mouse */
 .nav-link:hover {
-  color: #2563eb; /* Azul médico */
+  color: var(--color-info);
 }
 
 /* Estado activo (la página donde estoy parado) */
 .nav-link.active {
-  color: #2563eb;
-  border-bottom: 2px solid #2563eb;
+  color: var(--color-info);
+  border-bottom: 2px solid var(--color-info);
 }
 
 /* =========================================
@@ -63,22 +63,22 @@
 .user-avatar {
   width: 40px;
   height: 40px;
-  border-radius: 50%; /* Hace que la imagen sea circular */
+  border-radius: 50%;
   object-fit: cover;
-  border: 2px solid #e2e8f0;
+  border: 2px solid var(--color-divider);
 }
 
 .user-name {
   font-size: var(--font-size-base);
   font-weight: var(--font-weight-base);
-  color: #334155;
+  color: var(--color-text);
 }
 
 /* Botón de Cerrar Sesión */
 .btn-logout {
   background-color: transparent;
-  color: #ef4444; /* Rojo para acción destructiva/salida */
-  border: 1px solid #ef4444;
+  color: var(--color-error);
+  border: 1px solid var(--color-error);
   padding: 0.5rem 1rem;
   border-radius: 6px;
   font-size: var(--font-size-base);
@@ -88,21 +88,18 @@
 }
 
 .btn-logout:hover {
-  background-color: #ef4444;
-  color: #ffffff;
+  background-color: var(--color-error);
+  color: var(--color-surface);
 }
 
 /* =========================================
    Diseño Responsivo Básico (Mobile)
 ========================================= */
 @media (max-width: 768px) {
-  /* En celulares, ocultamos los links del medio por ahora para que no se rompa todo. 
-     Más adelante pueden agregar un menú hamburguesa */
   .navbar-menu {
     display: none; 
   }
   
-  /* Ocultamos el nombre para dejar solo la foto de perfil en pantallas chicas */
   .user-name {
     display: none; 
   }

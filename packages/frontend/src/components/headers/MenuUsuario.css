@@ -8,7 +8,7 @@
 }
 
 .menu-user-btn {
-  margin-left: 1rem !important; /* Reemplaza el sx={{ ml: 2 }} */
+  margin-left: 1rem !important;
 }
 
 .menu-user-avatar {
@@ -42,7 +42,7 @@
   right: 14px;
   width: 10px;
   height: 10px;
-  background-color: #ffffff; /* Color de fondo del menú */
+  background-color: var(--color-surface);
   transform: translateY(-50%) rotate(45deg);
   z-index: 0;
 }
