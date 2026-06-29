@@ -1,0 +1,29 @@
+import axios from "axios";
+
+const axiosInstance = axios.create({
+    baseURL: process.env.REACT_APP_API_URL || "http://localhost:3001",
+    headers: {
+        "Content-Type": "application/json"
+    },
+    // withCredentials: true es ESENCIAL para que el browser envíe y reciba
+    // las cookies HttpOnly automáticamente en requests cross-origin.
+    // Sin esto, las cookies nunca viajan entre frontend y backend.
+    withCredentials: true,
+});
+
+// Interceptor de respuesta: normaliza los errores del backend.
+// Extrae el mensaje legible del cuerpo de la respuesta (error.response.data.message)
+// y lo pone en error.message, para que cualquier catch en la app pueda usar
+// error.message directamente sin repetir la lógica de extracción.
+axiosInstance.interceptors.response.use(
+    (response) => response,
+    (error) => {
+        const mensajeBackend = error.response?.data?.message;
+        if (mensajeBackend) {
+            error.message = mensajeBackend;
+        }
+        return Promise.reject(error);
+    }
+);
+
+export default axiosInstance;

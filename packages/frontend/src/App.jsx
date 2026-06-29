@@ -5,7 +5,8 @@ import Login from "./components/login/Login.jsx";
 import MisTurnos from "./features/misTurnos/MisTurnos.jsx";
 import BusquedaTurnos from "./features/busqueda-turnos/busquedaTurnos.jsx";
 import PerfilMedico from "./features/perfil-medico/PerfilMedico.jsx";
-import { CartProvider} from './context/CartContext.jsx';
+import { CartProvider } from './context/CartContext.jsx';
+import { AlertProvider } from "./context/AlertContext.jsx";
 import Home from "./features/home/Home.jsx"
 
 import "./App.css";
@@ -23,34 +24,37 @@ function App({toggleTheme}) {
   */
 
   return (
-    <CartProvider>
-      <Routes>
-        <Route
-          path="/"
-          element={
-            <Layout toggleTheme={toggleTheme}/>
-          }>
+    <AlertProvider>
+      <CartProvider>
+        <Routes>
           <Route
-            path="busqueda-turnos"
+            path="/"
             element={
-              <BusquedaTurnos/>
-            }
-          />
+              <Layout toggleTheme={toggleTheme}/>
+            }>
+            <Route
+              path="busqueda-turnos"
+              element={
+                <BusquedaTurnos />
+              }
+            />
 
-          <Route
-            path="mis-turnos"
-            element={<MisTurnos />}
-          />
+            <Route
+              path="mis-turnos"
+              element={<MisTurnos />}
+            />
 
-          <Route
-            path="perfil-medico"
-            element={<PerfilMedico />}
-          />    
-          <Route index element={<Home />} />
-        </Route>
-        <Route path="/login" element={<Login />} />
-      </Routes>
-    </CartProvider>
+            <Route
+              path="perfil-medico"
+              element={<PerfilMedico />}
+            />
+
+            <Route index element={<Home />} />
+          </Route>
+          <Route path="/login" element={<Login />} />
+        </Routes>
+      </CartProvider>
+    </AlertProvider>
   );
 }
 

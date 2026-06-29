@@ -16,7 +16,8 @@ import { mockRespuestaPaginada, historialTurnos } from '../../mockdata/turnos';
 import TituloSeccion from '../../shared/TituloSeccion/TituloSeccion';
 import { Button } from '@mui/material';
 import CardBase from '../../shared/CardBase/CardBase'
-
+// Contextos y hooks
+import { useAlert } from "../../context/AlertContext.jsx";
 import TurnoHistorialCard from '../../components/cards/TurnoHistorialCard';
 import styled from 'styled-components';
 
@@ -41,6 +42,9 @@ export default function MisTurnos() {
   const [toastVisible, setToastVisible] = useState(false);
   const turnosPorPagina = 3;
   const navigate = useNavigate();
+
+  // accionees alertaContext
+  const {showAlert} = useAlert(); 
 
   const totalPaginasProximos = Math.ceil(
     mockRespuestaPaginada.paginacion.totalTurnos / turnosPorPagina

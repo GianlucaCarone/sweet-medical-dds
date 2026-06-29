@@ -1,7 +1,7 @@
 import { Usuario } from "../domain/usuario.js";
 import { UsuarioRepository } from "../repositories/UsuarioRepository.js";
 import { logger } from "../config/logger.js";
-import { NotFoundError, ConflictError } from "../errors/AppError.js";
+import { NotFoundError, ConflictError, UnauthorizedError } from "../errors/AppError.js";
 
 import argon2 from "argon2";
 
@@ -46,6 +46,20 @@ export class UsuarioService {
     const usuario = await this.usuarioRepository.findById(id);
     if (!usuario) throw new NotFoundError("Usuario no encontrado");
     logger.info("[USUARIO SERVICE]: Usuario obtenido: ", usuario);
+    return this.toDto(usuario);
+  }
+
+  async login(nombreUsuario, password) {
+    const usuario = await this.usuarioRepository.findByUsername(nombreUsuario);
+    if (!usuario) {
+      throw new UnauthorizedError();
+    }
+
+    const passwordValida = await argon2.verify(usuario.password, password);
+    if (!passwordValida) {
+      throw new UnauthorizedError();
+    }
+
     return this.toDto(usuario);
   }
 

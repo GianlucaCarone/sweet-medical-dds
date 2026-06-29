@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import {useAlert} from '../../context/AlertContext.jsx';
 
 // Hooks
 import useDoctorProfile from './hooks/useDoctorProfile';
@@ -23,6 +24,7 @@ import './PerfilMedico.css';
 export default function PerfilMedico() {
   const [activeTab, setActiveTab] = useState('servicios');
   const [modalOpen, setModalOpen] = useState(null);
+  const { showAlert } = useAlert();
   
   // Estado para alertas y confirmaciones
   const [alertConfig, setAlertConfig] = useState({ isOpen: false, title: '', message: '', type: 'info' });
@@ -36,6 +38,7 @@ export default function PerfilMedico() {
       onConfirm: () => {
         onConfirmAction();
         setConfirmModal(prev => ({ ...prev, isOpen: false }));
+        showAlert("Acción confirmada", "success")
       }
     });
   };

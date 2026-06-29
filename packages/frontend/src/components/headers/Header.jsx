@@ -2,7 +2,6 @@ import "./Header.css";
 import Navbar from "./Navbar.jsx";
 import { Link } from "react-router-dom";
 import MenuUsuario from "./MenuUsuario.jsx";
-import CampanitaNotificacion from "./CampanitaNotification.jsx";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import { useState, useEffect } from "react";
 import CarritoTurnos from "./carritoTurnos.jsx";
@@ -11,58 +10,40 @@ import { useAuth } from "../../context/AuthContext.jsx"; // Importamos el hook d
 import { useCart } from '../../context/CartContext.jsx';
 import {
   Drawer,
-  Alert,
-  AlertTitle,
-  Snackbar,
   Badge,
   IconButton,
   Button,
 } from "@mui/material";
+import { useAlert } from "../../context/AlertContext.jsx";
 
 const Header = ({ toggleTheme }) => {
   const { user } = useAuth(); // Traemos al usuario logueado
-  const { carrito, limpiarCarrito,  eliminarDelCarrito, manejoCarritoDrawer } = useCart();
+  const { carrito, limpiarCarrito,  eliminarDelCarrito, manejoCarritoDrawer, counterCarrito } = useCart();
+  const {showAlert} = useAlert();
 
   const [cantUnidades, setCantUnidades] = useState(0);
   //estado para controlar si el Pop-up de Login está abierto o cerrado
   const [loginAbierto, setLoginAbierto] = useState(false);
-  const [userName, setUserName] = useState(null); // Estado local para el nombre de usuario
 
-  // Estados para el Snackbar de bienvenida
-  const [snackbarAbierto, setSnackbarAbierto] = useState(false);
-  const [mensajeSnackbar, setMensajeSnackbar] = useState("");
 
-  const cantUnidadesEnCarrito = () => {
-    return carrito.length; //por ahora, cada turno es una unidad. Si en el futuro se permite agregar más de un turno a la vez, habría que cambiar esto.
-  };
 
   const handleLoginExitoso = (usuario) => {
     setLoginAbierto(false);
     // 2. Seteamos el mensaje personalizado (asumiendo que tu usuario tiene un 'nombre')
-    setMensajeSnackbar(
-      `¡Bienvenido/a de nuevo, ${user.email || "usuario"}!`,
+    showAlert(
+      `¡Bienvenido/a de nuevo, ${user.nombreUsuario || "usuario"}!`,
+      "success"
     );
-    // 3. Disparamos el Snackbar
-    setSnackbarAbierto(true);
     // 4. Actualizamos el estado local del Header para mostrar el menú en lugar del botón
     setUserName(usuario.nombre || "Usuario");
   };
   const handleLogoutExitoso = () => {
-    setMensajeSnackbar("Sesión cerrada correctamente.");
-    setSnackbarAbierto(true);
+    showAlert("Sesión cerrada correctamente.");
     setUserName(null); // Volvemos a mostrar el botón de login
   };
 
-  const handleCerrarSnackbar = (event, reason) => {
-    // Si el usuario hace click afuera, no lo cerramos abruptamente
-    if (reason === "clickaway") {
-      return;
-    }
-    setSnackbarAbierto(false);
-  };
-
   useEffect(() => {
-    setCantUnidades(cantUnidadesEnCarrito());
+    setCantUnidades(counterCarrito);
   }, [carrito]);
 
   return (
@@ -95,11 +76,11 @@ const Header = ({ toggleTheme }) => {
             </Badge>
           </IconButton>
           {/* 2. Renderizado Condicional: 
-              Si tenemos 'userName', mostramos el Menú. 
+              Si tenemos 'user' en el contexto, mostramos el Menú. 
               Si es null/undefined, mostramos el botón que abre el pop-up */}
-          {userName ? (
+          {user ? (
             <MenuUsuario
-              userName={userName}
+              userName={user.nombreUsuario || "Usuario"}
               onLogoutSuccess={handleLogoutExitoso}
             />
           ) : (
@@ -156,23 +137,6 @@ const Header = ({ toggleTheme }) => {
           onLoginSuccess={handleLoginExitoso}
         />
 
-        {/* --- SNACKBAR DE ÉXITO --- */}
-        {/* autoHideDuration={3000} significa que se cierra solo a los 3 segundos */}
-        <Snackbar
-          open={snackbarAbierto}
-          autoHideDuration={3000}
-          onClose={handleCerrarSnackbar}
-          anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-        >
-          <Alert
-            onClose={handleCerrarSnackbar}
-            severity="success"
-            sx={{ width: "100%" }}
-            variant="filled"
-          >
-            {mensajeSnackbar}
-          </Alert>
-        </Snackbar>
       </div>
     </header>
   );

@@ -1,25 +1,5 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
-//import api from '../api/axiosConfig';
-
-// api mock
-const api = {
-  post: (url, data) => {
-    return new Promise((resolve, reject) => {
-      setTimeout(() => {
-        if (url === '/auth/login' && data.email === 'user@example.com' && data.password === 'password') {
-          resolve({
-            data: {
-              user: { id: 1, email: data.email },
-              token: 'mock-jwt-token'
-            }
-          });
-        } else {
-          reject(new Error('Credenciales inválidas'));
-        }
-      }, 1000);
-    });
-  }
-}; 
+import axiosInstance from '../api/axiosInstance';
 
 const AuthContext = createContext();
 
@@ -27,36 +7,54 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Al cargar la app, revisamos si ya había una sesión guardada
+  // Al cargar la app, intentamos restaurar la sesión consultando GET /auth/me.
+  // El browser envía la cookie HttpOnly automáticamente (gracias a withCredentials: true).
+  // Si la cookie es válida, el backend devuelve el usuario autenticado.
+  // Si no hay cookie o expiró, el backend devuelve 401 y el usuario queda como null.
   useEffect(() => {
-    const storedUser = localStorage.getItem('user');
-    if (storedUser) setUser(JSON.parse(storedUser));
-    setLoading(false);
+    const restaurarSesion = async () => {
+      try {
+        const response = await axiosInstance.get('/auth/me');
+        setUser(response.data.usuario);
+      } catch {
+        // 401 u otro error → no hay sesión activa, es el estado normal
+        setUser(null);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    restaurarSesion();
   }, []);
 
-  const login = async (email, password) => {
+  /**
+   * Inicia sesión enviando las credenciales al backend.
+   * El backend verifica la contraseña, firma el JWT y lo setea como cookie HttpOnly.
+   */
+  const login = async (nombreUsuario, password) => {
     try {
-      // Usamos nuestra instancia de Axios
-      const response = await api.post('/auth/login', { email, password });
-      
-      // Asumiendo que el back devuelve { user: {...}, token: "jwt..." }
-      const { user: userData, token } = response.data; 
-
-      localStorage.setItem('token', token);
-      localStorage.setItem('user', JSON.stringify(userData));
-      setUser(userData);
-      
-      return userData; // Retornamos para que el ModalLogin sepa que salió bien
+      const response = await axiosInstance.post('/auth/login', { nombreUsuario, password });
+      const { usuario } = response.data;
+      setUser(usuario);
+      return usuario;
     } catch (error) {
-      // Axios guarda el mensaje del backend en error.response.data
-      throw new Error(error.response?.data?.message || 'Error al iniciar sesión');
+      // El interceptor de axiosInstance ya extrajo el mensaje del backend
+      // en error.message. Solo lo repassamos con un fallback genérico.
+      throw new Error(error.message || 'Error al iniciar sesión. Intentá de nuevo.');
     }
   };
 
-  const logout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    setUser(null);
+  /**
+   * Cierra sesión llamando al backend para que borre la cookie HttpOnly.
+   * El frontend no puede borrar una HttpOnly cookie por sí solo.
+   */
+  const logout = async () => {
+    try {
+      await axiosInstance.post('/auth/logout');
+    } finally {
+      // Limpiamos el estado local siempre, incluso si el request falla
+      setUser(null);
+    }
   };
 
   return (

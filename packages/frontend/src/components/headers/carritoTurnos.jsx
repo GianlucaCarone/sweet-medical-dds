@@ -5,11 +5,12 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import { Box, Typography, Stack, IconButton, Button, Divider } from '@mui/material';
 import { useNavigate } from "react-router-dom";
 import './carritoTurnos.css';
-import { Message } from '@mui/icons-material';
+import { useAlert } from "../../context/AlertContext.jsx";
 
 export default function CarritoTurnos({ items, onEliminar, onConfirmar, onCerrar }) {
   const total = items.reduce((acc, item) => acc + item.costo, 0);
   const navigate = useNavigate();
+  const { showAlert } = useAlert();
 
   return (
     <Box component="aside" sx={{ 
@@ -85,7 +86,7 @@ export default function CarritoTurnos({ items, onEliminar, onConfirmar, onCerrar
           disabled={items.length === 0}
           startIcon={<CheckCircleIcon />}
           onClick={() => {
-            alert("Turnos reservados exitosamente");
+            showAlert("Turnos reservados exitosamente", "success");
             onCerrar();
             onConfirmar();
             navigate("/mis-turnos");
