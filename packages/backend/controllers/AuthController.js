@@ -37,7 +37,7 @@ export class AuthController {
           const token = jwt.sign(
             { id: usuario.id, nombreUsuario: usuario.nombreUsuario },
             process.env.JWT_SECRET,
-            { expiresIn: process.env.JWT_EXPIRATION || "7d" },
+            { expiresIn: process.env.JWT_EXPIRATION || "1h" },
           );
 
           // Setear la cookie HttpOnly — JavaScript del cliente no puede leerla
