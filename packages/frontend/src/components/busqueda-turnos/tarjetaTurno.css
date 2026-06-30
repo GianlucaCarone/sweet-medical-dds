@@ -9,24 +9,8 @@
 
 .tarjeta-turno {
     background-color: var(--blanco);
-    border: 1px solid var(--borde-gris);
-    border-radius: 12px;
     padding: 20px;
     margin-bottom: 16px;
-    box-shadow: 1px 1px 1px grey;
-}
-
-.info-principal {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    gap: 20px;
-}
-
-.info-medico {
-    display: flex;
-    gap: 16px;
-    flex: 1;
 }
 
 .info-lateral {
@@ -50,53 +34,6 @@
     margin-left: 2px;
 }
 
-.avatar-placeholder {
-    width: 56px;
-    height: 56px;
-    background-color: #f1f5f9;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 24px;
-}
-
-.datos-turno h4 {
-    margin: 0 0 4px 0;
-    font-size: 20px;
-    color: var(--texto-oscuro);
-    font-weight: 600;
-}
-
-.datos-turno .especialidad-practica {
-    margin: 0 0 4px 0;
-    font-size: 15px;
-    color: black;
-    font-weight: 500;
-}
-
-.datos-turno .sede {
-    margin: 0 0 10px 0;
-    font-size: 15px;
-    color: var(--texto-mutado);
-}
-
-.badge-cobertura {
-    background-color: var(--verde-badge);
-    color: var(--verde-texto);
-    font-size: 20px;
-    font-weight: 600;
-    padding: 4px 12px;
-    border-radius: 10px;
-    margin-top: 15px;
-}
-
-.costo-turno {
-    font-size: 20px;
-    color: var(--texto-oscuro);
-    font-weight: 700;
-}
-
 .seccion-inferior-turnos {
     display: flex;
     flex-direction: column;
@@ -111,7 +48,6 @@
 }
 
 .seccion-turnos {
-    border-top: 1px solid var(--borde-gris);
     display: flex;
     justify-content: space-between;
     align-items: center;

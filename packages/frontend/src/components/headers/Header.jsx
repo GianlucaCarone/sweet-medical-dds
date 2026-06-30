@@ -16,7 +16,7 @@ import {
 } from "@mui/material";
 import { useAlert } from "../../context/AlertContext.jsx";
 
-const Header = () => {
+const Header = ({ toggleTheme }) => {
   const { user } = useAuth(); // Traemos al usuario logueado
   const { carrito, limpiarCarrito,  eliminarDelCarrito, manejoCarritoDrawer, counterCarrito } = useCart();
   const {showAlert} = useAlert();
@@ -63,12 +63,13 @@ const Header = () => {
         <Navbar />
 
         <div className="header-actions">
+          <Button onClick={toggleTheme} sx={{height: "20px"}} aria-label="Cambiar modo claro/osuro"></Button>
           <IconButton
             onClick={() => manejoCarritoDrawer.abrir()}
             aria-label="carrito de turnos"
             sx={{ marginRight: 2 }} // Un poco de margen a la derecha
           >
-            <Badge badgeContent={cantUnidades} color="error">
+            <Badge badgeContent={cantUnidades} color="primary">
               {/* Le puse color 'inherit' asumiendo que el fondo de tu header es oscuro. 
                   Si es blanco, borrale el sx y usá color="primary" */}
               <ShoppingCartIcon sx={{ color: "primary" }} />

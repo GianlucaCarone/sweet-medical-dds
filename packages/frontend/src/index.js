@@ -1,40 +1,48 @@
-import React from "react";
-import ReactDOM from "react-dom/client";
-import { BrowserRouter } from "react-router-dom";
-import "bootstrap/dist/css/bootstrap.min.css";
-import { ThemeProvider, createTheme } from "@mui/material/styles";
-import CssBaseline from "@mui/material/CssBaseline";
-import "./index.css";
-import App from "./App";
-import reportWebVitals from "./reportWebVitals";
-import { AuthProvider } from "./context/AuthContext.jsx"; // Importamos el Provider del contexto de autenticación
+import React, { useEffect, useState } from 'react';
+import ReactDOM from 'react-dom/client';
+import { BrowserRouter } from 'react-router-dom';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import CssBaseline from '@mui/material/CssBaseline';
+import './index.css';
+import App from './App';
+import reportWebVitals from './reportWebVitals';
+import { AuthProvider } from './context/AuthContext.jsx'; // Importamos el Provider del contexto de autenticación
+import { ThemeProvider } from '@mui/material/styles';
+import getTheme from './theme';
 
-const theme = createTheme({
-  palette: {
-    primary: { main: "#1a62b9ff" }, //TODO Los colores de boquita papa (después los cambiamos)
-    secondary: { main: "#FFC200" }
-  },
-  typography: {
-    fontFamily: [
-      '"Poppins"', // Cambia "Poppins" por la fuente que hayas elegido para el TP
-      'Roboto',
-      '"Helvetica Neue"',
-      'Arial',
-      'sans-serif'
-    ].join(','),
-  }
-});
-const root = ReactDOM.createRoot(document.getElementById("root"));
+function Root() {
+  const [mode, setMode] = useState(localStorage.getItem('themeMode') || 'light');
+  const theme = getTheme(mode);
+
+  useEffect(() => {
+    localStorage.setItem('themeMode', mode);
+
+    const r = document.documentElement.style;
+    r.setProperty('--color-primary', theme.palette.primary.main);
+    r.setProperty('--color-secondary', theme.palette.secondary.main);
+    r.setProperty('--color-bg', theme.palette.background.default);
+    r.setProperty('--color-surface', theme.palette.background.paper);
+    r.setProperty('--color-text', theme.palette.text.primary);
+    r.setProperty('--color-text-muted', theme.palette.text.secondary);
+
+    document.documentElement.setAttribute('data-theme', mode);
+  }, [mode, theme]);
+
+  return (
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      <BrowserRouter>
+        <App toggleTheme={() => setMode((m) => (m === 'light' ? 'dark' : 'light'))} />
+      </BrowserRouter>
+    </ThemeProvider>
+  );
+}
+
+const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
     <AuthProvider>
-    <ThemeProvider theme={theme}>
-      {/* CssBaseline inyecta los estilos globales, incluyendo el fontFamily al body */}
-      <CssBaseline /> 
-      <BrowserRouter>
-        <App />
-      </BrowserRouter>
-    </ThemeProvider>
+      <Root />
     </AuthProvider>
   </React.StrictMode>
 );
