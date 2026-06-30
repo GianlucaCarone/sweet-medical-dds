@@ -99,24 +99,27 @@ export class TurnoController {
     }
   };
 
-  //TODO: endpoint mis turnos
-
-  //TODO: endpoint historial paginado
-
-  findAllPaginatedByUsuario = async (req, res, next) => {
+  getTurnosProximosUsuario = async (req, res, next) => {
     try {
-      const paginacion = this.extraerPaginacion(req.query);
-      const filtros = this.extraerFiltros(req.query);
+      //const idUsuario = req.user.id;
+      const idUsuario = req.query.idUsuario;
+      logger.info("[TURNOS CONTROLLER]: Obteniendo turnos proximos del usuario de id: " + idUsuario);
+      const turnos = await this.turnoService.obtenerTurnosProximosUsuario(idUsuario);
+      logger.info("[TURNOS CONTROLLER]: Turnos proximos obtenidos: " + JSON.stringify(turnos));
+      res.status(200).json(turnos);
+    } catch (error) {
+      logger.error("[TURNOS CONTROLLER]: Error al obtener turnos del paciente");
+      return next(error);
+    }
+  }
 
-      logger.info(
-        "[TURNOS CONTROLLER]: Obteniendo turnos de usuario paginados: ",
-        filtros,
-      );
-      const resultado = await this.turnoService.obtenerTurnosDeUsuario(
-        filtros,
-        paginacion.numeroPagina,
-        paginacion.limitePorPagina,
-      );
+  getHistorialUsuario = async (req, res, next) => {
+    try {
+      //const idUsuario = req.user.id;
+      const idUsuario = req.query.idUsuario;
+      const paginacion = this.extraerPaginacion(req.query);
+      logger.info("[TURNOS CONTROLLER]: Obteniendo historial de usuario paginado");
+      const resultado = await this.turnoService.obtenerHistorialDeUsuario(idUsuario, paginacion.numeroPagina, paginacion.limitePorPagina);
 
       logger.info(`[TURNOS CONTROLLER]: Turnos de usuario obtenidos: ${resultado.turnos.length}`);
       res.status(200).json({

@@ -1,5 +1,6 @@
 import express from "express";
 import { TurnoController } from "../controllers/TurnoController.js";
+import { authMiddleware } from "../middlewares/authMiddleware.js";
 
 /**
  * @swagger
@@ -273,10 +274,72 @@ export default function turnoRoutes(getController) {
          */
         .patch((req, res, next) => turnoController.responderCambioFecha(req, res, next));
 
-    router.route("/:estadoId")
+    router.route("/mis-turnos")
         /**
          * @swagger
-         * /turno/{estado}:
+         * /turno/mis-turnos:
+         *   get:
+         *     summary: Listar mis turnos proximos
+         *     tags: [Turnos]
+         *     parameters:
+         *       - in: query
+         *         name: page
+         *         schema: { type: integer, minimum: 1 }
+         *       - in: query
+         *         name: limit
+         *         schema: { type: integer, minimum: 1 }
+         *     responses:
+         *       200:
+         *         description: Turnos del usuario
+         *         content:
+         *           application/json:
+         *             schema:
+         *               type: object
+         *               properties:
+         *                 status: { type: string, example: "success" }
+         *                 data:
+         *                   type: array
+         *                   items:
+         *                     $ref: '#/components/schemas/Turno'
+         */
+        .get(/*authMiddleware,*/ (req, res, next) => turnoController.getTurnosProximosUsuario(req, res, next));
+
+    router.route("/historial")
+        /**
+         * @swagger
+         * /turno/historial:
+         *   get:
+         *     summary: Obtener historial
+         *     tags: [Turnos]
+         *     parameters:
+         *       - in: query
+         *         name: page
+         *         schema: { type: integer, minimum: 1 }
+         *       - in: query
+         *         name: limit
+         *         schema: { type: integer, minimum: 1 }
+         *     responses:
+         *       200:
+         *         description: Turnos del usuario
+         *         content:
+         *           application/json:
+         *             schema:
+         *               type: object
+         *               properties:
+         *                 status: { type: string, example: "success" }
+         *                 data:
+         *                   type: array
+         *                   items:
+         *                     $ref: '#/components/schemas/Turno'
+         *                 paginacion:
+         *                   $ref: '#/components/schemas/Paginacion'
+         */
+        .get(/*authMiddleware,*/ (req, res, next) => turnoController.getHistorialUsuario(req, res, next));
+
+    router.route("/estado/:estadoId")
+        /**
+         * @swagger
+         * /turno/estado/{estado}:
          *   get:
          *     summary: Buscar turnos por estado
          *     tags: [Turnos]
@@ -363,38 +426,6 @@ export default function turnoRoutes(getController) {
          *         $ref: '#/components/responses/E400'
          */
         .patch((req, res, next) => turnoController.update(req, res, next));
-    
-    router.route("/mis-turnos")
-        /**
-         * @swagger
-         * /turno/mis-turnos:
-         *   get:
-         *     summary: Listar mis turnos
-         *     tags: [Turnos]
-         *     parameters:
-         *       - in: query
-         *         name: page
-         *         schema: { type: integer, minimum: 1 }
-         *       - in: query
-         *         name: limit
-         *         schema: { type: integer, minimum: 1 }
-         *     responses:
-         *       200:
-         *         description: Turnos del usuario
-         *         content:
-         *           application/json:
-         *             schema:
-         *               type: object
-         *               properties:
-         *                 status: { type: string, example: "success" }
-         *                 data:
-         *                   type: array
-         *                   items:
-         *                     $ref: '#/components/schemas/Turno'
-         *                 paginacion:
-         *                   $ref: '#/components/schemas/Paginacion'
-         */
-        .get((req, res, next) => turnoController.findAllPaginatedByUsuario(req, res, next));
 
     return router;
 }

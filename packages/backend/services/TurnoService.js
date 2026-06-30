@@ -246,11 +246,34 @@ export class TurnoService {
     };
   }
 
-  async obtenerTurnosDeUsuario(filtros, numeroPagina = 1, limitePorPagina = Number(process.env.ITEMS_PER_PAGE) || 10) {
+  async obtenerTurnosProximosUsuario(idUsuario) {
+    logger.info("[TURNOS SERVICE]: Obteniendo turnos proximos de usuario");
+    const paciente = await this.pacienteRepository.findByIdUsuario(idUsuario);
+    if(!paciente) throw new NotFoundError("No se encontro el paciente con id de usuario: " + idUsuario);
+    const filtros = {
+      estado: 'CONFIRMADO',
+      fechaHoraInicio: new Date(),
+      pacienteId: paciente.id,
+      ordenPorFecha: 'asc'
+    }
+    const turnos = await this.turnoRepository.obtener(filtros);
+    logger.info("[TURNOS SERVICE]: Turnos proximos de usuario obtenidos: " + turnos.length);
+    return turnos.map((t) => this.toDto(t));
+  }
+
+  async obtenerHistorialDeUsuario(idUsuario, numeroPagina = 1, limitePorPagina = Number(process.env.ITEMS_PER_PAGE) || 10) {
     logger.info(`[TURNO SERVICE]: Obteniendo turnos de usuario (Pág: ${numeroPagina})`);
+    const paciente = await this.pacienteRepository.findByIdUsuario(idUsuario);
+    if(!paciente) throw new NotFoundError("No se encontro el paciente con id de usuario: " + idUsuario);
 
     this.validarPaginacion(numeroPagina, limitePorPagina);
-    const filtrosValidados = this.validarFiltros(filtros);
+    //const filtrosValidados = this.validarFiltros(filtros);
+    const filtros = {
+      estado: 'FINALIZADO',
+      fechaHoraFin: new Date(),
+      pacienteId: paciente.id,
+      ordenPorFecha: 'asc'
+    }
 
     // Acá los filtros ya deberían venir validados con `pacienteId` o `medicoId`
     // No calculamos la obra social en tiempo de ejecución porque se supone
@@ -259,7 +282,7 @@ export class TurnoService {
     const { turnos, totalTurnos } = await this.turnoRepository.obtenerPaginados(
       numeroPagina,
       limitePorPagina,
-      filtrosValidados,
+      filtros,
     );
 
     const totalPaginas =

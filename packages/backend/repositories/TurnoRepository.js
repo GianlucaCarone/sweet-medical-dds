@@ -74,11 +74,56 @@ disponible:
 ● El monto que el paciente deberá abonar en caso de reservar dicho turno.
     */
 
+    async obtener(filtros = {}) {
+        const query = {};
 
+        if (filtros.pacienteId !== undefined) {
+            query.paciente = filtros.pacienteId;
+        }
+        if (filtros.estado !== undefined) {
+            query.estado = filtros.estado;
+        }
+        if (filtros.sedeId !== undefined) {
+            query.sede = filtros.sedeId;
+        }
+        if (filtros.fechaHoraInicio !== undefined || filtros.fechaHoraFin !== undefined) {
+            query.fechaHora = {};
+            if (filtros.fechaHoraInicio !== undefined) query.fechaHora.$gte = filtros.fechaHoraInicio;
+            if (filtros.fechaHoraFin !== undefined) query.fechaHora.$lte = filtros.fechaHoraFin;
+        }
+        if (filtros.medicoId !== undefined) {
+            query.medico = filtros.medicoId;
+        }
+        if (filtros.servicioId !== undefined) {
+            query.servicio = filtros.servicioId;
+        }
+
+        const ordenamiento = {};
+        if (filtros.ordenPorCosto !== undefined) {
+            ordenamiento.costoBase = filtros.ordenPorCosto === "desc" ? -1 : 1;
+        }
+        if (filtros.ordenPorFecha !== undefined) {
+            ordenamiento.fechaHora = filtros.ordenPorFecha === "desc" ? -1 : 1;
+        }
+
+        const turnos = await this.model.find(query)
+            .populate("medico", "nombre matricula idUsuario")
+            .populate("paciente", "nombre dni idUsuario obraSocial plan")
+            .populate("sede", "nombre direccion")
+            .populate("servicio", "nombre costo duracionTurnoEnMins")
+            .sort(ordenamiento)
+            .lean()
+            .exec();
+
+        return turnos;
+    }
 
     async obtenerPaginados(numeroPagina, limitePorPagina, filtros = {}) {
         const query = {};
 
+        if (filtros.pacienteId !== undefined) {
+            query.paciente = filtros.pacienteId;
+        }
         if (filtros.estado !== undefined) {
             query.estado = filtros.estado;
         }
