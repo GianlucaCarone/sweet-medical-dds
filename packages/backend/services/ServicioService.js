@@ -117,7 +117,7 @@ export class ServicioService {
                 duracionTurnoEnMins: servicio.duracionTurnoEnMins,
                 costo: servicio.costo,
                 codigo: servicio.codigo,
-                especialidadPadreId: servicio.especialidadPadreId ? servicio.especialidadPadreId.toString() : null
+                especialidadPadreId: servicio.especialidadPadreId ? (servicio.especialidadPadreId._id || servicio.especialidadPadreId).toString() : null
             };
         } else {
             return {
