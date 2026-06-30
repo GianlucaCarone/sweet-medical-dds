@@ -19,7 +19,7 @@ import ModalPerfil from "./ModalPerfil";
 
 export default function MenuUsuario({ userName = "Andino Franco", onLogoutSuccess }) {
   const navigate = useNavigate(); // Hook para navegar por las rutas
-  const { logout } = useAuth(); // Traemos la función de deslogueo global
+  const { user, logout } = useAuth(); // Traemos el usuario y la función de deslogueo global
 
   // Estados
   const [anchorEl, setAnchorEl] = useState(null);
@@ -83,9 +83,12 @@ export default function MenuUsuario({ userName = "Andino Franco", onLogoutSucces
         <MenuItem onClick={handleOpenProfileModal}>
           <Avatar /> Mi Perfil
         </MenuItem>
-        <MenuItem onClick={() => { navigate("/perfil-medico"); handleMenuClose(); }}>
-          <Avatar /> Perfil Médico
-        </MenuItem>
+        {/* "Perfil Médico" solo visible para usuarios con rol MEDICO */}
+        {user?.rol === "MEDICO" && (
+          <MenuItem onClick={() => { navigate("/perfil-medico"); handleMenuClose(); }}>
+            <Avatar /> Perfil Médico
+          </MenuItem>
+        )}
         <Divider />
         <MenuItem onClick={handleLogout}>
           <ListItemIcon>

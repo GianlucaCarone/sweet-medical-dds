@@ -15,7 +15,7 @@ import { useAuth } from "../../context/AuthContext.jsx"; // Importamos el hook d
 
 // Le pasamos las props 'open' y 'onClose' tal como hiciste en ModalPerfil
 // Agregamos 'onLoginSuccess' para actualizar el contexto/estado del Header al loguearse
-export default function ModalLogin({ open, onClose, onLoginSuccess }) {
+export default function ModalLogin({ open, onClose, onLoginSuccess, onIrARegistro }) {
   // El backend identifica al usuario por 'nombreUsuario', pero visualmente
   // el campo se muestra como "Correo Electrónico" para el usuario final.
   const [nombreUsuario, setNombreUsuario] = useState('');
@@ -81,6 +81,23 @@ export default function ModalLogin({ open, onClose, onLoginSuccess }) {
             onChange={(e) => setPassword(e.target.value)}
           />
         </DialogContent>
+
+        <Box sx={{ px: 3, pb: 0, textAlign: 'center' }}>
+          <Typography variant="body2" color="text.secondary">
+            ¿No tenés cuenta?{' '}
+            <Button
+              variant="text"
+              size="small"
+              sx={{ textTransform: 'none', p: 0, minWidth: 0 }}
+              onClick={() => {
+                onClose();
+                if (onIrARegistro) onIrARegistro();
+              }}
+            >
+              Registrate
+            </Button>
+          </Typography>
+        </Box>
 
         <DialogActions sx={{ p: 2, justifyContent: 'space-between' }}>
           <Button onClick={handleCerrar} color="inherit" disabled={loading}>
