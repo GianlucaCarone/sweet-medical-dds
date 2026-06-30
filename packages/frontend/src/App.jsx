@@ -7,7 +7,7 @@ import BusquedaTurnos from "./features/busqueda-turnos/busquedaTurnos.jsx";
 import PerfilMedico from "./features/perfil-medico/PerfilMedico.jsx";
 import { CartProvider } from './context/CartContext.jsx';
 import { AlertProvider } from "./context/AlertContext.jsx";
-import Home from "./features/home/Home.jsx"
+import Home from "./features/home/Home.jsx";
 
 import "./App.css";
 

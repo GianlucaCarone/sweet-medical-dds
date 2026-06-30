@@ -11,19 +11,21 @@ export default function ServicioCard({ servicio, onEliminar }) {
           </h5>
           <button
             className="btn btn-link text-danger p-1 border-0"
-            onClick={() => onEliminar(servicio.id || servicio._id)}
+            onClick={() => onEliminar(servicio.id)}
             title="Eliminar servicio"
           >
             <Trash2 size={18} />
           </button>
         </div>
         <div className="text-muted small mb-3">
-          <div className="mb-1"><span className="font-weight-bold text-default">Código:</span> {servicio.codigo}</div>
-          <div><span className="font-weight-bold text-default">Duración:</span> {servicio.duracionEstimada} min</div>
+          {servicio.codigo && (
+            <div className="mb-1"><span className="font-weight-bold text-default">Código:</span> {servicio.codigo}</div>
+          )}
+          <div><span className="font-weight-bold text-default">Duración:</span> {servicio.duracionTurnoEnMins} min</div>
         </div>
       </div>
       <div className="text-success font-weight-bold h5 mb-0 mt-auto border-top pt-2">
-        ${servicio.costoBase.toLocaleString('es-AR')}
+        ${servicio.costo?.toLocaleString('es-AR')}
       </div>
     </div>
   );

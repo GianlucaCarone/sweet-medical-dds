@@ -27,17 +27,24 @@ import './PerfilMedico.css';
 
 export default function PerfilMedico() {
   const { user } = useAuth();
-  const [activeTab, setActiveTab] = useState('servicios');
-  const [modalOpen, setModalOpen] = useState(null);
-  const { showAlert } = useAlert();
-  const { medico, cargando } = useGetMedicoByIdUsuario(user?.id);
+  const { medico: medicoInicial, cargando, error } = useGetMedicoByIdUsuario(user?.id);
 
-  // Early returns para estados de carga y error
-  if (cargando) {
-    return <PerfilMedicoSkeleton />;
+  if (cargando) return <PerfilMedicoSkeleton />;
+
+  if (error) {
+    return (
+      <main className="container-perfil">
+        <PerfilEmptyState
+          titulo="Error al cargar el perfil"
+          descripcion="Ocurrió un problema al obtener tu perfil médico. Intentá nuevamente."
+          textoBoton="Reintentar"
+          onClick={() => window.location.reload()}
+        />
+      </main>
+    );
   }
 
-  if (!medico) {  
+  if (!medicoInicial) {  
     return (
       <main className="container-perfil">
         <PerfilEmptyState
@@ -50,7 +57,14 @@ export default function PerfilMedico() {
     );
   }
 
-  // Estado para alertas y confirmaciones
+  return <PerfilMedicoContent medicoInicial={medicoInicial} />;
+}
+
+function PerfilMedicoContent({ medicoInicial }) {
+  const [activeTab, setActiveTab] = useState('servicios');
+  const [modalOpen, setModalOpen] = useState(null);
+  const { showAlert } = useAlert();
+
   const [alertConfig, setAlertConfig] = useState({ isOpen: false, title: '', message: '', type: 'info' });
   const [confirmModal, setConfirmModal] = useState({ isOpen: false, title: '', message: '', onConfirm: null });
 
@@ -62,12 +76,11 @@ export default function PerfilMedico() {
       onConfirm: () => {
         onConfirmAction();
         setConfirmModal(prev => ({ ...prev, isOpen: false }));
-        showAlert("Acción confirmada", "success")
+        showAlert("Acción confirmada", "success");
       }
     });
   };
 
-  // Custom Hooks
   const {
     medico,
     handleAgregarServicio,
@@ -77,16 +90,17 @@ export default function PerfilMedico() {
     handleAsociarSede,
     handleDesvincularSede,
     handleGuardarDatosPersonales
-  } = useMedicoProfile(medico, triggerConfirm, setAlertConfig);
+  } = useMedicoProfile(medicoInicial, triggerConfirm, setAlertConfig, showAlert);
 
   const turnosHook = useTurnos(medico, activeTab);
 
-  // Estados para ModalDisponibilidad (editar)
   const [editingDispId, setEditingDispId] = useState(null);
   const [dispInitialData, setDispInitialData] = useState(null);
 
+
+
   const handleEditDisponibilidad = (disp) => {
-    setEditingDispId(disp._id);
+    setEditingDispId(disp.id);
     setDispInitialData(disp);
     setModalOpen('disponibilidad');
   };

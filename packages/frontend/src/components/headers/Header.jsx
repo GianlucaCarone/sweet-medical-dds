@@ -35,15 +35,13 @@ const Header = () => {
     setLoginAbierto(false);
     // 2. Seteamos el mensaje personalizado (asumiendo que tu usuario tiene un 'nombre')
     showAlert(
-      `¡Bienvenido/a de nuevo, ${user.nombreUsuario || "usuario"}!`,
+      `¡Bienvenido/a de nuevo, ${usuario?.nombreUsuario || "usuario"}!`,
       "success"
     );
-    // 4. Actualizamos el estado local del Header para mostrar el menú en lugar del botón
-    setUserName(usuario.nombre || "Usuario");
   };
+  
   const handleLogoutExitoso = () => {
-    showAlert("Sesión cerrada correctamente.");
-    setUserName(null); // Volvemos a mostrar el botón de login
+    showAlert("Sesión cerrada correctamente.", "success");
   };
 
   useEffect(() => {

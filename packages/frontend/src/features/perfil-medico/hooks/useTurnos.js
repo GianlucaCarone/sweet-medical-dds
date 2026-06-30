@@ -4,7 +4,7 @@ import { initialTurnosMock } from '../../../mockdata/medico';
 // Helper para comparar IDs de manera robusta
 const obtenerId = (obj) => {
   if (!obj) return '';
-  if (typeof obj === 'object') return obj._id || obj.id || '';
+  if (typeof obj === 'object') return obj.id || '';
   return obj;
 };
 
@@ -37,7 +37,7 @@ export default function useTurnos(medico, activeTab) {
 
       // Parámetros de paginación y filtros para enviar al backend
       const queryParams = {
-        medicoId: medico._id,
+        medicoId: medico.id,
         estado: estadoMapeado,
         pagina: paginaActual,
         limite: 4
@@ -54,13 +54,13 @@ export default function useTurnos(medico, activeTab) {
     } finally {
       setLoadingTurnos(false);
     }
-  }, [medico._id]);
+  }, [medico.id]);
 
   useEffect(() => {
-    if (activeTab === 'turnos' && medico._id) {
+    if (activeTab === 'turnos' && medico.id) {
       cargarTurnosMedico(turnosSubTab, turnosPage);
     }
-  }, [activeTab, turnosSubTab, turnosPage, medico._id, cargarTurnosMedico]);
+  }, [activeTab, turnosSubTab, turnosPage, medico.id, cargarTurnosMedico]);
   =============================================================================
   */
 

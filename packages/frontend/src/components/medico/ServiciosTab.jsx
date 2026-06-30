@@ -26,7 +26,7 @@ export default function ServiciosTab({ especialidades = [], practicas = [], onAd
         ) : (
           <div className="row g-3">
             {especialidades.map(srv => (
-              <div key={srv.id || srv._id} className="col-12 col-md-6 col-lg-4">
+              <div key={srv.id} className="col-12 col-md-6 col-lg-4">
                 <ServicioCard servicio={srv} onEliminar={onEliminar} />
               </div>
             ))}

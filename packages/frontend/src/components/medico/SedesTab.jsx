@@ -1,9 +1,20 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { MapPin, Plus } from 'lucide-react';
-import { globalSedesMock } from '../../mockdata/medico';
+import { getAllSedes } from '../../api/sede';
 
-export default function SedesTab({ sedes, onAsociar, onDesvincular }) {
-  const sedesDisponibles = globalSedesMock.filter(s => !sedes.some(asig => asig._id === s._id));
+export default function SedesTab({ sedesAsignadas = [], onAsociar, onDesvincular }) {
+  const sedes = sedesAsignadas;
+  const [todasLasSedes, setTodasLasSedes] = useState([]);
+
+  useEffect(() => {
+    getAllSedes()
+      .then(data => setTodasLasSedes(data?.data || data || []))
+      .catch(() => setTodasLasSedes([]));
+  }, []);
+
+  const sedesDisponibles = todasLasSedes.filter(
+    s => !sedes.some(asig => asig.id === s.id)
+  );
 
   return (
     <div className="fade-in">
@@ -24,13 +35,13 @@ export default function SedesTab({ sedes, onAsociar, onDesvincular }) {
                 <p className="text-muted italic small text-center py-5">No hay sedes vinculadas actualmente.</p>
               ) : (
                 sedes.map(sede => (
-                  <div key={sede._id} className="sede-box-vinculada">
+                  <div key={sede.id} className="sede-box-vinculada">
                     <div className="text-truncatepe" style={{ maxWidth: '75%' }}>
                       <p className="font-weight-bold text-default mb-1 small">{sede.nombre}</p>
                       <p className="text-muted mb-0" style={{ fontSize: '11px' }}>{sede.direccion}</p>
                     </div>
                     <button 
-                      onClick={() => onDesvincular(sede._id)} 
+                      onClick={() => onDesvincular(sede.id)} 
                       className="btn btn-outline-danger btn-sm font-weight-bold px-2 py-1"
                       style={{ fontSize: '11px', borderRadius: '8px' }}
                     >
@@ -49,7 +60,7 @@ export default function SedesTab({ sedes, onAsociar, onDesvincular }) {
             <h5 className="font-weight-bold text-default mb-4" style={{ fontSize: '1.1rem' }}>Disponibles en el Sistema</h5>
             <div className="space-y-2">
               {sedesDisponibles.map(sede => (
-                <div key={sede._id} className="sede-box-disponible">
+                <div key={sede.id} className="sede-box-disponible">
                   <div className="text-truncatepe" style={{ maxWidth: '70%' }}>
                     <p className="font-weight-bold text-default mb-1 small">{sede.nombre}</p>
                     <p className="text-muted mb-0" style={{ fontSize: '11px' }}>{sede.direccion}</p>
