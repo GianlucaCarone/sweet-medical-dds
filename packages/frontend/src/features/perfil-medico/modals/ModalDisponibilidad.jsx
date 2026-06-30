@@ -13,8 +13,8 @@ export default function ModalDisponibilidad({ isOpen, onClose, medico, handleAgr
     if (isOpen) {
       if (initialData) {
         setFormDispDia(initialData.diaSemana || 'LUNES');
-        setFormDispSede(initialData.sede?._id || '');
-        setFormDispSrv(initialData.servicio?._id || '');
+        setFormDispSede(initialData.sede?.id || '');
+        setFormDispSrv(initialData.servicio?.id || '');
         setFormDispHoraInicio(initialData.horaDesde || '');
         setFormDispHoraFin(initialData.horaHasta || '');
       } else {
@@ -33,7 +33,7 @@ export default function ModalDisponibilidad({ isOpen, onClose, medico, handleAgr
     onClose();
   };
 
-  const onSubmit = (e) => {
+  const onSubmit = async (e) => {
     e.preventDefault();
     setErrorDisp('');
     if (!formDispSrv || !formDispSede || !formDispHoraInicio || !formDispHoraFin) {
@@ -54,7 +54,7 @@ export default function ModalDisponibilidad({ isOpen, onClose, medico, handleAgr
       formDispHoraFin
     };
 
-    const result = handleAgregarDisponibilidad(dispData, editingDispId);
+    const result = await handleAgregarDisponibilidad(dispData, editingDispId);
     if (!result.success) {
       setErrorDisp(result.error);
     } else {
@@ -102,7 +102,7 @@ export default function ModalDisponibilidad({ isOpen, onClose, medico, handleAgr
               }}
             >
               <option value="" disabled>-- Seleccionar Sede --</option>
-              {medico.sedes.map(s => <option key={s._id} value={s._id}>{s.nombre}</option>)}
+              {medico.sedes.map(s => <option key={s.id} value={s.id}>{s.nombre}</option>)}
             </select>
             {medico.sedes.length === 0 && (
               <div className="text-danger mt-1 font-weight-bold" style={{ fontSize: '10px' }}>
@@ -112,11 +112,6 @@ export default function ModalDisponibilidad({ isOpen, onClose, medico, handleAgr
           </div>
         </div>
 
-        {errorDisp && (
-          <div className="error-message text-center w-100 d-block">
-            {errorDisp}
-          </div>
-        )}
 
         <div>
           <label className="form-label font-weight-bold text-default small mb-1">Especialidad / Práctica</label>
@@ -130,8 +125,8 @@ export default function ModalDisponibilidad({ isOpen, onClose, medico, handleAgr
             }}
           >
             <option value="" disabled>-- Seleccionar un servicio de tu perfil --</option>
-            {medico.serviciosAsignados.map(srv => (
-              <option key={srv._id} value={srv._id}>[{srv.tipo}] {srv.nombre} ({srv.duracionEstimada} min)</option>
+            {[...(medico.especialidades || []), ...(medico.practicas || [])].map(srv => (
+              <option key={srv.id} value={srv.id}>[{srv.tipo}] {srv.nombre} ({srv.duracionTurnoEnMins} min)</option>
             ))}
           </select>
         </div>
@@ -166,6 +161,13 @@ export default function ModalDisponibilidad({ isOpen, onClose, medico, handleAgr
             </div>
           </div>
         </div>
+
+
+        {errorDisp && (
+          <div className="alert alert-danger p-2 small mb-0 mt-2">
+            {errorDisp}
+          </div>
+        )}
 
         <div className="d-flex justify-content-end gap-2 mt-2">
           <button
