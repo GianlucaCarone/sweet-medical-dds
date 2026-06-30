@@ -8,7 +8,8 @@ import CarritoTurnos from "./carritoTurnos.jsx";
 import ModalLogin from "../login/ModalLogin.jsx";
 import ModalRegistro from "../auth/ModalRegistro.jsx";
 import { useAuth } from "../../context/AuthContext.jsx";
-import { useCart } from "../../context/CartContext.jsx";
+import { useCart } from '../../context/CartContext.jsx';
+import { useThemeContext } from '../../context/ThemeContext.jsx';
 import {
   Drawer,
   Badge,
@@ -16,12 +17,15 @@ import {
   Button,
   Box,
 } from "@mui/material";
+import DarkModeIcon from '@mui/icons-material/DarkMode';
+import LightModeIcon from '@mui/icons-material/LightMode';
 import { useAlert } from "../../context/AlertContext.jsx";
 
 const Header = () => {
-  const { user } = useAuth();
-  const { carrito, limpiarCarrito, eliminarDelCarrito, manejoCarritoDrawer, counterCarrito } = useCart();
-  const { showAlert } = useAlert();
+  const { user } = useAuth(); // Traemos al usuario logueado
+  const { mode, toggleTheme } = useThemeContext();
+  const { carrito, limpiarCarrito,  eliminarDelCarrito, manejoCarritoDrawer, counterCarrito } = useCart();
+  const {showAlert} = useAlert();
 
   const [cantUnidades, setCantUnidades] = useState(0);
   const [loginAbierto, setLoginAbierto] = useState(false);
@@ -72,12 +76,17 @@ const Header = () => {
         <Navbar />
 
         <div className="header-actions">
+          <IconButton onClick={toggleTheme} aria-label="Cambiar modo claro/oscuro">
+            { mode == 'light' ? <LightModeIcon sx={{ color: "primary" }}></LightModeIcon> : <DarkModeIcon sx={{ color: "primary" }}></DarkModeIcon>}
+          </IconButton>
           <IconButton
             onClick={() => manejoCarritoDrawer.abrir()}
             aria-label="carrito de turnos"
             sx={{ marginRight: 1 }}
           >
-            <Badge badgeContent={cantUnidades} color="error">
+            <Badge badgeContent={cantUnidades} color="primary">
+              {/* Le puse color 'inherit' asumiendo que el fondo de tu header es oscuro. 
+                  Si es blanco, borrale el sx y usá color="primary" */}
               <ShoppingCartIcon sx={{ color: "primary" }} />
             </Badge>
           </IconButton>

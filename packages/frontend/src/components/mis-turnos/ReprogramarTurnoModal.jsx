@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
+import { Avatar } from '@mui/material';
+import CardTurnoReprogramar from "../cards/CardTurno/CardTurnoReprogramar.jsx"
 import CalendarMonthRoundedIcon from "@mui/icons-material/CalendarMonthRounded";
-import AccessTimeRoundedIcon from "@mui/icons-material/AccessTimeRounded";
-import LocationOnRoundedIcon from "@mui/icons-material/LocationOnRounded";
 import "./ReprogramarTurnoModal.css";
 
 const turnosDisponiblesMock = [
@@ -61,37 +61,7 @@ export default function ReprogramarTurnoModal({
                     </button>
                 </div>
 
-                <div className="turno-actual-box">
-                    <div className="doctor-avatar reprogramar-avatar">
-                        {turno.foto ? (
-                            <img src={turno.foto} alt={turno.doctor} />
-                        ) : (
-                            <span>{turno.doctor.slice(0, 2).toUpperCase()}</span>
-                        )}
-                    </div>
-
-                    <div>
-                        <h3>{turno.doctor}</h3>
-                        <p>{turno.especialidad}</p>
-
-                        <div className="reprogramar-detalles">
-                            <span>
-                                <CalendarMonthRoundedIcon fontSize="small" />
-                                {turno.fecha}
-                            </span>
-
-                            <span>
-                                <AccessTimeRoundedIcon fontSize="small" />
-                                {turno.hora}
-                            </span>
-
-                            <span>
-                                <LocationOnRoundedIcon fontSize="small" />
-                                {turno.sede}
-                            </span>
-                        </div>
-                    </div>
-                </div>
+                <CardTurnoReprogramar turno={turno}></CardTurnoReprogramar>
 
                 <h4>Próximos turnos disponibles</h4>
 

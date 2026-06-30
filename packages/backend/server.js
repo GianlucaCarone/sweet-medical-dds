@@ -38,15 +38,15 @@ export class Server {
     }
 
     configurarRutas() {
-        // CORS y cookie-parser deben ir ANTES de las rutas
-        this.#app.use(
-            cors({
-                origin: process.env.ALLOWED_ORIGINS
-                    ? process.env.ALLOWED_ORIGINS.split(",").map((o) => o.trim())
-                    : true,
-                credentials: true, // necesario para que el browser envíe/reciba cookies
-            }),
-        );
+        const corsOptions = {
+            origin: process.env.ALLOWED_ORIGINS
+                ? process.env.ALLOWED_ORIGINS.split(",").map((o) => o.trim())
+                : true,
+            credentials: true, // necesario para que el browser envíe/reciba cookies
+        };
+
+        this.#app.options('/{*path}', cors(corsOptions));
+        this.#app.use(cors(corsOptions));
         this.#app.use(cookieParser());
 
         this.#app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs))

@@ -1,23 +1,14 @@
 const medicosEjemplo = [
-    { id: 1, nombre: "Dra. María Gómez" },
-    { id: 2, nombre: "Dra. Valentina Cruz" },
-    { id: 3, nombre: "Dr. Juan Perez" }
+    { id: "6a0a1176de9814963dfdff58", nombre: "Dra. María Gómez" }
 ];
 const especialidadesEjemplo = [
-    { id: 1, nombre: "Cardiología" },
-    { id: 2, nombre: "Dermatología" },
-    { id: 3, nombre: "Neurología" }
+    { id: "6a0a77bcab3c257deb8ab6cd", nombre: "Cardiología" }
 ];
 const practicasEjemplo = [
-    { id: 1, nombre: "Electrocardiograma", especialidadPadre: 1 },
-    { id: 2, nombre: "Ecocardiograma", especialidadPadre: 1 },
-    { id: 3, nombre: "Biopsia endomiocárdica", especialidadPadre: 2 },
-    { id: 4, nombre: "Valvuloplastia percutánea", especialidadPadre: 2 },
-    { id: 5, nombre: "Neurofisiología", especialidadPadre: 3 }
+    { id: "6a0a77feab3c257deb8ab6d2", nombre: "Cirugia", especialidadPadreId: "6a0a77bcab3c257deb8ab6cd" }
 ];
 const sedesEjemplo = [
-    { id: 1, nombre: "Sede Belgrano" },
-    { id: 2, nombre: "Sede Vicente López" }
-];
+    { id: "6a0a7795ab3c257deb8ab6c8", nombre: "Hospital Britanico" }
+]
 
 export { medicosEjemplo, especialidadesEjemplo, practicasEjemplo, sedesEjemplo };

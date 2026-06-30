@@ -22,8 +22,8 @@ export default function CarritoTurnos({ items, onEliminar, onConfirmar, onCerrar
         }}>
       {/* Título */}
       <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: 2 }}>
-                <ShoppingCartIcon sx={{ color: '#475569', fontSize: 20 }} />
-                <Typography variant="h6" sx={{ fontSize: 16, fontWeight: 700, color: '#1e293b' }}>
+                <ShoppingCartIcon sx={{ color: 'var(--color-text-muted)', fontSize: 20 }} />
+                <Typography variant="h6" sx={{ fontSize: 16, fontWeight: 700, color: 'var(--color-text)' }}>
           Preselección de Turnos
         </Typography>
         <IconButton
@@ -42,7 +42,7 @@ export default function CarritoTurnos({ items, onEliminar, onConfirmar, onCerrar
         py: 1,
       }}>
         {items.length === 0 && (
-          <Typography variant="body2" sx={{ color: '#94a3b8', textAlign: 'center', mt: 4 }}>
+          <Typography variant="body2" sx={{ color: 'var(--color-text-muted)', textAlign: 'center', mt: 4 }}>
             No hay turnos seleccionados.
           </Typography>
         )}
@@ -57,9 +57,9 @@ export default function CarritoTurnos({ items, onEliminar, onConfirmar, onCerrar
             </IconButton>
 
             <Typography fontWeight={700} fontSize={14}>{item.medico.nombre}</Typography>
-            <Typography fontSize={13} sx={{ color: '#2563eb' }}>{item.servicio.nombre}</Typography>
-            <Typography fontSize={13} sx={{ color: '#475569' }}>{item.fechaHora}</Typography>
-            <Typography fontSize={13} sx={{ color: '#475569' }}>{item.sede.nombre}</Typography>
+            <Typography fontSize={13} sx={{ color: 'var(--color-info)' }}>{item.servicio.nombre}</Typography>
+            <Typography fontSize={13} sx={{ color: 'var(--color-text-muted)' }}>{item.fechaHora}</Typography>
+            <Typography fontSize={13} sx={{ color: 'var(--color-text-muted)' }}>{item.sede.nombre}</Typography>
 
             <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mt: 1 }}>
               <span className={`badge-cobertura ${item.estadoCobertura === 'TOTAL' ? 'cubierto' : item.estadoCobertura === 'PARCIAL' ? 'parcial' : 'no-cubierto'}`}>
@@ -92,12 +92,12 @@ export default function CarritoTurnos({ items, onEliminar, onConfirmar, onCerrar
             navigate("/mis-turnos");
           }}
           sx={{
-            backgroundColor: '#1d4ed8',
+            backgroundColor: 'var(--color-info-dark)',
             borderRadius: 2,
             textTransform: 'none',
             fontWeight: 700,
-            '&:hover': { backgroundColor: '#1e40af' },
-            '&:disabled': { backgroundColor: '#cbd5e1', color: '#94a3b8' }
+            '&:hover': { backgroundColor: 'var(--color-info-dark)' },
+            '&:disabled': { backgroundColor: 'var(--color-divider)', color: 'var(--color-text-muted)' }
           }}
         >
           Confirmar Turnos

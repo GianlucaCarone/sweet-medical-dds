@@ -1,17 +1,16 @@
 import express from "express"; // framework para crear el servidor y manejar las rutas
 import { Server } from "./server.js";
-import routes from "./routes/router.js";
-
-import { ServicioController } from "./controllers/ServicioController.js";
-import { NotificacionController } from "./controllers/NotificacionController.js";
-import { TurnoController } from "./controllers/TurnoController.js";
-import { ObraSocialController } from "./controllers/ObraSocialController.js";
-import { UsuarioController } from "./controllers/UsuarioController.js";
 import { MedicoController } from "./controllers/MedicoController.js";
+import { NotificacionController } from "./controllers/NotificacionController.js";
+import { ObraSocialController } from "./controllers/ObraSocialController.js";
+import { PacienteController } from "./controllers/PacienteController.js";
+import { SedeController } from "./controllers/SedeController.js";
+import { ServicioController } from "./controllers/ServicioController.js";
+import { TurnoController } from "./controllers/TurnoController.js";
+import { UsuarioController } from "./controllers/UsuarioController.js";
 import { TurnoService } from "./services/TurnoService.js";
 import { iniciarGeneracionTurnosBatch } from "./schedulers/generacionTurnos.js";
-import { SedeController } from "./controllers/SedeController.js";
-import { PacienteController } from "./controllers/PacienteController.js";
+import routes from "./routes/router.js";
 
 const app = express();
 
@@ -21,13 +20,8 @@ app.use(express.urlencoded({ extended: true }));
 const server = new Server(app);
 
 server.setController(
-    PacienteController,
-    new PacienteController()
-);
-
-server.setController(
-    ServicioController,
-    new ServicioController()
+    MedicoController,
+    new MedicoController()
 );
 
 server.setController(
@@ -36,13 +30,13 @@ server.setController(
 );
 
 server.setController(
-    UsuarioController,
-    new UsuarioController()
+    ObraSocialController, 
+    new ObraSocialController()
 );
 
 server.setController(
-    MedicoController,
-    new MedicoController()
+    PacienteController,
+    new PacienteController()
 );
 
 server.setController(
@@ -50,28 +44,27 @@ server.setController(
     new SedeController()
 );
 
-const turnoController = new TurnoController();
-server.setController(TurnoController, turnoController);
+server.setController(
+    ServicioController,
+    new ServicioController()
+);
 
-const obraSocialController = new ObraSocialController();
-server.setController(ObraSocialController, obraSocialController);
+server.setController(
+    TurnoController, 
+    new TurnoController()
+);
 
-const usuarioController = new UsuarioController();
-server.setController(UsuarioController, usuarioController);
+server.setController(
+    UsuarioController,
+    new UsuarioController()
+);
 
-const medicoController = new MedicoController();
-server.setController(MedicoController, medicoController);
-
-const turnoService = new TurnoService();
-
-iniciarGeneracionTurnosBatch(turnoService);
+iniciarGeneracionTurnosBatch(new TurnoService());
 
 /* -------------------------------------------------------------------------- */
 /*                                    RUTAS                                   */
 /* -------------------------------------------------------------------------- */
 routes.forEach((ruta) => server.addRoute(ruta));
 server.configurarRutas();
-
-
 
 export default server;

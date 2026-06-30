@@ -9,10 +9,10 @@ export default function ModalConfirmacion({ isOpen, onClose, title, message, onC
       title={title}
     >
       <div className="p-3">
-        <p className="mb-4 text-secondary">{message}</p>
+        <p className="mb-4 text-muted">{message}</p>
         <div className="d-flex justify-content-end gap-2">
           <button
-            className="btn btn-light btn-sm font-weight-bold text-secondary"
+            className="btn btn-light btn-sm font-weight-bold text-muted"
             onClick={onClose}
           >
             Cancelar

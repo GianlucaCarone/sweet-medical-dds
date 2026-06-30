@@ -38,7 +38,7 @@ export default function ModalPerfil({ open, onClose, userData }) {
       PaperProps={{
         // Mantenemos este color si es exclusivo del fondo del modal,
         // o podrías pasarlo a theme.palette.background.paper en el futuro.
-        sx: { bgcolor: "#fcfaf5", borderRadius: 2 },
+        sx: { bgcolor: "var(--color-surface)", borderRadius: 2 },
       }}
     >
       <DialogContent sx={{ p: 4 }}>
@@ -140,7 +140,7 @@ export default function ModalPerfil({ open, onClose, userData }) {
                 variant="outlined"
                 // El fondo de los inputs lo dejamos harcodeado por ahora
                 // a menos que quieras agregarlo como "primary.light" en tu theme
-                sx={{ bgcolor: "#e6ebff", "& fieldset": { border: "none" } }}
+                sx={{ bgcolor: "var(--color-info-light)", "& fieldset": { border: "none" } }}
               />
             </Grid>
             <Grid item xs={12} sm={6}>
@@ -156,7 +156,7 @@ export default function ModalPerfil({ open, onClose, userData }) {
                   size="small"
                   type="password"
                   variant="outlined"
-                  sx={{ bgcolor: "#e6ebff", "& fieldset": { border: "none" } }}
+                  sx={{ bgcolor: "var(--color-info-light)", "& fieldset": { border: "none" } }}
                 />
               </Box>
               <Box>
@@ -171,7 +171,7 @@ export default function ModalPerfil({ open, onClose, userData }) {
                   size="small"
                   type="password"
                   variant="outlined"
-                  sx={{ bgcolor: "#e6ebff", "& fieldset": { border: "none" } }}
+                  sx={{ bgcolor: "var(--color-info-light)", "& fieldset": { border: "none" } }}
                 />
               </Box>
             </Grid>

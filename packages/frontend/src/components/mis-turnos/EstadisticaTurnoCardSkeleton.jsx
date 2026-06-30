@@ -1,25 +1,32 @@
 import Skeleton from "@mui/material/Skeleton";
-import "./EstadisticaTurnoCard.css";
+import styled from 'styled-components';
 
+// --- Styled Components ---
+const StatCardArticle = styled.article`
+  background: var(--color-surface);
+  border: 2px solid var(--color-divider);
+  border-radius: 20px;
+  padding: 20px;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.03);
+`;
+
+// --- Componente ---
 export default function EstadisticaTurnoCardSkeleton() {
     return (
-        <article className="stat-card">
-            <Skeleton
-                variant="rounded"
-                width={38}
-                height={38}
-            />
+      <StatCardArticle>
+        {/* Ícono */}
+        <Skeleton variant="rounded" width={38} height={38} />
 
-            <Skeleton
-                width="45%"
-                height={50}
-                sx={{ marginTop: "12px" }}
-            />
+        {/* Número grande */}
+        <Skeleton width="45%" height={50} sx={{ marginTop: '12px' }} />
 
-            <Skeleton
-                width="70%"
-                height={25}
-            />
-        </article>
+        {/* Texto descriptivo */}
+        <Skeleton width="70%" height={25} />
+      </StatCardArticle>
     );
 }
