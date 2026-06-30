@@ -17,7 +17,7 @@ export default function BusquedaTurnos() {
 
     //datos para los filtros:
                                         // TODO usar el auth context para recuperar al usuario
-    const [pacienteID, setPacienteID] = useState("6a42c49da279cfb5b99ef572"); //por ahora; hasta tener el login
+    const [pacienteID, setPacienteID] = useState(null); //por ahora; hasta tener el login
     const [medicos, setMedicos] = useState([]);
     const [especialidades, setEspecialidades] = useState([]);
     const [practicas, setPracticas] = useState([]);
@@ -97,9 +97,10 @@ export default function BusquedaTurnos() {
         const filtrosCompletos = {
             ...filtrosInput,
             estado: 'DISPONIBLE',
-            pacienteId: pacienteID,
+            // pacienteId: pacienteID,
             orden: "asc"
         };
+        if (pacienteID != null) filtrosCompletos.pacienteId = pacienteID
         const turnosFiltrados = await getTurnosDisponiblesFiltradoPaginado(filtrosCompletos, page);
         setTurnos(turnosFiltrados.data);
         if (turnosFiltrados.data.length === 0) setSinResultados(true);

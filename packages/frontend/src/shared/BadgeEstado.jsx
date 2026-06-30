@@ -20,7 +20,7 @@ const configs = {
 export default function BadgeEstado({ status }) {
   // 1. Manejo seguro ("Fail Fast"): Si no llega status, devolvemos un fallback genérico.
   if (!status) {
-    return <Chip label="Desconocido" color="default" size="small" />;
+    return;
   }
 
   // 2. Normalizamos la cadena entrante a mayúsculas.
