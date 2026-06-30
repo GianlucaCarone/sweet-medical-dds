@@ -10,7 +10,11 @@ import {
   Box,
   Typography,
   Alert,
+  InputAdornment,
+  IconButton,
 } from "@mui/material";
+import Visibility from "@mui/icons-material/Visibility";
+import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import { useAuth } from "../../context/AuthContext.jsx"; // Importamos el hook del contexto de autenticación
 
 // Le pasamos las props 'open' y 'onClose' tal como hiciste en ModalPerfil
@@ -22,6 +26,7 @@ export default function ModalLogin({ open, onClose, onLoginSuccess, onIrARegistr
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [mostrarPassword, setMostrarPassword] = useState(false);
 
   const { login } = useAuth(); // Traemos la función del estado global
 
@@ -73,12 +78,25 @@ export default function ModalLogin({ open, onClose, onLoginSuccess, onIrARegistr
 
           <TextField
             label="Contraseña"
-            type="password"
+            type={mostrarPassword ? "text" : "password"}
             variant="outlined"
             fullWidth
             required
             value={password}
             onChange={(e) => setPassword(e.target.value)}
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton
+                    aria-label="toggle password visibility"
+                    onClick={() => setMostrarPassword((prev) => !prev)}
+                    edge="end"
+                  >
+                    {mostrarPassword ? <VisibilityOff /> : <Visibility />}
+                  </IconButton>
+                </InputAdornment>
+              ),
+            }}
           />
         </DialogContent>
 

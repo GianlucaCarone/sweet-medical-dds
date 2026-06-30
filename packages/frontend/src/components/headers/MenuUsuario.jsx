@@ -1,9 +1,8 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom"; // Importamos react-router-dom
-import "./MenuUsuario.css"; // Importamos nuestro nuevo CSS
-import { useAuth } from "../../context/AuthContext"; // Importamos nuestro contexto
+import { useNavigate } from "react-router-dom";
+import "./MenuUsuario.css";
+import { useAuth } from "../../context/AuthContext";
 
-// Importaciones de Material UI agrupadas para mayor limpieza
 import {
   Box,
   Avatar,
@@ -15,34 +14,24 @@ import {
   Tooltip,
 } from "@mui/material";
 import Logout from "@mui/icons-material/Logout";
-import ModalPerfil from "./ModalPerfil";
+import AccountCircleIcon from "@mui/icons-material/AccountCircle";
+import MedicalServicesIcon from "@mui/icons-material/MedicalServices";
 
-export default function MenuUsuario({ userName = "Andino Franco", onLogoutSuccess }) {
-  const navigate = useNavigate(); // Hook para navegar por las rutas
-  const { user, logout } = useAuth(); // Traemos el usuario y la función de deslogueo global
+export default function MenuUsuario({ userName = "Usuario", onLogoutSuccess }) {
+  const navigate = useNavigate();
+  const { user, logout } = useAuth();
 
-  // Estados
   const [anchorEl, setAnchorEl] = useState(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const openMenu = Boolean(anchorEl);
 
-  // Manejadores del Menú Desplegable
   const handleMenuClick = (event) => setAnchorEl(event.currentTarget);
   const handleMenuClose = () => setAnchorEl(null);
 
-  // Manejadores del Modal
-  const handleOpenProfileModal = () => {
-    setIsModalOpen(true);
-    handleMenuClose();
-  };
-  const handleCloseModal = () => setIsModalOpen(false);
-
-  // Acción de Cerrar Sesión usando React Router
   const handleLogout = () => {
-    handleMenuClose();   // 1. Cerramos el menú desplegable
-    logout();            // 2. Borramos token y usuario del estado global
-    onLogoutSuccess();   // 3. Le avisamos al Header que dispare el Snackbar
-    navigate("/");       // 4. Redirigimos a la landing page (home)
+    handleMenuClose();
+    logout();
+    onLogoutSuccess();
+    navigate("/");
   };
 
   return (
@@ -56,7 +45,6 @@ export default function MenuUsuario({ userName = "Andino Franco", onLogoutSucces
             aria-controls={openMenu ? "account-menu" : undefined}
             aria-haspopup="true"
             aria-expanded={openMenu}
-            // el bloque es flexible para que puedas agregar más cosas al header sin que se rompa el diseño del menú desplegable
             display="flex"
           >
             <Avatar className="menu-user-avatar">
@@ -76,20 +64,32 @@ export default function MenuUsuario({ userName = "Andino Franco", onLogoutSucces
         slotProps={{
           paper: {
             elevation: 0,
-            className: "menu-paper-custom", // Aplicamos nuestra clase CSS en lugar del objeto sx
+            className: "menu-paper-custom",
           },
         }}
       >
-        <MenuItem onClick={handleOpenProfileModal}>
-          <Avatar /> Mi Perfil
-        </MenuItem>
+        {/* "Mi Perfil" navega a /mi-perfil (PACIENTE) */}
+        {user?.rol === "PACIENTE" && (
+          <MenuItem onClick={() => { navigate("/mi-perfil"); handleMenuClose(); }}>
+            <ListItemIcon>
+              <AccountCircleIcon fontSize="small" />
+            </ListItemIcon>
+            Mi Perfil
+          </MenuItem>
+        )}
+
         {/* "Perfil Médico" solo visible para usuarios con rol MEDICO */}
         {user?.rol === "MEDICO" && (
           <MenuItem onClick={() => { navigate("/perfil-medico"); handleMenuClose(); }}>
-            <Avatar /> Perfil Médico
+            <ListItemIcon>
+              <MedicalServicesIcon fontSize="small" />
+            </ListItemIcon>
+            Perfil Médico
           </MenuItem>
         )}
+
         <Divider />
+
         <MenuItem onClick={handleLogout}>
           <ListItemIcon>
             <Logout fontSize="small" />
@@ -97,12 +97,6 @@ export default function MenuUsuario({ userName = "Andino Franco", onLogoutSucces
           Cerrar Sesión
         </MenuItem>
       </Menu>
-
-      <ModalPerfil
-        open={isModalOpen}
-        onClose={handleCloseModal}
-        userName={userName}
-      />
     </React.Fragment>
   );
 }

@@ -5,6 +5,7 @@ import Login from "./components/login/Login.jsx";
 import MisTurnos from "./features/misTurnos/MisTurnos.jsx";
 import BusquedaTurnos from "./features/busqueda-turnos/busquedaTurnos.jsx";
 import PerfilMedico from "./features/perfil-medico/PerfilMedico.jsx";
+import MiPerfil from "./features/perfil-usuario/MiPerfil.jsx";
 import { CartProvider } from './context/CartContext.jsx';
 import { AlertProvider } from "./context/AlertContext.jsx";
 import ProtectedRoute from "./components/auth/ProtectedRoute.jsx";
@@ -44,6 +45,16 @@ function App() {
               element={
                 <ProtectedRoute allowedRoles={["PACIENTE"]}>
                   <MisTurnos />
+                </ProtectedRoute>
+              }
+            />
+
+            {/* Mi Perfil: cualquier usuario logueado */}
+            <Route
+              path="mi-perfil"
+              element={
+                <ProtectedRoute>
+                  <MiPerfil />
                 </ProtectedRoute>
               }
             />

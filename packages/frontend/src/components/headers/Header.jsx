@@ -1,6 +1,6 @@
 import "./Header.css";
 import Navbar from "./Navbar.jsx";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import MenuUsuario from "./MenuUsuario.jsx";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import { useState, useEffect } from "react";
@@ -20,6 +20,7 @@ import { useAlert } from "../../context/AlertContext.jsx";
 
 const Header = () => {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const { carrito, limpiarCarrito, eliminarDelCarrito, manejoCarritoDrawer, counterCarrito } = useCart();
   const { showAlert } = useAlert();
 
@@ -35,6 +36,8 @@ const Header = () => {
   const handleRegistroExitoso = (usuario) => {
     setRegistroAbierto(false);
     showAlert(`¡Cuenta creada exitosamente! Bienvenido/a, ${usuario.nombreUsuario || "usuario"}.`, "success");
+    // Redirigimos al paciente a su perfil para que complete su cobertura médica si lo desea
+    navigate("/mi-perfil");
   };
 
   const handleLogoutExitoso = () => {

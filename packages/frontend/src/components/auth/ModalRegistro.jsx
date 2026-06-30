@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Dialog,
   DialogTitle,
@@ -14,13 +14,19 @@ import {
   StepLabel,
   InputAdornment,
   IconButton,
+  Select,
+  MenuItem,
+  FormControl,
+  InputLabel,
+  CircularProgress,
 } from "@mui/material";
-import VisibilityIcon from "@mui/icons-material/Visibility";
-import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
+import Visibility from "@mui/icons-material/Visibility";
+import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import PersonAddAltIcon from "@mui/icons-material/PersonAddAlt";
 import { useAuth } from "../../context/AuthContext.jsx";
+import { getObrasSociales } from "../../api/obraSocialApi.js";
 
-const pasos = ["Cuenta", "Datos Personales"];
+const pasos = ["Cuenta", "Datos Personales", "Cobertura (Opcional)"];
 
 /**
  * Modal de registro para nuevos Pacientes.
@@ -38,12 +44,31 @@ export default function ModalRegistro({ open, onClose, onRegistroSuccess, onIrAL
   const [error, setError] = useState("");
   const [mostrarPassword, setMostrarPassword] = useState(false);
 
-  // Campos del formulario
+  // Paso 0 — Cuenta
   const [nombreUsuario, setNombreUsuario] = useState("");
   const [password, setPassword] = useState("");
   const [confirmarPassword, setConfirmarPassword] = useState("");
+
+  // Paso 1 — Datos personales
   const [nombre, setNombre] = useState("");
   const [dni, setDni] = useState("");
+
+  // Paso 2 — Cobertura (opcional)
+  const [obrasSociales, setObrasSociales] = useState([]);
+  const [loadingObras, setLoadingObras] = useState(false);
+  const [obraSocialSeleccionada, setObraSocialSeleccionada] = useState("");
+  const [planSeleccionado, setPlanSeleccionado] = useState(""); // ObjectId del subdocumento plan
+
+  // Carga las obras sociales (con sus planes incluidos) al llegar al paso 2
+  useEffect(() => {
+    if (paso === 2 && obrasSociales.length === 0) {
+      setLoadingObras(true);
+      getObrasSociales()
+        .then((data) => setObrasSociales(data))
+        .catch(() => setError("No se pudieron cargar las obras sociales."))
+        .finally(() => setLoadingObras(false));
+    }
+  }, [paso, obrasSociales.length]);
 
   const limpiarFormulario = () => {
     setPaso(0);
@@ -53,6 +78,8 @@ export default function ModalRegistro({ open, onClose, onRegistroSuccess, onIrAL
     setConfirmarPassword("");
     setNombre("");
     setDni("");
+    setObraSocialSeleccionada("");
+    setPlanSeleccionado("");
   };
 
   const handleCerrar = () => {
@@ -75,35 +102,44 @@ export default function ModalRegistro({ open, onClose, onRegistroSuccess, onIrAL
   };
 
   const handleSiguiente = () => {
-    const errorValidacion = validarPaso0();
-    if (errorValidacion) {
-      setError(errorValidacion);
-      return;
-    }
+    const validadores = [validarPaso0, validarPaso1];
+    const err = validadores[paso]?.();
+    if (err) { setError(err); return; }
     setError("");
-    setPaso(1);
+    setPaso((prev) => prev + 1);
   };
 
   const handleVolver = () => {
     setError("");
-    setPaso(0);
+    setPaso((prev) => prev - 1);
   };
 
+  /**
+   * Ejecuta el registro, incluyendo la cobertura si fue seleccionada.
+   * Si no se seleccionó obra social, registra sin cobertura (estado válido del negocio).
+   */
   const handleRegistrar = async () => {
-    const errorValidacion = validarPaso1();
-    if (errorValidacion) {
-      setError(errorValidacion);
-      return;
-    }
     setError("");
     try {
       setLoading(true);
-      const usuario = await registro({
+
+      const payload = {
         nombreUsuario: nombreUsuario.trim(),
         password,
         nombre: nombre.trim(),
         dni: Number(dni),
-      });
+      };
+
+      // Solo incluye cobertura si el usuario seleccionó algo
+      if (obraSocialSeleccionada) {
+        payload.obraSocial = obraSocialSeleccionada;
+        if (planSeleccionado) {
+          // Se envía el id del plan del DTO (= ObjectId del subdocumento)
+          payload.plan = planSeleccionado;
+        }
+      }
+
+      const usuario = await registro(payload);
       limpiarFormulario();
       onRegistroSuccess(usuario);
     } catch (err) {
@@ -112,6 +148,11 @@ export default function ModalRegistro({ open, onClose, onRegistroSuccess, onIrAL
       setLoading(false);
     }
   };
+
+  // Planes del select: se derivan de la obra social ya cargada (1 solo request)
+  // El DTO de ObraSocial usa "id" (no "_id")
+  const obraSocialActual = obrasSociales.find((os) => os.id === obraSocialSeleccionada);
+  const planesDisponibles = obraSocialActual?.planes ?? [];
 
   return (
     <Dialog open={open} onClose={handleCerrar} fullWidth maxWidth="xs">
@@ -137,10 +178,10 @@ export default function ModalRegistro({ open, onClose, onRegistroSuccess, onIrAL
         </Stepper>
       </Box>
 
-      <DialogContent sx={{ display: "flex", flexDirection: "column", gap: 2, pt: 2 }}>
+      <DialogContent sx={{ display: "flex", flexDirection: "column", gap: 2, pt: 2, minHeight: "220px" }}>
         {error && <Alert severity="error">{error}</Alert>}
 
-        {/* Paso 0: Datos de cuenta */}
+        {/* ── Paso 0: Datos de cuenta ── */}
         {paso === 0 && (
           <>
             <TextField
@@ -166,8 +207,12 @@ export default function ModalRegistro({ open, onClose, onRegistroSuccess, onIrAL
               InputProps={{
                 endAdornment: (
                   <InputAdornment position="end">
-                    <IconButton onClick={() => setMostrarPassword((v) => !v)} edge="end">
-                      {mostrarPassword ? <VisibilityOffIcon /> : <VisibilityIcon />}
+                    <IconButton
+                      aria-label="toggle password visibility"
+                      onClick={() => setMostrarPassword((v) => !v)}
+                      edge="end"
+                    >
+                      {mostrarPassword ? <VisibilityOff /> : <Visibility />}
                     </IconButton>
                   </InputAdornment>
                 ),
@@ -186,7 +231,7 @@ export default function ModalRegistro({ open, onClose, onRegistroSuccess, onIrAL
           </>
         )}
 
-        {/* Paso 1: Datos personales */}
+        {/* ── Paso 1: Datos personales ── */}
         {paso === 1 && (
           <>
             <TextField
@@ -214,26 +259,85 @@ export default function ModalRegistro({ open, onClose, onRegistroSuccess, onIrAL
           </>
         )}
 
-        {/* Link a Login */}
-        <Box textAlign="center">
-          <Typography variant="body2" color="text.secondary">
-            ¿Ya tenés cuenta?{" "}
-            <Button
-              variant="text"
-              size="small"
-              sx={{ textTransform: "none", p: 0, minWidth: 0 }}
-              onClick={() => {
-                limpiarFormulario();
-                onIrALogin();
-              }}
-            >
-              Iniciá sesión
-            </Button>
-          </Typography>
-        </Box>
+        {/* ── Paso 2: Cobertura médica (Opcional) ── */}
+        {paso === 2 && (
+          <Box display="flex" flexDirection="column" gap={2}>
+            {loadingObras ? (
+              <Box display="flex" justifyContent="center" p={2}>
+                <CircularProgress size={30} />
+              </Box>
+            ) : (
+              <>
+                <FormControl fullWidth variant="outlined">
+                  <InputLabel id="select-obra-social-label">Obra Social (Opcional)</InputLabel>
+                  <Select
+                    labelId="select-obra-social-label"
+                    id="select-obra-social"
+                    value={obraSocialSeleccionada}
+                    label="Obra Social (Opcional)"
+                    onChange={(e) => {
+                      setObraSocialSeleccionada(e.target.value);
+                      setPlanSeleccionado(""); // resetear plan al cambiar OS
+                    }}
+                  >
+                    <MenuItem value=""><em>Ninguna</em></MenuItem>
+                    {obrasSociales.map((os) => (
+                      // El DTO devuelve "id" (no "_id")
+                      <MenuItem key={os.id} value={os.id}>
+                        {os.nombre}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+
+                <FormControl fullWidth variant="outlined" disabled={!obraSocialSeleccionada}>
+                  <InputLabel id="select-plan-label">Plan (Opcional)</InputLabel>
+                  <Select
+                    labelId="select-plan-label"
+                    id="select-plan"
+                    value={planSeleccionado}
+                    label="Plan (Opcional)"
+                    onChange={(e) => setPlanSeleccionado(e.target.value)}
+                  >
+                    <MenuItem value=""><em>Ningún plan</em></MenuItem>
+                    {planesDisponibles.map((plan) => (
+                      // El DTO devuelve "id" (no "_id") para los planes
+                      <MenuItem key={plan.id} value={plan.id}>
+                        {plan.nombre}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+
+                <Typography variant="caption" color="text.secondary" align="center" sx={{ mt: 1 }}>
+                  Cargar tu obra social permite calcular el costo de tus turnos automáticamente.
+                  Podés hacerlo luego desde <strong>Mi Perfil</strong>.
+                </Typography>
+              </>
+            )}
+          </Box>
+        )}
+
+        {/* Link a Login (solo en los primeros 2 pasos) */}
+        {paso < 2 && (
+          <Box textAlign="center" mt={1}>
+            <Typography variant="body2" color="text.secondary">
+              ¿Ya tenés cuenta?{" "}
+              <Button
+                variant="text"
+                size="small"
+                sx={{ textTransform: "none", p: 0, minWidth: 0 }}
+                onClick={() => { limpiarFormulario(); onIrALogin(); }}
+              >
+                Iniciá sesión
+              </Button>
+            </Typography>
+          </Box>
+        )}
       </DialogContent>
 
       <DialogActions sx={{ p: 2, justifyContent: "space-between" }}>
+        {/* Botón izquierdo */}
         {paso === 0 ? (
           <Button onClick={handleCerrar} color="inherit" disabled={loading}>
             Cancelar
@@ -244,26 +348,30 @@ export default function ModalRegistro({ open, onClose, onRegistroSuccess, onIrAL
           </Button>
         )}
 
-        {paso === 0 ? (
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={handleSiguiente}
-            disabled={loading}
-          >
-            Siguiente
-          </Button>
-        ) : (
-          <Button
-            id="btn-confirmar-registro"
-            variant="contained"
-            color="primary"
-            onClick={handleRegistrar}
-            disabled={loading}
-          >
-            {loading ? "Registrando..." : "Confirmar registro"}
-          </Button>
-        )}
+        {/* Botón(es) derecho(s) */}
+        <Box>
+          {paso < 2 ? (
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={handleSiguiente}
+              disabled={loading}
+            >
+              Siguiente
+            </Button>
+          ) : (
+            // Un solo botón: registra con la cobertura seleccionada (o sin ella si no eligió)
+            <Button
+              id="btn-confirmar-registro"
+              variant="contained"
+              color="primary"
+              onClick={handleRegistrar}
+              disabled={loading || loadingObras}
+            >
+              {loading ? "Registrando..." : "Registrarme"}
+            </Button>
+          )}
+        </Box>
       </DialogActions>
     </Dialog>
   );
