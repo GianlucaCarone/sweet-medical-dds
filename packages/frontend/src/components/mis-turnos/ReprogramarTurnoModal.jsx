@@ -1,8 +1,7 @@
 import { useState, useEffect } from "react";
 import { Avatar } from '@mui/material';
+import CardTurnoReprogramar from "../cards/CardTurno/CardTurnoReprogramar.jsx"
 import CalendarMonthRoundedIcon from "@mui/icons-material/CalendarMonthRounded";
-import AccessTimeRoundedIcon from "@mui/icons-material/AccessTimeRounded";
-import LocationOnRoundedIcon from "@mui/icons-material/LocationOnRounded";
 import "./ReprogramarTurnoModal.css";
 
 const turnosDisponiblesMock = [
@@ -62,33 +61,7 @@ export default function ReprogramarTurnoModal({
                     </button>
                 </div>
 
-                <div className="turno-actual-box">
-                    <div className="doctor-avatar reprogramar-avatar">
-                        <Avatar>{turno.medico?.nombre?.slice(0, 2).toUpperCase()}</Avatar>
-                    </div>
-
-                    <div>
-                        <h3>{turno.medico?.nombre}</h3>
-                        <p>{turno.servicio?.nombre}</p>
-
-                        <div className="reprogramar-detalles">
-                            <span>
-                                <CalendarMonthRoundedIcon fontSize="small" />
-                                {new Date(turno.fechaHora).toLocaleDateString('es-AR', { day: 'numeric', month: 'short' })}
-                            </span>
-
-                            <span>
-                                <AccessTimeRoundedIcon fontSize="small" />
-                                {new Date(turno.fechaHora).toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' })}
-                            </span>
-
-                            <span>
-                                <LocationOnRoundedIcon fontSize="small" />
-                                {turno.sede?.nombre}
-                            </span>
-                        </div>
-                    </div>
-                </div>
+                <CardTurnoReprogramar turno={turno}></CardTurnoReprogramar>
 
                 <h4>Próximos turnos disponibles</h4>
 
