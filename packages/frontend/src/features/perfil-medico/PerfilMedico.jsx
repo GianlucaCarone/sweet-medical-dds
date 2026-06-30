@@ -1,16 +1,20 @@
 import React, { useState } from 'react';
 import {useAlert} from '../../context/AlertContext.jsx';
+import {useAuth} from '../../context/AuthContext.jsx';
 
 // Hooks
-import useDoctorProfile from './hooks/useDoctorProfile';
+import useMedicoProfile from './hooks/useMedicoProfile.js';
 import useTurnos from './hooks/useTurnos';
+import { useGetMedicoByIdUsuario } from './hooks/useMedicoProfile.js';
 
-// Componentes
+// Componentes 
 import CabeceraPerfil from '../../components/medico/CabeceraPerfil';
 import ServiciosTab from '../../components/medico/ServiciosTab';
 import DisponibilidadesTab from '../../components/medico/DisponibilidadesTab';
 import SedesTab from '../../components/medico/SedesTab';
 import TurnosTab from '../../components/medico/TurnosTab';
+import PerfilMedicoSkeleton from './components/PerfilMedicoSkeleton';
+import PerfilEmptyState from './components/PerfilEmptyState';
 
 // Modales
 import ModalAgregarServicio from './modals/ModalAgregarServicio';
@@ -22,10 +26,30 @@ import ModalAlerta from './modals/ModalAlerta';
 import './PerfilMedico.css';
 
 export default function PerfilMedico() {
+  const { user } = useAuth();
   const [activeTab, setActiveTab] = useState('servicios');
   const [modalOpen, setModalOpen] = useState(null);
   const { showAlert } = useAlert();
-  
+  const { medico, cargando } = useGetMedicoByIdUsuario(user?.id);
+
+  // Early returns para estados de carga y error
+  if (cargando) {
+    return <PerfilMedicoSkeleton />;
+  }
+
+  if (!medico) {  
+    return (
+      <main className="container-perfil">
+        <PerfilEmptyState
+          titulo="Perfil no encontrado"
+          descripcion="No se encontró un perfil médico asociado a tu cuenta."
+          textoBoton="Volver al inicio"
+          onClick={() => window.location.href = '/'}
+        />
+      </main>
+    );
+  }
+
   // Estado para alertas y confirmaciones
   const [alertConfig, setAlertConfig] = useState({ isOpen: false, title: '', message: '', type: 'info' });
   const [confirmModal, setConfirmModal] = useState({ isOpen: false, title: '', message: '', onConfirm: null });
@@ -45,7 +69,7 @@ export default function PerfilMedico() {
 
   // Custom Hooks
   const {
-    doctor,
+    medico,
     handleAgregarServicio,
     handleEliminarServicio,
     handleAgregarDisponibilidad,
@@ -53,9 +77,9 @@ export default function PerfilMedico() {
     handleAsociarSede,
     handleDesvincularSede,
     handleGuardarDatosPersonales
-  } = useDoctorProfile(triggerConfirm, setAlertConfig);
+  } = useMedicoProfile(medico, triggerConfirm, setAlertConfig);
 
-  const turnosHook = useTurnos(doctor, activeTab);
+  const turnosHook = useTurnos(medico, activeTab);
 
   // Estados para ModalDisponibilidad (editar)
   const [editingDispId, setEditingDispId] = useState(null);
@@ -79,7 +103,7 @@ export default function PerfilMedico() {
         <div className="col-12">
           
           <CabeceraPerfil
-            doctor={doctor}
+            medico={medico}
             handleGuardarDatosPersonales={handleGuardarDatosPersonales}
             setAlertConfig={setAlertConfig}
           />
@@ -106,7 +130,8 @@ export default function PerfilMedico() {
             <article className="tab-content-container p-4">
               {activeTab === 'servicios' && (
                 <ServiciosTab
-                  servicios={doctor.serviciosAsignados}
+                  especialidades={medico?.especialidades || []}
+                  practicas={medico?.practicas || []}
                   onAdd={() => setModalOpen('servicio')}
                   onEliminar={handleEliminarServicio}
                 />
@@ -114,7 +139,7 @@ export default function PerfilMedico() {
 
               {activeTab === 'disponibilidades' && (
                 <DisponibilidadesTab
-                  disponibilidades={doctor.disponibilidadHoraria}
+                  disponibilidades={medico?.disponibilidades || []}
                   onAdd={handleOpenDispModalNew}
                   onEdit={handleEditDisponibilidad}
                   onEliminar={handleEliminarDisponibilidad}
@@ -123,7 +148,7 @@ export default function PerfilMedico() {
 
               {activeTab === 'sedes' && (
                 <SedesTab
-                  sedesAsignadas={doctor.sedesAsignadas}
+                  sedesAsignadas={medico?.sedes || []}
                   onAsociar={handleAsociarSede}
                   onDesvincular={handleDesvincularSede}
                 />
@@ -153,14 +178,14 @@ export default function PerfilMedico() {
       <ModalAgregarServicio
         isOpen={modalOpen === 'servicio'}
         onClose={() => setModalOpen(null)}
-        doctor={doctor}
+        medico={medico}
         handleAgregarServicio={handleAgregarServicio}
       />
 
       <ModalDisponibilidad
         isOpen={modalOpen === 'disponibilidad'}
         onClose={() => setModalOpen(null)}
-        doctor={doctor}
+        medico={medico}
         handleAgregarDisponibilidad={handleAgregarDisponibilidad}
         initialData={dispInitialData}
         editingDispId={editingDispId}

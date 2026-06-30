@@ -2,9 +2,7 @@ import React from 'react';
 import { Plus, User, Activity } from 'lucide-react';
 import ServicioCard from './ServicioCard';
 
-export default function ServiciosTab({ servicios, onAdd, onEliminar }) {
-  const especialidades = servicios.filter(s => s.tipo === 'ESPECIALIDAD');
-  const practicas = servicios.filter(s => s.tipo === 'PRACTICA');
+export default function ServiciosTab({ especialidades = [], practicas = [], onAdd, onEliminar }) {
 
   return (
     <div className="fade-in">
@@ -28,7 +26,7 @@ export default function ServiciosTab({ servicios, onAdd, onEliminar }) {
         ) : (
           <div className="row g-3">
             {especialidades.map(srv => (
-              <div key={srv._id} className="col-12 col-md-6 col-lg-4">
+              <div key={srv.id || srv._id} className="col-12 col-md-6 col-lg-4">
                 <ServicioCard servicio={srv} onEliminar={onEliminar} />
               </div>
             ))}
@@ -45,7 +43,7 @@ export default function ServiciosTab({ servicios, onAdd, onEliminar }) {
         ) : (
           <div className="row g-3">
             {practicas.map(srv => (
-              <div key={srv._id} className="col-12 col-md-6 col-lg-4">
+              <div key={srv.id || srv._id} className="col-12 col-md-6 col-lg-4">
                 <ServicioCard servicio={srv} onEliminar={onEliminar} />
               </div>
             ))}

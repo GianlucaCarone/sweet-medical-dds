@@ -1,21 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import { User, Edit, Check } from 'lucide-react';
 
-export default function DatosPersonales({ doctor, handleGuardarDatosPersonales }) {
+export default function DatosPersonales({ medico, handleGuardarDatosPersonales }) {
   const [isEditingDatos, setIsEditingDatos] = useState(false);
   const [formDatos, setFormDatos] = useState({ 
-    nombre: doctor.nombre || '', 
-    apellido: doctor.apellido || '', 
-    honorario: doctor.honorario || 0 
+    nombre: medico.nombre || '', 
+    apellido: medico.apellido || '', 
+    honorario: medico.honorario || 0 
   });
 
   useEffect(() => {
     setFormDatos({ 
-      nombre: doctor.nombre || '', 
-      apellido: doctor.apellido || '', 
-      honorario: doctor.honorario || 0 
+      nombre: medico.nombre || '', 
+      apellido: medico.apellido || '', 
+      honorario: medico.honorario || 0 
     });
-  }, [doctor]);
+  }, [medico]);
 
   const onGuardar = (e) => {
     e.preventDefault();
@@ -26,7 +26,7 @@ export default function DatosPersonales({ doctor, handleGuardarDatosPersonales }
   };
 
   return (
-    <form onSubmit={onGuardar} className="col-12 col-lg-4 col-border-right d-flex flex-column justify-content-center px-4">
+    <form onSubmit={onGuardar} className="col-12 col-lg-6 d-flex flex-column justify-content-center px-4">
       {/* Cabecera de la sección */}
       <div className="d-flex justify-content-between align-items-center mb-4 border-bottom pb-2">
         <h5 className="font-weight-bold text-default m-0 d-flex align-items-center gap-2" style={{ fontSize: '13px', letterSpacing: '0.8px', color: 'var(--color-text)' }}>
@@ -37,7 +37,7 @@ export default function DatosPersonales({ doctor, handleGuardarDatosPersonales }
           <button
             type="button"
             onClick={() => { 
-              setFormDatos({ nombre: doctor.nombre, apellido: doctor.apellido, honorario: doctor.honorario }); 
+              setFormDatos({ nombre: medico.nombre, apellido: medico.apellido, honorario: medico.honorario }); 
               setIsEditingDatos(true); 
             }}
             className="btn btn-link btn-sm text-primary font-weight-bold d-flex align-items-center gap-1 p-0 border-0"
@@ -96,7 +96,7 @@ export default function DatosPersonales({ doctor, handleGuardarDatosPersonales }
         <div className="col-6">
           <div className="p-2 border border-transparent rounded-3" style={{ background: isEditingDatos ? 'var(--color-bg)' : 'transparent' }}>
             <span className="d-block text-muted mb-0.5" style={{ fontSize: '10px', textTransform: 'uppercase', fontWeight: '600', letterSpacing: '0.5px' }}>Usuario</span>
-            <span className="font-weight-bold d-block text-truncate text-muted" title={doctor.usuario} style={{ fontSize: '13px' }}>{doctor.usuario}</span>
+            <span className="font-weight-bold d-block text-truncate text-muted" title={medico.usuario} style={{ fontSize: '13px' }}>{medico.usuario}</span>
           </div>
         </div>
 
@@ -120,8 +120,8 @@ export default function DatosPersonales({ doctor, handleGuardarDatosPersonales }
           ) : (
             <div className="p-2 border border-transparent rounded-3">
               <span className="d-block text-muted mb-0.5" style={{ fontSize: '10px', textTransform: 'uppercase', fontWeight: '600', letterSpacing: '0.5px' }}>Honorario</span>
-              <span className="font-weight-bold d-block text-success" style={{ fontSize: '14px', letterSpacing: '0.2px' }} title={doctor.honorario}>
-                ${Number(doctor.honorario).toLocaleString('es-AR')}
+              <span className="font-weight-bold d-block text-success" style={{ fontSize: '14px', letterSpacing: '0.2px' }} title={medico.honorario}>
+                ${Number(medico.honorario).toLocaleString('es-AR')}
               </span>
             </div>
           )}
@@ -131,7 +131,7 @@ export default function DatosPersonales({ doctor, handleGuardarDatosPersonales }
         <div className="col-6">
           <div className="p-2 border border-transparent rounded-3" style={{ background: isEditingDatos ? 'var(--color-bg)' : 'transparent' }}>
             <span className="d-block text-muted mb-0.5" style={{ fontSize: '10px', textTransform: 'uppercase', fontWeight: '600', letterSpacing: '0.5px' }}>Documento</span>
-            <span className="font-weight-bold d-block text-muted" style={{ fontSize: '13px' }}>{doctor.documento}</span>
+            <span className="font-weight-bold d-block text-muted" style={{ fontSize: '13px' }}>{medico.documento}</span>
           </div>
         </div>
 
@@ -139,7 +139,7 @@ export default function DatosPersonales({ doctor, handleGuardarDatosPersonales }
         <div className="col-6">
           <div className="p-2 border border-transparent rounded-3" style={{ background: isEditingDatos ? 'var(--color-bg)' : 'transparent' }}>
             <span className="d-block text-muted mb-0.5" style={{ fontSize: '10px', textTransform: 'uppercase', fontWeight: '600', letterSpacing: '0.5px' }}>Matrícula</span>
-            <span className="font-weight-bold d-block text-muted" style={{ fontSize: '13px' }}>{doctor.matricula}</span>
+            <span className="font-weight-bold d-block text-muted" style={{ fontSize: '13px' }}>{medico.matricula}</span>
           </div>
         </div>
 

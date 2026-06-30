@@ -2,8 +2,8 @@ import React from 'react';
 import { MapPin, Plus } from 'lucide-react';
 import { globalSedesMock } from '../../mockdata/medico';
 
-export default function SedesTab({ sedesAsignadas, onAsociar, onDesvincular }) {
-  const sedesDisponibles = globalSedesMock.filter(s => !sedesAsignadas.some(asig => asig._id === s._id));
+export default function SedesTab({ sedes, onAsociar, onDesvincular }) {
+  const sedesDisponibles = globalSedesMock.filter(s => !sedes.some(asig => asig._id === s._id));
 
   return (
     <div className="fade-in">
@@ -20,10 +20,10 @@ export default function SedesTab({ sedesAsignadas, onAsociar, onDesvincular }) {
               <MapPin size={20} className="text-primary"/> Sedes Vinculadas
             </h5>
             <div className="space-y-2">
-              {sedesAsignadas.length === 0 ? (
+              {sedes.length === 0 ? (
                 <p className="text-muted italic small text-center py-5">No hay sedes vinculadas actualmente.</p>
               ) : (
-                sedesAsignadas.map(sede => (
+                sedes.map(sede => (
                   <div key={sede._id} className="sede-box-vinculada">
                     <div className="text-truncatepe" style={{ maxWidth: '75%' }}>
                       <p className="font-weight-bold text-default mb-1 small">{sede.nombre}</p>

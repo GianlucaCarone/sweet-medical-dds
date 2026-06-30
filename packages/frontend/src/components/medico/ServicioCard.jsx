@@ -11,7 +11,7 @@ export default function ServicioCard({ servicio, onEliminar }) {
           </h5>
           <button
             className="btn btn-link text-danger p-1 border-0"
-            onClick={() => onEliminar(servicio._id)}
+            onClick={() => onEliminar(servicio.id || servicio._id)}
             title="Eliminar servicio"
           >
             <Trash2 size={18} />

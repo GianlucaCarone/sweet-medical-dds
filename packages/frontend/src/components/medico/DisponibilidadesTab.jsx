@@ -22,7 +22,7 @@ export default function DisponibilidadesTab({ disponibilidades, onAdd, onEdit, o
 
           const turnosDiaOriginales = disponibilidades.filter(d => d.diaSemana === dia);
           //los ordenamos
-          const turnosDia = [...turnosDiaOriginales].sort((a, b) => a.horaInicio.localeCompare(b.horaInicio));
+          const turnosDia = [...turnosDiaOriginales].sort((a, b) => a.horaDesde.localeCompare(b.horaDesde));
 
           const diaLabel = dia === 'MIERCOLES' ? 'MIÉRCOLES' : dia === 'SABADO' ? 'SÁBADO' : dia;
           return (
@@ -35,7 +35,7 @@ export default function DisponibilidadesTab({ disponibilidades, onAdd, onEdit, o
                   turnosDia.map(disp => (
                     <div key={disp._id} className="disp-slot-card">
                       <div className="d-flex align-items-center gap-1 mb-1 font-weight-bold text-primary" style={{ fontSize: '11px' }}>
-                        <Clock size={11} /> {disp.horaInicio} - {disp.horaFin}
+                        <Clock size={11} /> {disp.horaDesde} - {disp.horaHasta}
                       </div>
                       <div 
                         className="text-default font-weight-bold text-truncate mb-1" 
