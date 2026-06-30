@@ -8,7 +8,7 @@ const obtenerId = (obj) => {
   return obj;
 };
 
-export default function useTurnos(doctor, activeTab) {
+export default function useTurnos(medico, activeTab) {
   const [todosLosTurnosMock, setTodosLosTurnosMock] = useState(initialTurnosMock);
   const [turnosFiltrados, setTurnosFiltrados] = useState([]);
   const [turnosSubTab, setTurnosSubTab] = useState('RESERVADOS');
@@ -37,7 +37,7 @@ export default function useTurnos(doctor, activeTab) {
 
       // Parámetros de paginación y filtros para enviar al backend
       const queryParams = {
-        medicoId: doctor._id,
+        medicoId: medico._id,
         estado: estadoMapeado,
         pagina: paginaActual,
         limite: 4
@@ -54,13 +54,13 @@ export default function useTurnos(doctor, activeTab) {
     } finally {
       setLoadingTurnos(false);
     }
-  }, [doctor._id]);
+  }, [medico._id]);
 
   useEffect(() => {
-    if (activeTab === 'turnos' && doctor._id) {
+    if (activeTab === 'turnos' && medico._id) {
       cargarTurnosMedico(turnosSubTab, turnosPage);
     }
-  }, [activeTab, turnosSubTab, turnosPage, doctor._id, cargarTurnosMedico]);
+  }, [activeTab, turnosSubTab, turnosPage, medico._id, cargarTurnosMedico]);
   =============================================================================
   */
 
@@ -80,7 +80,7 @@ export default function useTurnos(doctor, activeTab) {
 
       // Filtro por ID de médico (robusto contra objetos e IDs puros de MongoDB)
       const todosFiltrados = todosLosTurnosMock.filter(t => 
-        obtenerId(t.medico) === obtenerId(doctor) && t.estado === estadoMapeado
+        obtenerId(t.medico) === obtenerId(medico) && t.estado === estadoMapeado
       );
 
       const itemsPerPage = 4; // Páginas de 4 elementos para demostración interactiva
@@ -103,15 +103,15 @@ export default function useTurnos(doctor, activeTab) {
     }, 400);
 
     return () => clearTimeout(timer);
-  }, [activeTab, turnosSubTab, todosLosTurnosMock, doctor, turnosPage]);
+  }, [activeTab, turnosSubTab, todosLosTurnosMock, medico, turnosPage]);
 
   const handleObtenerHistorialPaciente = useCallback((id) => {
     const pacienteId = obtenerId(id);
     return todosLosTurnosMock.filter(t => 
       obtenerId(t.paciente) === pacienteId && 
-      obtenerId(t.medico) === obtenerId(doctor)
+      obtenerId(t.medico) === obtenerId(medico)
     );
-  }, [todosLosTurnosMock, doctor]);
+  }, [todosLosTurnosMock, medico]);
 
   const handleActualizarEstadoTurno = useCallback((turnoId, nuevoEstado, motivo = '', aceptarCambio = false) => {
     setTodosLosTurnosMock(prev => prev.map(t => {
@@ -157,7 +157,7 @@ export default function useTurnos(doctor, activeTab) {
     }));
   }, []);
 
-  const turnosDelMedico = todosLosTurnosMock.filter(t => obtenerId(t.medico) === obtenerId(doctor));
+  const turnosDelMedico = todosLosTurnosMock.filter(t => obtenerId(t.medico) === obtenerId(medico));
   
   const counts = {
     RESERVADOS: turnosDelMedico.filter(t => t.estado === 'RESERVADO').length,
