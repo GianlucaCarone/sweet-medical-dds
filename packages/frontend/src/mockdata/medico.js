@@ -30,12 +30,12 @@ export const initialDoctorMock = {
     { _id: "srv_prac_1", tipo: "PRACTICA", nombre: "Electrocardiograma", duracionEstimada: 15, costoBase: 5000 }
   ],
   
-  sedesAsignadas: [
+  sedes: [
     { _id: "sede_1", nombre: "Sede Central (Belgrano)", direccion: "Av. Cabildo 1234, CABA" }
   ],
-  disponibilidadHoraria: [
-    { _id: "disp_1", diaSemana: "LUNES", horaInicio: "09:00", horaFin: "11:00", servicio: { _id: "srv_esp_1", nombre: "Cardiología Clínica" }, sede: { _id: "sede_1", nombre: "Sede Central (Belgrano)" } },
-    { _id: "disp_2", diaSemana: "LUNES", horaInicio: "11:30", horaFin: "14:00", servicio: { _id: "srv_prac_1", nombre: "Electrocardiograma" }, sede: { _id: "sede_1", nombre: "Sede Central (Belgrano)" } }
+  disponibilidades: [
+    { _id: "disp_1", diaSemana: "LUNES", horaDesde: "09:00", horaHasta: "11:00", servicio: { _id: "srv_esp_1", nombre: "Cardiología Clínica" }, sede: { _id: "sede_1", nombre: "Sede Central (Belgrano)" } },
+    { _id: "disp_2", diaSemana: "LUNES", horaDesde: "11:30", horaHasta: "14:00", servicio: { _id: "srv_prac_1", nombre: "Electrocardiograma" }, sede: { _id: "sede_1", nombre: "Sede Central (Belgrano)" } }
   ]
 };
 

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Modal from './Modal';
 
-export default function ModalDisponibilidad({ isOpen, onClose, doctor, handleAgregarDisponibilidad, initialData, editingDispId }) {
+export default function ModalDisponibilidad({ isOpen, onClose, medico, handleAgregarDisponibilidad, initialData, editingDispId }) {
   const [formDispDia, setFormDispDia] = useState('LUNES');
   const [formDispSede, setFormDispSede] = useState('');
   const [formDispSrv, setFormDispSrv] = useState('');
@@ -15,8 +15,8 @@ export default function ModalDisponibilidad({ isOpen, onClose, doctor, handleAgr
         setFormDispDia(initialData.diaSemana || 'LUNES');
         setFormDispSede(initialData.sede?._id || '');
         setFormDispSrv(initialData.servicio?._id || '');
-        setFormDispHoraInicio(initialData.horaInicio || '');
-        setFormDispHoraFin(initialData.horaFin || '');
+        setFormDispHoraInicio(initialData.horaDesde || '');
+        setFormDispHoraFin(initialData.horaHasta || '');
       } else {
         setFormDispDia('LUNES');
         setFormDispSede('');
@@ -102,9 +102,9 @@ export default function ModalDisponibilidad({ isOpen, onClose, doctor, handleAgr
               }}
             >
               <option value="" disabled>-- Seleccionar Sede --</option>
-              {doctor.sedesAsignadas.map(s => <option key={s._id} value={s._id}>{s.nombre}</option>)}
+              {medico.sedes.map(s => <option key={s._id} value={s._id}>{s.nombre}</option>)}
             </select>
-            {doctor.sedesAsignadas.length === 0 && (
+            {medico.sedes.length === 0 && (
               <div className="text-danger mt-1 font-weight-bold" style={{ fontSize: '10px' }}>
                 Vincula una sede primero desde la pestaña de Sedes.
               </div>
@@ -130,7 +130,7 @@ export default function ModalDisponibilidad({ isOpen, onClose, doctor, handleAgr
             }}
           >
             <option value="" disabled>-- Seleccionar un servicio de tu perfil --</option>
-            {doctor.serviciosAsignados.map(srv => (
+            {medico.serviciosAsignados.map(srv => (
               <option key={srv._id} value={srv._id}>[{srv.tipo}] {srv.nombre} ({srv.duracionEstimada} min)</option>
             ))}
           </select>

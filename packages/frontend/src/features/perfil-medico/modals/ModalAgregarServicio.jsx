@@ -3,13 +3,13 @@ import Modal from './Modal';
 import { globalServicesMock } from '../../../mockdata/medico';
 import {useAlert} from '../../../context/AlertContext.jsx';
 
-export default function ModalAgregarServicio({ isOpen, onClose, doctor, handleAgregarServicio }) {
+export default function ModalAgregarServicio({ isOpen, onClose, medico, handleAgregarServicio }) {
   const [formTipoSrv, setFormTipoSrv] = useState('ESPECIALIDAD');
   const [formServicioElegido, setFormServicioElegido] = useState('');
   const {showAlert} = useAlert();
 
   const opcionesServiciosDisponibles = globalServicesMock.filter(s =>
-    s.tipo === formTipoSrv && !doctor.serviciosAsignados.some(ds => ds._id === s._id)
+    s.tipo === formTipoSrv && !medico.serviciosAsignados.some(ds => ds._id === s._id)
   );
 
   const onSubmit = (e) => {
