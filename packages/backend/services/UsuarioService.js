@@ -49,6 +49,15 @@ export class UsuarioService {
     return this.toDto(usuario);
   }
 
+  // Devuelve la entidad completa de Mongoose (con password incluida).
+  // Uso interno: cuando se necesita re-instanciar el objeto de dominio Usuario.
+  async findEntityById(id) {
+    logger.info("[USUARIO SERVICE]: Obteniendo entidad de usuario con id: " + id);
+    const usuario = await this.usuarioRepository.findById(id);
+    if (!usuario) throw new NotFoundError("Usuario no encontrado");
+    return usuario;
+  }
+
   async login(nombreUsuario, password) {
     const usuario = await this.usuarioRepository.findByUsername(nombreUsuario);
     if (!usuario) {
