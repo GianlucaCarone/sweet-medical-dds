@@ -45,7 +45,7 @@
     border: none;
     border-radius: 999px;
 
-    background: var(--color-neutral-light);
+    background: var(--color-bg);
     color: var(--color-text);
 
     font-size: 24px;
