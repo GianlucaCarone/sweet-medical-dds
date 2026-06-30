@@ -17,7 +17,14 @@
     border: 1px solid #e2e8f0;
     border-radius: 8px;
     padding: 12px;
+    padding-right: 32px;
     position: relative;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.carrito-item:hover {
+    border-color: #cbd5e1;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.04);
 }
 
 .carrito-item-eliminar {
@@ -34,4 +41,30 @@
 .carrito-footer {
     margin-top: auto;
     padding-top: 8px;
+}
+
+/* Badges de cobertura */
+.badge-cobertura {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 9999px;
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 1.5;
+    white-space: nowrap;
+}
+
+.badge-cobertura.cubierto {
+    background-color: #dcfce7;
+    color: #15803d;
+}
+
+.badge-cobertura.parcial {
+    background-color: #fef9c3;
+    color: #a16207;
+}
+
+.badge-cobertura.no-cubierto {
+    background-color: #fee2e2;
+    color: #b91c1c;
 }

@@ -2,10 +2,27 @@ import React from 'react';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import CloseIcon from '@mui/icons-material/Close';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import HealingRoundedIcon from '@mui/icons-material/HealingRounded';
+import BusinessRoundedIcon from '@mui/icons-material/BusinessRounded';
+import BadgeIcon from '@mui/icons-material/Badge';
+import EventIcon from '@mui/icons-material/Event';
 import { Box, Typography, Stack, IconButton, Button, Divider } from '@mui/material';
 import { useNavigate } from "react-router-dom";
 import './carritoTurnos.css';
 import { useAlert } from "../../context/AlertContext.jsx";
+
+const formatoFechaHora = (isoString) => {
+  const fecha = new Date(isoString);
+  const texto = fecha.toLocaleString("es-AR", {
+    weekday: "short",
+    day: "2-digit",
+    month: "short",
+    hour: "2-digit",
+    minute: "2-digit",
+    timeZone: "UTC"
+  });
+  return texto.charAt(0).toUpperCase() + texto.slice(1);
+};
 
 export default function CarritoTurnos({ items, onEliminar, onConfirmar, onCerrar }) {
   const total = items.reduce((acc, item) => acc + item.costo, 0);
@@ -56,10 +73,22 @@ export default function CarritoTurnos({ items, onEliminar, onConfirmar, onCerrar
               <CloseIcon fontSize="small" />
             </IconButton>
 
-            <Typography fontWeight={700} fontSize={14}>{item.medico.nombre}</Typography>
-            <Typography fontSize={13} sx={{ color: '#2563eb' }}>{item.servicio.nombre}</Typography>
-            <Typography fontSize={13} sx={{ color: '#475569' }}>{item.fechaHora}</Typography>
-            <Typography fontSize={13} sx={{ color: '#475569' }}>{item.sede.nombre}</Typography>
+            <Stack direction="row" alignItems="center" spacing={0.75}>
+              <BadgeIcon sx={{ fontSize: 16, color: '#475569' }} />
+              <Typography fontWeight={700} fontSize={14}>{item.medico.nombre}</Typography>
+            </Stack>
+            <Stack direction="row" alignItems="center" spacing={0.75}>
+              <HealingRoundedIcon sx={{ fontSize: 15, color: '#475569' }} />
+              <Typography fontSize={13} sx={{ color: '#475569' }}>{item.servicio.nombre}</Typography>
+            </Stack>
+            <Stack direction="row" alignItems="center" spacing={0.75}>
+              <EventIcon sx={{ fontSize: 15, color: '#475569' }} />
+              <Typography fontSize={13} sx={{ color: '#475569' }}>{formatoFechaHora(item.fechaHora)}</Typography>
+            </Stack>
+            <Stack direction="row" alignItems="center" spacing={0.75}>
+              <BusinessRoundedIcon sx={{ fontSize: 15, color: '#475569' }} />
+              <Typography fontSize={13} sx={{ color: '#475569' }}>{item.sede.nombre}</Typography>
+            </Stack>
 
             <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mt: 1 }}>
               <span className={`badge-cobertura ${item.estadoCobertura === 'TOTAL' ? 'cubierto' : item.estadoCobertura === 'PARCIAL' ? 'parcial' : 'no-cubierto'}`}>
@@ -74,7 +103,7 @@ export default function CarritoTurnos({ items, onEliminar, onConfirmar, onCerrar
       </Stack>
 
       {/* Footer */}
-      <Box className="carrito-footer" position="fixed">
+      <Box className="carrito-footer">
         <Divider sx={{ mb: 2 }} />
         <Stack direction="row" justifyContent="space-between" sx={{ mb: 2 }}>
           <Typography fontWeight={600}>Total a pagar:</Typography>

@@ -6,7 +6,7 @@ import TarjetaTurnoSkeleton from '../../components/busqueda-turnos/tarjetaTurnoS
 import Pagination from '@mui/material/Pagination';
 import { turnosEjemplo, datosPaginacionEjemplo } from '../../mockdata/turnos.js';
 import { medicosEjemplo, especialidadesEjemplo, practicasEjemplo, sedesEjemplo } from '../../mockdata/busquedaTurnos.js';
-import { getTurnosDisponiblesFiltradoPaginado, getListadoMedicos, getListadoEspecialidades, getListadoPracticas, getListadoSedes, getListadoServicios, getPacienteByIdUsuario } from '../../api/api.js';
+import { getTurnosDisponiblesFiltradoPaginado, getListadoMedicos, getListadoEspecialidades, getListadoPracticas, getListadoSedes, getListadoServicios, getPacienteByIdUsuario } from '../../api/apiBusquedaTurnos.js';
 import './busquedaTurnos.css';
 import { useAuth } from '../../context/AuthContext.jsx';
 import { useCart } from '../../context/CartContext.jsx';
@@ -17,7 +17,7 @@ export default function BusquedaTurnos() {
 
     //datos para los filtros:
                                         // TODO usar el auth context para recuperar al usuario
-    const [pacienteID, setPacienteID] = useState(null); //por ahora; hasta tener el login
+    const [pacienteID, setPacienteID] = useState("6a0b720ada9b7c8a035d96a9"); //por ahora; hasta tener el login
     const [medicos, setMedicos] = useState([]);
     const [especialidades, setEspecialidades] = useState([]);
     const [practicas, setPracticas] = useState([]);
@@ -84,10 +84,10 @@ export default function BusquedaTurnos() {
 
     const nuevosFiltros = async (filtrosInput = {}) => {
         filtrosActualesRef.current = filtrosInput;
-        cargarTurnos(filtrosInput);
+        //cargarTurnos(filtrosInput);
     };
 
-    const cargarTurnos = useCallback(async (filtrosInput = {}, pagina = numeroPagina, orden = ordenarPor) => {
+    const cargarTurnos = useCallback(async (filtrosInput = filtrosActualesRef.current, pagina = numeroPagina, orden = ordenarPor) => {
         setLoading(true);
         setTimeout(() => setLoading(false), 200);
         setSinResultados(false);
@@ -103,6 +103,7 @@ export default function BusquedaTurnos() {
         if (pacienteID != null) filtrosCompletos.pacienteId = pacienteID
         const turnosFiltrados = await getTurnosDisponiblesFiltradoPaginado(filtrosCompletos, page);
         setTurnos(turnosFiltrados.data);
+        console.log("Turnos recibidos: " + JSON.stringify(turnosFiltrados.data));
         if (turnosFiltrados.data.length === 0) setSinResultados(true);
         setConjuntosTurnos(crearConjuntosTurnos(turnosFiltrados.data));
         setDataPaginacion(turnosFiltrados.paginacion);
@@ -137,6 +138,7 @@ export default function BusquedaTurnos() {
                 especialidades={especialidades}
                 practicas={practicas}
                 nuevosFiltros={nuevosFiltros}
+                cargarTurnos={cargarTurnos}
             />
 
             {/* Contenedor de Resultados */}

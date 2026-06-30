@@ -15,7 +15,7 @@ import {
 } from '@mui/material';
 
 
-export default function SidebarFiltros({ medicos, sedes, especialidades, practicas, nuevosFiltros }) {
+export default function SidebarFiltros({ medicos, sedes, especialidades, practicas, nuevosFiltros, cargarTurnos }) {
     // Estados para controlar los filtros (puedes pasarlos como props más adelante)
     const [profesional, setProfesional] = useState('Todos');
     const [especialidad, setEspecialidad] = useState('Todas');
@@ -229,6 +229,19 @@ export default function SidebarFiltros({ medicos, sedes, especialidades, practic
                         />
                     </Stack>
                 </Box>
+
+                <Button
+                    variant="contained"
+                    fullWidth
+                    onClick={() => cargarTurnos()}
+                    sx={{
+                        backgroundColor: '#2563eb',
+                        color: '#ffffff',
+                        '&:hover': { backgroundColor: '#1E3A5F' }
+                    }}
+                >
+                    Buscar
+                </Button>
             </Stack>
         </Box>
     );

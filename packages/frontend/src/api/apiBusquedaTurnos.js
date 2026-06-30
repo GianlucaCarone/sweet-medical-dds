@@ -1,10 +1,8 @@
-import axios from 'axios'
-
-const API_BASE_URL = process.env.REACT_APP_API_URL
+import axiosInstance from './axiosInstance.js';
 
 export const getPacienteByIdUsuario = async (idUsuario) => {
     try {
-        const response = await axios.get(`${API_BASE_URL}/pacientes/${idUsuario}`);
+        const response = await axiosInstance.get('/pacientes/${idUsuario}');
         return response.data;
     } catch (e) {
         console.error("Error obteniendo el id del paciente con id de usuario: " + idUsuario);
@@ -19,7 +17,7 @@ export const getTurnosDisponiblesFiltradoPaginado = async (filtros, paginacion) 
                 .filter(([_, v]) => v !== null && v !== undefined && v !== "")
         );
 
-        const response = await axios.get(`${API_BASE_URL}/turno`, { params });
+        const response = await axiosInstance.get('/turno', { params });
         return response.data;
     } catch (e) {
         console.error("Error obteniendo los turnos");
@@ -29,7 +27,7 @@ export const getTurnosDisponiblesFiltradoPaginado = async (filtros, paginacion) 
 
 export const getListadoMedicos = async () => {
     try {
-        const response = await axios.get(`${API_BASE_URL}/medicos`);
+        const response = await axiosInstance.get('/medicos');
         return response.data;
     } catch (e) {
         console.error("Error obteniendo los medicos");
@@ -39,7 +37,7 @@ export const getListadoMedicos = async () => {
 
 export const getListadoServicios = async () => {
     try {
-        const response = await axios.get(`${API_BASE_URL}/servicios`);
+        const response = await axiosInstance.get('/servicios');
         return response.data;
     } catch (e) {
         console.error("Error obteniendo las especialidades");
@@ -49,7 +47,7 @@ export const getListadoServicios = async () => {
 
 export const getListadoSedes = async () => {
     try {
-        const response = await axios.get(`${API_BASE_URL}/sedes`);
+        const response = await axiosInstance.get('/sedes');
         return response.data;
     } catch (e) {
         console.error("Error obteniendo las sedes");
@@ -59,7 +57,7 @@ export const getListadoSedes = async () => {
 
 export const reservarTurno = async (turnoId, pacienteId, costo) => {
     try {
-        const response = await axios.post(`${API_BASE_URL}/turnos/${turnoId}`, {
+        const response = await axiosInstance.post('/turnos/${turnoId}', {
             body: {
                 'pacienteId': pacienteId,
                 'costo': costo

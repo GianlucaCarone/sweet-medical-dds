@@ -99,6 +99,10 @@ export class TurnoController {
     }
   };
 
+  //TODO: endpoint mis turnos
+
+  //TODO: endpoint historial paginado
+
   findAllPaginatedByUsuario = async (req, res, next) => {
     try {
       const paginacion = this.extraerPaginacion(req.query);
