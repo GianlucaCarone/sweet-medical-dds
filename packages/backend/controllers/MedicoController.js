@@ -77,6 +77,19 @@ export class MedicoController {
     }
   };
 
+  update = async (req, res, next) => {
+    try {
+      const { id } = idParamObjectIdSchema.parse(req.params);
+      const medicoData = medicoSchema.partial().parse(req.body);
+      logger.info("[MEDICO CONTROLLER]: Actualizando medico de id: ", id, " con datos: ", medicoData);
+      const medicoActualizado = await this.medicoService.update(id, medicoData);
+      logger.info("[MEDICO CONTROLLER]: Medico actualizado: ", medicoActualizado);
+      res.status(200).json(medicoActualizado);
+    } catch (error) {
+      next(error);
+    }
+  };
+
   definirDisponibilidad = async (req, res, next) => {
     try {
       const { id } = idParamObjectIdSchema.parse(req.params);

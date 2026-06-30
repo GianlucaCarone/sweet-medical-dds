@@ -5,21 +5,19 @@ export default function DatosPersonales({ medico, handleGuardarDatosPersonales }
   const [isEditingDatos, setIsEditingDatos] = useState(false);
   const [formDatos, setFormDatos] = useState({ 
     nombre: medico.nombre || '', 
-    apellido: medico.apellido || '', 
     honorario: medico.honorario || 0 
   });
 
   useEffect(() => {
     setFormDatos({ 
       nombre: medico.nombre || '', 
-      apellido: medico.apellido || '', 
       honorario: medico.honorario || 0 
     });
   }, [medico]);
 
-  const onGuardar = (e) => {
+  const onGuardar = async (e) => {
     e.preventDefault();
-    const success = handleGuardarDatosPersonales(formDatos);
+    const success = await handleGuardarDatosPersonales(formDatos);
     if (success) {
       setIsEditingDatos(false);
     }
@@ -37,7 +35,7 @@ export default function DatosPersonales({ medico, handleGuardarDatosPersonales }
           <button
             type="button"
             onClick={() => { 
-              setFormDatos({ nombre: medico.nombre, apellido: medico.apellido, honorario: medico.honorario }); 
+              setFormDatos({ nombre: medico.nombre, honorario: medico.honorario }); 
               setIsEditingDatos(true); 
             }}
             className="btn btn-link btn-sm text-primary font-weight-bold d-flex align-items-center gap-1 p-0 border-0"
@@ -60,43 +58,28 @@ export default function DatosPersonales({ medico, handleGuardarDatosPersonales }
       {/* Cuerpo de Datos */}
       <div className="row g-3 text-default" style={{ fontSize: '13px' }}>
 
-        {/* Fila de Nombre y Apellido (Solo visible/editable si está en modo edición) */}
+        {/* Fila de Nombre (Solo visible/editable si está en modo edición) */}
         {isEditingDatos && (
-          <>
-            <div className="col-6">
-              <div className="p-2 border rounded-3" style={{ borderColor: 'var(--color-success)', backgroundColor: 'var(--color-success-light)', transition: 'all 0.2s' }}>
-                <span className="d-block text-muted mb-0.5" style={{ fontSize: '10px', textTransform: 'uppercase', fontWeight: '600', letterSpacing: '0.5px' }}>Nombre</span>
-                <input
-                  type="text"
-                  className="form-control form-control-sm border-0 p-0 bg-transparent font-weight-bold text-default"
-                  style={{ fontSize: '13px', boxShadow: 'none', height: 'auto' }}
-                  value={formDatos.nombre}
-                  onChange={e => setFormDatos({ ...formDatos, nombre: e.target.value })}
-                  required
-                />
-              </div>
+          <div className="col-12">
+            <div className="p-2 border rounded-3" style={{ borderColor: 'var(--color-success)', backgroundColor: 'var(--color-success-light)', transition: 'all 0.2s' }}>
+              <span className="d-block text-muted mb-0.5" style={{ fontSize: '10px', textTransform: 'uppercase', fontWeight: '600', letterSpacing: '0.5px' }}>Nombre Completo</span>
+              <input
+                type="text"
+                className="form-control form-control-sm border-0 p-0 bg-transparent font-weight-bold text-default"
+                style={{ fontSize: '13px', boxShadow: 'none', height: 'auto' }}
+                value={formDatos.nombre}
+                onChange={e => setFormDatos({ ...formDatos, nombre: e.target.value })}
+                required
+              />
             </div>
-            <div className="col-6">
-              <div className="p-2 border rounded-3" style={{ borderColor: 'var(--color-success)', backgroundColor: 'var(--color-success-light)', transition: 'all 0.2s' }}>
-                <span className="d-block text-muted mb-0.5" style={{ fontSize: '10px', textTransform: 'uppercase', fontWeight: '600', letterSpacing: '0.5px' }}>Apellido</span>
-                <input
-                  type="text"
-                  className="form-control form-control-sm border-0 p-0 bg-transparent font-weight-bold text-default"
-                  style={{ fontSize: '13px', boxShadow: 'none', height: 'auto' }}
-                  value={formDatos.apellido}
-                  onChange={e => setFormDatos({ ...formDatos, apellido: e.target.value })}
-                  required
-                />
-              </div>
-            </div>
-          </>
+          </div>
         )}
 
         {/* Campo: Usuario */}
         <div className="col-6">
           <div className="p-2 border border-transparent rounded-3" style={{ background: isEditingDatos ? 'var(--color-bg)' : 'transparent' }}>
             <span className="d-block text-muted mb-0.5" style={{ fontSize: '10px', textTransform: 'uppercase', fontWeight: '600', letterSpacing: '0.5px' }}>Usuario</span>
-            <span className="font-weight-bold d-block text-truncate text-muted" title={medico.usuario} style={{ fontSize: '13px' }}>{medico.usuario}</span>
+            <span className="font-weight-bold d-block text-truncate text-muted" title={medico.usuario.nombreUsuario } style={{ fontSize: '13px' }}>{medico.usuario?.nombreUsuario || medico.usuario}</span>
           </div>
         </div>
 

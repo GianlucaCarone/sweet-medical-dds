@@ -113,3 +113,13 @@ export const eliminarDisponibilidad = async (idMedico, diaSemana) => {
         throw e;
     }
 }
+
+export const updateMedico = async (idMedico, medicoData) => {
+    try {
+        const response = await axiosInstance.put(`/medicos/${idMedico}`, medicoData);
+        return response.data;
+    } catch (e) {
+        console.error("Error actualizando medico:", e);
+        throw e;
+    }
+}
