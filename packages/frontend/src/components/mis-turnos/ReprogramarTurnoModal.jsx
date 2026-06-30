@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { Avatar } from '@mui/material';
 import CalendarMonthRoundedIcon from "@mui/icons-material/CalendarMonthRounded";
 import AccessTimeRoundedIcon from "@mui/icons-material/AccessTimeRounded";
 import LocationOnRoundedIcon from "@mui/icons-material/LocationOnRounded";
@@ -63,31 +64,27 @@ export default function ReprogramarTurnoModal({
 
                 <div className="turno-actual-box">
                     <div className="doctor-avatar reprogramar-avatar">
-                        {turno.foto ? (
-                            <img src={turno.foto} alt={turno.doctor} />
-                        ) : (
-                            <span>{turno.doctor.slice(0, 2).toUpperCase()}</span>
-                        )}
+                        <Avatar>{turno.medico?.nombre?.slice(0, 2).toUpperCase()}</Avatar>
                     </div>
 
                     <div>
-                        <h3>{turno.doctor}</h3>
-                        <p>{turno.especialidad}</p>
+                        <h3>{turno.medico?.nombre}</h3>
+                        <p>{turno.servicio?.nombre}</p>
 
                         <div className="reprogramar-detalles">
                             <span>
                                 <CalendarMonthRoundedIcon fontSize="small" />
-                                {turno.fecha}
+                                {new Date(turno.fechaHora).toLocaleDateString('es-AR', { day: 'numeric', month: 'short' })}
                             </span>
 
                             <span>
                                 <AccessTimeRoundedIcon fontSize="small" />
-                                {turno.hora}
+                                {new Date(turno.fechaHora).toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' })}
                             </span>
 
                             <span>
                                 <LocationOnRoundedIcon fontSize="small" />
-                                {turno.sede}
+                                {turno.sede?.nombre}
                             </span>
                         </div>
                     </div>
