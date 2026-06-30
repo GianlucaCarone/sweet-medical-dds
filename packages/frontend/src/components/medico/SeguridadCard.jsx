@@ -35,7 +35,7 @@ export default function SeguridadCard({ setAlertConfig }) {
     <div className="col-12 col-lg-4 d-flex flex-column justify-content-center px-4">
       <div className="d-flex align-items-center gap-2 mb-3 border-bottom pb-2">
         <KeyRound size={16} className="text-primary" />
-        <h5 className="font-weight-bold text-dark m-0" style={{ fontSize: '14px', letterSpacing: '0.5px' }}>SEGURIDAD</h5>
+        <h5 className="font-weight-bold text-default m-0" style={{ fontSize: '14px', letterSpacing: '0.5px' }}>SEGURIDAD</h5>
       </div>
 
       <form onSubmit={handleCambioContrasena} className="d-flex flex-column gap-3">

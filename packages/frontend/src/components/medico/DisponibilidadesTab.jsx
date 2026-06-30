@@ -7,7 +7,7 @@ export default function DisponibilidadesTab({ disponibilidades, onAdd, onEdit, o
   return (
     <div className="fade-in">
       <div className="d-flex justify-content-between align-items-center mb-4">
-        <h4 className="font-weight-bold text-dark m-0">Horario Semanal de Atención</h4>
+        <h4 className="font-weight-bold text-default m-0">Horario Semanal de Atención</h4>
         <button 
           onClick={onAdd} 
           className="btn btn-success d-flex align-items-center gap-2 font-weight-bold px-3 py-2"
@@ -38,14 +38,14 @@ export default function DisponibilidadesTab({ disponibilidades, onAdd, onEdit, o
                         <Clock size={11} /> {disp.horaInicio} - {disp.horaFin}
                       </div>
                       <div 
-                        className="text-dark font-weight-bold text-truncate mb-1" 
+                        className="text-default font-weight-bold text-truncate mb-1" 
                         style={{ fontSize: '11px', lineHeight: '1.2' }} 
                         title={disp.servicio.nombre}
                       >
                         {disp.servicio.nombre}
                       </div>
                       <div 
-                        className="text-secondary text-truncate d-flex align-items-center gap-0.5" 
+                        className="text-muted text-truncate d-flex align-items-center gap-0.5" 
                         style={{ fontSize: '10px' }} 
                         title={disp.sede.nombre}
                       >

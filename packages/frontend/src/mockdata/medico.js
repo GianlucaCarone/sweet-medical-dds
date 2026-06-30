@@ -221,3 +221,49 @@ export const initialTurnosMock = [
   }
 ];
 
+/* -------------------------------------------------------------------------- */
+/*                             Componente de Home                             */
+/* -------------------------------------------------------------------------- */
+
+const medicoEjemplo = {
+    id: "60d5f484f1a2c8b1f8e4e1a1",
+    nombre: "Dra. María Gómez",
+    matricula: "M54321",
+    honorario: 15000,
+    especialidades: [
+      {
+        id: "60d5f484f1a2c8b1f8e4e1b1",
+        nombre: "Cardiología",
+        tipo: "Especialidad",
+        duracionEnMins: 30,
+        costo: 15000,
+      },
+    ],
+    practicas: [
+      {
+        id: "60d5f484f1a2c8b1f8e4e1c1",
+        nombre: "Electrocardiograma",
+        tipo: "Practica",
+        duracionEnMins: 20,
+        costo: 8000,
+        especialidadPadre: { id: "60d5f484f1a2c8b1f8e4e1b1", nombre: "Cardiología" },
+      },
+    ],
+    sedes: [
+      { id: "60d5f484f1a2c8b1f8e4e1d1", nombre: "Sede Belgrano", direccion: "Av. Cabildo 1500" },
+      { id: "60d5f484f1a2c8b1f8e4e1d2", nombre: "Sede Vicente López", direccion: "Av. Maipú 2500" },
+    ],
+    disponibilidades: [
+      {
+        id: "60d5f484f1a2c8b1f8e4e1e1",
+        diaSemana: "LUNES",
+        horaDesde: "08:00",
+        horaHasta: "13:00",
+        servicio: { id: "60d5f484f1a2c8b1f8e4e1b1", nombre: "Cardiología" },
+        sede: { id: "60d5f484f1a2c8b1f8e4e1d1", nombre: "Sede Belgrano" },
+      },
+    ],
+    usuario: { id: "60d5f484f1a2c8b1f8e4e1f1", nombreUsuario: "mariagomez" },
+  };
+  export const arrayMedicos = [medicoEjemplo, medicoEjemplo, medicoEjemplo] 
+

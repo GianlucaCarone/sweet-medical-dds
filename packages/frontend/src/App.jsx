@@ -9,18 +9,21 @@ import MiPerfil from "./features/perfil-usuario/MiPerfil.jsx";
 import { CartProvider } from './context/CartContext.jsx';
 import { AlertProvider } from "./context/AlertContext.jsx";
 import ProtectedRoute from "./components/auth/ProtectedRoute.jsx";
+import Home from "./features/home/Home.jsx"
 
 import "./App.css";
 
 function App() {
   const [message, setMessage] = useState("");
 
+  /*
   useEffect(() => {
     fetch("http://localhost:8000/hello")
       .then((response) => response.json())
       .then((data) => setMessage(data.message))
       .catch((error) => console.error("Error cargando mensaje.", error));
   }, []);
+  */
 
   return (
     <AlertProvider>
@@ -69,7 +72,7 @@ function App() {
               }
             />
 
-            {/* <Route index element={<Home />} /> */}
+            <Route index element={<Home />} />
           </Route>
           <Route path="/login" element={<Login />} />
         </Routes>

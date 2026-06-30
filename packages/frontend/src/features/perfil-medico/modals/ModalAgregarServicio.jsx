@@ -35,7 +35,7 @@ export default function ModalAgregarServicio({ isOpen, onClose, doctor, handleAg
     >
       <form onSubmit={onSubmit} className="d-flex flex-column gap-3">
         <div>
-          <label className="form-label font-weight-bold text-dark small mb-1">Tipo de Servicio</label>
+          <label className="form-label font-weight-bold text-default small mb-1">Tipo de Servicio</label>
           <select
             className="form-select form-select-sm"
             value={formTipoSrv}
@@ -50,7 +50,7 @@ export default function ModalAgregarServicio({ isOpen, onClose, doctor, handleAg
         </div>
 
         <div>
-          <label className="form-label font-weight-bold text-dark small mb-1">Servicio a Vincular</label>
+          <label className="form-label font-weight-bold text-default small mb-1">Servicio a Vincular</label>
           <select
             className="form-select form-select-sm"
             value={formServicioElegido}
@@ -73,7 +73,7 @@ export default function ModalAgregarServicio({ isOpen, onClose, doctor, handleAg
           <button
             type="button"
             onClick={handleClose}
-            className="btn btn-light btn-sm font-weight-bold text-secondary"
+            className="btn btn-light btn-sm font-weight-bold text-muted"
           >
             Cancelar
           </button>
