@@ -47,6 +47,21 @@ export class MedicoController {
     }
   };
 
+  findByIdUsuario = async (req, res, next) => {
+    try {
+      const { id } = idParamObjectIdSchema.parse(req.params);
+      logger.info("[MEDICO CONTROLLER]: Obteniendo medico de usuario: ", id);
+      const medico = await this.medicoService.findByIdUsuario(id);
+      if (!medico) {
+        return res.status(404).json({ message: "Médico no encontrado" });
+      }
+      logger.info("[MEDICO CONTROLLER]: Medico obtenido: ", medico);
+      res.status(200).json(medico);
+    } catch (error) {
+      return next(error);
+    }
+  }
+
   delete = async (req, res, next) => {
     try {
       const { id } = idParamObjectIdSchema.parse(req.params);

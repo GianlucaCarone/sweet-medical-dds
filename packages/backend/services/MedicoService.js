@@ -74,8 +74,16 @@ export class MedicoService {
     return this.toDto(medico);
   }
 
+  async findByIdUsuario(idUsuario) {
+    logger.info("[MEDICO SERVICE]: Obteniendo medico con usuario: ", idUsuario);
+    const medico = await this.medicoRepository.findByIdUsuario(idUsuario);
+    if (!medico) throw new NotFoundError("Médico no encontrado");
+    logger.info("[MEDICO SERVICE]: Medico obtenido: ", medico);
+    return this.toDto(medico);
+  }
+
   async findAll() {
-    logger.info("Consultando todos los médicos");
+    logger.info("[MEDICO SERVICE]: Obteniendo todos los medicos");
     const medicos = await this.medicoRepository.findAll();
     return medicos.map(m => this.toDto(m));
   }
