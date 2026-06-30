@@ -7,30 +7,38 @@ import {
   modificarDisponibilidad,
   eliminarDisponibilidad,
   agregarSede,
-  eliminarSede
+  eliminarSede,
+  updateMedico
 } from '../../../api/medico';
 
 export const useGetMedicoByIdUsuario = (idUsuario) => {
   const [medico, setMedico] = useState(null);
   const [cargando, setCargando] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     const cargarMedico = async () => {
-      setCargando(true);
-      const datos = await getMedicoByIdUsuario(idUsuario);
-      // getMedicoByIdUsuario devuelve data directamente o envuelto en { data: ... }
-      setMedico(datos.data || datos);
-      setCargando(false);
+      try {
+        setCargando(true);
+        setError(null);
+        const datos = await getMedicoByIdUsuario(idUsuario);
+        // getMedicoByIdUsuario devuelve data directamente o envuelto en { data: ... }
+        setMedico(datos);
+      } catch (err) {
+        setError(err);
+      } finally {
+        setCargando(false);
+      }
     }
     if (idUsuario) {
       cargarMedico();
     }
   }, [idUsuario]);
 
-  return { medico, cargando };
-} 
+  return { medico, cargando, error };
+}
 
-export default function useMedicoProfile(medicoInicial, triggerConfirm, setAlertConfig) {
+export default function useMedicoProfile(medicoInicial, triggerConfirm, setAlertConfig, showAlert) {
   const [medico, setMedico] = useState(medicoInicial);
 
   const actualizarEstado = (response) => {
@@ -50,12 +58,14 @@ export default function useMedicoProfile(medicoInicial, triggerConfirm, setAlert
 
   // --- MANEJADORES DE SERVICIOS ---
   const handleAgregarServicio = async (idServicioElegido) => {
-    if (!idServicioElegido) return;
+    if (!idServicioElegido) return false;
     try {
       const resp = await agregarServicio(medico.id, idServicioElegido);
       actualizarEstado(resp);
+      return true;
     } catch (e) {
       handleError(e, "No se pudo agregar el servicio.");
+      return false;
     }
   };
 
@@ -112,7 +122,7 @@ export default function useMedicoProfile(medicoInicial, triggerConfirm, setAlert
           // Buscamos la disponibilidad si diaSemana no fue provisto
           let dia = diaSemana;
           if (!dia) {
-             const dispObj = medico.disponibilidades.find(d => (d.id || d._id) === idDisp);
+             const dispObj = medico.disponibilidades.find(d => d.id === idDisp);
              if (dispObj) dia = dispObj.diaSemana;
           }
           if (dia) {
@@ -129,8 +139,9 @@ export default function useMedicoProfile(medicoInicial, triggerConfirm, setAlert
   // --- MANEJADORES DE SEDES ---
   const handleAsociarSede = async (sede) => {
     try {
-      const resp = await agregarSede(medico.id, sede.id || sede._id);
+      const resp = await agregarSede(medico.id, sede.id);
       actualizarEstado(resp);
+      if (showAlert) showAlert('La sede fue vinculada con éxito.', 'success');
     } catch (e) {
       handleError(e, "No se pudo asociar la sede.");
     }
@@ -144,6 +155,7 @@ export default function useMedicoProfile(medicoInicial, triggerConfirm, setAlert
         try {
           const resp = await eliminarSede(medico.id, idSede);
           actualizarEstado(resp);
+          if (showAlert) showAlert('La sede fue desvinculada con éxito.', 'success');
         } catch (e) {
           handleError(e, "No se pudo desvincular la sede.");
         }
@@ -151,8 +163,7 @@ export default function useMedicoProfile(medicoInicial, triggerConfirm, setAlert
     );
   };
 
-  const handleGuardarDatosPersonales = (nuevosDatos) => {
-    // TODO: Falta endpoint de PUT /medicos/:id en la API para actualizar datos
+  const handleGuardarDatosPersonales = async (nuevosDatos) => {
     if (Number(nuevosDatos.honorario) <= 0) {
       setAlertConfig({
         isOpen: true,
@@ -162,13 +173,19 @@ export default function useMedicoProfile(medicoInicial, triggerConfirm, setAlert
       });
       return false;
     }
-    setMedico(prev => ({
-      ...prev,
-      nombre: nuevosDatos.nombre,
-      apellido: nuevosDatos.apellido,
-      honorario: Number(nuevosDatos.honorario)
-    }));
-    return true;
+    try {
+      const payload = {
+        nombre: nuevosDatos.nombre,
+        honorario: Number(nuevosDatos.honorario)
+      };
+      const resp = await updateMedico(medico.id, payload);
+      actualizarEstado(resp);
+      if (showAlert) showAlert('Datos personales actualizados con éxito.', 'success');
+      return true;
+    } catch (e) {
+      handleError(e, "No se pudieron actualizar los datos personales.");
+      return false;
+    }
   };
 
   return {
