@@ -3,12 +3,11 @@ import styled from 'styled-components';
 
 // --- Styled Components ---
 const StatCardArticle = styled.article`
-  background: white;
-  border: 2px solid #bac4c2; /* Mantenemos la consistencia visual del sistema */
+  background: var(--color-surface);
+  border: 2px solid var(--color-divider);
   border-radius: 20px;
   padding: 20px;
 
-  /* Flexbox para asegurarnos de que el contenido fluya hacia abajo */
   display: flex;
   flex-direction: column;
   justify-content: center;

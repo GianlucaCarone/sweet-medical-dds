@@ -5,7 +5,7 @@
 }
 
 .app-main {
-    background: linear-gradient(180deg, #f2fbf9 0%, #f7f9fc 100%);
+    background: linear-gradient(180deg, var(--color-success-light) 0%, var(--color-bg) 100%);
 }
 
 .header-content {
@@ -23,12 +23,12 @@
 }
 
 .saludo strong {
-    color: #087f73;
+    color: var(--color-primary);
 }
 
 .mis-turnos-header {
-    background: white;
-    border: 2px solid #bac4c2;
+    background: var(--color-surface);
+    border: 2px solid var(--color-divider);
     border-radius: 24px;
     padding: 28px;
 
@@ -43,13 +43,13 @@
     font-size: 45px;
     font-weight: 800;
 
-    color: #121e3a;
+    color: var(--color-text);
 
     margin: 0 0 14px;
 }
 
 /* .tarjeta-turno p {
-    color: #64748b;
+    color: var(--color-text-muted);
 
     font-size: 18px;
     line-height: 1.7;
@@ -58,7 +58,7 @@
 } */
 
 .tarjeta-turno strong {
-    color: #087f73;
+    color: var(--color-primary);
 }
 
 .header-actions {
@@ -67,7 +67,7 @@
 }
 
 .nuevo-turno-btn {
-    background: #087f73;
+    background: var(--color-primary);
     color: white;
 
     border: none;
@@ -84,7 +84,7 @@
 }
 
 .nuevo-turno-btn:hover {
-    background: #06695f;
+    background: var(--color-primary-dark);
     transform: translateY(-1px);
 }
 
@@ -117,7 +117,7 @@
     width: 6px;
     height: 26px;
     border-radius: 999px;
-    background: #087f73;
+    background: var(--color-primary);
 }
 
 .turno-card {
@@ -138,8 +138,8 @@
 }
 
 .paginacion-turnos button {
-    border: 1px solid #dbe7e5;
-    background: white;
+    border: 1px solid var(--color-divider);
+    background: var(--color-surface);
     border-radius: 999px;
     padding: 9px 16px;
     font-weight: 700;
@@ -152,14 +152,14 @@
 }
 
 .paginacion-turnos span {
-    color: #526173;
+    color: var(--color-text-muted);
     font-weight: 600;
 }
 
 .historial-empty-state {
-    background: white;
+    background: var(--color-surface);
 
-    border: 1px dashed #dbe7e5;
+    border: 1px dashed var(--color-divider);
     border-radius: 18px;
 
     min-height: 90px;
@@ -169,7 +169,7 @@
     align-items: center;
     gap: 14px;
 
-    color: #64748b;
+    color: var(--color-text-muted);
 
     position: relative;
     overflow: hidden;
@@ -185,7 +185,7 @@
     width: 4px;
     height: 100%;
 
-    background: #087f73;
+    background: var(--color-primary);
     opacity: 0.75;
 }
 

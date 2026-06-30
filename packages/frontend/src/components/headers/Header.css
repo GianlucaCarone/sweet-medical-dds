@@ -2,21 +2,21 @@
    Estilos generales del Header
 ========================================= */
 .header {
-  background-color: #ffffff;
-  border-bottom: 1px solid #e2e8f0; /* Una línea sutil para separar el header del contenido */
+  background-color: var(--color-surface);
+  border-bottom: 1px solid var(--color-divider);
   position: sticky;
   top: 0;
   z-index: 100;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); /* Sombreado muy suave */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
   font-family: system-ui, -apple-system, sans-serif;
 }
 
 /* Contenedor principal para limitar el ancho y centrar */
 .header-container {
   display: flex;
-  justify-content: space-between; /* Separa los 3 bloques: izquierda, centro y derecha */
-  align-items: center; /* Centra verticalmente los elementos */
-  max-width: 100%; /* Ancho máximo para que no se estire demasiado en pantallas gigantes */
+  justify-content: space-between;
+  align-items: center;
+  max-width: 100%;
   margin: 0 auto;
   padding: 0.75rem 1.5rem; 
   height: 70px;
@@ -37,8 +37,8 @@
 .brand-link {
   display: flex;
   align-items: center;
-  gap: 0.75rem; /* Espacio entre el loquito y el texto */
-  text-decoration: none; /* Elimina el subrayado por defecto de los links */
+  gap: 0.75rem;
+  text-decoration: none;
 }
 
 .brand-logo {
@@ -49,7 +49,7 @@
 .brand-name {
   font-size: var(--font-size-xlarge);
   font-weight: var(--font-weight-base);
-  color: #0f172a;
+  color: var(--color-text);
 }
 
 /* Contenedor derecho con campanita y usuario */
@@ -63,7 +63,7 @@
 .cart{
     display: flex;
     align-items: center;
-    color: var(--primary-white);
+    color: var(--color-text);
     font-size: 1.25rem;
     background-color: transparent;
     border: none;
@@ -73,6 +73,6 @@
 
 .cart-count{
     margin: 0 0 0 1rem;
-    color: var(--primary-white);
+    color: var(--color-text);
     background-color: transparent;
 }

@@ -3,15 +3,14 @@ import styled from 'styled-components';
 
 // --- Styled Components ---
 const SkeletonContainer = styled.div`
-  background: white;
-  border: 2px solid #bac4c2;
+  background: var(--color-surface);
+  border: 2px solid var(--color-divider);
   border-radius: 22px;
   padding: 18px 24px;
   box-shadow: 0 6px 18px rgba(15, 23, 42, 0.05);
   position: relative;
   overflow: hidden;
 
-  /* Reemplaza a .turno-card::before */
   &::before {
     content: '';
     position: absolute;
@@ -19,7 +18,7 @@ const SkeletonContainer = styled.div`
     top: 0;
     width: 6px;
     height: 100%;
-    background: #087f73;
+    background: var(--color-primary);
     opacity: 0.9;
   }
 `;

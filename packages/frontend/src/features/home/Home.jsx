@@ -49,7 +49,7 @@ const Home = () => {
         />
         <h2 className="fw-bold titulo">Tu salud, a un clic de distancia</h2>
         <h6 className="banner banner-subtitulo">Gestiona tus turnos médicos de manera fácil y rápida. Encontrá especialistas, revisá tu cobertura y agendá en segundos.</h6>
-        <Button className="bg-white gap-3" onClick={irAVerTurnos}>
+        <Button className="bg-neutral-light gap-3" onClick={irAVerTurnos}>
           <span>Ir a ver turnos</span>
           <ArrowForwardIcon />
         </Button>
@@ -57,13 +57,13 @@ const Home = () => {
     </div>
 
     <div className="funcionamiento">
-      <div className="d-flex flex-column bg-white p-5">
+      <div className="d-flex flex-column bg-surface p-5">
         <TituloSeccion>¿Cómo funciona?</TituloSeccion>
         <h6 className="text-muted">Reservá tu turno en tres simples pasos</h6>
       </div>
       <div className="d-flex justify-content-around w-100 mt-2 p-5 gap-5">
         {cardsFuncionamiento.map((paso, index) => (
-          <CardBase key={index} className="w-25 bg-white">
+          <CardBase key={index} className="w-25 bg-surface">
           <CardContent>
               <Box sx={{ display: "inline-flex"}}>
                 <Typography sx={{ color: 'text.secondary', fontSize: 40 }}>
@@ -98,7 +98,7 @@ const Home = () => {
         <h3>¿Tenés obra social?</h3>
         <h6 className="tieneObraSocialSubtitulo">Ingresá tus datos y consultá al instante qué está cubierto para vos.</h6>
       </div>
-      <Button className="bg-white gap-3 h-50" onClick={irAVerTurnos}>
+      <Button className="bg-neutral-light gap-3 h-50" onClick={irAVerTurnos}>
         <span>Ir a ver turnos</span>
         <ArrowForwardIcon />
       </Button>

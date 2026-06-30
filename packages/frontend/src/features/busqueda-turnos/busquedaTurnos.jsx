@@ -142,7 +142,7 @@ export default function BusquedaTurnos() {
             {/* Contenedor de Resultados */}
             <main className="contenido-resultados">
                 <header className="header-resultados">
-                    <TituloSeccion>{dataPaginacion.totalTurnos} turnos disponibles</TituloSeccion>
+                    <TituloSeccion>{dataPaginacion.totalTurnos} {dataPaginacion.totalTurnos > 1 ? 'Turnos disponibles' : 'Turno disponible'}</TituloSeccion>
                     <div className="ordenar-por">
                         <label>Ordenar por:</label>
                         <select defaultValue="ordenPorFecha" onChange={(e) => {
@@ -171,7 +171,7 @@ export default function BusquedaTurnos() {
                             />
                         ))}
                 </section>
-                <Pagination count={dataPaginacion.totalPaginas} color="#137333"
+                <Pagination count={dataPaginacion.totalPaginas} color="primary"
                     page={numeroPagina}
                     onChange={(e, page) => {
                         setNumeroPagina(page);

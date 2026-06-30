@@ -3,7 +3,7 @@ import Header from "../../components/headers/Header.jsx";
 import Footer from "../../components/footers/Footer.jsx";
 import "./Layout.css";
 
-const Layout = ({ toggleTheme }) => {
+const Layout = () => {
 
   return (
     <>
@@ -11,7 +11,6 @@ const Layout = ({ toggleTheme }) => {
         <Header
           className="app-header"
           userName={null} //aún no tenemos autenticación, así que por ahora lo dejamos como null
-          toggleTheme={toggleTheme}
         />
         <main className="app-main">
           <Outlet />

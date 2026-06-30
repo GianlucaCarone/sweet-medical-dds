@@ -22,6 +22,31 @@ const getTheme = (mode = 'light') => {
     neutralDark: '#334155',
   };
 
+  // colores semánticos para badges (manual de marca)
+  const badgeColors = {
+    DISPONIBLE: { main: '#087f73', light: '#e0f2f1', dark: '#065e54' },
+    RESERVADO: { main: '#EF6C00', light: '#fff3e0', dark: '#e65100' },
+    CONFIRMADO: { main: '#2563eb', light: '#dbeafe', dark: '#1e40af' },
+    FINALIZADO: { main: '#43A047', light: '#e8f5e9', dark: '#2e7d32' },
+    CANCELADO: { main: '#C62828', light: '#ffebee', dark: '#b71c1c' },
+    PENDIENTECAMBIO: { main: '#9e9e9e', light: '#f5f5f5', dark: '#616161' },
+    TOTAL: { main: '#43A047', light: '#e8f5e9', dark: '#2e7d32' },
+    PARCIAL: { main: '#EF6C00', light: '#fff3e0', dark: '#e65100' },
+    NO_CUBIERTA: { main: '#C62828', light: '#ffebee', dark: '#b71c1c' },
+  };
+
+  const darkBadgeColors = {
+    DISPONIBLE: { main: '#4dd0c7', light: '#1a3a38', dark: '#087f73' },
+    RESERVADO: { main: '#ffb74d', light: '#3d2a00', dark: '#EF6C00' },
+    CONFIRMADO: { main: '#64b5f6', light: '#0d2137', dark: '#2563eb' },
+    FINALIZADO: { main: '#81c784', light: '#1b3d1f', dark: '#43A047' },
+    CANCELADO: { main: '#ef5350', light: '#3d1515', dark: '#C62828' },
+    PENDIENTECAMBIO: { main: '#bdbdbd', light: '#2a2a2a', dark: '#9e9e9e' },
+    TOTAL: { main: '#81c784', light: '#1b3d1f', dark: '#43A047' },
+    PARCIAL: { main: '#ffb74d', light: '#3d2a00', dark: '#EF6C00' },
+    NO_CUBIERTA: { main: '#ef5350', light: '#3d1515', dark: '#C62828' },
+  };
+
   // paleta para light mode
   const lightPalette = {
     mode: 'light',
@@ -61,13 +86,19 @@ const getTheme = (mode = 'light') => {
       dark: semantic.infoDark,
       contrastText: semantic.infoDark,
     },
+    neutral: {
+      main: semantic.neutral,
+      light: semantic.neutralLight,
+      dark: semantic.neutralDark,
+      contrastText: '#ffffff',
+    },
     background: {
       default: '#f5f5f5',
       paper: '#ffffff',
     },
     text: {
       primary: '#212121',
-      secondary: '#757575',
+      secondary: '#9ca3af',
     },
     divider: '#e2e8f0',
   };
@@ -111,6 +142,12 @@ const getTheme = (mode = 'light') => {
       dark: semantic.infoDark,
       contrastText: '#ffffff',
     },
+    neutral: {
+      main: semantic.neutral,
+      light: semantic.neutralLight,
+      dark: semantic.neutralDark,
+      contrastText: '#ffffff',
+    },
     background: {
       default: '#0f172a',
       paper: '#111827',
@@ -124,6 +161,9 @@ const getTheme = (mode = 'light') => {
 
   return createTheme({
     palette: isDark ? darkPalette : lightPalette,
+    customPalette: {
+      badge: isDark ? darkBadgeColors : badgeColors,
+    },
     typography: {
       fontFamily: 'Roboto, sans-serif',
       h1: { fontSize: '24px', fontWeight: 600 },
@@ -168,10 +208,10 @@ const getTheme = (mode = 'light') => {
       },
       MuiAvatar: {
         styleOverrides: {
-          root: {
-            backgroundColor: isDark ? '#1f2937' : '#f0fdf4',
-            color: isDark ? '#34d399' : '#16a34a',
-          },
+          root: ({ theme }) => ({
+            backgroundColor: theme.palette.primary.main,
+            color: theme.palette.primary.contrastText,
+          }),
         },
       },
       MuiChip: {

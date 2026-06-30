@@ -17,8 +17,8 @@
     width: 100%;
     max-width: 520px;
 
-    background: white;
-    border: 1px solid #dbe7e5;
+    background: var(--color-surface);
+    border: 1px solid var(--color-divider);
     border-radius: 24px;
 
     padding: 28px;
@@ -28,14 +28,14 @@
 
 .cancelar-modal h2 {
     margin: 0 0 10px;
-    color: #0f172a;
+    color: var(--color-text);
     font-size: 28px;
     font-weight: 800;
 }
 
 .cancelar-modal p {
     margin: 0 0 22px;
-    color: #526173;
+    color: var(--color-text-muted);
     line-height: 1.6;
 }
 
@@ -43,7 +43,7 @@
     display: block;
     margin-bottom: 8px;
 
-    color: #0f172a;
+    color: var(--color-text);
     font-weight: 700;
 }
 
@@ -51,7 +51,7 @@
     width: 100%;
     min-height: 110px;
 
-    border: 1px solid #cbd5e1;
+    border: 1px solid var(--color-divider);
     border-radius: 16px;
 
     padding: 14px;
@@ -60,13 +60,13 @@
 
     font-family: inherit;
     font-size: 15px;
-    color: #0f172a;
+    color: var(--color-text);
 
     outline: none;
 }
 
 .cancelar-modal textarea:focus {
-    border-color: #087f73;
+    border-color: var(--color-primary);
     box-shadow: 0 0 0 3px rgba(8, 127, 115, 0.12);
 }
 
@@ -90,28 +90,28 @@
 }
 
 .btn-no-cancelar {
-    border: 1px solid #cbd5e1;
-    background: white;
-    color: #334155;
+    border: 1px solid var(--color-divider);
+    background: var(--color-surface);
+    color: var(--color-text);
 }
 
 .btn-no-cancelar:hover {
-    background: #f8fafc;
+    background: var(--color-bg);
 }
 
 .btn-confirmar-cancelacion {
     border: none;
-    background: #dc2626;
-    color: white;
+    background: var(--color-error);
+    color: var(--color-surface);
 }
 
 .btn-confirmar-cancelacion:hover {
-    background: #b91c1c;
+    background: var(--color-error-dark);
 }
 
 .btn-confirmar-cancelacion:disabled {
-    background: #e2e8f0;
-    color: #94a3b8;
+    background: var(--color-divider);
+    color: var(--color-text-muted);
     cursor: not-allowed;
 }
 
