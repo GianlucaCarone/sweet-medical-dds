@@ -170,10 +170,12 @@ function PerfilMedicoContent({ medicoInicial }) {
 
               {activeTab === 'turnos' && (
                 <TurnosTab
+                  medico={medico}
                   turnos={turnosHook.turnosFiltrados}
                   subTab={turnosHook.turnosSubTab}
                   setSubTab={turnosHook.setTurnosSubTab}
                   loading={turnosHook.loadingTurnos}
+                  isFetching={turnosHook.isFetching}
                   page={turnosHook.turnosPage}
                   totalPages={turnosHook.totalTurnosPaginas}
                   totalItems={turnosHook.totalTurnosCount}

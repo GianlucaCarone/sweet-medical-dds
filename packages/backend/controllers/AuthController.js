@@ -35,7 +35,11 @@ export class AuthController {
           );
           // Firmar el JWT con los datos del usuario
           const token = jwt.sign(
-            { id: usuario.id, nombreUsuario: usuario.nombreUsuario },
+            {
+              id: usuario.id,
+              nombreUsuario: usuario.nombreUsuario,
+              rol: usuario.rol,
+            },
             process.env.JWT_SECRET,
             { expiresIn: process.env.JWT_EXPIRATION || "1h" },
           );
@@ -54,6 +58,58 @@ export class AuthController {
           // UnauthorizedError (y cualquier otro AppError) es manejado automáticamente
           // por el errorHandler global, que responde con el statusCode correcto.
           next(error);
+        }
+    };
+
+    /**
+     * POST /auth/registro
+     * Body: { nombreUsuario, password, nombre, dni, obraSocial?, plan? }
+     * Crea un Usuario (rol=PACIENTE) + su Paciente, firma el JWT y setea la cookie.
+     * El paciente queda logueado automáticamente tras el registro.
+     */
+    registro = async (req, res, next) => {
+        try {
+            const { nombreUsuario, password, nombre, dni, obraSocial, plan } = req.body;
+
+            if (!nombreUsuario || !password || !nombre || !dni) {
+                return res.status(400).json({
+                    message: "nombreUsuario, password, nombre y dni son requeridos",
+                });
+            }
+
+            logger.info("[AUTH CONTROLLER]: Registrando nuevo paciente: ", nombreUsuario);
+
+            const usuario = await this.usuarioService.registrarPaciente({
+                nombreUsuario,
+                password,
+                nombre,
+                dni,
+                obraSocial,
+                plan,
+            });
+
+            // Auto-login: firmar JWT igual que en /login
+            const token = jwt.sign(
+                {
+                    id: usuario.id,
+                    nombreUsuario: usuario.nombreUsuario,
+                    rol: usuario.rol,
+                },
+                process.env.JWT_SECRET,
+                { expiresIn: process.env.JWT_EXPIRATION || "1h" },
+            );
+
+            res.cookie("token", token, {
+                httpOnly: true,
+                secure: process.env.NODE_ENV === "production",
+                sameSite: "strict",
+                maxAge: 7 * 24 * 60 * 60 * 1000,
+            });
+
+            logger.info("[AUTH CONTROLLER]: Registro exitoso para: ", nombreUsuario);
+            return res.status(201).json({ usuario });
+        } catch (error) {
+            next(error);
         }
     };
 

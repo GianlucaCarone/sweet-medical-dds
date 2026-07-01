@@ -1,177 +1,151 @@
 import { useState, useEffect, useCallback } from 'react';
-import { initialTurnosMock } from '../../../mockdata/medico';
-
-// Helper para comparar IDs de manera robusta
-const obtenerId = (obj) => {
-  if (!obj) return '';
-  if (typeof obj === 'object') return obj.id || '';
-  return obj;
-};
+import { 
+  getMisTurnos, 
+  cambiarEstadoTurno, 
+  solicitarCambioFecha,
+  getContadoresTurnos
+} from '../../../api/turno';
 
 export default function useTurnos(medico, activeTab) {
-  const [todosLosTurnosMock, setTodosLosTurnosMock] = useState(initialTurnosMock);
   const [turnosFiltrados, setTurnosFiltrados] = useState([]);
   const [turnosSubTab, setTurnosSubTab] = useState('RESERVADOS');
   const [loadingTurnos, setLoadingTurnos] = useState(false);
+  const [isFetching, setIsFetching] = useState(false);
   const [turnosPage, setTurnosPage] = useState(1);
   const [totalTurnosPaginas, setTotalTurnosPaginas] = useState(1);
   const [totalTurnosCount, setTotalTurnosCount] = useState(0);
 
-  /*
-  =============================================================================
-  GUÍA DE INTEGRACIÓN FUTURA CON EL BACKEND (MÉDICO)
-  =============================================================================
-  Cuando realicemos la integración con las APIs del backend, esta sección
-  reemplazará los estados simulados en memoria. Ejemplo de estructura:
+  const [counts, setCounts] = useState({
+    RESERVADOS: 0,
+    CONFIRMADOS: 0,
+    PROPUESTAS: 0,
+    REALIZADOS: 0,
+    CANCELADOS: 0
+  });
+
+  const ESTADO_MAP = {
+    'RESERVADOS': 'RESERVADO',
+    'CONFIRMADOS': 'CONFIRMADO',
+    'REALIZADOS': 'REALIZADO',
+    'CANCELADOS': 'CANCELADO',
+    'PROPUESTAS': 'PENDIENTECAMBIO'
+  };
+
+  const cargarTodosLosContadores = useCallback(async () => {
+    if (!medico?.id) return;
+    try {
+      const response = await getContadoresTurnos({ medicoId: medico.id });
+      const rawCounts = response.data || {};
+      setCounts({
+        RESERVADOS: rawCounts.RESERVADO || 0,
+        CONFIRMADOS: rawCounts.CONFIRMADO || 0,
+        PROPUESTAS: rawCounts.PENDIENTECAMBIO || 0,
+        REALIZADOS: rawCounts.REALIZADO || 0,
+        CANCELADOS: rawCounts.CANCELADO || 0
+      });
+    } catch (err) {
+      console.error("Error al obtener contadores de turnos:", err);
+    }
+  }, [medico?.id]);
 
   const cargarTurnosMedico = useCallback(async (estadoTab, paginaActual) => {
+    if (!medico?.id) return;
     setLoadingTurnos(true);
     try {
-      const estadoMapeado = {
-        'RESERVADOS': 'RESERVADO',
-        'CONFIRMADOS': 'CONFIRMADO',
-        'REALIZADOS': 'REALIZADO',
-        'CANCELADOS': 'CANCELADO',
-        'PROPUESTAS': 'PENDIENTECAMBIO'
-      }[estadoTab];
-
-      // Parámetros de paginación y filtros para enviar al backend
+      const estadoMapeado = ESTADO_MAP[estadoTab];
+      
       const queryParams = {
         medicoId: medico.id,
         estado: estadoMapeado,
-        pagina: paginaActual,
-        limite: 4
+        page: paginaActual,
+        limit: 4
       };
 
-      // Llamar al endpoint del backend que implementa la consulta paginada
-      const response = await getTurnosMedicoPaginado(queryParams);
+      const response = await getMisTurnos(queryParams);
       
-      setTurnosFiltrados(response.turnos);
-      setTotalTurnosCount(response.totalCount);
-      setTotalTurnosPaginas(response.paginasTotales);
+      setTurnosFiltrados(response.data || []);
+      setTotalTurnosCount(response.paginacion?.totalTurnos || 0);
+      setTotalTurnosPaginas(response.paginacion?.totalPaginas || 1);
+
+      setCounts(prev => ({
+        ...prev,
+        [estadoTab]: response.paginacion?.totalTurnos || 0
+      }));
+
     } catch (err) {
       console.error("Error al obtener turnos del médico:", err);
+      setTurnosFiltrados([]);
     } finally {
       setLoadingTurnos(false);
     }
-  }, [medico.id]);
+  }, [medico?.id]);
 
+  // Efecto para cargar los contadores iniciales de todas las pestañas
   useEffect(() => {
-    if (activeTab === 'turnos' && medico.id) {
+    if (activeTab === 'turnos' && medico?.id) {
+      cargarTodosLosContadores();
+    }
+  }, [activeTab, medico?.id, cargarTodosLosContadores]);
+
+  // Efecto para cargar el listado del subtab activo
+  useEffect(() => {
+    if (activeTab === 'turnos' && medico?.id) {
       cargarTurnosMedico(turnosSubTab, turnosPage);
     }
-  }, [activeTab, turnosSubTab, turnosPage, medico.id, cargarTurnosMedico]);
-  =============================================================================
-  */
+  }, [activeTab, turnosSubTab, turnosPage, medico?.id, cargarTurnosMedico]);
 
-  // useEffect para simular consulta paginada y on-demand (con filtros id de médico y estado) con indicador de carga
-  useEffect(() => {
-    if (activeTab !== 'turnos') return;
-    
-    setLoadingTurnos(true);
-    const timer = setTimeout(() => {
-      const estadoMapeado = {
-        'RESERVADOS': 'RESERVADO',
-        'CONFIRMADOS': 'CONFIRMADO',
-        'REALIZADOS': 'REALIZADO',
-        'CANCELADOS': 'CANCELADO',
-        'PROPUESTAS': 'PENDIENTECAMBIO'
-      }[turnosSubTab];
-
-      // Filtro por ID de médico (robusto contra objetos e IDs puros de MongoDB)
-      const todosFiltrados = todosLosTurnosMock.filter(t => 
-        obtenerId(t.medico) === obtenerId(medico) && t.estado === estadoMapeado
-      );
-
-      const itemsPerPage = 4; // Páginas de 4 elementos para demostración interactiva
-      const totalCount = todosFiltrados.length;
-      const paginas = Math.ceil(totalCount / itemsPerPage) || 1;
-
-      // Asegurar que la página actual no quede huérfana
-      const paginaValida = Math.min(turnosPage, paginas);
-      if (paginaValida !== turnosPage) {
-        setTurnosPage(paginaValida);
-      }
-
-      const startIdx = (paginaValida - 1) * itemsPerPage;
-      const paginados = todosFiltrados.slice(startIdx, startIdx + itemsPerPage);
-
-      setTurnosFiltrados(paginados);
-      setTotalTurnosCount(totalCount);
-      setTotalTurnosPaginas(paginas);
-      setLoadingTurnos(false);
-    }, 400);
-
-    return () => clearTimeout(timer);
-  }, [activeTab, turnosSubTab, todosLosTurnosMock, medico, turnosPage]);
-
-  const handleObtenerHistorialPaciente = useCallback((id) => {
-    const pacienteId = obtenerId(id);
-    return todosLosTurnosMock.filter(t => 
-      obtenerId(t.paciente) === pacienteId && 
-      obtenerId(t.medico) === obtenerId(medico)
-    );
-  }, [todosLosTurnosMock, medico]);
-
-  const handleActualizarEstadoTurno = useCallback((turnoId, nuevoEstado, motivo = '', aceptarCambio = false) => {
-    setTodosLosTurnosMock(prev => prev.map(t => {
-      if (t.id === turnoId) {
-        let updated = { ...t };
-        if (aceptarCambio) {
-          if (t.fechaHoraPropuesta) {
-            updated.fechaHora = t.fechaHoraPropuesta;
-            updated.fechaHoraPropuesta = null;
-          }
-          updated.estado = 'CONFIRMADO';
-          updated.historialEstado = [
-            ...t.historialEstado,
-            { estado: 'CONFIRMADO', usuario: 'medico', motivo: 'Cambio de fecha aceptado por el médico.' }
-          ];
-        } else {
-          updated.estado = nuevoEstado;
-          updated.historialEstado = [
-            ...t.historialEstado,
-            { estado: nuevoEstado, usuario: 'medico', motivo }
-          ];
-        }
-        return updated;
-      }
-      return t;
-    }));
+  const handleObtenerHistorialPaciente = useCallback(async (idPaciente) => {
+    try {
+        const queryParams = { pacienteId: idPaciente, page: 1, limit: 100 };
+        const response = await getMisTurnos(queryParams);
+        return response.data?.filter(t => ['REALIZADO', 'CANCELADO', 'CONFIRMADO', 'RESERVADO', 'PENDIENTECAMBIO'].includes(t.estado)) || [];
+    } catch(err) {
+        console.error("Error al obtener historial del paciente:", err);
+        return [];
+    }
   }, []);
 
-  const handleProponerCambioTurno = useCallback((turnoId, nuevaFechaHora) => {
-    setTodosLosTurnosMock(prev => prev.map(t => {
-      if (t.id === turnoId) {
-        return {
-          ...t,
-          estado: 'PENDIENTECAMBIO',
-          fechaHoraPropuesta: nuevaFechaHora,
-          historialEstado: [
-            ...t.historialEstado,
-            { estado: 'PENDIENTECAMBIO', usuario: 'medico', motivo: 'Propuesta de reprogramación enviada por el médico.' }
-          ]
-        };
+  const handleActualizarEstadoTurno = useCallback(async (idTurno, nuevoEstado, motivo = '', aceptarCambio = false) => {
+    setIsFetching(true);
+    try {
+      if (aceptarCambio) {
+          // El paciente acepta el cambio (o el médico acepta si la lógica fuera cruzada)
+          await cambiarEstadoTurno(idTurno, 'CONFIRMADO', medico?.id, motivo);
+      } else {
+          await cambiarEstadoTurno(idTurno, nuevoEstado, medico?.id, motivo);
       }
-      return t;
-    }));
-  }, []);
+      await cargarTurnosMedico(turnosSubTab, turnosPage);
+      await cargarTodosLosContadores();
+      return true;
+    } catch (error) {
+      console.error(`Error al actualizar estado del turno a ${nuevoEstado}:`, error);
+      return false;
+    } finally {
+      setIsFetching(false);
+    }
+  }, [cargarTurnosMedico, cargarTodosLosContadores, turnosSubTab, turnosPage, medico?.id]);
 
-  const turnosDelMedico = todosLosTurnosMock.filter(t => obtenerId(t.medico) === obtenerId(medico));
-  
-  const counts = {
-    RESERVADOS: turnosDelMedico.filter(t => t.estado === 'RESERVADO').length,
-    CONFIRMADOS: turnosDelMedico.filter(t => t.estado === 'CONFIRMADO').length,
-    PROPUESTAS: turnosDelMedico.filter(t => t.estado === 'PENDIENTECAMBIO').length,
-    REALIZADOS: turnosDelMedico.filter(t => t.estado === 'REALIZADO').length,
-    CANCELADOS: turnosDelMedico.filter(t => t.estado === 'CANCELADO').length
-  };
+  const handleProponerCambioTurno = useCallback(async (idTurno, nuevaFechaHora) => {
+    setIsFetching(true);
+    try {
+      await solicitarCambioFecha(idTurno, nuevaFechaHora, medico?.id);
+      await cargarTurnosMedico(turnosSubTab, turnosPage);
+      await cargarTodosLosContadores();
+      return true;
+    } catch (error) {
+      console.error("Error al proponer cambio de fecha:", error);
+      return false;
+    } finally {
+      setIsFetching(false);
+    }
+  }, [cargarTurnosMedico, cargarTodosLosContadores, turnosSubTab, turnosPage, medico?.id]);
 
   return {
     turnosFiltrados,
     turnosSubTab,
     setTurnosSubTab,
     loadingTurnos,
+    isFetching,
     turnosPage,
     setTurnosPage,
     totalTurnosPaginas,

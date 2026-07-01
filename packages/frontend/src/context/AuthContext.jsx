@@ -45,6 +45,28 @@ export const AuthProvider = ({ children }) => {
   };
 
   /**
+   * Registra un nuevo paciente y lo loguea automáticamente.
+   * El backend crea el Usuario + Paciente, firma el JWT y setea la cookie.
+   */
+  const registro = async ({ nombreUsuario, password, nombre, dni, obraSocial, plan }) => {
+    try {
+      const response = await axiosInstance.post('/auth/registro', {
+        nombreUsuario,
+        password,
+        nombre,
+        dni,
+        ...(obraSocial && { obraSocial }),
+        ...(plan && { plan }),
+      });
+      const { usuario } = response.data;
+      setUser(usuario);
+      return usuario;
+    } catch (error) {
+      throw new Error(error.message || 'Error al registrarse. Intentá de nuevo.');
+    }
+  };
+
+  /**
    * Cierra sesión llamando al backend para que borre la cookie HttpOnly.
    * El frontend no puede borrar una HttpOnly cookie por sí solo.
    */
@@ -58,10 +80,10 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, loading }}>
+    <AuthContext.Provider value={{ user, login, registro, logout, loading }}>
       {!loading && children}
     </AuthContext.Provider>
   );
 };
 
-export const useAuth = () => useContext(AuthContext);
+export const useAuth = () => useContext(AuthContext);

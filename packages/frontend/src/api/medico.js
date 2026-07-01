@@ -1,17 +1,16 @@
 import axiosInstance from "./axiosInstance";
 
-const API_BASE_URL = process.env.REACT_APP_API_URL
-
 export const getMedicoByIdUsuario = async (idUsuario) => {
     try {
-        const response = await axiosInstance.get(`/medicos/usuario/${idUsuario}`);
-        console.log(response.data);
+        // Obtenemos el perfil usando el JWT. El idUsuario ya no es necesario,
+        // pero mantenemos la firma de la función para no romper otros componentes
+        const response = await axiosInstance.get(`/medicos/me`);
         return response.data;
     } catch (e) {
         if (e.response?.status === 404) {
             return null; // usuario sin medico
         }
-        console.error("Error obteniendo el medico con id de usuario: " + idUsuario, e);
+        console.error("Error obteniendo el perfil médico", e);
         throw e;
     }
 }

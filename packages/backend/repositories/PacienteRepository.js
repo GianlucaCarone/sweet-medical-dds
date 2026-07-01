@@ -47,9 +47,18 @@ export class PacienteRepository {
 
   async save(paciente) {
     logger.info("[PACIENTE REPOSITORY]: Guardando paciente: ", paciente);
-    const nuevoPaciente = new this.#model(paciente);
-    const pacienteGuardado = await nuevoPaciente.save();
 
+    let pacienteGuardado;
+    if (paciente._id) {
+      // Documento existente (update): usar save() del documento de Mongoose
+      pacienteGuardado = await paciente.save();
+    } else {
+      // Documento nuevo (create)
+      const nuevoPaciente = new this.#model(paciente);
+      pacienteGuardado = await nuevoPaciente.save();
+    }
+
+    // Siempre re-populamos para tener los datos completos en el DTO
     await pacienteGuardado.populate("idUsuario");
     await pacienteGuardado.populate("obraSocial");
 
