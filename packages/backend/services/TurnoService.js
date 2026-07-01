@@ -111,7 +111,7 @@ export class TurnoService {
     }
 
     turno.actualizarEstadoTurno({ nuevoEstado, quien: quienObj._id, turno, motivo});
-    this.notificacionService.crearNotificacionSegunEstadoTurno(turno, remitente.idUsuario, destinatario.idUsuario);
+    this.notificacionService.crearNotificacionSegunEstadoTurno(turno, remitente, destinatario);
     const turnoActualizado = await this.turnoRepository.update(id, turno);
     logger.info(`[TURNO SERVICE]: Estado de turno ${id} actualizado correctamente`);
     return this.toDto(turnoActualizado);
@@ -186,7 +186,7 @@ export class TurnoService {
       turno,
       motivo: "Reserva de turno"
     });
-    this.notificacionService.crearNotificacionSegunEstadoTurno(turno, paciente.idUsuario, turno.medico.idUsuario);
+    this.notificacionService.crearNotificacionSegunEstadoTurno(turno, paciente, turno.medico);
 
     const turnoActualizado = await this.turnoRepository.update(idTurno, turno);
     logger.info(`[TURNO SERVICE]: Turno ${idTurno} asignado correctamente`);
@@ -205,8 +205,9 @@ export class TurnoService {
     if (filtrosParaBD.estado === EstadoTurnoEnum.DISPONIBLE) {
       delete filtrosParaBD.pacienteId;
     }
-    // aseguramos que si no viene la fecha desde, que sea desde hoy, para no mostrar pasados
-    if (!filtrosParaBD.fechaHoraInicio) {
+    // aseguramos que si no viene la fecha desde, que sea desde hoy para no mostrar pasados,
+    // pero solo cuando se buscan turnos disponibles o búsquedas públicas generales (sin paciente ni médico específicos)
+    if (!filtrosParaBD.fechaHoraInicio && (filtrosParaBD.estado === EstadoTurnoEnum.DISPONIBLE || (!filtrosParaBD.pacienteId && !filtrosParaBD.medicoId))) {
       const hoy = new Date();
       hoy.setHours(0, 0, 0, 0);
       filtrosParaBD.fechaHoraInicio = hoy;
@@ -345,7 +346,7 @@ export class TurnoService {
     turno.fechaHoraPropuesta = nuevaFechaHora;
     turno.actualizarEstadoTurno({nuevoEstado: EstadoTurnoEnum.PENDIENTECAMBIO, quien: quien._id, turno, motivo: `El ${rol} propone cambio de fecha a ${nuevaFechaHora}`});
 
-    this.notificacionService.crearNotificacionSegunEstadoTurno(turno, quien.idUsuario, receptor.idUsuario);
+    this.notificacionService.crearNotificacionSegunEstadoTurno(turno, quien, receptor);
 
     const turnoActualizado = await this.turnoRepository.update(idTurno, turno);
     logger.info(`[TURNO SERVICE]: Cambio de fecha solicitado. Turno ${idTurno} actualizado`);
@@ -387,7 +388,7 @@ export class TurnoService {
         turno,
         motivo: `El ${rol} aceptó la propuesta de cambio de fecha`,
       });
-      this.notificacionService.crearNotificacionSegunEstadoTurno(turno, quien.idUsuario, receptor.idUsuario);
+      this.notificacionService.crearNotificacionSegunEstadoTurno(turno, quien, receptor);
     } else {
       turno.fechaHoraPropuesta = undefined;
       turno.actualizarEstadoTurno({
@@ -396,7 +397,7 @@ export class TurnoService {
         turno,
         motivo: `El ${rol} rechazó el cambio de fecha. Se conserva la original.`,
       });
-      this.notificacionService.crearNotificacionSegunEstadoTurno(turno, quien.idUsuario, receptor.idUsuario);
+      this.notificacionService.crearNotificacionSegunEstadoTurno(turno, quien, receptor);
     }
 
     const turnoActualizado = await this.turnoRepository.update(idTurno, turno);
@@ -520,5 +521,10 @@ export class TurnoService {
     );
 
     await this.generarTurnosDisponiblesParaMedico(medico);
+  }
+
+  async obtenerContadores({ medicoId, pacienteId }) {
+    logger.info(`[TURNO SERVICE]: Obteniendo contadores de turnos`);
+    return await this.turnoRepository.obtenerContadores({ medicoId, pacienteId });
   }
 }
