@@ -58,9 +58,27 @@ export class MedicoController {
       logger.info("[MEDICO CONTROLLER]: Medico obtenido: ", medico);
       res.status(200).json(medico);
     } catch (error) {
-      return next(error);
+      next(error);
     }
-  }
+  };
+
+  /**
+   * GET /medicos/me
+   * Protegido por authMiddleware. Obtiene el perfil del medico del usuario logueado.
+   * El id del usuario se extrae del JWT (req.user.id).
+   */
+  buscarMiPerfil = async (req, res, next) => {
+    try {
+      logger.info("[MEDICO CONTROLLER]: Obteniendo mi perfil médico para usuario: ", req.user.id);
+      const medico = await this.medicoService.findByIdUsuario(req.user.id);
+      if (!medico) {
+        return res.status(404).json({ message: "Perfil médico no encontrado" });
+      }
+      res.status(200).json(medico);
+    } catch (error) {
+      next(error);
+    }
+  };
 
   delete = async (req, res, next) => {
     try {

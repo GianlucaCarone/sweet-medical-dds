@@ -3,7 +3,7 @@ import jwt from "jsonwebtoken";
 /**
  * Middleware que verifica el JWT almacenado en la cookie HttpOnly.
  * Si el token es válido, agrega `req.user` con los datos del usuario.
- * Si no, responde con 401.
+ * Si no, responde con 401.s
  */
 export function authMiddleware(req, res, next) {
     const token = req.cookies?.token;
@@ -14,7 +14,7 @@ export function authMiddleware(req, res, next) {
 
     try {
         const payload = jwt.verify(token, process.env.JWT_SECRET);
-        req.user = payload; // { id, nombreUsuario, iat, exp }
+        req.user = payload; // { id, nombreUsuario, rol, medicoId, pacienteId, iat, exp }
         next();
     } catch (error) {
         // Token expirado o inválido

@@ -1,4 +1,5 @@
 import express from "express";
+import { authMiddleware } from "../middlewares/authMiddleware.js";
 import { MedicoController } from "../controllers/MedicoController.js";
 
 /**
@@ -241,6 +242,9 @@ export default function medicoRoutes(getController) {
      *         $ref: '#/components/responses/E400'
      */
     .delete((req, res, next) => medicoController.eliminarDisponibilidad(req, res, next)); // Eliminar disponibilidad existente del medico
+
+  router.route("/me")
+    .get(authMiddleware, (req, res, next) => medicoController.buscarMiPerfil(req, res, next));
 
   router.route("/usuario/:id")
     /**

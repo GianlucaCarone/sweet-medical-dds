@@ -1,12 +1,18 @@
 import jwt from "jsonwebtoken";
 import { UsuarioService } from "../services/UsuarioService.js";
+import { MedicoService } from "../services/MedicoService.js";
+import { PacienteService } from "../services/PacienteService.js";
 import { logger } from "../config/logger.js";
 
 export class AuthController {
     constructor({
-        usuarioService = new UsuarioService()
+        usuarioService = new UsuarioService(),
+        medicoService = new MedicoService(),
+        pacienteService = new PacienteService()
     } = {}) {
         this.usuarioService = usuarioService;
+        this.medicoService = medicoService;
+        this.pacienteService = pacienteService;
     }
 
     /**
@@ -33,12 +39,26 @@ export class AuthController {
             nombreUsuario,
             password,
           );
-          // Firmar el JWT con los datos del usuario
+          // Fetch perfiles de manera segura (si no existen, catch y retorna null)
+          let medicoId = null;
+          let pacienteId = null;
+          
+          if (usuario.rol === "MEDICO") {
+              const medico = await this.medicoService.findByIdUsuario(usuario.id).catch(() => null);
+              medicoId = medico ? medico.id : null;
+          } else if (usuario.rol === "PACIENTE") {
+              const paciente = await this.pacienteService.findByUserId(usuario.id).catch(() => null);
+              pacienteId = paciente ? paciente.id : null;
+          }
+
+          // Firmar el JWT con los datos del usuario + Custom Claims
           const token = jwt.sign(
             {
               id: usuario.id,
               nombreUsuario: usuario.nombreUsuario,
               rol: usuario.rol,
+              medicoId,
+              pacienteId
             },
             process.env.JWT_SECRET,
             { expiresIn: process.env.JWT_EXPIRATION || "1h" },
