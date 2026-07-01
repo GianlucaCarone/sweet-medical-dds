@@ -3,7 +3,6 @@ import { NotFoundError } from "../errors/AppError.js";
 import { Notificacion } from "../domain/notificacion.js";
 import { UsuarioService } from "./UsuarioService.js";
 import { logger } from "../config/logger.js";
-import { Usuario } from "../domain/usuario.js";
 import { FactoryNotificacion } from "../domain/factoryNotificacion.js";
 
 export class NotificacionService {

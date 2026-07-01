@@ -35,7 +35,7 @@ export class FactoryNotificacion {
       mensaje:      this.#t(claveEstado, this.#params(turno, destinatario /*, destinatario.idioma */)),
     });
   }
- 
+  
   static crearSegunFechaTurnoI(turno, destinatario) {
     const esMañana = turno.fechaHora.getDay() === new Date().getDay() + 1;
     if (!esMañana) return null;
@@ -48,11 +48,15 @@ export class FactoryNotificacion {
   }
 
   static crearSegunEstadoTurno(turno, remitente, destinatario) {
+    const remitenteId = remitente?.idUsuario || remitente?.usuario;
+    const destinatarioId = destinatario?.idUsuario || destinatario?.usuario;
+    const remitenteNombre = remitente?.nombre || "Usuario";
+    
     switch (turno.estado) {
       case EstadoTurnoEnum.DISPONIBLE:
         return new Notificacion({
-          destinatario: destinatario,
-          remitente: remitente,
+          destinatario: destinatarioId,
+          remitente: remitenteId,
           mensaje:
             `El turno volvió a estar disponible
             - Para el servicio: ${turno.servicio.nombre}
@@ -60,35 +64,35 @@ export class FactoryNotificacion {
         });
       case EstadoTurnoEnum.RESERVADO:
         return new Notificacion({
-          destinatario: destinatario,
-          remitente: remitente,
+          destinatario: destinatarioId,
+          remitente: remitenteId,
           mensaje:
-            `El turno fue reservado por el usuario ${remitente.nombre} 
+            `El turno fue reservado por el usuario ${remitenteNombre} 
             - Para el servicio: ${turno.servicio.nombre}
             - En la sede: ${turno.sede.nombre}`
         });
       case EstadoTurnoEnum.CANCELADO:
         return new Notificacion({
-          destinatario: destinatario,
-          remitente: remitente,
+          destinatario: destinatarioId,
+          remitente: remitenteId,
           mensaje:
-            `El turno fue cancelado por el usuario ${remitente.nombre} 
+            `El turno fue cancelado por el usuario ${remitenteNombre} 
             - Para el servicio: ${turno.servicio.nombre}
             - En la sede: ${turno.sede.nombre}`
         });
       case EstadoTurnoEnum.CONFIRMADO:
         return new Notificacion({
-          destinatario: destinatario,
-          remitente: remitente,
+          destinatario: destinatarioId,
+          remitente: remitenteId,
           mensaje:
-            `El turno fue confirmado por el usuario ${remitente.nombre}
+            `El turno fue confirmado por el usuario ${remitenteNombre}
             - Para el servicio: ${turno.servicio.nombre} 
             - En la sede: "${turno.sede.nombre}`
         });
       case EstadoTurnoEnum.REALIZADO:
         return new Notificacion({
-          destinatario: destinatario,
-          remitente: remitente,
+          destinatario: destinatarioId,
+          remitente: remitenteId,
           mensaje:
             `Turno Realizado
             - Para el servicio: ${turno.servicio.nombre}
@@ -96,10 +100,10 @@ export class FactoryNotificacion {
         });
       case EstadoTurnoEnum.PENDIENTECAMBIO:
         return new Notificacion({
-          destinatario: destinatario,
-          remitente: remitente,
+          destinatario: destinatarioId,
+          remitente: remitenteId,
           mensaje:
-            `El turno fue puesto en pendiente de cambio por el usuario ${remitente.nombre}
+            `El turno fue puesto en pendiente de cambio por el usuario ${remitenteNombre}
             - Para el servicio: " ${turno.servicio.nombre}
             - En la sede: " ${turno.sede.nombre}`
         });
