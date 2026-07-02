@@ -3,7 +3,7 @@ import jwt from "jsonwebtoken";
 /**
  * Middleware que verifica el JWT almacenado en la cookie HttpOnly.
  * Si el token es válido, agrega `req.user` con los datos del usuario.
- * Si no, responde con 401.s
+ * Si no, responde con 401.
  */
 export function authMiddleware(req, res, next) {
     const token = req.cookies?.token;
