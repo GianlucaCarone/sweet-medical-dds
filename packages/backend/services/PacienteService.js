@@ -32,14 +32,14 @@ export class PacienteService {
         }
         logger.info("[PACIENTE SERVICE]: Paciente creado: ", pacienteData);
         const nuevoPaciente = await this.#pacienteRepository.save(pacienteData);
-        return nuevoPaciente;
+        return this.toDto(nuevoPaciente);
     }
 
     async findAll() {
         logger.info("[PACIENTE SERVICE]: Buscando todos los pacientes");
         const pacientes = await this.#pacienteRepository.findAll();
         logger.info("[PACIENTE SERVICE]: Pacientes encontrados: ", pacientes);
-        return pacientes;
+        return pacientes.map((p) => this.toDto(p));
     }
 
     async findById(idPaciente) {
@@ -47,7 +47,15 @@ export class PacienteService {
         const paciente = await this.#pacienteRepository.findById(idPaciente);
         if (!paciente) throw new NotFoundError("Paciente no encontrado");
         logger.info("[PACIENTE SERVICE]: Paciente encontrado con ID: ", paciente);
-        return paciente;
+        return this.toDto(paciente);
+    }
+
+    async findByUserId(idUsuario) {
+        logger.info("[PACIENTE SERVICE]: Buscando paciente por ID de usuario: ", idUsuario);
+        const paciente = await this.#pacienteRepository.findByIdUsuario(idUsuario);
+        if (!paciente) throw new NotFoundError("Paciente no encontrado para el usuario actual");
+        logger.info("[PACIENTE SERVICE]: Paciente encontrado por ID de usuario: ", paciente);
+        return this.toDto(paciente);
     }
 
     async update(idPaciente, pacienteData) {
@@ -67,7 +75,7 @@ export class PacienteService {
 
         const pacienteActualizado = await this.#pacienteRepository.save(paciente);
         logger.info("[PACIENTE SERVICE]: Paciente actualizado: ", pacienteActualizado);
-        return pacienteActualizado;
+        return this.toDto(pacienteActualizado);
     }
 
     async delete(idPaciente) {
@@ -77,6 +85,59 @@ export class PacienteService {
 
         const pacienteEliminado = await this.#pacienteRepository.delete(idPaciente);
         logger.info("[PACIENTE SERVICE]: Paciente eliminado: ", pacienteEliminado);
-        return pacienteEliminado;
+        return this.toDto(pacienteEliminado);
+    }
+
+    /**
+     * Transforma un documento Mongoose de Paciente (con populate de obraSocial)
+     * a un DTO plano y seguro para exponer en la API.
+     *
+     * - obraSocial: { id, nombre, planes } (objeto populado o null)
+     * - plan: { id, nombre, coberturaEspecialidad, coberturaPractica } (resuelto desde obraSocial.planes) o null
+     * - idUsuario: el ObjectId del usuario relacionado
+     */
+    toDto(paciente) {
+        if (!paciente) return null;
+
+        // Resolver el plan desde el array de planes de la obra social populada
+        let planDto = null;
+        const obraSocialDoc = paciente.obraSocial;
+
+        if (obraSocialDoc && paciente.plan) {
+            const planIdStr = paciente.plan.toString();
+            const planEncontrado = obraSocialDoc.planes?.find(
+                (p) => p._id?.toString() === planIdStr
+            );
+            if (planEncontrado) {
+                planDto = {
+                    id: planEncontrado._id?.toString(),
+                    nombre: planEncontrado.nombre,
+                    coberturaEspecialidad: planEncontrado.coberturaEspecialidad ?? [],
+                    coberturaPractica: planEncontrado.coberturaPractica ?? [],
+                };
+            }
+        }
+
+        // Resolver obra social
+        let obraSocialDto = null;
+        if (obraSocialDoc) {
+            obraSocialDto = {
+                id: obraSocialDoc._id?.toString() ?? obraSocialDoc.toString(),
+                nombre: obraSocialDoc.nombre ?? null,
+                planes: obraSocialDoc.planes?.map((p) => ({
+                    id: p._id?.toString(),
+                    nombre: p.nombre,
+                })) ?? [],
+            };
+        }
+
+        return {
+            id: paciente._id?.toString() ?? paciente.id,
+            idUsuario: paciente.idUsuario?._id?.toString() ?? paciente.idUsuario?.toString() ?? null,
+            nombre: paciente.nombre,
+            dni: paciente.dni,
+            obraSocial: obraSocialDto,
+            plan: planDto,
+        };
     }
 }

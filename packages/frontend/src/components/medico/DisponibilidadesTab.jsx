@@ -22,7 +22,7 @@ export default function DisponibilidadesTab({ disponibilidades, onAdd, onEdit, o
 
           const turnosDiaOriginales = disponibilidades.filter(d => d.diaSemana === dia);
           //los ordenamos
-          const turnosDia = [...turnosDiaOriginales].sort((a, b) => a.horaInicio.localeCompare(b.horaInicio));
+          const turnosDia = [...turnosDiaOriginales].sort((a, b) => a.horaDesde.localeCompare(b.horaDesde));
 
           const diaLabel = dia === 'MIERCOLES' ? 'MIÉRCOLES' : dia === 'SABADO' ? 'SÁBADO' : dia;
           return (
@@ -33,9 +33,9 @@ export default function DisponibilidadesTab({ disponibilidades, onAdd, onEdit, o
               <div className="dia-body">
                 {turnosDia.length > 0 ? (
                   turnosDia.map(disp => (
-                    <div key={disp._id} className="disp-slot-card">
+                    <div key={disp.id} className="disp-slot-card">
                       <div className="d-flex align-items-center gap-1 mb-1 font-weight-bold text-primary" style={{ fontSize: '11px' }}>
-                        <Clock size={11} /> {disp.horaInicio} - {disp.horaFin}
+                        <Clock size={11} /> {disp.horaDesde} - {disp.horaHasta}
                       </div>
                       <div 
                         className="text-default font-weight-bold text-truncate mb-1" 
@@ -44,29 +44,32 @@ export default function DisponibilidadesTab({ disponibilidades, onAdd, onEdit, o
                       >
                         {disp.servicio.nombre}
                       </div>
-                      <div 
-                        className="text-muted text-truncate d-flex align-items-center gap-0.5" 
-                        style={{ fontSize: '10px' }} 
-                        title={disp.sede.nombre}
-                      >
-                        <MapPin size={9} /> {disp.sede.nombre}
+                      <div className="d-flex justify-content-between align-items-start mt-2 pt-1">
+                        <div 
+                          className="text-muted d-flex align-items-start gap-1" 
+                          style={{ fontSize: '9px', lineHeight: '1.2', flex: 1, minWidth: 0, wordBreak: 'break-word', paddingRight: '4px' }} 
+                          title={disp.sede.nombre}
+                        >
+                          <MapPin size={9} className="flex-shrink-0" style={{ marginTop: '2px' }} /> 
+                          <span>{disp.sede.nombre}</span>
+                        </div>
+                        <div className="d-flex gap-1">
+                          <button 
+                            onClick={() => onEdit(disp)} 
+                            className="disp-slot-edit-btn" 
+                            title="Editar Horario"
+                          >
+                            <Edit size={10} />
+                          </button>
+                          <button 
+                            onClick={() => onEliminar(disp.id)} 
+                            className="disp-slot-delete-btn" 
+                            title="Eliminar Horario"
+                          >
+                            <Trash2 size={10} />
+                          </button>
+                        </div>
                       </div>
-                      
-                      <button 
-                        onClick={() => onEdit(disp)} 
-                        className="disp-slot-edit-btn" 
-                        title="Editar Horario"
-                      >
-                        <Edit size={10} />
-                      </button>
-
-                      <button 
-                        onClick={() => onEliminar(disp._id)} 
-                        className="disp-slot-delete-btn" 
-                        title="Eliminar Horario"
-                      >
-                        <Trash2 size={10} />
-                      </button>
                     </div>
                   ))
                 ) : (

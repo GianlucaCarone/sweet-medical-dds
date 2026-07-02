@@ -230,6 +230,18 @@ export class TurnoController {
     }
   };
 
+  obtenerContadores = async (req, res, next) => {
+    try {
+      const { medicoId, pacienteId } = req.query;
+      logger.info(`[TURNOS CONTROLLER]: Obteniendo contadores de turnos (Médico: ${medicoId}, Paciente: ${pacienteId})`);
+      const counts = await this.turnoService.obtenerContadores({ medicoId, pacienteId });
+      return res.status(200).json({ status: "success", data: counts });
+    } catch (error) {
+      logger.error("[TURNOS CONTROLLER]: Error al obtener contadores de turnos");
+      return next(error);
+    }
+  };
+
   extraerFiltros(query) {
     const filtros = {};
 

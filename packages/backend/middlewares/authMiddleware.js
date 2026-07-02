@@ -14,7 +14,7 @@ export function authMiddleware(req, res, next) {
 
     try {
         const payload = jwt.verify(token, process.env.JWT_SECRET);
-        req.user = payload; // { id, nombreUsuario, iat, exp }
+        req.user = payload; // { id, nombreUsuario, rol, medicoId, pacienteId, iat, exp }
         next();
     } catch (error) {
         // Token expirado o inválido
