@@ -152,17 +152,17 @@ export default function TurnosTab({
       });
       return;
     }
-    try {
-      await onProponerCambio(turnoId, nuevaFechaHoraPropuesta);
-      setReprogrammingId(null);
-      setNuevaFechaHoraPropuesta('');
-    } catch (e) {
+    const ok = await onProponerCambio(turnoId, nuevaFechaHoraPropuesta);
+    if (!ok) {
       setCustomAlert({
         isOpen: true,
-        title: 'Error de Red',
+        title: 'Error',
         message: 'No se pudo enviar la propuesta de reprogramación.'
       });
+      return;
     }
+    setReprogrammingId(null);
+    setNuevaFechaHoraPropuesta('');
   };
 
   // Obtener historial completo de un paciente
