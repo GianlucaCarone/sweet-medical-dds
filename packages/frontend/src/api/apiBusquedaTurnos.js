@@ -55,17 +55,17 @@ export const getListadoSedes = async () => {
     }
 }
 
-export const reservarTurno = async (turnoId, pacienteId, costo) => {
+export const reservarTurnos = async (idTurnosArray, pacienteId) => {
+    console.log("reservando turnos:", idTurnosArray, "para paciente:", pacienteId);
     try {
-        const response = await axiosInstance.post('/turnos/${turnoId}', {
-            body: {
-                'pacienteId': pacienteId,
-                'costo': costo
-            }
+        const response = await axiosInstance.put('/turno/asignar', {
+            pacienteId: pacienteId,
+            idsTurnos: idTurnosArray,
         });
         return response.data;
     } catch (e) {
-        console.error("Error reservando el turno de id: " + turnoId);
+        //TODO: Ver bien que llega y como mostrarlo
+        console.error("Error reservando los turnos del paciente: " + pacienteId);
         throw e;
     }
 }

@@ -49,20 +49,19 @@ export class TurnoController {
     }
   };
 
-  asignarTurno = async (req, res, next) => {
+  asignarTurnos = async (req, res, next) => {
     try {
-      const {id} = idParamsSchema.parse(req.params);
+      logger.info("intentando asignar turnos a un paciente: " + JSON.stringify(req.body));
       const turnoData = bodyAsignarTurnoSchema.parse(req.body);
 
       logger.info(`[TURNOS CONTROLLER]: Asignando turno a paciente: ${turnoData.pacienteId}`);
-      const turnoAsignado = await this.turnoService.asignarTurno(
-        id,
+      const turnosAsignados = await this.turnoService.asignarTurnos(
+        turnoData.idsTurnos,
         turnoData.pacienteId,
-        turnoData.costoTurno,
       );
 
       logger.info("[TURNOS CONTROLLER]: Turno asignado con éxito");
-      return res.status(200).json({ status: "success", data: turnoAsignado });
+      return res.status(200).json({ status: "success", data: turnosAsignados });
     } catch (error) {
       logger.error("[TURNOS CONTROLLER]: Error al asignar paciente al turno");
       return next(error);

@@ -1,6 +1,5 @@
 import express from "express";
 import { TurnoController } from "../controllers/TurnoController.js";
-import { authMiddleware } from "../middlewares/authMiddleware.js";
 
 /**
  * @swagger
@@ -134,19 +133,14 @@ export default function turnoRoutes(getController) {
          */
         .post((req, res, next) => turnoController.create(req, res, next));
 
-    router.route("/:id/asignar")
+    router.route("/asignar")
         /**
          * @swagger
-         * /turno/{id}/asignar:
+         * /turno/asignar:
          *   put:
-         *     summary: Asignar turno a un paciente
+         *     summary: Asignar turnos a un paciente
          *     tags: [Turnos]
          *     parameters:
-         *       - in: path
-         *         name: id
-         *         required: true
-         *         schema:
-         *           $ref: '#/components/schemas/ObjectId'
          *     requestBody:
          *       required: true
          *       content:
@@ -167,7 +161,7 @@ export default function turnoRoutes(getController) {
          *       400:
          *         $ref: '#/components/responses/E400'
          */
-        .put((req, res, next) => turnoController.asignarTurno(req, res, next));
+        .put((req, res, next) => turnoController.asignarTurnos(req, res, next));
 
     router.route("/:id/cambiar-estado")
         /**

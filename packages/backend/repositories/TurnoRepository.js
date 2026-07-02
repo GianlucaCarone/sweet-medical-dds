@@ -81,7 +81,7 @@ disponible:
             query.paciente = filtros.pacienteId;
         }
         if (filtros.estado !== undefined) {
-            query.estado = filtros.estado;
+            query.estado.$in = filtros.estados;
         }
         if (filtros.sedeId !== undefined) {
             query.sede = filtros.sedeId;
@@ -105,6 +105,8 @@ disponible:
         if (filtros.ordenPorFecha !== undefined) {
             ordenamiento.fechaHora = filtros.ordenPorFecha === "desc" ? -1 : 1;
         }
+
+        console.log("Filtros: " + JSON.stringify(query));
 
         const turnos = await this.model.find(query)
             .populate("medico", "nombre matricula idUsuario")

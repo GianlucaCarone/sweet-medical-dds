@@ -160,16 +160,9 @@ export class TurnoService {
     return this.toDto(turnoGuardado);
   }
 
-  async asignarTurno(idTurno, pacienteId, costoTurno) {
-    logger.info("[TURNO SERVICE]: Intentando asignar el turno " + idTurno + " al paciente " + pacienteId);
+  async asignarTurnos(idsTurnos, pacienteId) {
+    logger.info("[TURNO SERVICE]: Intentando asignar turnos " + " al paciente " + pacienteId);
 
-    const turno = await this.turnoRepository.findById(idTurno);
-    if (!turno){
-      throw new NotFoundError("No se encontro el turno con el id " + idTurno);
-    }
-    if(turno.paciente){
-      throw new ConflictError("El turno ya tiene un paciente asignado");
-    }
     const paciente = await this.pacienteRepository.findById(pacienteId);
     if (!paciente){
       throw new NotFoundError(
@@ -177,20 +170,48 @@ export class TurnoService {
       );
     }
 
-    turno.paciente = paciente;
-    turno.costo = costoTurno;
+    const { obraSocial, plan } = await this.obtenerObraSocialYPlanPorPaciente(pacienteId);
 
-    turno.actualizarEstadoTurno({
-      nuevoEstado: EstadoTurnoEnum.RESERVADO,
-      quien: paciente._id,
-      turno,
-      motivo: "Reserva de turno"
-    });
-    this.notificacionService.crearNotificacionSegunEstadoTurno(turno, paciente.idUsuario, turno.medico.idUsuario);
+    // 1) validar que los turnos esten disponibles
+    const turnos = await Promise.all(
+      idsTurnos.map(async (id) => {
+        const turno = await this.turnoRepository.findById(id);
+        if (!turno) {
+          throw new NotFoundError("No se encontro el turno con el id " + id);
+        }
+        if (turno.paciente) {
+          throw new ConflictError(`El turno ${id} ya tiene un paciente asignado`);
+        }
+        return turno;
+      })
+    );
 
-    const turnoActualizado = await this.turnoRepository.update(idTurno, turno);
-    logger.info(`[TURNO SERVICE]: Turno ${idTurno} asignado correctamente`);
-    return this.toDto(turnoActualizado);
+    // 2) asignar
+    const turnosFinal = [];
+    for (const turno of turnos) {
+      try {
+        turno.paciente = paciente;
+        const cobertura = this.calcularCostoTurno(obraSocial, plan, turno.costo, turno.servicio);
+        turno.costo = cobertura.costoFinal ?? cobertura;
+        turno.cobertura = cobertura.estadoCobertura ?? null;
+
+        turno.actualizarEstadoTurno({
+          nuevoEstado: EstadoTurnoEnum.RESERVADO,
+          quien: paciente._id,
+          turno,
+          motivo: "Reserva de turno"
+        });
+        this.notificacionService.crearNotificacionSegunEstadoTurno(turno, paciente.idUsuario, turno.medico.idUsuario);
+
+        const turnoActualizado = await this.turnoRepository.update(turno.id ?? turno._id, turno);
+        logger.info(`[TURNO SERVICE]: Turno ${turno.id ?? turno._id} asignado correctamente`);
+        turnosFinal.push(turnoActualizado);
+      } catch (error) {
+        console.error(error.message);
+        throw error;
+      }
+    }
+    return turnosFinal.map((t) => this.toDto(t));
   }
 
   async obtenerTodosPaginados(numeroPagina = 1, limitePorPagina = Number(process.env.ITEMS_PER_PAGE) || 10, filtros = {}) {
@@ -216,6 +237,27 @@ export class TurnoService {
 
     const totalPaginas = totalTurnos === 0 ? 0 : Math.ceil(totalTurnos / limitePorPagina);
 
+    // Si lo solicita un paciente, entonces cargamos los costos finales y la cobertura de cada turno
+    if (filtrosValidados.pacienteId) {
+      const { obraSocial, plan } = await this.obtenerObraSocialYPlanPorPaciente(filtrosValidados.pacienteId);
+      turnos.map((t) => {
+        const cobertura = this.calcularCostoTurno(obraSocial, plan, t.costo, t.servicio);
+        t.costo = cobertura.costoFinal;
+        t.estadoCobertura = cobertura.estadoCobertura;
+        return t;
+      });
+    }
+    turnos.map((t) => this.toDto(t))
+    logger.info(`[TURNO SERVICE]: Retornando ${turnos.length} turnos`);
+    return {
+      turnos,
+      numeroPagina,
+      limitePorPagina,
+      totalPaginas,
+      totalTurnos,
+    };
+
+    /* ESTO NO CONTEMPLA EL CASO SIN PACIENTE ID
     let obraSocial = null;
     let plan = null;
 
@@ -244,6 +286,7 @@ export class TurnoService {
       totalPaginas,
       totalTurnos,
     };
+    */
   }
 
   async obtenerTurnosProximosUsuario(idUsuario) {
@@ -251,7 +294,7 @@ export class TurnoService {
     const paciente = await this.pacienteRepository.findByIdUsuario(idUsuario);
     if(!paciente) throw new NotFoundError("No se encontro el paciente con id de usuario: " + idUsuario);
     const filtros = {
-      estado: 'CONFIRMADO',
+      estados: [EstadoTurnoEnum.CONFIRMADO, EstadoTurnoEnum.RESERVADO, EstadoTurnoEnum.PENDIENTECAMBIO],
       fechaHoraInicio: new Date(),
       pacienteId: paciente.id,
       ordenPorFecha: 'asc'
@@ -269,7 +312,7 @@ export class TurnoService {
     this.validarPaginacion(numeroPagina, limitePorPagina);
     //const filtrosValidados = this.validarFiltros(filtros);
     const filtros = {
-      estado: 'FINALIZADO',
+      estados: [EstadoTurnoEnum.REALIZADO, EstadoTurnoEnum.CANCELADO],
       fechaHoraFin: new Date(),
       pacienteId: paciente.id,
       ordenPorFecha: 'asc'
@@ -277,7 +320,7 @@ export class TurnoService {
 
     // Acá los filtros ya deberían venir validados con `pacienteId` o `medicoId`
     // No calculamos la obra social en tiempo de ejecución porque se supone
-    // que estos turnos (RESERVADO, CONFIRMADO, FINALIZADO) ya tienen un costo/asociación guardada
+    // que estos turnos (RESERVADO, CONFIRMADO, REALIZADO) ya tienen un costo/asociación guardada
 
     const { turnos, totalTurnos } = await this.turnoRepository.obtenerPaginados(
       numeroPagina,
@@ -443,10 +486,8 @@ export class TurnoService {
   /* -------------------------------------------------------------------------- */
 
   calcularCostoTurno(obraSocial, plan, precioBase, servicio) {
-    const precioFinal = precioBase;
-
     if (!obraSocial || !plan) {
-      return precioFinal; // Si no hay obra social ni plan, el paciente paga el 100%
+      return precioBase; // Si no hay obra social ni plan, el paciente paga el 100%
     }
 
     const { nivel, porcentaje } = plan.obtenerCoberturaServicio(servicio); // si el servicio no existe en las cobertura se devuelve nivel: "NO_CUBIERTA" y porcentaje: 0
@@ -456,13 +497,13 @@ export class TurnoService {
         return { costoFinal: 0, estadoCobertura: "TOTAL" };
       case NivelCobertura.PARCIAL:
         return {
-          costoFinal: precioFinal * porcentaje,
+          costoFinal: precioBase * porcentaje,
           estadoCobertura: "PARCIAL",
         };
       case NivelCobertura.NO_CUBIERTA:
-        return { costoFinal: precioFinal, estadoCobertura: "NO_CUBIERTA" };
+        return { costoFinal: precioBase, estadoCobertura: "NO_CUBIERTA" };
       default:
-        return { costoFinal: precioFinal, estadoCobertura: "NO_CUBIERTA" };
+        return { costoFinal: precioBase, estadoCobertura: "NO_CUBIERTA" };
     }
   }
 

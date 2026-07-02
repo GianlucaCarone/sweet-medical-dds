@@ -14,8 +14,8 @@ export const bodyCambioEstadoTurnoSchema = z.object({
 });
 
 export const bodyAsignarTurnoSchema = z.object({
-    costoTurno: z.number("El costo del turno debe ser un número").nonnegative("El costo del turno no puede ser negativo").optional(),
-    pacienteId: z.string("El id del paciente debe ser un UUID válido"),
+    pacienteId: objectIdSchema("paciente"),
+    idsTurnos: z.array(z.string("El id del turno debe ser un UUID válido")).min(1, "Debe indicar al menos un turno")
 });
 
 export const filtrosTurnoSchema = z.object({

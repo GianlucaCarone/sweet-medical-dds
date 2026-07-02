@@ -10,6 +10,8 @@ import { Box, Typography, Stack, IconButton, Button, Divider } from '@mui/materi
 import { useNavigate } from "react-router-dom";
 import './carritoTurnos.css';
 import { useAlert } from "../../context/AlertContext.jsx";
+import { useState } from 'react';
+import { reservarTurnos } from '../../api/apiBusquedaTurnos.js';
 
 const formatoFechaHora = (isoString) => {
   const fecha = new Date(isoString);
@@ -25,6 +27,7 @@ const formatoFechaHora = (isoString) => {
 };
 
 export default function CarritoTurnos({ items, onEliminar, onConfirmar, onCerrar }) {
+  const pacienteID = "6a0b720ada9b7c8a035d96a9"; //por ahora; hasta tener el login
   const total = items.reduce((acc, item) => acc + item.costo, 0);
   const navigate = useNavigate();
   const { showAlert } = useAlert();
@@ -114,7 +117,9 @@ export default function CarritoTurnos({ items, onEliminar, onConfirmar, onCerrar
           variant="contained"
           disabled={items.length === 0}
           startIcon={<CheckCircleIcon />}
-          onClick={() => {
+          onClick={async () => {
+            console.log("Reservando turnos para el paciente: " + pacienteID);
+            const response = await reservarTurnos(items.map((t) => t.id), pacienteID);
             showAlert("Turnos reservados exitosamente", "success");
             onCerrar();
             onConfirmar();
