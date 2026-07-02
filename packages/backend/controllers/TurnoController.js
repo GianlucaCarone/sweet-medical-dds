@@ -120,7 +120,7 @@ export class TurnoController {
       logger.info("[TURNOS CONTROLLER]: Obteniendo historial de usuario paginado");
       const resultado = await this.turnoService.obtenerHistorialDeUsuario(idUsuario, paginacion.numeroPagina, paginacion.limitePorPagina);
 
-      logger.info(`[TURNOS CONTROLLER]: Turnos de usuario obtenidos: ${resultado.turnos.length}`);
+      logger.info(`[TURNOS CONTROLLER]: Turnos de usuario obtenidos: ` + JSON.stringify(resultado));
       res.status(200).json({
         status: "success",
         data: resultado.turnos,

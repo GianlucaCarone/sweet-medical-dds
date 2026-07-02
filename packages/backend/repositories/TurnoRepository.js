@@ -81,7 +81,10 @@ disponible:
             query.paciente = filtros.pacienteId;
         }
         if (filtros.estado !== undefined) {
-            query.estado.$in = filtros.estados;
+            query.estado = filtros.estado;
+        }
+        if (filtros.estados !== undefined) {
+            query.estado = { $in: filtros.estados };
         }
         if (filtros.sedeId !== undefined) {
             query.sede = filtros.sedeId;
@@ -128,6 +131,9 @@ disponible:
         }
         if (filtros.estado !== undefined) {
             query.estado = filtros.estado;
+        }
+        if (filtros.estados !== undefined) {
+            query.estado = { $in: filtros.estados };
         }
         if (filtros.sedeId !== undefined) {
             query.sede = filtros.sedeId;
