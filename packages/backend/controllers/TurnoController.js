@@ -81,10 +81,10 @@ export class TurnoController {
         filtros,
       );
 
-      logger.info(`[TURNOS CONTROLLER]: Turnos obtenidos: ${resultado.turnosConCobertura.length}`);
+      logger.info(`[TURNOS CONTROLLER]: Turnos obtenidos: ${resultado.turnosFinal.length}`);
       res.status(200).json({
         status: "success",
-        data: resultado.turnosConCobertura,
+        data: resultado.turnosFinal,
         paginacion: {
           numeroPagina: resultado.numeroPagina,
           limitePorPagina: resultado.limitePorPagina,
