@@ -275,8 +275,18 @@ export class TurnoService {
       ordenPorFecha: 'asc'
     }
     const turnos = await this.turnoRepository.obtener(filtros);
-    logger.info("[TURNOS SERVICE]: Turnos proximos de usuario obtenidos: " + turnos.length);
-    return turnos.map((t) => this.toDto(t));
+    let turnosFinal = turnos;
+    const { obraSocial, plan } = await this.obtenerObraSocialYPlanPorPaciente(paciente.id);
+    if (obraSocial && plan) {
+      turnosFinal = turnos.map((t) => {
+        const cobertura = this.calcularCostoTurno(obraSocial, plan, t.costo, t.servicio);
+        t.costo = cobertura.costoFinal;
+        t.estadoCobertura = cobertura.estadoCobertura;
+        return t;
+      });
+    }
+    logger.info("[TURNOS SERVICE]: Turnos proximos de usuario obtenidos: " + turnosFinal.length);
+    return turnosFinal.map((t) => this.toDto(t));
   }
 
   async obtenerHistorialDeUsuario(idUsuario, numeroPagina = 1, limitePorPagina = Number(process.env.ITEMS_PER_PAGE) || 10) {
