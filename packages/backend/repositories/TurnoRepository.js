@@ -119,7 +119,7 @@ disponible:
 
         const inicio = (numeroPagina - 1) * limitePorPagina;
 
-        console.log("[DEBUG] Query a MongoDB para obtenerPaginados:", JSON.stringify(query));
+        // Debug log eliminado para evitar ruido/exposición de filtros en producción
 
         // Ejecutar la consulta y el conteo en paralelo
         const [turnos, totalTurnos] = await Promise.all([
