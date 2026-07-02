@@ -79,7 +79,7 @@ export default function DatosPersonales({ medico, handleGuardarDatosPersonales }
         <div className="col-6">
           <div className="p-2 border border-transparent rounded-3" style={{ background: isEditingDatos ? 'var(--color-bg)' : 'transparent' }}>
             <span className="d-block text-muted mb-0.5" style={{ fontSize: '10px', textTransform: 'uppercase', fontWeight: '600', letterSpacing: '0.5px' }}>Usuario</span>
-            <span className="font-weight-bold d-block text-truncate text-muted" title={medico.usuario.nombreUsuario } style={{ fontSize: '13px' }}>{medico.usuario?.nombreUsuario || medico.usuario}</span>
+            <span className="font-weight-bold d-block text-truncate text-muted" title={medico.usuario?.nombreUsuario || medico.usuario || ""} style={{ fontSize: '13px' }}>{medico.usuario?.nombreUsuario || medico.usuario}</span>
           </div>
         </div>
 
