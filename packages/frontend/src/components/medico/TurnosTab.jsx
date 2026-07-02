@@ -124,17 +124,17 @@ export default function TurnosTab({
       });
       return;
     }
-    try {
-      await onActualizarEstado(turnoId, 'CANCELADO', motivoCancelacion);
-      setCancelingId(null);
-      setMotivoCancelacion('');
-    } catch (e) {
+    const ok = await onActualizarEstado(turnoId, 'CANCELADO', motivoCancelacion);
+    if (!ok) {
       setCustomAlert({
         isOpen: true,
-        title: 'Error de Red',
+        title: 'Error',
         message: 'No se pudo cancelar el turno. Inténtalo de nuevo.'
       });
+      return;
     }
+    setCancelingId(null);
+    setMotivoCancelacion('');
   };
 
   const handleReprogramarClick = (turno) => {
