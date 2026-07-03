@@ -1,11 +1,15 @@
 import { actualizarPacienteSchema, crearPacienteSchema } from "../schemas/zod/pacienteSchema.js";
 import { idParamObjectIdSchema } from "../schemas/zod/urlSchema.js";
 import { PacienteService } from "../services/PacienteService.js";
+import { TurnoService } from "../services/TurnoService.js";
+import { logger } from "../config/logger.js";
 
 export class PacienteController {
     #pacienteService;
-    constructor(pacienteService = new PacienteService()) {
+    #turnoService;
+    constructor(pacienteService = new PacienteService(), turnoService = new TurnoService()) {
         this.#pacienteService = pacienteService;
+        this.#turnoService = turnoService;
     }
 
     async crear(req, res, next) {
@@ -67,6 +71,39 @@ export class PacienteController {
         try {
             const paciente = await this.#pacienteService.findByUserId(req.user.id);
             res.status(200).json({ status: "success", data: paciente });
+        } catch (error) {
+            return next(error);
+        }
+    }
+
+    /**
+     * GET /pacientes/me/turnos
+     * Obtiene los turnos (historial y próximos) del paciente logueado.
+     */
+    async buscarMisTurnos(req, res, next) {
+        try {
+            logger.info(`[PACIENTE CONTROLLER]: Buscando turnos para usuario: ${req.user.id}`);
+            const paciente = await this.#pacienteService.findByUserId(req.user.id);
+            
+            // Extraer paginación de req.query (por defecto pág 1, límite 10)
+            const numeroPagina = parseInt(req.query.page) || 1;
+            const limitePorPagina = parseInt(req.query.limit) || 10;
+            
+            // Filtros adicionales si los hubiera, pero forzamos pacienteId
+            const filtros = { ...req.query, pacienteId: paciente.id };
+            
+            const resultado = await this.#turnoService.obtenerTurnosDeUsuario(
+                filtros, 
+                numeroPagina, 
+                limitePorPagina
+            );
+            
+            res.status(200).json({ status: "success", data: resultado.turnos, paginacion: {
+                numeroPagina: resultado.numeroPagina,
+                limitePorPagina: resultado.limitePorPagina,
+                totalPaginas: resultado.totalPaginas,
+                totalTurnos: resultado.totalTurnos
+            } });
         } catch (error) {
             return next(error);
         }
