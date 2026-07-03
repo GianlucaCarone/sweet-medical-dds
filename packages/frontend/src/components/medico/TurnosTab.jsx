@@ -3,10 +3,12 @@ import { Calendar, Clock, MapPin, User, Check, AlertTriangle, FileText, DollarSi
 import Modal from '../../features/perfil-medico/modals/Modal';
 
 export default function TurnosTab({
-  turnos,
+  medico,
+  turnos = [],
   subTab,
   setSubTab,
   loading,
+  isFetching,
   page = 1,
   totalPages = 1,
   totalItems = 0,
@@ -30,13 +32,6 @@ export default function TurnosTab({
   // Alerta personalizada estética
   const [customAlert, setCustomAlert] = useState({ isOpen: false, title: '', message: '' });
 
-  // Helper para resolver IDs robustamente
-  const obtenerId = (obj) => {
-    if (!obj) return '';
-    if (typeof obj === 'object') return obj._id || obj.id || '';
-    return obj;
-  };
-
   // Obtener texto seguro de obra social
   const obtenerObraSocialText = (paciente) => {
     if (!paciente) return 'No especificado';
@@ -49,25 +44,28 @@ export default function TurnosTab({
   // Obtener texto seguro de plan
   const obtenerPlanText = (paciente) => {
     if (!paciente) return '';
-    if (typeof paciente.plan === 'object' && paciente.plan !== null) {
-      return paciente.plan.nombre || paciente.plan.codigo || '';
+    
+    // Si es un ID de plan (string) y tenemos la obra social con sus planes
+    if (paciente.plan && paciente.obraSocial && Array.isArray(paciente.obraSocial.planes)) {
+      const planEncontrado = paciente.obraSocial.planes.find(
+        p => (p._id || p.id)?.toString() === paciente.plan?.toString()
+      );
+      if (planEncontrado) {
+        return planEncontrado.nombre || '';
+      }
     }
-    return paciente.plan || '';
+    
+    return '';
   };
 
   // Resolver nombre de actor de cambios de estado
   const obtenerNombreActor = (usuarioId, turno) => {
     if (!usuarioId) return 'Sistema';
-    const cleanUser = obtenerId(usuarioId);
     
-    const uId = typeof usuarioId === 'object' ? (usuarioId).toString() : String(usuarioId);
-    const medicoId = turno.medico ? String(turno.medico._id) : null;
-    const pacienteId = turno.paciente ? String(turno.paciente._id) : null;
-
-    if(uId === medicoId) {
+    if (usuarioId === 'medico' || (turno.medico && usuarioId === turno.medico.id)) {
       return 'Médico';
     }
-    if(uId === pacienteId) {
+    if (usuarioId === 'paciente' || (turno.paciente && usuarioId === turno.paciente.id)) {
       return 'Paciente';
     }
     return 'Sistema';
@@ -117,7 +115,7 @@ export default function TurnosTab({
     setCancelingId(turno.id);
   };
 
-  const handleConfirmarCancelacion = (turnoId) => {
+  const handleConfirmarCancelacion = async (turnoId) => {
     if (!motivoCancelacion.trim()) {
       setCustomAlert({
         isOpen: true,
@@ -126,7 +124,15 @@ export default function TurnosTab({
       });
       return;
     }
-    onActualizarEstado(turnoId, 'CANCELADO', motivoCancelacion);
+    const ok = await onActualizarEstado(turnoId, 'CANCELADO', motivoCancelacion);
+    if (!ok) {
+      setCustomAlert({
+        isOpen: true,
+        title: 'Error',
+        message: 'No se pudo cancelar el turno. Inténtalo de nuevo.'
+      });
+      return;
+    }
     setCancelingId(null);
     setMotivoCancelacion('');
   };
@@ -137,7 +143,7 @@ export default function TurnosTab({
     setReprogrammingId(turno.id);
   };
 
-  const handleConfirmarReprogramacion = (turnoId) => {
+  const handleConfirmarReprogramacion = async (turnoId) => {
     if (!nuevaFechaHoraPropuesta) {
       setCustomAlert({
         isOpen: true,
@@ -146,18 +152,35 @@ export default function TurnosTab({
       });
       return;
     }
-    onProponerCambio(turnoId, nuevaFechaHoraPropuesta);
+    const ok = await onProponerCambio(turnoId, nuevaFechaHoraPropuesta);
+    if (!ok) {
+      setCustomAlert({
+        isOpen: true,
+        title: 'Error',
+        message: 'No se pudo enviar la propuesta de reprogramación.'
+      });
+      return;
+    }
     setReprogrammingId(null);
     setNuevaFechaHoraPropuesta('');
   };
 
   // Obtener historial completo de un paciente
-  const verHistorialPaciente = (paciente) => {
-    const historial = onObtenerHistorialPaciente(paciente.id);
-    setPacienteHistorial({
-      paciente,
-      historial: [...historial].sort((a, b) => new Date(b.fechaHora) - new Date(a.fechaHora))
-    });
+  const verHistorialPaciente = async (paciente) => {
+    try {
+      const pacienteId = paciente.id || paciente._id;
+      const historial = await onObtenerHistorialPaciente(pacienteId);
+      setPacienteHistorial({
+        paciente,
+        historial: [...historial].sort((a, b) => new Date(b.fechaHora) - new Date(a.fechaHora))
+      });
+    } catch (e) {
+      setCustomAlert({
+        isOpen: true,
+        title: 'Error al obtener historial',
+        message: 'Ocurrió un problema al solicitar el historial del paciente.'
+      });
+    }
   };
 
   return (
@@ -179,6 +202,7 @@ export default function TurnosTab({
             key={tab.key}
             onClick={() => {
               setSubTab(tab.key);
+              onPageChange(1); // Reset page to 1 when changing tabs
               setCancelingId(null);
               setReprogrammingId(null);
             }}
@@ -208,7 +232,7 @@ export default function TurnosTab({
       ) : (
         <>
           {/* Listado de turnos */}
-          <div className="row g-3">
+          <div className="row g-3" style={{ opacity: isFetching ? 0.5 : 1, transition: 'opacity 0.2s ease-in-out', pointerEvents: isFetching ? 'none' : 'auto' }}>
           {turnos.length > 0 ? (
             turnos.map(turno => (
               <div key={turno.id} className="col-12 col-md-6">
@@ -218,19 +242,27 @@ export default function TurnosTab({
                     <div className="d-flex justify-content-between align-items-start border-bottom pb-2 mb-3">
                       <div>
                         <span className="font-weight-bold text-default d-block" style={{ fontSize: '15px' }}>
-                          {turno.paciente.nombre}
+                          {turno.paciente ? turno.paciente.nombre : 'Turno Disponible'}
                         </span>
-                        <span className="text-muted d-block" style={{ fontSize: '11px' }}>
-                          DNI: {turno.paciente.dni} | Obra Social: {obtenerObraSocialText(turno.paciente)} {obtenerPlanText(turno.paciente) ? `| Plan: ${obtenerPlanText(turno.paciente)}` : ''}
-                        </span>
+                        {turno.paciente ? (
+                          <span className="text-muted d-block" style={{ fontSize: '11px' }}>
+                            DNI: {turno.paciente.dni} | Obra Social: {obtenerObraSocialText(turno.paciente)} {obtenerPlanText(turno.paciente) ? `| Plan: ${obtenerPlanText(turno.paciente)}` : ''}
+                          </span>
+                        ) : (
+                          <span className="text-muted d-block" style={{ fontSize: '11px' }}>
+                            Sin paciente asignado
+                          </span>
+                        )}
                       </div>
-                      <button
-                        onClick={() => verHistorialPaciente(turno.paciente)}
-                        className="btn btn-link btn-xs p-0 text-primary font-weight-bold d-flex align-items-center gap-1 border-0"
-                        style={{ textDecoration: 'none', fontSize: '11px' }}
-                      >
-                        <FileText size={12} /> Historial
-                      </button>
+                      {turno.paciente && (
+                        <button
+                          onClick={() => verHistorialPaciente(turno.paciente)}
+                          className="btn btn-link btn-xs p-0 text-primary font-weight-bold d-flex align-items-center gap-1 border-0"
+                          style={{ textDecoration: 'none', fontSize: '11px' }}
+                        >
+                          <FileText size={12} /> Historial
+                        </button>
+                      )}
                     </div>
                     
                     {/* Detalles de la cita */}
@@ -249,7 +281,7 @@ export default function TurnosTab({
                       </div>
                       <div className="d-flex align-items-center gap-2">
                         <DollarSign size={14} className="text-primary" />
-                        <span>Costo: ${turno.costo || 'No especificado'}</span>
+                        <span>Costo: {turno.costo !== undefined && turno.costo !== null ? `$${turno.costo}` : 'No especificado'}</span>
                       </div>
                       <div className="mt-1 d-flex flex-column gap-1">
                         <span className="badge bg-neutral-light text-default border px-2 py-1 font-weight-bold me-auto" style={{ fontSize: '11px' }}>
@@ -277,7 +309,7 @@ export default function TurnosTab({
                         </span>
                         <span>Fecha Propuesta: <strong>{formatearFecha(turno.fechaHoraPropuesta)} - {formatearHora(turno.fechaHoraPropuesta)}</strong></span>
                         <span className="text-muted small">
-                          Cambio solicitado por {turno.historialEstado?.slice().reverse().find(h => h.estado === 'PENDIENTECAMBIO')?.usuario === 'medico' ? 'ti (Médico)' : 'el paciente'}.
+                          Cambio solicitado por {turno.historialEstado?.slice().reverse().find(h => h.estado === 'PENDIENTECAMBIO')?.usuario === medico?.id ? 'ti (Médico)' : 'el paciente'}.
                         </span>
                       </div>
                     )}
@@ -328,7 +360,7 @@ export default function TurnosTab({
                         {turno.estado === 'RESERVADO' && (
                           <>
                             <button
-                              onClick={() => onActualizarEstado(turno.id, 'CONFIRMADO')}
+                              onClick={() => onActualizarEstado(turno.id, 'CONFIRMADO', "Turno confirmado")}
                               className="btn btn-success btn-sm font-weight-bold d-flex align-items-center gap-1"
                               style={{ fontSize: '11px', borderRadius: '6px' }}
                             >
@@ -356,7 +388,7 @@ export default function TurnosTab({
                         {turno.estado === 'CONFIRMADO' && (
                           <>
                             <button
-                              onClick={() => onActualizarEstado(turno.id, 'REALIZADO')}
+                              onClick={() => onActualizarEstado(turno.id, 'REALIZADO', "Turno realizado")}
                               className="btn btn-primary btn-sm font-weight-bold d-flex align-items-center gap-1"
                               style={{ fontSize: '11px', borderRadius: '6px' }}
                             >
@@ -383,9 +415,9 @@ export default function TurnosTab({
 
                         {turno.estado === 'PENDIENTECAMBIO' && (
                           <>
-                            {turno.historialEstado?.slice().reverse().find(h => h.estado === 'PENDIENTECAMBIO')?.usuario !== 'medico' ? (
+                            {turno.historialEstado?.slice().reverse().find(h => h.estado === 'PENDIENTECAMBIO')?.usuario !== medico?.id ? (
                               <button
-                                onClick={() => onActualizarEstado(turno.id, 'CONFIRMADO', '', true)}
+                                onClick={() => onActualizarEstado(turno.id, 'CONFIRMADO', 'Turno aceptado', true)}
                                 className="btn btn-success btn-sm font-weight-bold"
                                 style={{ fontSize: '11px', borderRadius: '6px' }}
                               >
@@ -409,6 +441,7 @@ export default function TurnosTab({
                         {(turno.estado === 'REALIZADO' || turno.estado === 'CANCELADO') && (
                           <span className="text-muted small italic me-auto">Finalizado</span>
                         )}
+
 
                         <button
                           onClick={() => setTurnoHistorial(turno)}
@@ -441,18 +474,19 @@ export default function TurnosTab({
               Mostrando página <strong>{page}</strong> de <strong>{totalPages}</strong> ({totalItems} turnos en total)
             </span>
             <div className="d-flex gap-2">
-              <button
-                className="btn btn-outline-secondary btn-sm font-weight-bold px-3 py-1.5"
-                style={{ borderRadius: '8px', fontSize: '12px', transition: 'all 0.2s' }}
-                disabled={page === 1}
+              <button 
+                className="btn btn-outline-primary btn-sm" 
+                disabled={page === 1 || isFetching}
                 onClick={() => onPageChange(page - 1)}
               >
                 Anterior
               </button>
-              <button
-                className="btn btn-outline-secondary btn-sm font-weight-bold px-3 py-1.5"
-                style={{ borderRadius: '8px', fontSize: '12px', transition: 'all 0.2s' }}
-                disabled={page === totalPages}
+              <span className="text-muted small align-self-center">
+                Página {page} de {totalPages}
+              </span>
+              <button 
+                className="btn btn-outline-primary btn-sm" 
+                disabled={page === totalPages || isFetching}
                 onClick={() => onPageChange(page + 1)}
               >
                 Siguiente
@@ -475,7 +509,6 @@ export default function TurnosTab({
               <span className="d-block text-default"><strong>Paciente:</strong> {pacienteHistorial.paciente.nombre}</span>
               <span className="d-block text-default"><strong>DNI:</strong> {pacienteHistorial.paciente.dni}</span>
               <span className="d-block text-default"><strong>Obra Social / Plan:</strong> {obtenerObraSocialText(pacienteHistorial.paciente)} {obtenerPlanText(pacienteHistorial.paciente) ? `/ ${obtenerPlanText(pacienteHistorial.paciente)}` : ''}</span>
-              <span className="d-block text-default"><strong>Usuario:</strong> {pacienteHistorial.paciente.usuario}</span>
             </div>
             
             <h6 className="font-weight-bold mb-2 text-primary" style={{ fontSize: '13px' }}>Turnos del Paciente</h6>
@@ -510,7 +543,7 @@ export default function TurnosTab({
         {turnoHistorial && (
           <div className="p-3">
             <div className="mb-3 p-2.5 bg-neutral-light rounded-3" style={{ fontSize: '12px' }}>
-              <span className="d-block text-default"><strong>Paciente:</strong> {turnoHistorial.paciente.nombre}</span>
+              <span className="d-block text-default"><strong>Paciente:</strong> {turnoHistorial.paciente ? turnoHistorial.paciente.nombre : 'Sin paciente asignado'}</span>
               <span className="d-block text-default"><strong>Servicio:</strong> {turnoHistorial.servicio.nombre}</span>
               <span className="d-block text-default"><strong>Fecha/Hora original:</strong> {formatearFecha(turnoHistorial.fechaHora)} - {formatearHora(turnoHistorial.fechaHora)}</span>
             </div>
