@@ -1,6 +1,5 @@
 import mongoose from "mongoose";
-import { Usuario } from "../../domain/usuarios/usuario.js";
-import { Rol } from "../../domain/usuarios/rolEnum.js";
+import { Usuario } from "../../domain/usuario.js";
 
 const UsuarioSchema = new mongoose.Schema(
   {
@@ -17,11 +16,6 @@ const UsuarioSchema = new mongoose.Schema(
       type: String,
       required: true,
       // NO ponemos el minlength de 8 ni las regex, ya que se hashea antes de guardar
-    },
-    rol: {
-      type: String,
-      enum: Object.values(Rol),
-      default: Rol.PACIENTE,
     },
   },
   { timestamps: true },

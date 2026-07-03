@@ -1,30 +1,32 @@
 import React, { useState, useEffect } from 'react';
 import { User, Edit, Check } from 'lucide-react';
 
-export default function DatosPersonales({ medico, handleGuardarDatosPersonales }) {
+export default function DatosPersonales({ doctor, handleGuardarDatosPersonales }) {
   const [isEditingDatos, setIsEditingDatos] = useState(false);
   const [formDatos, setFormDatos] = useState({ 
-    nombre: medico.nombre || '', 
-    honorario: medico.honorario || 0 
+    nombre: doctor.nombre || '', 
+    apellido: doctor.apellido || '', 
+    honorario: doctor.honorario || 0 
   });
 
   useEffect(() => {
     setFormDatos({ 
-      nombre: medico.nombre || '', 
-      honorario: medico.honorario || 0 
+      nombre: doctor.nombre || '', 
+      apellido: doctor.apellido || '', 
+      honorario: doctor.honorario || 0 
     });
-  }, [medico]);
+  }, [doctor]);
 
-  const onGuardar = async (e) => {
+  const onGuardar = (e) => {
     e.preventDefault();
-    const success = await handleGuardarDatosPersonales(formDatos);
+    const success = handleGuardarDatosPersonales(formDatos);
     if (success) {
       setIsEditingDatos(false);
     }
   };
 
   return (
-    <form onSubmit={onGuardar} className="col-12 col-lg-6 d-flex flex-column justify-content-center px-4">
+    <form onSubmit={onGuardar} className="col-12 col-lg-4 col-border-right d-flex flex-column justify-content-center px-4">
       {/* Cabecera de la sección */}
       <div className="d-flex justify-content-between align-items-center mb-4 border-bottom pb-2">
         <h5 className="font-weight-bold text-default m-0 d-flex align-items-center gap-2" style={{ fontSize: '13px', letterSpacing: '0.8px', color: 'var(--color-text)' }}>
@@ -35,7 +37,7 @@ export default function DatosPersonales({ medico, handleGuardarDatosPersonales }
           <button
             type="button"
             onClick={() => { 
-              setFormDatos({ nombre: medico.nombre, honorario: medico.honorario }); 
+              setFormDatos({ nombre: doctor.nombre, apellido: doctor.apellido, honorario: doctor.honorario }); 
               setIsEditingDatos(true); 
             }}
             className="btn btn-link btn-sm text-primary font-weight-bold d-flex align-items-center gap-1 p-0 border-0"
@@ -58,28 +60,43 @@ export default function DatosPersonales({ medico, handleGuardarDatosPersonales }
       {/* Cuerpo de Datos */}
       <div className="row g-3 text-default" style={{ fontSize: '13px' }}>
 
-        {/* Fila de Nombre (Solo visible/editable si está en modo edición) */}
+        {/* Fila de Nombre y Apellido (Solo visible/editable si está en modo edición) */}
         {isEditingDatos && (
-          <div className="col-12">
-            <div className="p-2 border rounded-3" style={{ borderColor: 'var(--color-success)', backgroundColor: 'var(--color-success-light)', transition: 'all 0.2s' }}>
-              <span className="d-block text-muted mb-0.5" style={{ fontSize: '10px', textTransform: 'uppercase', fontWeight: '600', letterSpacing: '0.5px' }}>Nombre Completo</span>
-              <input
-                type="text"
-                className="form-control form-control-sm border-0 p-0 bg-transparent font-weight-bold text-default"
-                style={{ fontSize: '13px', boxShadow: 'none', height: 'auto' }}
-                value={formDatos.nombre}
-                onChange={e => setFormDatos({ ...formDatos, nombre: e.target.value })}
-                required
-              />
+          <>
+            <div className="col-6">
+              <div className="p-2 border rounded-3" style={{ borderColor: 'var(--color-success)', backgroundColor: 'var(--color-success-light)', transition: 'all 0.2s' }}>
+                <span className="d-block text-muted mb-0.5" style={{ fontSize: '10px', textTransform: 'uppercase', fontWeight: '600', letterSpacing: '0.5px' }}>Nombre</span>
+                <input
+                  type="text"
+                  className="form-control form-control-sm border-0 p-0 bg-transparent font-weight-bold text-default"
+                  style={{ fontSize: '13px', boxShadow: 'none', height: 'auto' }}
+                  value={formDatos.nombre}
+                  onChange={e => setFormDatos({ ...formDatos, nombre: e.target.value })}
+                  required
+                />
+              </div>
             </div>
-          </div>
+            <div className="col-6">
+              <div className="p-2 border rounded-3" style={{ borderColor: 'var(--color-success)', backgroundColor: 'var(--color-success-light)', transition: 'all 0.2s' }}>
+                <span className="d-block text-muted mb-0.5" style={{ fontSize: '10px', textTransform: 'uppercase', fontWeight: '600', letterSpacing: '0.5px' }}>Apellido</span>
+                <input
+                  type="text"
+                  className="form-control form-control-sm border-0 p-0 bg-transparent font-weight-bold text-default"
+                  style={{ fontSize: '13px', boxShadow: 'none', height: 'auto' }}
+                  value={formDatos.apellido}
+                  onChange={e => setFormDatos({ ...formDatos, apellido: e.target.value })}
+                  required
+                />
+              </div>
+            </div>
+          </>
         )}
 
         {/* Campo: Usuario */}
         <div className="col-6">
           <div className="p-2 border border-transparent rounded-3" style={{ background: isEditingDatos ? 'var(--color-bg)' : 'transparent' }}>
             <span className="d-block text-muted mb-0.5" style={{ fontSize: '10px', textTransform: 'uppercase', fontWeight: '600', letterSpacing: '0.5px' }}>Usuario</span>
-            <span className="font-weight-bold d-block text-truncate text-muted" title={medico.usuario?.nombreUsuario || medico.usuario || ""} style={{ fontSize: '13px' }}>{medico.usuario?.nombreUsuario || medico.usuario}</span>
+            <span className="font-weight-bold d-block text-truncate text-muted" title={doctor.usuario} style={{ fontSize: '13px' }}>{doctor.usuario}</span>
           </div>
         </div>
 
@@ -103,8 +120,8 @@ export default function DatosPersonales({ medico, handleGuardarDatosPersonales }
           ) : (
             <div className="p-2 border border-transparent rounded-3">
               <span className="d-block text-muted mb-0.5" style={{ fontSize: '10px', textTransform: 'uppercase', fontWeight: '600', letterSpacing: '0.5px' }}>Honorario</span>
-              <span className="font-weight-bold d-block text-success" style={{ fontSize: '14px', letterSpacing: '0.2px' }} title={medico.honorario}>
-                ${Number(medico.honorario).toLocaleString('es-AR')}
+              <span className="font-weight-bold d-block text-success" style={{ fontSize: '14px', letterSpacing: '0.2px' }} title={doctor.honorario}>
+                ${Number(doctor.honorario).toLocaleString('es-AR')}
               </span>
             </div>
           )}
@@ -114,7 +131,7 @@ export default function DatosPersonales({ medico, handleGuardarDatosPersonales }
         <div className="col-6">
           <div className="p-2 border border-transparent rounded-3" style={{ background: isEditingDatos ? 'var(--color-bg)' : 'transparent' }}>
             <span className="d-block text-muted mb-0.5" style={{ fontSize: '10px', textTransform: 'uppercase', fontWeight: '600', letterSpacing: '0.5px' }}>Documento</span>
-            <span className="font-weight-bold d-block text-muted" style={{ fontSize: '13px' }}>{medico.documento}</span>
+            <span className="font-weight-bold d-block text-muted" style={{ fontSize: '13px' }}>{doctor.documento}</span>
           </div>
         </div>
 
@@ -122,7 +139,7 @@ export default function DatosPersonales({ medico, handleGuardarDatosPersonales }
         <div className="col-6">
           <div className="p-2 border border-transparent rounded-3" style={{ background: isEditingDatos ? 'var(--color-bg)' : 'transparent' }}>
             <span className="d-block text-muted mb-0.5" style={{ fontSize: '10px', textTransform: 'uppercase', fontWeight: '600', letterSpacing: '0.5px' }}>Matrícula</span>
-            <span className="font-weight-bold d-block text-muted" style={{ fontSize: '13px' }}>{medico.matricula}</span>
+            <span className="font-weight-bold d-block text-muted" style={{ fontSize: '13px' }}>{doctor.matricula}</span>
           </div>
         </div>
 

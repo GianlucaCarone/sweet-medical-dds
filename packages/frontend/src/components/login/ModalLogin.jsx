@@ -10,23 +10,18 @@ import {
   Box,
   Typography,
   Alert,
-  InputAdornment,
-  IconButton,
 } from "@mui/material";
-import Visibility from "@mui/icons-material/Visibility";
-import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import { useAuth } from "../../context/AuthContext.jsx"; // Importamos el hook del contexto de autenticación
 
 // Le pasamos las props 'open' y 'onClose' tal como hiciste en ModalPerfil
 // Agregamos 'onLoginSuccess' para actualizar el contexto/estado del Header al loguearse
-export default function ModalLogin({ open, onClose, onLoginSuccess, onIrARegistro }) {
+export default function ModalLogin({ open, onClose, onLoginSuccess }) {
   // El backend identifica al usuario por 'nombreUsuario', pero visualmente
   // el campo se muestra como "Correo Electrónico" para el usuario final.
   const [nombreUsuario, setNombreUsuario] = useState('');
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const [mostrarPassword, setMostrarPassword] = useState(false);
 
   const { login } = useAuth(); // Traemos la función del estado global
 
@@ -78,44 +73,14 @@ export default function ModalLogin({ open, onClose, onLoginSuccess, onIrARegistr
 
           <TextField
             label="Contraseña"
-            type={mostrarPassword ? "text" : "password"}
+            type="password"
             variant="outlined"
             fullWidth
             required
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            InputProps={{
-              endAdornment: (
-                <InputAdornment position="end">
-                  <IconButton
-                    aria-label="toggle password visibility"
-                    onClick={() => setMostrarPassword((prev) => !prev)}
-                    edge="end"
-                  >
-                    {mostrarPassword ? <VisibilityOff /> : <Visibility />}
-                  </IconButton>
-                </InputAdornment>
-              ),
-            }}
           />
         </DialogContent>
-
-        <Box sx={{ px: 3, pb: 0, textAlign: 'center' }}>
-          <Typography variant="body2" color="text.secondary">
-            ¿No tenés cuenta?{' '}
-            <Button
-              variant="text"
-              size="small"
-              sx={{ textTransform: 'none', p: 0, minWidth: 0 }}
-              onClick={() => {
-                onClose();
-                if (onIrARegistro) onIrARegistro();
-              }}
-            >
-              Registrate
-            </Button>
-          </Typography>
-        </Box>
 
         <DialogActions sx={{ p: 2, justifyContent: 'space-between' }}>
           <Button onClick={handleCerrar} color="inherit" disabled={loading}>

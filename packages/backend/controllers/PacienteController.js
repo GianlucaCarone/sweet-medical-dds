@@ -57,18 +57,4 @@ export class PacienteController {
             return next(error);
         }
     }
-
-    /**
-     * GET /pacientes/me
-     * Protegido por authMiddleware. Obtiene el perfil del paciente del usuario logueado.
-     * El id del usuario se extrae del JWT (req.user.id) — nunca viaja en la URL.
-     */
-    async buscarMiPerfil(req, res, next) {
-        try {
-            const paciente = await this.#pacienteService.findByUserId(req.user.id);
-            res.status(200).json({ status: "success", data: paciente });
-        } catch (error) {
-            return next(error);
-        }
-    }
 }

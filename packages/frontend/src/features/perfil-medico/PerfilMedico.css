@@ -12,7 +12,7 @@
 }
 
 .container-perfil {
-  max-width: 1300px;
+  max-width: 1140px;
   margin: 30px auto;
   padding: 0 20px 80px;
 }
@@ -118,7 +118,7 @@
 .semana-grid {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  gap: 8px;
+  gap: 12px;
   margin-top: 15px;
 }
 
@@ -162,7 +162,7 @@
 }
 
 .dia-body {
-  padding: 6px;
+  padding: 8px;
   display: flex;
   flex-direction: column;
   gap: 8px;

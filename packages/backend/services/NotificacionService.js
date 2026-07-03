@@ -3,6 +3,7 @@ import { NotFoundError } from "../errors/AppError.js";
 import { Notificacion } from "../domain/notificacion.js";
 import { UsuarioService } from "./UsuarioService.js";
 import { logger } from "../config/logger.js";
+import { Usuario } from "../domain/usuario.js";
 import { FactoryNotificacion } from "../domain/factoryNotificacion.js";
 
 export class NotificacionService {
@@ -31,13 +32,15 @@ export class NotificacionService {
 
     async crearNotificacion(notificacionData) {
         logger.info("[NOTIFICACIONES SERVICE]: Obteniendo datos necesarios para crear la notificacion");
-        // Validamos que los usuarios existan
-        const destinatario = await this.usuarioService.findById(notificacionData.destinatario);
-        const remitente = await this.usuarioService.findById(notificacionData.remitente);
+        const destinatarioObtenido = await this.usuarioService.findById(notificacionData.destinatario);
+        const destinatario = new Usuario(destinatarioObtenido); destinatario.id = destinatarioObtenido.id;
+        
+        const remitenteObtenido = await this.usuarioService.findById(notificacionData.remitente);
+        const remitente = new Usuario(remitenteObtenido); remitente.id = remitenteObtenido.id;
 
         const notificacion = new Notificacion({
-            destinatario: destinatario.id,
-            remitente: remitente.id,
+            destinatario: destinatario,
+            remitente: remitente,
             mensaje: notificacionData.mensaje
         });
         const notificacionGuardada = await this.notificacionRepository.save(notificacion);
