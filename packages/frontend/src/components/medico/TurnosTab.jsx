@@ -60,10 +60,14 @@ export default function TurnosTab({
     if (!usuarioId) return 'Sistema';
     const cleanUser = obtenerId(usuarioId);
     
-    if (cleanUser === 'medico' || (turno.medico && cleanUser === obtenerId(turno.medico))) {
+    const uId = typeof usuarioId === 'object' ? (usuarioId).toString() : String(usuarioId);
+    const medicoId = turno.medico ? String(turno.medico._id) : null;
+    const pacienteId = turno.paciente ? String(turno.paciente._id) : null;
+
+    if(uId === medicoId) {
       return 'Médico';
     }
-    if (cleanUser === 'paciente' || (turno.paciente && cleanUser === obtenerId(turno.paciente))) {
+    if(uId === pacienteId) {
       return 'Paciente';
     }
     return 'Sistema';
