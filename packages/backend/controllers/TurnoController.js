@@ -98,29 +98,19 @@ export class TurnoController {
     }
   };
 
-  getTurnosProximosUsuario = async (req, res, next) => {
+  findAllPaginatedByUsuario = async (req, res, next) => {
     try {
-      //const idUsuario = req.user.id;
-      const idUsuario = req.query.idUsuario;
-      logger.info("[TURNOS CONTROLLER]: Obteniendo turnos proximos del usuario de id: " + idUsuario);
-      const turnos = await this.turnoService.obtenerTurnosProximosUsuario(idUsuario);
-      logger.info("[TURNOS CONTROLLER]: Turnos proximos obtenidos: " + JSON.stringify(turnos));
-      res.status(200).json(turnos);
-    } catch (error) {
-      logger.error("[TURNOS CONTROLLER]: Error al obtener turnos del paciente");
-      return next(error);
-    }
-  }
-
-  getHistorialUsuario = async (req, res, next) => {
-    try {
-      //const idUsuario = req.user.id;
-      const idUsuario = req.query.idUsuario;
       const paginacion = this.extraerPaginacion(req.query);
-      logger.info("[TURNOS CONTROLLER]: Obteniendo historial de usuario paginado");
-      const resultado = await this.turnoService.obtenerHistorialDeUsuario(idUsuario, paginacion.numeroPagina, paginacion.limitePorPagina);
+      const filtros = this.extraerFiltros(req.query);
 
-      logger.info(`[TURNOS CONTROLLER]: Turnos de usuario obtenidos: ` + JSON.stringify(resultado));
+      logger.info("[TURNOS CONTROLLER]: Obteniendo turnos de usuario paginados: " + JSON.stringify(req.query));
+      const resultado = await this.turnoService.obtenerTurnosDeUsuario(
+        filtros,
+        paginacion.numeroPagina,
+        paginacion.limitePorPagina,
+      );
+
+      logger.info(`[TURNOS CONTROLLER]: Turnos de usuario obtenidos: ${resultado.turnos.length}`);
       res.status(200).json({
         status: "success",
         data: resultado.turnos,
@@ -248,17 +238,14 @@ export class TurnoController {
     if (query.estado !== undefined) {
       filtros.estado = query.estado;
     }
+    if (query.estados !== undefined) {
+      // Con claves repetidas (estados=A&estados=B) un solo valor llega como
+      // string; lo normalizamos a array para que el schema (z.array) valide bien.
+      filtros.estados = Array.isArray(query.estados) ? query.estados : [query.estados];
+    }
     if (query.servicioId !== undefined) {
       filtros.servicioId = query.servicioId;
     }
-    /* en el repo espera servicio id, no especialidad o practica (el turno tiene servicio)
-    if (query.especialidadId !== undefined) {
-      filtros.especialidadId = query.especialidadId;
-    }
-    if (query.practicaId !== undefined) {
-      filtros.practicaId = query.practicaId;
-    }
-    */
     if (query.sedeId !== undefined) {
       filtros.sedeId = query.sedeId;
     }

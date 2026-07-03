@@ -161,8 +161,6 @@ disponible:
         }
 
         const inicio = (numeroPagina - 1) * limitePorPagina;
-
-        console.log("filtros a usar: " + JSON.stringify(query));
         // Ejecutar la consulta y el conteo en paralelo
         const [turnos, totalTurnos] = await Promise.all([
             this.model.find(query)
@@ -177,7 +175,6 @@ disponible:
                 .exec(),
             this.model.countDocuments(query).exec()
         ]);
-        console.log("turnos levantados: " + JSON.stringify(turnos));
 
         return {
             turnos,

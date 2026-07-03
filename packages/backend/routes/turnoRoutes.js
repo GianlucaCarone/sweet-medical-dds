@@ -273,37 +273,7 @@ export default function turnoRoutes(getController) {
          * @swagger
          * /turno/mis-turnos:
          *   get:
-         *     summary: Listar mis turnos proximos
-         *     tags: [Turnos]
-         *     parameters:
-         *       - in: query
-         *         name: page
-         *         schema: { type: integer, minimum: 1 }
-         *       - in: query
-         *         name: limit
-         *         schema: { type: integer, minimum: 1 }
-         *     responses:
-         *       200:
-         *         description: Turnos del usuario
-         *         content:
-         *           application/json:
-         *             schema:
-         *               type: object
-         *               properties:
-         *                 status: { type: string, example: "success" }
-         *                 data:
-         *                   type: array
-         *                   items:
-         *                     $ref: '#/components/schemas/Turno'
-         */
-        .get(/*authMiddleware,*/ (req, res, next) => turnoController.getTurnosProximosUsuario(req, res, next));
-
-    router.route("/historial")
-        /**
-         * @swagger
-         * /turno/historial:
-         *   get:
-         *     summary: Obtener historial
+         *     summary: Listar mis turnos
          *     tags: [Turnos]
          *     parameters:
          *       - in: query
@@ -328,7 +298,7 @@ export default function turnoRoutes(getController) {
          *                 paginacion:
          *                   $ref: '#/components/schemas/Paginacion'
          */
-        .get(/*authMiddleware,*/ (req, res, next) => turnoController.getHistorialUsuario(req, res, next));
+        .get((req, res, next) => turnoController.findAllPaginatedByUsuario(req, res, next));
 
     router.route("/estado/:estadoId")
         /**

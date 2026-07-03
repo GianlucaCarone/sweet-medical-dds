@@ -21,6 +21,7 @@ export const bodyAsignarTurnoSchema = z.object({
 export const filtrosTurnoSchema = z.object({
     pacienteId: objectIdSchema("paciente").optional(),
     estado: z.enum(EstadoTurnoEnum, { error: "El estado del turno no es válido" }).optional(),
+    estados: z.array(z.enum(EstadoTurnoEnum, { error: "El estado del turno no es válido" })).optional(),
     medicoId: objectIdSchema("medico").optional(),
     servicioId: objectIdSchema("servicio").optional(),
     sedeId: objectIdSchema("sede").optional(),

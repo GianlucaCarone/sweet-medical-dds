@@ -1,14 +1,15 @@
 import axiosInstance from './axiosInstance.js';
 
-export const getPacienteByIdUsuario = async (idUsuario) => {
-    try {
-        const response = await axiosInstance.get('/pacientes/${idUsuario}');
-        return response.data;
-    } catch (e) {
-        console.error("Error obteniendo el id del paciente con id de usuario: " + idUsuario);
-        throw e;
-    }
-}
+//ESTE ENDPOINT NO EXISTE
+//export const getPacienteByIdUsuario = async (idUsuario) => {
+//    try {
+//        const response = await axiosInstance.get('/pacientes/${idUsuario}');
+//        return response.data;
+//    } catch (e) {
+//        console.error("Error obteniendo el id del paciente con id de usuario: " + idUsuario);
+//        throw e;
+//    }
+//}
 
 export const getTurnosDisponiblesFiltradoPaginado = async (filtros, paginacion) => {
     try {
@@ -56,7 +57,6 @@ export const getListadoSedes = async () => {
 }
 
 export const reservarTurnos = async (idTurnosArray, pacienteId) => {
-    console.log("reservando turnos:", idTurnosArray, "para paciente:", pacienteId);
     try {
         const response = await axiosInstance.put('/turno/asignar', {
             pacienteId: pacienteId,

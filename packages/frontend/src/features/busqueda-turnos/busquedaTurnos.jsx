@@ -6,7 +6,7 @@ import TarjetaTurnoSkeleton from '../../components/busqueda-turnos/tarjetaTurnoS
 import Pagination from '@mui/material/Pagination';
 import { turnosEjemplo, datosPaginacionEjemplo } from '../../mockdata/turnos.js';
 import { medicosEjemplo, especialidadesEjemplo, practicasEjemplo, sedesEjemplo } from '../../mockdata/busquedaTurnos.js';
-import { getTurnosDisponiblesFiltradoPaginado, getListadoMedicos, getListadoEspecialidades, getListadoPracticas, getListadoSedes, getListadoServicios, getPacienteByIdUsuario } from '../../api/apiBusquedaTurnos.js';
+import { getTurnosDisponiblesFiltradoPaginado, getListadoMedicos, getListadoEspecialidades, getListadoPracticas, getListadoSedes, getListadoServicios } from '../../api/apiBusquedaTurnos.js';
 import './busquedaTurnos.css';
 import { useAuth } from '../../context/AuthContext.jsx';
 import { useCart } from '../../context/CartContext.jsx';
@@ -97,13 +97,11 @@ export default function BusquedaTurnos() {
         const filtrosCompletos = {
             ...filtrosInput,
             estado: 'DISPONIBLE',
-            // pacienteId: pacienteID,
-            orden: "asc"
+            [orden]: "asc"
         };
         if (pacienteID != null) filtrosCompletos.pacienteId = pacienteID
         const turnosFiltrados = await getTurnosDisponiblesFiltradoPaginado(filtrosCompletos, page);
         setTurnos(turnosFiltrados.data);
-        console.log("Turnos recibidos: " + JSON.stringify(turnosFiltrados.data));
         if (turnosFiltrados.data.length === 0) setSinResultados(true);
         setConjuntosTurnos(crearConjuntosTurnos(turnosFiltrados.data));
         setDataPaginacion(turnosFiltrados.paginacion);

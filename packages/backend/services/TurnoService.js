@@ -195,7 +195,7 @@ export class TurnoService {
         turno.paciente = paciente;
         const cobertura = this.calcularCostoTurno(obraSocial, plan, turno.costo, turno.servicio);
         turno.costo = cobertura.costoFinal ?? cobertura;
-        turno.cobertura = cobertura.estadoCobertura ?? null;
+        turno.estadoCobertura = cobertura.estadoCobertura ?? null;
 
         turno.actualizarEstadoTurno({
           nuevoEstado: EstadoTurnoEnum.RESERVADO,

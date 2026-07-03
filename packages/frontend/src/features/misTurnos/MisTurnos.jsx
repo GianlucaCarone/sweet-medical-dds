@@ -5,7 +5,7 @@ import CalendarMonthRoundedIcon from '@mui/icons-material/CalendarMonthRounded';
 import CheckCircleRoundedIcon from '@mui/icons-material/CheckCircleRounded';
 import CancelRoundedIcon from '@mui/icons-material/CancelRounded';
 import NotificationsRoundedIcon from '@mui/icons-material/NotificationsRounded';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import TurnosEmptyState from '../../components/mis-turnos/TurnosEmptyState';
 import TurnoCardSkeleton from '../../components/mis-turnos/TurnoCardSkeleton';
 import EstadisticaTurnoCardSkeleton from '../../components/mis-turnos/EstadisticaTurnoCardSkeleton';
@@ -20,7 +20,7 @@ import Pagination from '@mui/material/Pagination';
 // Contextos y hooks
 import { useAlert } from "../../context/AlertContext.jsx";
 import TurnoHistorialCard from '../../components/cards/TurnoHistorialCard';
-import { getTurnosUsuario, getHistorialUsuario, cancelarTurno } from '../../api/apiMisTurnos.js';
+import { getTurnosProximosUsuario, getHistorialUsuario, cancelarTurno } from '../../api/apiMisTurnos.js';
 import styled from 'styled-components';
 
 const StyledTarjetaWrapper = styled(CardBase)`
@@ -39,7 +39,9 @@ const StatsGrid = styled.div`
 
 export default function MisTurnos() {
   const idUsuario = '6a0b7127da9b7c8a035d969b';
+  const [idPaciente, setIdPaciente] = useState('6a0b720ada9b7c8a035d96a9');
   const [paginaProximos, setPaginaProximos] = useState(1);
+  const [dataPaginacionProximos, setDataPaginacionProximos] = useState({limitePorPagina: 5})
   const [paginaHistorial, setPaginaHistorial] = useState(1);
   const [dataPaginacionHistorial, setDataPaginacionHistorial] = useState({limitePorPagina: 5});
   const [loading, setLoading] = useState(true);
@@ -60,7 +62,7 @@ export default function MisTurnos() {
   const estadisticasData = [
     {
       id: 1,
-      numero: turnosProximos.length.toString(),
+      numero: dataPaginacionProximos.totalTurnos,
       texto: 'Turnos próximos',
       tipo: 'azul',
       icono: <CalendarMonthRoundedIcon />,
@@ -100,26 +102,34 @@ export default function MisTurnos() {
     }, 1500);
   };
 
-  const cargarProximosTurnos = async () => {
+  const cargarProximosTurnos = useCallback(async (page = paginaProximos) => {
     try {
-      const proximosTurnos = await getTurnosUsuario(idUsuario);
-      setTurnosProximos(proximosTurnos);
+      const paginacion = {
+        'page': page,
+        'limit': dataPaginacionHistorial.limitePorPagina
+      }
+      const proximosTurnos = await getTurnosProximosUsuario(idPaciente, paginacion);
+      setTurnosProximos(proximosTurnos.data);
+      setDataPaginacionProximos(proximosTurnos.paginacion);
     } catch (error) {
       console.error("Error cargando listados:", error);
     }
-  }
+  }, [paginaProximos])
 
-  const cargarHistorialTurnos = async ({ page = paginaHistorial } = {}) => {
+  const cargarHistorialTurnos = useCallback(async (page = paginaHistorial) => {
     try {
-      const historialPaginado = await getHistorialUsuario(idUsuario, dataPaginacionHistorial);
-      console.log("historial turnos: " + JSON.stringify(historialPaginado.data));
+      const paginacion = {
+        'page': page,
+        'limit': dataPaginacionHistorial.limitePorPagina
+      }
+      const historialPaginado = await getHistorialUsuario(idPaciente, paginacion);
       setTurnosHistorial(historialPaginado.data);
       setDataPaginacionHistorial(historialPaginado.paginacion);
       setLoading(false)
     } catch (error) {
       console.error("Error cargando listados:", error);
     }
-  }
+  }, [paginaHistorial])
 
   useEffect(() => { //renderizado inicial
     if (yaCargado.current) return;
@@ -214,6 +224,15 @@ export default function MisTurnos() {
               </Button>
             </div>
           )}
+
+          <Pagination color="#137333"
+            count={dataPaginacionProximos.totalPaginas} 
+            page={paginaProximos}
+            onChange={(e, page) => {
+              setPaginaProximos(page);
+              cargarProximosTurnos(page);
+            }}
+          />
         </>
       )}
 
@@ -238,34 +257,14 @@ export default function MisTurnos() {
             ))}
           </div>
 
-          <Pagination count={dataPaginacionHistorial.totalPaginas} color="#137333"
-                              page={paginaHistorial}
-                              onChange={(e, page) => {
-                                  setPaginaHistorial(page);
-                                  cargarHistorialTurnos(page);
-                              }}
-                          />
-          {/*{dataPaginacionHistorial.totalPaginas > 1 && (
-            <div className="paginacion-turnos">
-              <button
-                disabled={paginaHistorial === 1}
-                onClick={() => setPaginaHistorial(paginaHistorial - 1)}
-              >
-                Anterior
-              </button>
-
-              <span>
-                Página {paginaHistorial} de {dataPaginacionHistorial.totalPaginas}
-              </span>
-
-              <button
-                disabled={paginaHistorial === dataPaginacionHistorial.totalPaginas}
-                onClick={() => setPaginaHistorial(paginaHistorial + 1)}
-              >
-                Siguiente
-              </button>
-            </div>
-          )}*/}
+          <Pagination color="#137333"
+            count={dataPaginacionHistorial.totalPaginas} 
+            page={paginaHistorial}
+            onChange={(e, page) => {
+                setPaginaHistorial(page);
+                cargarHistorialTurnos(page);
+            }}
+          />
         </>
       )}
     </section>
