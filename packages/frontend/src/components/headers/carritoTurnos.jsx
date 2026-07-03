@@ -118,12 +118,15 @@ export default function CarritoTurnos({ items, onEliminar, onConfirmar, onCerrar
           disabled={items.length === 0}
           startIcon={<CheckCircleIcon />}
           onClick={async () => {
-            console.log("Reservando turnos para el paciente: " + pacienteID);
-            const response = await reservarTurnos(items.map((t) => t.id), pacienteID);
-            showAlert("Turnos reservados exitosamente", "success");
-            onCerrar();
-            onConfirmar();
-            navigate("/mis-turnos");
+            try {
+              await reservarTurnos(items.map((t) => t.id), pacienteID);
+              showAlert("Turnos reservados exitosamente", "success");
+              onCerrar();
+              onConfirmar();
+              navigate("/mis-turnos");
+            } catch (e) {
+              showAlert(e.message, "error");
+            }
           }}
           sx={{
             backgroundColor: '#1d4ed8',

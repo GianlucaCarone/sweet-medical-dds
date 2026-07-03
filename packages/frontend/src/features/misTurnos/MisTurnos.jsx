@@ -5,7 +5,7 @@ import CalendarMonthRoundedIcon from '@mui/icons-material/CalendarMonthRounded';
 import CheckCircleRoundedIcon from '@mui/icons-material/CheckCircleRounded';
 import CancelRoundedIcon from '@mui/icons-material/CancelRounded';
 import NotificationsRoundedIcon from '@mui/icons-material/NotificationsRounded';
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import TurnosEmptyState from '../../components/mis-turnos/TurnosEmptyState';
 import TurnoCardSkeleton from '../../components/mis-turnos/TurnoCardSkeleton';
 import EstadisticaTurnoCardSkeleton from '../../components/mis-turnos/EstadisticaTurnoCardSkeleton';
@@ -102,21 +102,21 @@ export default function MisTurnos() {
     }, 1500);
   };
 
-  const cargarProximosTurnos = useCallback(async (page = paginaProximos) => {
+  const cargarProximosTurnos = async (page = paginaProximos) => {
     try {
       const paginacion = {
         'page': page,
-        'limit': dataPaginacionHistorial.limitePorPagina
+        'limit': dataPaginacionProximos.limitePorPagina
       }
       const proximosTurnos = await getTurnosProximosUsuario(idPaciente, paginacion);
       setTurnosProximos(proximosTurnos.data);
       setDataPaginacionProximos(proximosTurnos.paginacion);
     } catch (error) {
-      console.error("Error cargando listados:", error);
+      console.error("Error cargando turnos proximos:", error);
     }
-  }, [paginaProximos])
+  }
 
-  const cargarHistorialTurnos = useCallback(async (page = paginaHistorial) => {
+  const cargarHistorialTurnos = async (page = paginaHistorial) => {
     try {
       const paginacion = {
         'page': page,
@@ -127,9 +127,9 @@ export default function MisTurnos() {
       setDataPaginacionHistorial(historialPaginado.paginacion);
       setLoading(false)
     } catch (error) {
-      console.error("Error cargando listados:", error);
+      console.error("Error cargando historial:", error);
     }
-  }, [paginaHistorial])
+  }
 
   useEffect(() => { //renderizado inicial
     if (yaCargado.current) return;

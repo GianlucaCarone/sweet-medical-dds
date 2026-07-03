@@ -1,5 +1,5 @@
 import React, { use } from 'react';
-import { useEffect, useState, useCallback, useRef } from "react";
+import { useEffect, useState, useRef } from "react";
 import SidebarFiltros from '../../components/busqueda-turnos/sidebarFiltros.jsx';
 import TarjetaTurno from '../../components/busqueda-turnos/tarjetaTurno.jsx';
 import TarjetaTurnoSkeleton from '../../components/busqueda-turnos/tarjetaTurnoSkeleton.jsx';
@@ -87,7 +87,7 @@ export default function BusquedaTurnos() {
         //cargarTurnos(filtrosInput);
     };
 
-    const cargarTurnos = useCallback(async (filtrosInput = filtrosActualesRef.current, pagina = numeroPagina, orden = ordenarPor) => {
+    const cargarTurnos = async (filtrosInput = filtrosActualesRef.current, pagina = numeroPagina, orden = ordenarPor) => {
         setLoading(true);
         setTimeout(() => setLoading(false), 200);
         setSinResultados(false);
@@ -106,7 +106,7 @@ export default function BusquedaTurnos() {
         setConjuntosTurnos(crearConjuntosTurnos(turnosFiltrados.data));
         setDataPaginacion(turnosFiltrados.paginacion);
         setLoading(false);
-    }, [ordenarPor, numeroPagina, pacienteID]);
+    };
 
     const agregarAlCarritoTurno = (id) => {
         const turno = turnos.find(t => t.id === id);
