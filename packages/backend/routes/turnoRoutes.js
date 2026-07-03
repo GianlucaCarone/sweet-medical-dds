@@ -1,5 +1,6 @@
 import express from "express";
 import { TurnoController } from "../controllers/TurnoController.js";
+import { authMiddleware } from "../middlewares/authMiddleware.js";
 
 /**
  * @swagger
@@ -163,7 +164,7 @@ export default function turnoRoutes(getController) {
          *                 paginacion:
          *                   $ref: '#/components/schemas/Paginacion'
          */
-        .get((req, res, next) => turnoController.findAllPaginatedByUsuario(req, res, next));
+        .get(authMiddleware, (req, res, next) => turnoController.findAllPaginatedByUsuario(req, res, next));
 
     router.route("/:id/asignar")
         /**
@@ -233,7 +234,7 @@ export default function turnoRoutes(getController) {
          *       400:
          *         $ref: '#/components/responses/E400'
          */
-        .patch((req, res, next) => turnoController.cambiarEstadoTurno(req, res, next));
+        .patch(authMiddleware, (req, res, next) => turnoController.cambiarEstadoTurno(req, res, next));
 
     router.route("/:id/solicitar-cambio-fecha")
         /**
@@ -268,7 +269,7 @@ export default function turnoRoutes(getController) {
          *       400:
          *         $ref: '#/components/responses/E400'
          */
-        .patch((req, res, next) => turnoController.solicitarCambioFecha(req, res, next));
+        .patch(authMiddleware, (req, res, next) => turnoController.solicitarCambioFecha(req, res, next));
 
     router.route("/:id/responder-cambio-fecha")
         /**
@@ -303,10 +304,10 @@ export default function turnoRoutes(getController) {
          *       400:
          *         $ref: '#/components/responses/E400'
          */
-        .patch((req, res, next) => turnoController.responderCambioFecha(req, res, next));
+        .patch(authMiddleware, (req, res, next) => turnoController.responderCambioFecha(req, res, next));
 
     router.route("/contadores")
-        .get((req, res, next) => turnoController.obtenerContadores(req, res, next));
+        .get(authMiddleware, (req, res, next) => turnoController.obtenerContadores(req, res, next));
 
     router.route("/:estadoId")
         /**
