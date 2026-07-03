@@ -26,7 +26,7 @@ export class TurnoRepository {
 
     async findById(id) {
         return await this.model.findById(id)
-            .populate("medico", "nombre matricula idUsuario")
+            .populate("medico", "nombre matricula usuario")
             .populate("paciente", "nombre dni idUsuario obraSocial plan")
             .populate("sede", "nombre direccion")
             .populate("servicio", "nombre costo duracionTurnoEnMins")
@@ -41,7 +41,7 @@ export class TurnoRepository {
 
 
     async update(id, turno) {
-        return this.model.findByIdAndUpdate(id, turno, { new: true, runValidators: true }).lean().exec();
+        return this.model.findByIdAndUpdate(id, turno, { new: true, runValidators: true }).exec();
     }
 
 
@@ -112,7 +112,7 @@ disponible:
         console.log("Filtros: " + JSON.stringify(query));
 
         const turnos = await this.model.find(query)
-            .populate("medico", "nombre matricula idUsuario")
+            .populate("medico", "nombre matricula usuario")
             .populate("paciente", "nombre dni idUsuario obraSocial plan")
             .populate("sede", "nombre direccion")
             .populate("servicio", "nombre costo duracionTurnoEnMins")
@@ -162,10 +162,11 @@ disponible:
 
         const inicio = (numeroPagina - 1) * limitePorPagina;
 
+        console.log("filtros a usar: " + JSON.stringify(query));
         // Ejecutar la consulta y el conteo en paralelo
         const [turnos, totalTurnos] = await Promise.all([
             this.model.find(query)
-                .populate("medico", "nombre matricula idUsuario")
+                .populate("medico", "nombre matricula usuario")
                 .populate("paciente", "nombre dni idUsuario obraSocial plan")
                 .populate("sede", "nombre direccion")
                 .populate("servicio", "nombre costo duracionTurnoEnMins")
@@ -176,6 +177,7 @@ disponible:
                 .exec(),
             this.model.countDocuments(query).exec()
         ]);
+        console.log("turnos levantados: " + JSON.stringify(turnos));
 
         return {
             turnos,

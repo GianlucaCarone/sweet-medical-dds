@@ -78,17 +78,18 @@ export class TurnoService {
     let destinatario;
     let quienObj = null;
 
-    if (turno.paciente &&(turno.paciente.toString() === quien || turno.paciente.idUsuario === quien)) {
-      remitente = turno.paciente;
-      destinatario = turno.medico;
-      quienObj = await this.pacienteRepository.findById(quien);
+    console.log("id paciente turno: " + turno.paciente.idUsuario + ", id paciente cambio: " + quien);
+    if (turno.paciente &&(turno.paciente.toString() === quien || turno.paciente.idUsuario.toString() === quien)) {
+      remitente = turno.paciente.idUsuario;
+      destinatario = turno.medico.usuario;
+      quienObj = await this.pacienteRepository.findByIdUsuario(quien);
     } else if (
       turno.medico &&
-      (turno.medico.toString() === quien || turno.medico.idUsuario === quien)
+      (turno.medico.toString() === quien || turno.medico.idUsuario.toString() === quien)
     ) {
-      remitente = turno.medico;
-      destinatario = turno.paciente;
-      quienObj = await this.medicoRepository.findById(quien);
+      remitente = turno.medico.usuario;
+      destinatario = turno.paciente.idUsuario;
+      quienObj = await this.medicoRepository.findByIdUsuario(quien);
     } else {
       throw new BadRequestError("El turno no pertenece a este usuario");
     }
@@ -110,8 +111,9 @@ export class TurnoService {
       }
     }
 
-    turno.actualizarEstadoTurno({ nuevoEstado, quien: quienObj._id, turno, motivo});
-    this.notificacionService.crearNotificacionSegunEstadoTurno(turno, remitente.idUsuario, destinatario.idUsuario);
+    console.log("Data cambio estado turno: estado" + nuevoEstado + " quien" + quienObj + " turno" + turno + " motivo" + motivo);
+    turno.actualizarEstadoTurno({ nuevoEstado, quien: quienObj.id, turno, motivo});
+    this.notificacionService.crearNotificacionSegunEstadoTurno(turno, remitente, destinatario);
     const turnoActualizado = await this.turnoRepository.update(id, turno);
     logger.info(`[TURNO SERVICE]: Estado de turno ${id} actualizado correctamente`);
     return this.toDto(turnoActualizado);
@@ -201,7 +203,7 @@ export class TurnoService {
           turno,
           motivo: "Reserva de turno"
         });
-        this.notificacionService.crearNotificacionSegunEstadoTurno(turno, paciente.idUsuario, turno.medico.idUsuario);
+        this.notificacionService.crearNotificacionSegunEstadoTurno(turno, paciente.idUsuario, turno.medico.usuario);
 
         const turnoActualizado = await this.turnoRepository.update(turno.id ?? turno._id, turno);
         logger.info(`[TURNO SERVICE]: Turno ${turno.id ?? turno._id} asignado correctamente`);
@@ -275,18 +277,41 @@ export class TurnoService {
       ordenPorFecha: 'asc'
     }
     const turnos = await this.turnoRepository.obtener(filtros);
-    let turnosFinal = turnos;
-    const { obraSocial, plan } = await this.obtenerObraSocialYPlanPorPaciente(paciente.id);
-    if (obraSocial && plan) {
-      turnosFinal = turnos.map((t) => {
-        const cobertura = this.calcularCostoTurno(obraSocial, plan, t.costo, t.servicio);
-        t.costo = cobertura.costoFinal;
-        t.estadoCobertura = cobertura.estadoCobertura;
-        return t;
-      });
-    }
-    logger.info("[TURNOS SERVICE]: Turnos proximos de usuario obtenidos: " + turnosFinal.length);
-    return turnosFinal.map((t) => this.toDto(t));
+    logger.info("[TURNOS SERVICE]: Turnos proximos de usuario obtenidos: " + turnos.length);
+    return turnos.map((t) => this.toDto(t));
+  }
+
+  async obtenerTurnosDeUsuario(filtros, numeroPagina = 1, limitePorPagina = Number(process.env.ITEMS_PER_PAGE) || 10) {
+    logger.info(`[TURNO SERVICE]: Obteniendo turnos de usuario (Pág: ${numeroPagina})`);
+
+    this.validarPaginacion(numeroPagina, limitePorPagina);
+    const filtrosValidados = this.validarFiltros(filtros);
+
+    // Acá los filtros ya deberían venir validados con `pacienteId` o `medicoId`
+    // No calculamos la obra social en tiempo de ejecución porque se supone
+    // que estos turnos (RESERVADO, CONFIRMADO, FINALIZADO) ya tienen un costo/asociación guardada
+
+    const { turnos, totalTurnos } = await this.turnoRepository.obtenerPaginados(
+      numeroPagina,
+      limitePorPagina,
+      filtrosValidados,
+    );
+
+    const totalPaginas =
+      totalTurnos === 0 ? 0 : Math.ceil(totalTurnos / limitePorPagina);
+
+    const turnosDTo = turnos.map((t) => this.toDto(t));
+
+    logger.info(
+      `[TURNO SERVICE]: Retornando ${turnosDTo.length} turnos de usuario`,
+    );
+    return {
+      turnos: turnosDTo,
+      numeroPagina,
+      limitePorPagina,
+      totalPaginas,
+      totalTurnos,
+    };
   }
 
   async obtenerHistorialDeUsuario(idUsuario, numeroPagina = 1, limitePorPagina = Number(process.env.ITEMS_PER_PAGE) || 10) {
@@ -298,7 +323,6 @@ export class TurnoService {
     //const filtrosValidados = this.validarFiltros(filtros);
     const filtros = {
       estados: [EstadoTurnoEnum.REALIZADO, EstadoTurnoEnum.CANCELADO],
-      fechaHoraFin: new Date(),
       pacienteId: paciente.id,
       ordenPorFecha: 'asc'
     }

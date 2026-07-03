@@ -20,7 +20,7 @@ import Pagination from '@mui/material/Pagination';
 // Contextos y hooks
 import { useAlert } from "../../context/AlertContext.jsx";
 import TurnoHistorialCard from '../../components/cards/TurnoHistorialCard';
-import { getTurnosUsuario, getHistorialUsuario } from '../../api/apiMisTurnos.js';
+import { getTurnosUsuario, getHistorialUsuario, cancelarTurno } from '../../api/apiMisTurnos.js';
 import styled from 'styled-components';
 
 const StyledTarjetaWrapper = styled(CardBase)`
@@ -90,6 +90,7 @@ export default function MisTurnos() {
 
   const handleTurnoCancelado = async (turnoId, motivo) => {
     console.log('Turno cancelado:', turnoId, motivo);
+    const response = cancelarTurno(turnoId, motivo, idUsuario);
     setTurnosProximos(turnosProximos.filter((t) => t.id != turnoId));
 
     setToastVisible(true);
