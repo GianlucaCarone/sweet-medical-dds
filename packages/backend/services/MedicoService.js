@@ -162,15 +162,6 @@ export class MedicoService {
 
     medico.eliminarSede(sedeId);
 
-    // REGLA DE NEGOCIO: También se eliminan los horarios semanales (disponibilidades) asociados a la sede eliminada
-    const sedeIdStr = sedeId.toString();
-    medico.disponibilidades = medico.disponibilidades.filter(disp => {
-      const dispSedeId = disp.sede && (disp.sede._id 
-        ? disp.sede._id.toString() 
-        : disp.sede.toString());
-      return dispSedeId !== sedeIdStr;
-    });
-
     const medicoActualizado = await this.medicoRepository.save(medico);
     return this.toDto(medicoActualizado);
   }

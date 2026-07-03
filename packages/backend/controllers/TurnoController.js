@@ -1,4 +1,5 @@
 import { TurnoService } from "../services/TurnoService.js";
+import { PacienteService } from "../services/PacienteService.js";
 import {
   idParamsSchema,
   bodyCambioEstadoTurnoSchema,
@@ -11,8 +12,12 @@ import {
 import { logger } from "../config/logger.js";
 
 export class TurnoController {
-  constructor({ turnoService = new TurnoService() } = {}) {
+  constructor({
+    turnoService = new TurnoService(),
+    pacienteService = new PacienteService(),
+  } = {}) {
     this.turnoService = turnoService;
+    this.pacienteService = pacienteService;
   }
 
   create = async (req, res, next) => {
@@ -30,7 +35,7 @@ export class TurnoController {
 
   cambiarEstadoTurno = async (req, res, next) => {
     try {
-      const {id} = idParamsSchema.parse(req.params);
+      const { id } = idParamsSchema.parse(req.params);
       const cambioTurnoData = bodyCambioEstadoTurnoSchema.parse(req.body);
 
       logger.info(`[TURNOS CONTROLLER]: Cambiando estado del turno a ${cambioTurnoData.nuevoEstado}`);
@@ -52,10 +57,12 @@ export class TurnoController {
 
   asignarTurno = async (req, res, next) => {
     try {
-      const {id} = idParamsSchema.parse(req.params);
+      const { id } = idParamsSchema.parse(req.params);
       const turnoData = bodyAsignarTurnoSchema.parse(req.body);
 
-      logger.info(`[TURNOS CONTROLLER]: Asignando turno a paciente: ${turnoData.pacienteId}`);
+      logger.info(
+        `[TURNOS CONTROLLER]: Asignando turno a paciente: ${turnoData.pacienteId}`,
+      );
       const turnoAsignado = await this.turnoService.asignarTurno(
         id,
         turnoData.pacienteId,
@@ -75,15 +82,33 @@ export class TurnoController {
       const paginacion = this.extraerPaginacion(req.query);
       const filtros = this.extraerFiltros(req.query);
 
-      logger.info(`[TURNOS CONTROLLER]: Obteniendo turnos paginados con estos filtros: ${JSON.stringify(filtros)}`);
-      logger.info(`[TURNOS CONTROLLER]: Obteniendo turnos paginados con esta paginacion: ${JSON.stringify(paginacion)}`);
+      if (req.user && req.user.rol === "PACIENTE") {
+        try {
+          const paciente = await this.pacienteService.findByUserId(req.user.id);
+          filtros.pacienteId = paciente.id || paciente._id;
+        } catch (error) {
+          logger.warn(
+            "[TURNOS CONTROLLER]: No se pudo inyectar el pacienteId para cobertura",
+            error.message,
+          );
+        }
+      }
+
+      logger.info(
+        `[TURNOS CONTROLLER]: Obteniendo turnos paginados con estos filtros: ${JSON.stringify(filtros)}`,
+      );
+      logger.info(
+        `[TURNOS CONTROLLER]: Obteniendo turnos paginados con esta paginacion: ${JSON.stringify(paginacion)}`,
+      );
       const resultado = await this.turnoService.obtenerTodosPaginados(
         paginacion.numeroPagina,
         paginacion.limitePorPagina,
         filtros,
       );
 
-      logger.info(`[TURNOS CONTROLLER]: Turnos obtenidos: ${resultado.turnosConCobertura.length}`);
+      logger.info(
+        `[TURNOS CONTROLLER]: Turnos obtenidos: ${resultado.turnosConCobertura.length}`,
+      );
       res.status(200).json({
         status: "success",
         data: resultado.turnosConCobertura,
@@ -123,7 +148,9 @@ export class TurnoController {
         paginacion.limitePorPagina,
       );
 
-      logger.info(`[TURNOS CONTROLLER]: Turnos de usuario obtenidos: ${resultado.turnos.length}`);
+      logger.info(
+        `[TURNOS CONTROLLER]: Turnos de usuario obtenidos: ${resultado.turnos.length}`,
+      );
       res.status(200).json({
         status: "success",
         data: resultado.turnos,
@@ -158,7 +185,9 @@ export class TurnoController {
   findByEstado = async (req, res, next) => {
     try {
       const estado = req.params.estado;
-      logger.info(`[TURNOS CONTROLLER]: Obteniendo turnos por estado: ${estado}`);
+      logger.info(
+        `[TURNOS CONTROLLER]: Obteniendo turnos por estado: ${estado}`,
+      );
       const turnos = await this.turnoService.findByEstado(estado);
       logger.info(`[TURNOS CONTROLLER]: Turnos obtenidos (${turnos.length})`);
       res.status(200).json({
@@ -177,10 +206,7 @@ export class TurnoController {
       const turnoData = bodyUpdateTurnoSchema.parse(req.body);
 
       logger.info("[TURNOS CONTROLLER]: Actualizando turno: ", turnoData);
-      const turnoActualizado = await this.turnoService.update(
-        id,
-        turnoData,
-      );
+      const turnoActualizado = await this.turnoService.update(id, turnoData);
 
       logger.info("[TURNOS CONTROLLER]: Turno actualizado con éxito");
       return res
@@ -198,7 +224,9 @@ export class TurnoController {
       const { nuevaFechaHora } = bodySolicitarCambioFechaSchema.parse(req.body);
       const usuarioId = req.user.idEspecifico;
 
-      logger.info(`[TURNOS CONTROLLER]: Solicitando cambio de fecha para turno ${id} a fecha ${nuevaFechaHora}`);
+      logger.info(
+        `[TURNOS CONTROLLER]: Solicitando cambio de fecha para turno ${id} a fecha ${nuevaFechaHora}`,
+      );
       const turnoActualizado = await this.turnoService.solicitarCambioFecha(
         id,
         nuevaFechaHora,
@@ -221,14 +249,18 @@ export class TurnoController {
       const { aceptado } = bodyResponderCambioFechaSchema.parse(req.body);
       const usuarioId = req.user.idEspecifico;
 
-      logger.info(`[TURNOS CONTROLLER]: Respondiendo cambio de fecha para turno ${id} (Aceptado: ${aceptado})`);
+      logger.info(
+        `[TURNOS CONTROLLER]: Respondiendo cambio de fecha para turno ${id} (Aceptado: ${aceptado})`,
+      );
       const turnoActualizado = await this.turnoService.responderCambioFecha(
         id,
         aceptado,
         usuarioId,
       );
 
-      logger.info("[TURNOS CONTROLLER]: Respuesta de cambio de fecha procesada");
+      logger.info(
+        "[TURNOS CONTROLLER]: Respuesta de cambio de fecha procesada",
+      );
       return res
         .status(200)
         .json({ status: "success", data: turnoActualizado });
@@ -255,7 +287,9 @@ export class TurnoController {
       const counts = await this.turnoService.obtenerContadores({ medicoId, pacienteId });
       return res.status(200).json({ status: "success", data: counts });
     } catch (error) {
-      logger.error("[TURNOS CONTROLLER]: Error al obtener contadores de turnos");
+      logger.error(
+        "[TURNOS CONTROLLER]: Error al obtener contadores de turnos",
+      );
       return next(error);
     }
   };
@@ -305,7 +339,9 @@ export class TurnoController {
   extraerPaginacion(query) {
     const numeroPagina = query?.page === undefined ? 1 : Number(query.page);
     const limitePorPagina =
-      query?.limit === undefined ? Number(process.env.ITEMS_PER_PAGE) : Number(query.limit);
+      query?.limit === undefined
+        ? Number(process.env.ITEMS_PER_PAGE)
+        : Number(query.limit);
 
     this.turnoService.validarEnteroPositivo(numeroPagina, "page");
     this.turnoService.validarEnteroPositivo(limitePorPagina, "limit");

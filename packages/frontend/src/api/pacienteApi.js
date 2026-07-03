@@ -20,3 +20,14 @@ export const actualizarPaciente = async (idPaciente, payload) => {
     const response = await axiosInstance.put(`/pacientes/${idPaciente}`, payload);
     return response.data.data;
 };
+
+/**
+ * Obtiene los turnos (historial y próximos) del paciente logueado.
+ * @param {Object} params - Filtros y paginación (page, limit, etc.)
+ * @returns {Promise<Object>} Resultado con turnos y paginacion
+ */
+export const getMisTurnos = async (params = {}) => {
+    const response = await axiosInstance.get("/pacientes/me/turnos", { params });
+    // axios interceptors/response formating might be different, but typically we return the whole data
+    return response.data;
+};
