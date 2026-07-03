@@ -3,16 +3,14 @@ import {
   ErrorContrasenaCorta,
   ErrorUsuarioDemasiadoLargo,
   ErrorUsuarioDemasiadoCorto,
-} from "../errores.js";
-import { Rol } from "./rolEnum.js";
+} from "../domain/errores.js";
 
 export class Usuario {
   id;
   nombreUsuario;
   password;
-  rol;
 
-  constructor({nombreUsuario, password, rol }) {
+  constructor({nombreUsuario, password }) {
     if (!nombreUsuario || !password) {
       throw new ErrorDatosObligatorios();
     }
@@ -24,13 +22,9 @@ export class Usuario {
     if (nombreUsuario.length < 3) {
       throw new ErrorUsuarioDemasiadoCorto("El nombre de usuario debe tener al menos 3 caracteres");
     }
-    if (rol && Object.values(Rol).includes(rol.toUpperCase())) {
-      this.rol = rol;
-    } else {
-      this.rol = Rol.PACIENTE;
-    }
 
-    this.nombreUsuario = nombreUsuario;
-    this.password = password;
+        //this.id = id || randomUUID();
+        this.nombreUsuario = nombreUsuario;
+        this.password = password;
     }
 }

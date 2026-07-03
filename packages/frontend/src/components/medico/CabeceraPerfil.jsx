@@ -1,8 +1,9 @@
 import React from 'react';
 import DatosPersonales from './DatosPersonales';
+import SeguridadCard from './SeguridadCard';
 
 export default function CabeceraPerfil({
-  medico,
+  doctor,
   handleGuardarDatosPersonales,
   setAlertConfig
 }) {
@@ -11,7 +12,7 @@ export default function CabeceraPerfil({
       <div className="row g-4">
 
         {/* Columna 1: Perfil e Iniciales Rediseñado */}
-        <div className="col-12 col-lg-6 col-border-right d-flex align-items-center px-4 py-3">
+        <div className="col-12 col-lg-4 col-border-right d-flex align-items-center px-4 py-3">
           <div className="d-flex align-items-center gap-3 w-100">
 
             {/* Avatar Circular Premium */}
@@ -26,7 +27,7 @@ export default function CabeceraPerfil({
                 letterSpacing: '0.5px'
               }}
             >
-              {medico.nombre?.charAt(0)}{medico.apellido ? medico.apellido.charAt(0) : ''}
+              {doctor.nombre?.charAt(0)}{doctor.apellido ? doctor.apellido.charAt(0) : ''}
             </div>
 
             {/* Textos Informativos Alabados */}
@@ -40,7 +41,7 @@ export default function CabeceraPerfil({
                   letterSpacing: '-0.3px'
                 }}
               >
-                {medico.nombre} {medico.apellido || ''}
+                {doctor.nombre} {doctor.apellido || ''}
               </h3>
 
               <span
@@ -61,9 +62,12 @@ export default function CabeceraPerfil({
 
         {/* Columna 2: Datos Personales */}
         <DatosPersonales 
-          medico={medico} 
+          doctor={doctor} 
           handleGuardarDatosPersonales={handleGuardarDatosPersonales} 
         />
+
+        {/* Columna 3: Seguridad / Contraseña */}
+        <SeguridadCard setAlertConfig={setAlertConfig} />
 
       </div>
     </header>

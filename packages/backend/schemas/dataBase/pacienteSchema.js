@@ -25,9 +25,7 @@ export const pacienteSchema = new mongoose.Schema({
         required: false, // puede ser opcional si el paciente puede no tener obra social
     },
     plan: {
-        // ObjectId del subdocumento Plan embebido dentro de ObraSocial.
-        // Se guarda el _id del plan para poder resolver coberturas (Flujo 1 del TP).
-        type: mongoose.Schema.Types.ObjectId,
+        type: String,
         required: false,
     },
 });

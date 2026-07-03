@@ -1,6 +1,5 @@
 import { Router } from "express";
 import { PacienteController } from "../controllers/PacienteController.js";
-import { authMiddleware } from "../middlewares/authMiddleware.js";
 
 /**
  * @swagger
@@ -85,39 +84,7 @@ export function pacienteRoutes(getController) {
          *         $ref: '#/components/responses/E500'
          */
         .post((req, res, next) => pacienteController.crear(req, res, next));
-
-    /**
-     * @swagger
-     * /pacientes/me:
-     *   get:
-     *     summary: Obtener el perfil del paciente logueado
-     *     description: >
-     *       Protegido por JWT (cookie HttpOnly). El ID del usuario se extrae del
-     *       token — nunca viaja en la URL. Devuelve el paciente correspondiente
-     *       al usuario autenticado, incluyendo su obra social y plan.
-     *     tags: [Pacientes]
-     *     responses:
-     *       200:
-     *         description: Perfil del paciente logueado
-     *         content:
-     *           application/json:
-     *             schema:
-     *               type: object
-     *               properties:
-     *                 status: { type: string, example: "success" }
-     *                 data:
-     *                   $ref: '#/components/schemas/Paciente'
-     *       401:
-     *         $ref: '#/components/responses/E401'
-     *       404:
-     *         $ref: '#/components/responses/E404'
-     *       500:
-     *         $ref: '#/components/responses/E500'
-     */
-    // IMPORTANTE: /me debe ir ANTES de /:id, de lo contrario Express
-    // intentaría parsear "me" como un ObjectId y fallaría la validación Zod.
-    router.get("/me", authMiddleware, (req, res, next) => pacienteController.buscarMiPerfil(req, res, next));
-
+        
     router.route("/:id")
         // GET /pacientes/:id
         /**

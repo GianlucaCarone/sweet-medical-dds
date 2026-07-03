@@ -1,64 +1,29 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import Modal from './Modal';
-import { getAllServicios } from '../../../api/servicio';
+import { globalServicesMock } from '../../../mockdata/medico';
 import {useAlert} from '../../../context/AlertContext.jsx';
 
-export default function ModalAgregarServicio({ isOpen, onClose, medico, handleAgregarServicio }) {
-  const [formTipoSrv, setFormTipoSrv] = useState('Especialidad');
+export default function ModalAgregarServicio({ isOpen, onClose, doctor, handleAgregarServicio }) {
+  const [formTipoSrv, setFormTipoSrv] = useState('ESPECIALIDAD');
   const [formServicioElegido, setFormServicioElegido] = useState('');
-  const [todosLosServicios, setTodosLosServicios] = useState([]);
   const {showAlert} = useAlert();
 
-  useEffect(() => {
-    if (isOpen) {
-      getAllServicios()
-        .then(data => setTodosLosServicios(data?.data || data || []))
-        .catch(() => setTodosLosServicios([]));
-    }
-  }, [isOpen]);
+  const opcionesServiciosDisponibles = globalServicesMock.filter(s =>
+    s.tipo === formTipoSrv && !doctor.serviciosAsignados.some(ds => ds._id === s._id)
+  );
 
-  const serviciosYaAsignados = [...(medico.especialidades || []), ...(medico.practicas || [])];
-  const opcionesServiciosDisponibles = todosLosServicios.filter(s => {
-    if (s.tipo !== formTipoSrv) return false;
-
-    const yaAsignado = serviciosYaAsignados.some(ds => ds.id === s.id);
-    if (yaAsignado) return false;
-
-    // REGLA DE NEGOCIO: Si es una práctica, el médico debe tener asignada la especialidad padre correspondiente
-    if (s.tipo === 'Practica') {
-      const padreId = s.especialidadPadreId?._id 
-        ? s.especialidadPadreId._id.toString() 
-        : s.especialidadPadreId?.toString();
-
-      const tienePadre = (medico.especialidades || []).some(
-        esp => (esp.id || esp._id).toString() === padreId
-      );
-      return tienePadre;
-    }
-
-    return true;
-  });
-
-  const totalNoAsignadosDeTipo = todosLosServicios.filter(s =>
-    s.tipo === formTipoSrv && !serviciosYaAsignados.some(ds => ds.id === s.id)
-  ).length;
-
-  const faltanEspecialidadesPadre = formTipoSrv === 'Practica' && totalNoAsignadosDeTipo > 0 && opcionesServiciosDisponibles.length === 0;
-
-  const onSubmit = async (e) => {
+  const onSubmit = (e) => {
     e.preventDefault();
-    const success = await handleAgregarServicio(formServicioElegido);
-    if (success) {
-      setFormServicioElegido('');
-      setFormTipoSrv('Especialidad');
-      showAlert('Servicio vinculado correctamente.', 'success');
-      onClose();
-    }
+    handleAgregarServicio(formServicioElegido);
+    setFormServicioElegido('');
+    setFormTipoSrv('ESPECIALIDAD');
+    showAlert('Servicio vinculado correctamente.', 'success');
+    onClose();
   };
 
   const handleClose = () => {
     setFormServicioElegido('');
-    setFormTipoSrv('Especialidad');
+    setFormTipoSrv('ESPECIALIDAD');
     onClose();
   };
 
@@ -79,8 +44,8 @@ export default function ModalAgregarServicio({ isOpen, onClose, medico, handleAg
               setFormServicioElegido('');
             }}
           >
-            <option value="Especialidad">Especialidad</option>
-            <option value="Practica">Práctica Médica</option>
+            <option value="ESPECIALIDAD">Especialidad</option>
+            <option value="PRACTICA">Práctica Médica</option>
           </select>
         </div>
 
@@ -94,14 +59,12 @@ export default function ModalAgregarServicio({ isOpen, onClose, medico, handleAg
           >
             <option value="" disabled>-- Seleccione --</option>
             {opcionesServiciosDisponibles.map(srv => (
-              <option key={srv.id} value={srv.id}>{srv.nombre}</option>
+              <option key={srv._id} value={srv._id}>{srv.nombre}</option>
             ))}
           </select>
           {opcionesServiciosDisponibles.length === 0 && (
-            <div className="mt-1" style={{ fontSize: '11px', color: faltanEspecialidadesPadre ? '#d97706' : '#6b7280' }}>
-              {faltanEspecialidadesPadre 
-                ? "Para vincular prácticas médicas, primero debes tener asignada la especialidad correspondiente."
-                : "Ya tienes vinculados todos los servicios disponibles de este tipo."}
+            <div className="text-muted mt-1" style={{ fontSize: '11px' }}>
+              Ya tienes vinculados todos los servicios disponibles de este tipo.
             </div>
           )}
         </div>
@@ -117,7 +80,7 @@ export default function ModalAgregarServicio({ isOpen, onClose, medico, handleAg
           <button
             type="submit"
             disabled={!formServicioElegido}
-            className="btn btn-success btn-sm font-weight-bold"
+            className="btn btn-primary btn-sm font-weight-bold"
           >
             Vincular
           </button>
