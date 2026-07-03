@@ -45,7 +45,7 @@ const Header = () => {
   };
 
   const handleLogoutExitoso = () => {
-    showAlert("Sesión cerrada correctamente.", "info");
+    showAlert("Sesión cerrada correctamente.", "success");
   };
 
   // Alternar entre modales
