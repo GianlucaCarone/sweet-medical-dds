@@ -13,11 +13,11 @@ import {
   ListItem,
   ListItemText,
   Divider,
-  CircularProgress
-} from "@mui/material";
+  CircularProgress,
+} from '@mui/material';
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import CheckIcon from "@mui/icons-material/Check";
-import RestoreIcon from "@mui/icons-material/Restore";
+import UndoIcon from '@mui/icons-material/Undo';
 import NotificationsOffIcon from "@mui/icons-material/NotificationsOff";
 import { useNotificaciones } from "../../context/NotificacionContext";
 
@@ -75,7 +75,7 @@ export default function CampanitaNotification() {
           onClick={handleClick}
           aria-describedby={id}
           className="notification-btn"
-          sx={{ color: "primary.main" }}
+          sx={{ color: 'primary.main' }}
         >
           <Badge color="error" variant="dot" invisible={cantidadNoLeidas === 0}>
             <NotificationsIcon />
@@ -89,23 +89,23 @@ export default function CampanitaNotification() {
         anchorEl={anchorEl}
         onClose={handleClose}
         anchorOrigin={{
-          vertical: "bottom",
-          horizontal: "right",
+          vertical: 'bottom',
+          horizontal: 'right',
         }}
         transformOrigin={{
-          vertical: "top",
-          horizontal: "right",
+          vertical: 'top',
+          horizontal: 'right',
         }}
         slotProps={{
           paper: {
             sx: {
               width: 380,
               maxHeight: 500,
-              display: "flex",
-              flexDirection: "column",
-              borderRadius: "12px",
-              boxShadow: "0px 8px 24px rgba(0, 0, 0, 0.15)",
-              overflow: "hidden",
+              display: 'flex',
+              flexDirection: 'column',
+              borderRadius: '12px',
+              boxShadow: '0px 8px 24px rgba(0, 0, 0, 0.15)',
+              overflow: 'hidden',
             },
           },
         }}
@@ -113,13 +113,13 @@ export default function CampanitaNotification() {
         {/* Encabezado */}
         <Box
           sx={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
             p: 2,
             pb: 1.5,
             borderBottom: 1,
-            borderColor: "divider",
+            borderColor: 'divider',
           }}
         >
           <Typography variant="h6" fontWeight="bold">
@@ -129,7 +129,7 @@ export default function CampanitaNotification() {
             <Button
               size="small"
               onClick={marcarTodasComoLeidas}
-              sx={{ textTransform: "none", fontWeight: "bold" }}
+              sx={{ textTransform: 'none', fontWeight: 'bold' }}
             >
               Marcar todo leído
             </Button>
@@ -137,7 +137,7 @@ export default function CampanitaNotification() {
         </Box>
 
         {/* Pestañas */}
-        <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
+        <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
           <Tabs
             value={tabValue}
             onChange={handleTabChange}
@@ -147,18 +147,18 @@ export default function CampanitaNotification() {
             <Tab
               label={`Sin leer (${cantidadNoLeidas})`}
               id="tab-no-leidas"
-              sx={{ textTransform: "none", fontWeight: "bold" }}
+              sx={{ textTransform: 'none', fontWeight: 'bold' }}
             />
             <Tab
               label={`Leídas (${cantidadLeidas})`}
               id="tab-leidas"
-              sx={{ textTransform: "none", fontWeight: "bold" }}
+              sx={{ textTransform: 'none', fontWeight: 'bold' }}
             />
           </Tabs>
         </Box>
 
         {/* Contenido / Listado */}
-        <Box sx={{ flexGrow: 1, overflowY: "auto", minHeight: 180 }}>
+        <Box sx={{ flexGrow: 1, overflowY: 'auto', minHeight: 180, display: 'flex', flexDirection: 'column', width: '100%' }}>
           {cargando && (
             <Box display="flex" justifyContent="center" alignItems="center" p={4}>
               <CircularProgress size={24} />
@@ -169,14 +169,21 @@ export default function CampanitaNotification() {
             <>
               {notificacionesNoLeidas.length === 0 ? (
                 <Box
-                  display="flex"
-                  flexDirection="column"
-                  alignItems="center"
-                  justifyContent="center"
-                  p={4}
-                  textAlign="center"
+                  sx={{
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    flexGrow: 1,
+                    p: 4,
+                    textAlign: "center",
+                    width: "100%",
+                    minHeight: 180
+                  }}
                 >
-                  <NotificationsOffIcon sx={{ fontSize: 40, color: "text.secondary", mb: 1, opacity: 0.6 }} />
+                  <NotificationsOffIcon
+                    sx={{ fontSize: 40, color: 'text.secondary', mb: 1, opacity: 0.6 }}
+                  />
                   <Typography variant="body2" color="text.secondary">
                     No tienes notificaciones pendientes.
                   </Typography>
@@ -188,10 +195,10 @@ export default function CampanitaNotification() {
                       <ListItem
                         alignItems="flex-start"
                         sx={{
-                          bgcolor: "action.hover",
-                          transition: "background-color 0.2s",
-                          "&:hover": { bgcolor: "action.selected" },
-                          pr: 7 // Espacio para el botón de acción
+                          bgcolor: 'action.hover',
+                          transition: 'background-color 0.2s',
+                          '&:hover': { bgcolor: 'action.selected' },
+                          pr: 7, // Espacio para el botón de acción
                         }}
                       >
                         <ListItemText
@@ -201,7 +208,7 @@ export default function CampanitaNotification() {
                             </Typography>
                           }
                           secondary={
-                            <Box sx={{ display: "flex", justifyContent: "space-between", mt: 0.5 }}>
+                            <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 0.5 }}>
                               <Typography variant="caption" color="text.secondary">
                                 De: {n.remitente}
                               </Typography>
@@ -217,14 +224,14 @@ export default function CampanitaNotification() {
                             size="small"
                             onClick={() => marcarComoLeida(n.id)}
                             sx={{
-                              position: "absolute",
+                              position: 'absolute',
                               right: 16,
-                              top: "50%",
-                              transform: "translateY(-50%)",
-                              color: "success.main",
-                              bgcolor: "success.light",
+                              top: '50%',
+                              transform: 'translateY(-50%)',
+                              color: 'success.main',
+                              bgcolor: 'success.light',
                               opacity: 0.8,
-                              "&:hover": { bgcolor: "success.light", opacity: 1 },
+                              '&:hover': { bgcolor: 'success.light', opacity: 1 },
                             }}
                           >
                             <CheckIcon fontSize="small" />
@@ -243,14 +250,21 @@ export default function CampanitaNotification() {
             <>
               {notificacionesLeidas.length === 0 ? (
                 <Box
-                  display="flex"
-                  flexDirection="column"
-                  alignItems="center"
-                  justifyContent="center"
-                  p={4}
-                  textAlign="center"
+                  sx={{
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    flexGrow: 1,
+                    p: 4,
+                    textAlign: "center",
+                    width: "100%",
+                    minHeight: 180
+                  }}
                 >
-                  <NotificationsOffIcon sx={{ fontSize: 40, color: "text.secondary", mb: 1, opacity: 0.6 }} />
+                  <NotificationsOffIcon
+                    sx={{ fontSize: 40, color: 'text.secondary', mb: 1, opacity: 0.6 }}
+                  />
                   <Typography variant="body2" color="text.secondary">
                     No tienes notificaciones leídas.
                   </Typography>
@@ -263,9 +277,9 @@ export default function CampanitaNotification() {
                         alignItems="flex-start"
                         sx={{
                           opacity: 0.8,
-                          transition: "background-color 0.2s",
-                          "&:hover": { bgcolor: "action.hover" },
-                          pr: 7
+                          transition: 'background-color 0.2s',
+                          '&:hover': { bgcolor: 'action.hover' },
+                          pr: 7,
                         }}
                       >
                         <ListItemText
@@ -275,7 +289,7 @@ export default function CampanitaNotification() {
                             </Typography>
                           }
                           secondary={
-                            <Box sx={{ display: "flex", justifyContent: "space-between", mt: 0.5 }}>
+                            <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 0.5 }}>
                               <Typography variant="caption" color="text.secondary">
                                 De: {n.remitente}
                               </Typography>
@@ -291,16 +305,16 @@ export default function CampanitaNotification() {
                             size="small"
                             onClick={() => marcarComoNoLeida(n.id)}
                             sx={{
-                              position: "absolute",
+                              position: 'absolute',
                               right: 16,
-                              top: "50%",
-                              transform: "translateY(-50%)",
-                              color: "text.secondary",
-                              bgcolor: "action.disabledBackground",
-                              "&:hover": { bgcolor: "action.focus" },
+                              top: '50%',
+                              transform: 'translateY(-50%)',
+                              color: 'text.secondary',
+                              bgcolor: 'action.disabledBackground',
+                              '&:hover': { bgcolor: 'action.focus' },
                             }}
                           >
-                            <RestoreIcon fontSize="small" />
+                            <UndoIcon fontSize="small" />
                           </IconButton>
                         </Tooltip>
                       </ListItem>

@@ -105,22 +105,6 @@ export class NotificacionController {
         }
     };
 
-    desleer = async (req, res, next) => {
-        try {
-            const { idNotificacion } = notificacionIdParamsSchema.parse(req.params);
-            logger.info("[NOTIFICACIONES CONTROLLER]: Marcando notificacion como no leida: ", idNotificacion);
-            const notificacion = await this.notificacionService.desleer(idNotificacion);
-            logger.info("[NOTIFICACIONES CONTROLLER]: Notificacion marcada como no leida: ", notificacion);
-            res.status(200).json({
-                status: "success",
-                data: notificacion,
-                message: "Notificación marcada como no leída exitosamente."
-            });
-        } catch (error) {
-            next(error);
-        }
-    };
-
     /*getNotificacionesPaginadas = async (req, res, next) => {
         try {
             const paginacion = this.extraerPaginacion(req.query);

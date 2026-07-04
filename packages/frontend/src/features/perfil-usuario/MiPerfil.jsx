@@ -15,7 +15,7 @@ import {
   InputLabel,
   CircularProgress,
   Alert,
-} from "@mui/material";
+} from '@mui/material';
 import { useAuth } from "../../context/AuthContext.jsx";
 import { getMiPerfil, actualizarPaciente } from "../../api/pacienteApi.js";
 import { getObrasSociales } from "../../api/obraSocialApi.js";
@@ -110,7 +110,7 @@ export default function MiPerfil() {
 
   if (loading) {
     return (
-      <Box sx={{ display: "flex", justifyContent: "center", mt: 10 }}>
+      <Box sx={{ display: 'flex', justifyContent: 'center', mt: 10 }}>
         <CircularProgress />
       </Box>
     );
