@@ -21,6 +21,8 @@ import Pagination from '@mui/material/Pagination';
 import { useAlert } from "../../context/AlertContext.jsx";
 import TurnoHistorialCard from '../../components/cards/TurnoHistorialCard';
 import { getTurnosProximosUsuario, getHistorialUsuario, cancelarTurno } from '../../api/apiMisTurnos.js';
+import { useAuth } from "../../context/AuthContext.jsx"
+import { getContadoresTurnos } from '../../api/turno.js';
 import styled from 'styled-components';
 
 const StyledTarjetaWrapper = styled(CardBase)`
@@ -38,14 +40,20 @@ const StatsGrid = styled.div`
 `;
 
 export default function MisTurnos() {
-  const idUsuario = '6a0b7127da9b7c8a035d969b';
-  const [idPaciente, setIdPaciente] = useState('6a0b720ada9b7c8a035d96a9');
+  const { user } = useAuth();
+  const [counts, setCounts] = useState({
+    RESERVADOS: 0,
+    CONFIRMADOS: 0,
+    PROPUESTAS: 0,
+    REALIZADOS: 0,
+    CANCELADOS: 0
+  });
   const [dataPaginacionProximos, setDataPaginacionProximos] = useState({page: 1, limitePorPagina: 4})
   const [dataPaginacionHistorial, setDataPaginacionHistorial] = useState({page: 1, limitePorPagina: 5});
   const [loading, setLoading] = useState(true);
   const [toastVisible, setToastVisible] = useState(false);
   const [turnosProximos, setTurnosProximos] = useState(mockRespuestaPaginada.data);
-  const [turnosHistorial, setTurnosHistorial] = useState(historialTurnos)
+  const [turnosHistorial, setTurnosHistorial] = useState(historialTurnos);
   const yaCargado = useRef(false);
   const turnosPorPagina = 3;
   const navigate = useNavigate();
@@ -55,30 +63,26 @@ export default function MisTurnos() {
 
   const estadisticasData = [
     {
-      id: 1,
-      numero: dataPaginacionProximos.totalTurnos,
+      numero: counts.RESERVADOS,
       texto: 'Turnos próximos',
       tipo: 'azul',
       icono: <CalendarMonthRoundedIcon />,
     },
     {
-      id: 2,
-      numero: '1', // TODO: Traer del backend
+      numero: counts.REALIZADOS,
       texto: 'Turnos realizados',
       tipo: 'verde',
       icono: <CheckCircleRoundedIcon />,
     },
     {
-      id: 3,
-      numero: '1', // TODO: Traer del backend
+      numero: counts.CANCELADOS,
       texto: 'Cancelados',
       tipo: 'rojo',
       icono: <CancelRoundedIcon />,
     },
     {
-      id: 4,
-      numero: '2', // TODO: Traer del backend
-      texto: 'Notif. sin leer',
+      numero: counts.PROPUESTAS,
+      texto: 'Turnos pendientes de revision',
       tipo: 'naranja',
       icono: <NotificationsRoundedIcon />,
     },
@@ -86,7 +90,7 @@ export default function MisTurnos() {
 
   const handleTurnoCancelado = async (turnoId, motivo) => {
     console.log('Turno cancelado:', turnoId, motivo);
-    const response = cancelarTurno(turnoId, motivo, idUsuario);
+    const response = cancelarTurno(turnoId, motivo, user?.id);
     setTurnosProximos(turnosProximos.filter((t) => t.id != turnoId));
 
     setToastVisible(true);
@@ -96,13 +100,29 @@ export default function MisTurnos() {
     }, 1500);
   };
 
+  const cargarTodosLosContadores = async () => {
+    try {
+      const response = await getContadoresTurnos();
+      const rawCounts = response.data || {};
+      setCounts({
+        RESERVADOS: rawCounts.RESERVADO || 0,
+        CONFIRMADOS: rawCounts.CONFIRMADO || 0,
+        PROPUESTAS: rawCounts.PENDIENTECAMBIO || 0,
+        REALIZADOS: rawCounts.REALIZADO || 0,
+        CANCELADOS: rawCounts.CANCELADO || 0
+      });
+    } catch (err) {
+      console.error("Error al obtener contadores de turnos:", err);
+    }
+  };
+
   const cargarProximosTurnos = async (page = dataPaginacionProximos.page) => {
     try {
       const paginacion = {
         'page': page,
         'limit': dataPaginacionProximos.limitePorPagina
       }
-      const proximosTurnos = await getTurnosProximosUsuario(idPaciente, paginacion);
+      const proximosTurnos = await getTurnosProximosUsuario(user?.idEspecifico, paginacion);
       setTurnosProximos(proximosTurnos.data);
       setDataPaginacionProximos(proximosTurnos.paginacion);
     } catch (error) {
@@ -116,7 +136,7 @@ export default function MisTurnos() {
         'page': page,
         'limit': dataPaginacionHistorial.limitePorPagina
       }
-      const historialPaginado = await getHistorialUsuario(idPaciente, paginacion);
+      const historialPaginado = await getHistorialUsuario(user?.idEspecifico, paginacion);
       setTurnosHistorial(historialPaginado.data);
       setDataPaginacionHistorial(historialPaginado.paginacion);
       setLoading(false)
@@ -130,6 +150,7 @@ export default function MisTurnos() {
     yaCargado.current = true;
 
     const cargarTodo = async () => {
+      await cargarTodosLosContadores()
       await cargarProximosTurnos();
       await cargarHistorialTurnos();
     };
@@ -147,7 +168,7 @@ export default function MisTurnos() {
           </span>
 
           <p>
-            Tenés <strong>{dataPaginacionProximos.totalTurnos}</strong> turnos próximos programados.
+            Tenés <strong>{counts.CONFIRMADOS}</strong> turnos próximos programados confirmados.
             Desde acá podés consultar, reprogramar o cancelar tus citas médicas.
           </p>
         </div>
@@ -165,7 +186,6 @@ export default function MisTurnos() {
           : /* 4. Mapeamos nuestra data real */
             estadisticasData.map((stat) => (
               <EstadisticaTurnoCard
-                key={stat.id}
                 numero={stat.numero}
                 texto={stat.texto}
                 tipo={stat.tipo}

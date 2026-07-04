@@ -19,7 +19,7 @@ export default function BusquedaTurnos() {
 
     const [turnos, setTurnos] = useState([]);
     const [turnGroups, setTurnGroups] = useState([]);
-    const [dataPaginacion, setDataPaginacion] = useState({page: 1, limitePorPagina: 5 });
+    const [paginationData, setPaginationData] = useState({page: 1, limitePorPagina: 5 });
     const [sortBy, setSortBy] = useState("ordenPorFecha");
     const yaCargado = useRef(false);
     const [loading, setLoading] = useState(true);
@@ -53,7 +53,7 @@ export default function BusquedaTurnos() {
         return Array.from(mapa.values());
     };
 
-    const fetchTurns = async (filtersInput = {}, page = dataPaginacion.page, order = sortBy) => {
+    const fetchTurns = async (filtersInput = {}, page = paginationData.page, order = sortBy) => {
         setLoading(true);
         setTimeout(() => setLoading(false), 200);
         setNoResults(false);
@@ -72,7 +72,7 @@ export default function BusquedaTurnos() {
             setTurnos(response.data);
             setNoResults(response.data.length === 0);
             setTurnGroups(createTurnGroups(response.data));
-            setDataPaginacion(response.paginacion);
+            setPaginationData(response.paginacion);
         } catch (e) {
             console.error("Error fetching turns:", e);
         } finally {
@@ -128,14 +128,14 @@ export default function BusquedaTurnos() {
                         ))}
                 </section>
                 {noResults ? (<TurnosEmptyState
-                        titulo="No se encontro ningun turno"
-                        descripcion="Intenta cambiar tus filtros de busqueda."
+                        titulo="No se encontró ningún turno"
+                        descripcion="Intentá cambiar tus filtros de busqueda"
                         textoBoton={null}
                         onClick={null}
                         />) :
                 (<Pagination color="#137333"
-                    count={dataPaginacion.totalPaginas}
-                    page={dataPaginacion.page}
+                    count={paginationData.totalPaginas}
+                    page={paginationData.page}
                     onChange={(e, page) => {
                         cargarTurnos(filtrosActualesRef.current, page);
                     }}

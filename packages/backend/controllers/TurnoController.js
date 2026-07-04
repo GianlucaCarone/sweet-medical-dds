@@ -58,7 +58,6 @@ export class TurnoController {
   asignarTurnos = async (req, res, next) => {
     try {
       logger.info("intentando asignar turnos a un paciente: " + JSON.stringify(req.body));
-      const { id } = idParamsSchema.parse(req.params);
       const turnoData = bodyAsignarTurnoSchema.parse(req.body);
 
       logger.info(`[TURNOS CONTROLLER]: Asignando turno a paciente: ${turnoData.pacienteId}`);
@@ -222,6 +221,7 @@ export class TurnoController {
   solicitarCambioFecha = async (req, res, next) => {
     try {
       const id = idParamsSchema.parse(req.params).id;
+      logger.info("[TC]: solicitando cambio de fecha con: " + JSON.stringify(req.body));
       const { nuevaFechaHora } = bodySolicitarCambioFechaSchema.parse(req.body);
       const usuarioId = req.user.idEspecifico;
 
@@ -239,7 +239,7 @@ export class TurnoController {
         .status(200)
         .json({ status: "success", data: turnoActualizado });
     } catch (error) {
-      logger.error("[TURNOS CONTROLLER]: Error al solicitar cambio de fecha");
+      logger.error("[TURNOS CONTROLLER]: Error al solicitar cambio de fecha: " + error.message);
       return next(error);
     }
   };
