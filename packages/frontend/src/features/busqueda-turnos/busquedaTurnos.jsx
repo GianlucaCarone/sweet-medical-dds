@@ -25,8 +25,7 @@ export default function BusquedaTurnos() {
     //los turnos en si:
     const [turnos, setTurnos] = useState([]);
     const [conjuntosTurnos, setConjuntosTurnos] = useState([]);
-    const [dataPaginacion, setDataPaginacion] = useState({limitePorPagina: 5});
-    const [numeroPagina, setNumeroPagina] = useState(1);
+    const [dataPaginacion, setDataPaginacion] = useState({page: 1, limitePorPagina: 5});
     //funcionamiento general de la vista:
     const yaCargado = useRef(false);
     const [ordenarPor, setOrdenarPor] = useState("ordenPorFecha");
@@ -87,7 +86,7 @@ export default function BusquedaTurnos() {
         //cargarTurnos(filtrosInput);
     };
 
-    const cargarTurnos = async (filtrosInput = filtrosActualesRef.current, pagina = numeroPagina, orden = ordenarPor) => {
+    const cargarTurnos = async (filtrosInput = filtrosActualesRef.current, pagina = dataPaginacion.page, orden = ordenarPor) => {
         setLoading(true);
         setTimeout(() => setLoading(false), 200);
         setSinResultados(false);
@@ -171,10 +170,10 @@ export default function BusquedaTurnos() {
                             />
                         ))}
                 </section>
-                <Pagination count={dataPaginacion.totalPaginas} color="#137333"
-                    page={numeroPagina}
+                <Pagination color="#137333"
+                    count={dataPaginacion.totalPaginas}
+                    page={dataPaginacion.page}
                     onChange={(e, page) => {
-                        setNumeroPagina(page);
                         cargarTurnos(filtrosActualesRef.current, page);
                     }}
                 />

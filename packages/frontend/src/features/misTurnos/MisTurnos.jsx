@@ -40,10 +40,8 @@ const StatsGrid = styled.div`
 export default function MisTurnos() {
   const idUsuario = '6a0b7127da9b7c8a035d969b';
   const [idPaciente, setIdPaciente] = useState('6a0b720ada9b7c8a035d96a9');
-  const [paginaProximos, setPaginaProximos] = useState(1);
-  const [dataPaginacionProximos, setDataPaginacionProximos] = useState({limitePorPagina: 5})
-  const [paginaHistorial, setPaginaHistorial] = useState(1);
-  const [dataPaginacionHistorial, setDataPaginacionHistorial] = useState({limitePorPagina: 5});
+  const [dataPaginacionProximos, setDataPaginacionProximos] = useState({page: 1, limitePorPagina: 4})
+  const [dataPaginacionHistorial, setDataPaginacionHistorial] = useState({page: 1, limitePorPagina: 5});
   const [loading, setLoading] = useState(true);
   const [toastVisible, setToastVisible] = useState(false);
   const [turnosProximos, setTurnosProximos] = useState(mockRespuestaPaginada.data);
@@ -54,10 +52,6 @@ export default function MisTurnos() {
 
   // accionees alertaContext
   const {showAlert} = useAlert(); 
-
-  const totalPaginasProximos = Math.ceil(
-    mockRespuestaPaginada.paginacion.totalTurnos / turnosPorPagina
-  );
 
   const estadisticasData = [
     {
@@ -102,7 +96,7 @@ export default function MisTurnos() {
     }, 1500);
   };
 
-  const cargarProximosTurnos = async (page = paginaProximos) => {
+  const cargarProximosTurnos = async (page = dataPaginacionProximos.page) => {
     try {
       const paginacion = {
         'page': page,
@@ -116,7 +110,7 @@ export default function MisTurnos() {
     }
   }
 
-  const cargarHistorialTurnos = async (page = paginaHistorial) => {
+  const cargarHistorialTurnos = async (page = dataPaginacionHistorial.page) => {
     try {
       const paginacion = {
         'page': page,
@@ -153,7 +147,7 @@ export default function MisTurnos() {
           </span>
 
           <p>
-            Tenés <strong>{turnosProximos.length}</strong> turnos próximos programados.
+            Tenés <strong>{dataPaginacionProximos.totalTurnos}</strong> turnos próximos programados.
             Desde acá podés consultar, reprogramar o cancelar tus citas médicas.
           </p>
         </div>
@@ -203,7 +197,7 @@ export default function MisTurnos() {
             ))}
           </div>
 
-          {totalPaginasProximos > 1 && (
+          {/*dataPaginacionProximos.totalPaginas > 1 && (
             <div className="paginacion-turnos">
               <Button
                 disabled={paginaProximos === 1}
@@ -213,23 +207,22 @@ export default function MisTurnos() {
               </Button>
 
               <span>
-                Página {paginaProximos} de {totalPaginasProximos}
+                Página {paginaProximos} de {dataPaginacionProximos.totalPaginas}
               </span>
 
               <Button
-                disabled={paginaProximos === totalPaginasProximos}
+                disabled={paginaProximos === dataPaginacionProximos.totalPaginas}
                 onClick={() => setPaginaProximos(paginaProximos + 1)}
               >
                 Siguiente
               </Button>
             </div>
-          )}
+          )*/}
 
           <Pagination color="#137333"
             count={dataPaginacionProximos.totalPaginas} 
-            page={paginaProximos}
+            page={dataPaginacionProximos.page}
             onChange={(e, page) => {
-              setPaginaProximos(page);
               cargarProximosTurnos(page);
             }}
           />
@@ -259,9 +252,8 @@ export default function MisTurnos() {
 
           <Pagination color="#137333"
             count={dataPaginacionHistorial.totalPaginas} 
-            page={paginaHistorial}
+            page={dataPaginacionHistorial.page}
             onChange={(e, page) => {
-                setPaginaHistorial(page);
                 cargarHistorialTurnos(page);
             }}
           />
