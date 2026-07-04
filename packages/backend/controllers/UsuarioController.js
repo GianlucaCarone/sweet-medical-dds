@@ -74,6 +74,19 @@ export class UsuarioController {
         }
     };
 
+    updateMe = async (req, res, next) => {
+        try {
+            const id = req.user.id;
+            const usuarioData = usuarioSchema.partial().parse(req.body);
+            logger.info("[USUARIOS CONTROLLER]: Actualizando datos del usuario autenticado: ", id);
+            const usuarioActualizado = await this.usuarioService.update(id, usuarioData);
+            logger.info("[USUARIOS CONTROLLER]: Usuario autenticado actualizado: ", usuarioActualizado);
+            res.status(200).json(usuarioActualizado);
+        } catch (error) {
+            next(error);
+        }
+    };
+
     //1. El primer seed. Crea los usuarios
     async seed() {
         const usuarios = [
