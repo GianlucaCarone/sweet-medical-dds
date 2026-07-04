@@ -38,16 +38,11 @@ function App() {
               }>
               {/* Búsqueda de turnos: visible sin login (el TP lo muestra en búsqueda pública) */}
               <Route
-                path="/"
+                path="busqueda-turnos"
                 element={
-                  <Layout />
-                }>
-                <Route
-                  path="busqueda-turnos"
-                  element={
-                    <BusquedaTurnos />
-                  }
-                />
+                  <BusquedaTurnos />
+                }
+              />
 
               {/* Mis Turnos: solo para PACIENTE logueado */}
               <Route
