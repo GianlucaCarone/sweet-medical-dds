@@ -193,7 +193,7 @@ export class MedicoController {
 
   eliminarSede = async (req, res, next) => {
     try {
-      const sedeId = req.params.sedeId;
+      const sedeId = objectIdSchema("sede").parse(req.params.sedeId);
       const id = objectIdSchema("médico").parse(req.user.idEspecifico);
       logger.info("[MEDICO CONTROLLER]: Eliminando sede con id: ", sedeId);
       const medicoActualizado = await this.medicoService.eliminarSede(id, sedeId);
