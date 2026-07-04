@@ -26,4 +26,10 @@ export class Notificacion {
         this.leida = true;
         this.fechaHoraLeida = new Date();
     }
+
+
+    marcarComoNoLeida() {
+        this.leida = false;
+        this.fechaHoraLeida = null;
+    }
 }

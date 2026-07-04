@@ -112,6 +112,20 @@ export class NotificacionService {
         return this.toDto(notificacionGuardada);
     }
 
+    async desleer(idNotificacion) {
+        logger.info("[NOTIFICACIONES SERVICE]: Obteniendo los datos necesarios para desleer la notificacion");
+        const notificacion = await this.notificacionRepository.getById(idNotificacion);
+
+        if (!notificacion) throw new NotFoundError("No se encontro la notificacion con el id " + idNotificacion);
+        logger.info("[NOTIFICACIONES SERVICE]: Marcando notificacion como no leida: ", idNotificacion);
+        if (notificacion.leida === false) return this.toDto(notificacion);
+        notificacion.marcarComoNoLeida();
+        const notificacionGuardada = await this.notificacionRepository.save(notificacion);
+        logger.info("[NOTIFICACIONES SERVICE]: Notificacion marcada como no leida: ", notificacionGuardada);
+
+        return this.toDto(notificacionGuardada);
+    }
+
     async setUsuarioSistema(usuarioSistemaId) {
         logger.info("[NOTIFICACIONES SERVICE]: Configurando usuario sistema para el factory de notificaciones");
         const usuarioSistema = await this.usuarioService.findEntityById(usuarioSistemaId);

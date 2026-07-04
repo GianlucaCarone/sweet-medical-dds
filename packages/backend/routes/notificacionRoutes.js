@@ -125,6 +125,7 @@ export default function notificacionRoutes(getController) {
      *         $ref: '#/components/responses/E400'
      */
     router.route("/:idNotificacion/leer").patch((req, res, next) => notificacionController.leer(req, res, next));
+    router.route("/:idNotificacion/desleer").patch((req, res, next) => notificacionController.desleer(req, res, next));
 
     return router;
 }

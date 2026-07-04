@@ -10,6 +10,7 @@ import { CartProvider } from './context/CartContext.jsx';
 import { AlertProvider } from "./context/AlertContext.jsx";
 import ProtectedRoute from "./components/auth/ProtectedRoute.jsx";
 import Home from "./features/home/Home.jsx"
+import { NotificacionProvider } from "./context/NotificacionContext.jsx";
 
 import "./App.css";
 import { FilterProvider } from "./context/FilterContext.jsx";
@@ -30,7 +31,8 @@ function App() {
     <AlertProvider>
       <CartProvider>
         <FilterProvider>
-          <Routes>
+          <NotificacionProvider>
+            <Routes>
             <Route
               path="/"
               element={
@@ -78,6 +80,7 @@ function App() {
             </Route>
             <Route path="/login" element={<Login />} />
           </Routes>
+          </NotificacionProvider>
         </FilterProvider>
       </CartProvider>
     </AlertProvider>

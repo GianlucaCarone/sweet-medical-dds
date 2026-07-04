@@ -10,6 +10,7 @@ import ModalRegistro from "../auth/ModalRegistro.jsx";
 import { useAuth } from "../../context/AuthContext.jsx";
 import { useCart } from '../../context/CartContext.jsx';
 import { useThemeContext } from '../../context/ThemeContext.jsx';
+import CampanitaNotification from "./CampanitaNotification.jsx";
 import {
   Drawer,
   Badge,
@@ -93,6 +94,8 @@ const Header = () => {
               <ShoppingCartIcon sx={{ color: "primary" }} />
             </Badge>
           </IconButton>
+
+          {user && <CampanitaNotification />}
 
           {user ? (
             <MenuUsuario
