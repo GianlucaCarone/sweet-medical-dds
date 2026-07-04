@@ -10,6 +10,7 @@ import { useAuth } from '../../context/AuthContext.jsx';
 import { useCart } from '../../context/CartContext.jsx';
 import TituloSeccion from "../../shared/TituloSeccion/TituloSeccion.jsx"
 import { useFilters } from '../../context/FilterContext.jsx';
+import { Typography } from '@mui/material';
 
 export default function BusquedaTurnos() {
     const { user } = useAuth();
@@ -130,15 +131,24 @@ export default function BusquedaTurnos() {
                             />
                         ))}
                 </section>
-                <Pagination
-                    count={paginationData.totalPaginas}
-                    color="primary"
-                    page={pageNumber}
-                    onChange={(e, page) => {
-                        setPageNumber(page);
-                        fetchTurns(buildApiFilters(), page);
-                    }}
-                />
+                {noResults
+                  ? <>
+                        <Typography variant="h6" fontWeight="bold">
+                            Lo sentimos, no contamos con turnos disponibles
+                        </Typography>
+                    </>
+                  : <Pagination
+                      count={paginationData.totalPaginas}
+                      color="primary"
+                      page={pageNumber}
+                      onChange={
+                        (e, page) => {
+                          setPageNumber(page);
+                          fetchTurns(buildApiFilters(), page);
+                        }
+                      }
+                    />
+                }
             </main>
         </div>
     );
