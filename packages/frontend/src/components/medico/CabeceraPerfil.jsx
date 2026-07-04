@@ -3,7 +3,6 @@ import DatosPersonales from './DatosPersonales';
 
 export default function CabeceraPerfil({
   medico,
-  handleGuardarDatosPersonales,
   setAlertConfig
 }) {
   return (
@@ -62,7 +61,6 @@ export default function CabeceraPerfil({
         {/* Columna 2: Datos Personales */}
         <DatosPersonales 
           medico={medico} 
-          handleGuardarDatosPersonales={handleGuardarDatosPersonales} 
         />
 
       </div>
