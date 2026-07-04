@@ -1,4 +1,5 @@
-import cors from "cors"; // middleware para permitir solicitudes desde diferentes orígenes (CORS)
+import cors from "cors";
+import cookieParser from "cookie-parser";
 import swaggerUi from "swagger-ui-express"
 import { notFoundHandler } from "./middlewares/notFoundHandler.js";
 import { errorLogger } from "./middlewares/errorLogger.js";
@@ -37,6 +38,17 @@ export class Server {
     }
 
     configurarRutas() {
+        const corsOptions = {
+            origin: process.env.ALLOWED_ORIGINS
+                ? process.env.ALLOWED_ORIGINS.split(",").map((o) => o.trim())
+                : true,
+            credentials: true, // necesario para que el browser envíe/reciba cookies
+        };
+
+        this.#app.options('/{*path}', cors(corsOptions));
+        this.#app.use(cors(corsOptions));
+        this.#app.use(cookieParser());
+
         this.#app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs))
         this.#routes.forEach(({ path, handler }) => this.app.use(path, handler(this.getController.bind(this))));
 
@@ -44,15 +56,6 @@ export class Server {
         this.#app.use(notFoundHandler);
         this.#app.use(errorLogger);
         this.#app.use(errorHandler);
-
-        this.#app.use(
-            cors({
-                origin: process.env.ALLOWED_ORIGINS
-                    ? process.env.ALLOWED_ORIGINS.split(",").map((o) => o.trim())
-                    : true,
-            }),
-        );
-
     }
 
     start() {

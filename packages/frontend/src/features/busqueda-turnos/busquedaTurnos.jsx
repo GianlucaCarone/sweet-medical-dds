@@ -1,159 +1,154 @@
-import React, { use } from 'react';
+import React from 'react';
 import { useEffect, useState, useCallback } from "react";
 import SidebarFiltros from '../../components/busqueda-turnos/sidebarFiltros.jsx';
 import TarjetaTurno from '../../components/busqueda-turnos/tarjetaTurno.jsx';
 import TarjetaTurnoSkeleton from '../../components/busqueda-turnos/tarjetaTurnoSkeleton.jsx';
 import Pagination from '@mui/material/Pagination';
-import { turnosEjemplo, datosPaginacionEjemplo } from '../../mockdata/turnos.js';
-import { medicosEjemplo, especialidadesEjemplo, practicasEjemplo, sedesEjemplo } from '../../mockdata/busquedaTurnos.js';
-import { getTurnosDisponiblesFiltradoPaginado, getListadoMedicos, getListadoEspecialidades, getListadoPracticas, getListadoSedes } from '../../api/api.js';
+import { getTurnosDisponiblesFiltradoPaginado } from '../../api/apiBusquedaTurnos.js';
 import './busquedaTurnos.css';
 import { useAuth } from '../../context/AuthContext.jsx';
 import { useCart } from '../../context/CartContext.jsx';
-
-function agruparTurnos(turnos) {
-    const mapa = new Map();
-
-    turnos.forEach((turno) => {
-        const clave = [
-            turno.medico.nombre,
-            turno.servicio.id,
-            turno.sede.nombre,
-            turno.costo,
-            turno.estadoCobertura,
-        ].join("|");
-
-        if (!mapa.has(clave)) {
-            mapa.set(clave, {
-                medico: turno.medico,
-                servicio: turno.servicio,
-                sede: turno.sede,
-                costo: turno.costo,
-                estadoCobertura: turno.estadoCobertura,
-                turnos: [],
-            });
-        }
-
-        mapa.get(clave).turnos.push({
-            id: turno.id,
-            horario: turno.fechaHora,
-        });
-    });
-
-    return Array.from(mapa.values());
-}
+import TituloSeccion from "../../shared/TituloSeccion/TituloSeccion.jsx"
+import { useFilters } from '../../context/FilterContext.jsx';
+import { Typography } from '@mui/material';
 
 export default function BusquedaTurnos() {
     const { user } = useAuth();
+    const { doctors, specialities, practices, branches, buildApiFilters } = useFilters();
+    const { manejoCarritoDrawer, agregarAlCarrito } = useCart();
 
-    //datos para los filtros:
-    const [pacienteID, setPacienteID] = useState(""); //por ahora; hasta tener el login
-    const [medicos, setMedicos] = useState(medicosEjemplo);
-    const [especialidades, setEspecialidades] = useState(especialidadesEjemplo);
-    const [practicas, setPracticas] = useState(practicasEjemplo);
-    const [sedes, setSedes] = useState(sedesEjemplo);
-    //los turnos en si:
-    const [turnos, setTurnos] = useState(turnosEjemplo);
-    const [conjuntosTurnos, setConjuntosTurnos] = useState(agruparTurnos(turnosEjemplo));
-    const [dataPaginacion, setDataPaginacion] = useState(datosPaginacionEjemplo);
-    const [numeroPagina, setNumeroPagina] = useState(1);
-    //funcionamiento general de la vista:
-    const [ordenarPor, setOrdenarPor] = useState("ordenarPorFecha");
+    const [turnos, setTurnos] = useState([]);
+    const [turnGroups, setTurnGroups] = useState([]);
+    const [paginationData, setPaginationData] = useState({ limitePorPagina: 5 });
+    const [pageNumber, setPageNumber] = useState(1);
+    const [sortBy, setSortBy] = useState("ordenPorFecha");
     const [loading, setLoading] = useState(true);
+    const [noResults, setNoResults] = useState(false);
 
-    const  {manejoCarritoDrawer, agregarAlCarrito} = useCart();
+    const createTurnGroups = (turnos) => {
+        const mapa = new Map();
+        turnos.forEach((turno) => {
+            const clave = [
+                turno.medico?._id,
+                turno.servicio?._id,
+                turno.sede?._id,
+                turno.costo,
+                turno.estadoCobertura,
+            ].join("|");
+            if (!mapa.has(clave)) {
+                mapa.set(clave, {
+                    medico: turno.medico,
+                    servicio: turno.servicio,
+                    sede: turno.sede,
+                    costo: turno.costo,
+                    estadoCobertura: turno.estadoCobertura,
+                    turnos: [],
+                });
+            }
+            mapa.get(clave).turnos.push({
+                id: turno.id,
+                horario: turno.fechaHora,
+            });
+        });
+        return Array.from(mapa.values());
+    };
 
-    useEffect(() => {
-        //const {user} = useAuth(); //obtenemos el id del usuario logueado desde el contexto de autenticación
-        
-        const cargarListados = async () => {
-            /*
-            const pacienteId = await getPacienteByIdUsuario(user.id)
-            setPacienteID(pacienteId)
-            const listadoMedicos = await getListadoMedicos();
-            setMedicos(listadoMedicos);
-            const listadoServicios = await getListadoEspecialidades();
-            setEspecialidades(listadoServicios.filter(s => s.tipo === 'Especialidad));
-            setPracticas(listadoServicios.filter(s => s.tipo === 'Practica'));
-            const listadoSedes = await getListadoSedes();
-            setSedes(listadoSedes);
-        */
-        }
-    }, []);
-
-    const cargarTurnos = useCallback((filtros = {}) => {
+    const fetchTurns = useCallback(async (filtersInput = {}, page = pageNumber, order = sortBy) => {
         setLoading(true);
-        setTimeout(() => setLoading(false), 500);
-            const filtrosCompletos = {
-                ...filtros,
-                'pacienteId': pacienteID,
-                ordenarPor: 'asc'
-            };
-            const dataPaginacion = { numeroPagina };
-            //const turnosFiltrados = getTurnosDisponiblesFiltradoPaginado(filtros, paginacion);
-            //setTurnos(response.turnos);
-            //setDataPaginacion(response.paginacion);
-            //setLoading(false);
-    }, [ordenarPor, numeroPagina]);
+        setTimeout(() => setLoading(false), 200);
+        setNoResults(false);
 
-    const agregarAlCarritoTurno = (id) => {
+        const pageParam = { page };
+        const completeFilters = {
+            ...filtersInput,
+            estado: 'DISPONIBLE',
+            orden: "asc"
+        };
+
+        if (order === "ordenPorCosto") {
+            completeFilters.ordenPorCosto = "asc";
+        } else if (order === "ordenPorFecha") {
+            completeFilters.ordenPorFecha = "asc";
+        }
+
+        try {
+            const response = await getTurnosDisponiblesFiltradoPaginado(completeFilters, pageParam);
+            setTurnos(response.data);
+            setNoResults(response.data.length === 0);
+            setTurnGroups(createTurnGroups(response.data));
+            setPaginationData(response.paginacion);
+        } catch (e) {
+            console.error("Error fetching turns:", e);
+        } finally {
+            setLoading(false);
+        }
+    }, [sortBy, pageNumber]);
+
+    const addTurnToCart = (id) => {
         const turno = turnos.find(t => t.id === id);
         agregarAlCarrito(turno);
         manejoCarritoDrawer.abrir();
     };
 
     useEffect(() => {
-        cargarTurnos();
-    }, [cargarTurnos]);
+        const initialFilters = buildApiFilters();
+        fetchTurns(initialFilters);
+    }, []);
 
     return (
         <div className="container-busqueda">
-
-            {/* Sidebar de filtros desarrollado con Material UI */}
             <SidebarFiltros
-                medicos={medicos}
-                sedes={sedes}
-                especialidades={especialidades}
-                practicas={practicas}
-                nuevosFiltros={cargarTurnos}
+                onSearch={() => fetchTurns(buildApiFilters())}
             />
 
-            {/* Contenedor de Resultados del lado derecho */}
             <main className="contenido-resultados">
                 <header className="header-resultados">
-                    <h3>{dataPaginacion.totalResultados} turnos disponibles</h3>
+                    <TituloSeccion>{paginationData.totalTurnos} {paginationData.totalTurnos > 1 ? 'Turnos disponibles' : 'Turno disponible'}</TituloSeccion>
                     <div className="ordenar-por">
                         <label>Ordenar por:</label>
-                        <select defaultValue="ordenarPorFecha" onChange={(e) => setOrdenarPor(e.target.value)}>
-                            <option value="ordenarPorFecha">Fecha (más próximos)</option>
-                            <option value="ordenarPorCosto">Costo (más barato)</option>
+                        <select defaultValue="ordenPorFecha" onChange={(e) => {
+                            setSortBy(e.target.value);
+                            fetchTurns(buildApiFilters(), null, e.target.value);
+                        }}>
+                            <option value="ordenPorFecha">Fecha (más próximos)</option>
+                            <option value="ordenPorCosto">Costo (más barato)</option>
                         </select>
                     </div>
                 </header>
 
-                {/* Listado dinámico de las tarjetas médicas */}
                 <section className="lista-turno">
                     {loading
-                        ? Array.from({ length: dataPaginacion.limitePorPagina }).map((_, i) => ( //que la cantidad de skeletons sea igual al tamaño de pagina
+                        ? Array.from({ length: paginationData.limitePorPagina }).map((_, i) => (
                             <TarjetaTurnoSkeleton key={i} />
                         ))
-                        : conjuntosTurnos.map((turno) => (
+                        : turnGroups.map((turno) => (
                             <TarjetaTurno
                                 key={turno.id}
                                 turno={turno}
-                                especialidades={especialidades}
-                                practicas={practicas}
-                                onReservar={agregarAlCarritoTurno}
+                                especialidades={specialities}
+                                practicas={practices}
+                                onReservar={addTurnToCart}
                             />
                         ))}
                 </section>
-                <Pagination count={dataPaginacion.totalPaginas} color="#137333"
-                    page={numeroPagina}
-                    onChange={(e, page) => {
-                        setNumeroPagina(page);
-                        cargarTurnos();
-                    }}
-                />
+                {noResults
+                  ? <>
+                        <Typography variant="h6" fontWeight="bold">
+                            Lo sentimos, no contamos con turnos disponibles
+                        </Typography>
+                    </>
+                  : <Pagination
+                      count={paginationData.totalPaginas}
+                      color="primary"
+                      page={pageNumber}
+                      onChange={
+                        (e, page) => {
+                          setPageNumber(page);
+                          fetchTurns(buildApiFilters(), page);
+                        }
+                      }
+                    />
+                }
             </main>
         </div>
     );

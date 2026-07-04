@@ -6,3 +6,69 @@
     align-items: center;
     width: 100%;
 }
+
+.home-grid {
+    overflow: auto;
+    display: grid;
+    grid-template-areas:
+        "banner banner"
+        "banner banner"
+        "banner banner"
+        "infoEstadistica infoEstadistica"
+        "profesionales profesionales"
+        "profesionales profesionales"
+        "funcionamiento funcionamiento"
+        "funcionamiento funcionamiento"
+        "funcionamiento funcionamiento"
+        "tieneObraSocial tieneObraSocial"
+    ;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: repeat(12, auto);
+}
+
+.banner {
+    grid-area: banner;
+    background: var(--color-primary);
+    color: white;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+.infoEstadistica {
+    grid-area: infoEstadistica;
+}
+.especialidades { grid-area: especialidades; }
+.profesionales { grid-area: profesionales; }
+.funcionamiento {
+    grid-area: funcionamiento;
+}
+.tieneObraSocial {
+    grid-area: tieneObraSocial;
+    background-color: var(--color-primary);
+    color: white;
+}
+.tieneObraSocialSubtitulo {
+    color: var(--color-text-muted);
+    font-weight: bold;
+}
+
+.spanEstadistica {
+    font-weight: bold;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    color: var(--color-secondary);
+    font-size: 1.5rem;
+    text-align: center;
+}
+
+.text-muted {
+    font-weight: bold;
+    color: var(--color-text-muted)
+}
+
+.banner .banner-subtitulo {
+    color: var(--color-text-muted);
+    font-weight: bold;
+}
+.titulo {
+    font-size: 3.5rem;
+}

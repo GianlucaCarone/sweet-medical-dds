@@ -26,8 +26,14 @@ export class TurnoRepository {
 
     async findById(id) {
         return await this.model.findById(id)
-            .populate("medico", "nombre matricula idUsuario")
-            .populate("paciente", "nombre dni idUsuario obraSocial plan")
+            .populate("medico", "nombre matricula usuario")
+            .populate({
+                path: "paciente",
+                select: "nombre dni idUsuario obraSocial plan",
+                populate: [
+                    { path: "obraSocial", select: "nombre planes" }
+                ]
+            })
             .populate("sede", "nombre direccion")
             .populate("servicio", "nombre costo duracionTurnoEnMins")
             .exec();
@@ -94,6 +100,10 @@ disponible:
         if (filtros.medicoId !== undefined) {
             query.medico = filtros.medicoId;
         }
+        
+        if (filtros.pacienteId !== undefined) {
+            query.paciente = filtros.pacienteId;
+        }
 
         if (filtros.servicioId !== undefined) {
             query.servicio = filtros.servicioId;
@@ -109,11 +119,19 @@ disponible:
 
         const inicio = (numeroPagina - 1) * limitePorPagina;
 
+        // Debug log eliminado para evitar ruido/exposición de filtros en producción
+
         // Ejecutar la consulta y el conteo en paralelo
         const [turnos, totalTurnos] = await Promise.all([
             this.model.find(query)
-                .populate("medico", "nombre matricula idUsuario")
-                .populate("paciente", "nombre dni idUsuario obraSocial plan")
+                .populate("medico", "nombre matricula usuario")
+                .populate({
+                    path: "paciente",
+                    select: "nombre dni idUsuario obraSocial plan",
+                    populate: [
+                        { path: "obraSocial", select: "nombre planes" }
+                    ]
+                })
                 .populate("sede", "nombre direccion")
                 .populate("servicio", "nombre costo duracionTurnoEnMins")
                 .sort(ordenamiento)
@@ -142,5 +160,24 @@ disponible:
             estado: EstadoTurnoEnum.DISPONIBLE,
             fechaHora: { $gt: fechaActual }
         });
+    }
+
+    async obtenerContadores({ medicoId, pacienteId }) {
+        const query = {};
+        if (medicoId) query.medico = medicoId;
+        if (pacienteId) query.paciente = pacienteId;
+
+        const estados = Object.values(EstadoTurnoEnum);
+        const promesas = estados.map(async (estado) => {
+            const count = await this.model.countDocuments({ ...query, estado }).exec();
+            return { estado, count };
+        });
+
+        const resultados = await Promise.all(promesas);
+        const counts = {};
+        resultados.forEach(res => {
+            counts[res.estado] = res.count;
+        });
+        return counts;
     }
 }

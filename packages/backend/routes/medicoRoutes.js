@@ -1,4 +1,5 @@
 import express from "express";
+import { authMiddleware } from "../middlewares/authMiddleware.js";
 import { MedicoController } from "../controllers/MedicoController.js";
 
 /**
@@ -242,6 +243,36 @@ export default function medicoRoutes(getController) {
      */
     .delete((req, res, next) => medicoController.eliminarDisponibilidad(req, res, next)); // Eliminar disponibilidad existente del medico
 
+  router.route("/me")
+    .get(authMiddleware, (req, res, next) => medicoController.buscarMiPerfil(req, res, next));
+
+  router.route("/usuario/:id")
+    /**
+     * @swagger
+     * /medicos/usuario/{idUsuario}:
+     *   get:
+     *     summary: Obtener médico por ID de usuario
+     *     tags: [Medicos]
+     *     parameters:
+     *       - in: path
+     *         name: idUsuario
+     *         required: true
+     *         schema:
+     *           $ref: '#/components/schemas/ObjectId'
+     *     responses:
+     *       200:
+     *         description: Médico encontrado
+     *         content:
+     *           application/json:
+     *             schema:
+     *               $ref: '#/components/schemas/Medico'
+     *       404:
+     *         description: Médico no encontrado
+     *       400:
+     *         $ref: '#/components/responses/E400'
+     */
+    .get((req, res, next) => medicoController.findByIdUsuario(req, res, next));
+
   router.route("/:id")
     /**
      * @swagger
@@ -466,6 +497,8 @@ export default function medicoRoutes(getController) {
      *                 message: { type: string }
      */
     .delete((req, res, next) => medicoController.eliminarServicio(req, res, next)); // Eliminar servicio existente del medico
+
+
 
   return router;
 }

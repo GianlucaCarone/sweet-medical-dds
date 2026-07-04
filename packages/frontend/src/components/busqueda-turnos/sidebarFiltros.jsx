@@ -1,10 +1,8 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React from 'react';
 import FilterAltIcon from '@mui/icons-material/FilterAlt';
 import {
     Box,
     Button,
-    Card,
     Typography,
     TextField,
     MenuItem,
@@ -13,200 +11,242 @@ import {
     Select,
     Stack
 } from '@mui/material';
+import { useFilters } from '../../context/FilterContext.jsx';
 
+export default function SidebarFiltros({ direction = 'vertical', onSearch }) {
+    const {
+        doctors, specialities, practices, branches,
+        doctorFilter, specialityFilter, practiceFilter, branchFilter, fromDate, untilDate,
+        setDoctorFilter, setSpecialityFilter, setPracticeFilter, setBranchFilter, setFromDate, setUntilDate,
+        updateFilters
+    } = useFilters();
 
-export default function SidebarFiltros({ medicos, sedes, especialidades, practicas, nuevosFiltros }) {
-    // Estados para controlar los filtros (puedes pasarlos como props más adelante)
-    const [profesional, setProfesional] = useState('Todos');
-    const [especialidad, setEspecialidad] = useState('Todas');
-    const [practica, setPractica] = useState('Todas');
-    const [sede, setSede] = useState('Todas');
-    const [fechaDesde, setFechaDesde] = useState('');
-    const [fechaHasta, setFechaHasta] = useState('');
+    const isHorizontal = direction === 'horizontal';
+    const selectWidth = isHorizontal ? { minWidth: 160 } : {};
 
-    const filtros = {
-        'medicoId': profesional.id,
-        'estado': 'DISPONIBLE',
-        'especialidadId': especialidad.id,
-        'practicaId': practica.id,
-        'sedeId': sede.id,
-        'fechaHoraInicio': fechaDesde,
-        'fechaHoraFin': fechaHasta
-    }
+    const handleDoctorChange = (e) => {
+        const selected = e.target.value === 'Todos'
+            ? 'Todos'
+            : doctors.find(d => d.id === e.target.value);
+        setDoctorFilter(selected);
+        updateFilters({ doctor: selected, speciality: 'Todas', practice: 'Todas' });
+    };
+
+    const handleSpecialityChange = (e) => {
+        const selected = e.target.value === 'Todas'
+            ? 'Todas'
+            : specialities.find(s => s.id === e.target.value);
+        setSpecialityFilter(selected);
+        setPracticeFilter('Todas');
+        updateFilters({ speciality: selected, practice: 'Todas' });
+    };
+
+    const handlePracticeChange = (e) => {
+        const selected = e.target.value === 'Todas'
+            ? 'Todas'
+            : practices.find(p => p.id === e.target.value);
+        setPracticeFilter(selected);
+        updateFilters({ practice: selected });
+    };
+
+    const handleBranchChange = (e) => {
+        const selected = e.target.value === 'Todas'
+            ? 'Todas'
+            : branches.find(b => b.id === e.target.value);
+        setBranchFilter(selected);
+        updateFilters({ branch: selected });
+    };
+
+    const handleFromDateChange = (e) => {
+        const value = e.target.value;
+        if (!value) {
+            setFromDate('');
+            updateFilters({ fromDate: '' });
+            return;
+        }
+        const selectedDate = new Date(value);
+        const today = new Date().setHours(0, 0, 0, 0);
+        if (selectedDate < today) {
+            alert("La fecha desde no puede ser anterior a hoy.");
+            return;
+        }
+        if (untilDate && value > untilDate) {
+            alert("La fecha desde no puede ser posterior a la fecha hasta.");
+            return;
+        }
+        setFromDate(value);
+        updateFilters({ fromDate: value });
+    };
+
+    const handleUntilDateChange = (e) => {
+        const value = e.target.value;
+        if (!value) {
+            setUntilDate('');
+            updateFilters({ untilDate: '' });
+            return;
+        }
+        const selectedDate = new Date(value);
+        const today = new Date().setHours(0, 0, 0, 0);
+        if (selectedDate < today) {
+            alert("La fecha hasta no puede ser anterior a hoy.");
+            return;
+        }
+        if (fromDate && value < fromDate) {
+            alert("La fecha hasta no puede ser anterior a la fecha desde.");
+            return;
+        }
+        setUntilDate(value);
+        updateFilters({ untilDate: value });
+    };
 
     return (
         <Box
             component="aside"
             sx={{
-                width: 280,
-                backgroundColor: '#ffffff',
+                width: isHorizontal ? '100%' : 280,
+                display: isHorizontal ? 'flex' : null,
+                backgroundColor: 'background.default',
                 borderRadius: 3,
                 padding: 3,
                 border: '1px solid #e2e8f0',
-                boxShadow: '0 4px 6px rgba(0,0,0,0.01)'
+                boxShadow: '0 4px 6px rgba(0,0,0,0.01)',
+                height: 'auto',
+                ...(isHorizontal ? {
+                    flexWrap: 'wrap',
+                    alignItems: 'flex-start',
+                    gap: 2,
+                    justifyContent: 'space-between',
+                    mt: 2
+                } : {}),
             }}
         >
-            {/* Título de la sección */}
-            <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: 3 }}>
-                <FilterAltIcon sx={{ color: '#475569', fontSize: 20 }} />
-                <Typography variant="h6" sx={{ fontSize: 16, fontWeight: 700, color: '#1e293b' }}>
-                    Búsqueda de Turnos
-                </Typography>
-            </Stack>
+            {!isHorizontal && (
+                <Stack
+                    direction="row"
+                    alignItems="center"
+                    spacing={1}
+                    sx={{ mb: 3 }}
+                >
+                    <FilterAltIcon sx={{ color: '#475569', fontSize: 20 }} />
+                    <Typography variant="h6" sx={{ fontSize: 16, fontWeight: 700, color: '#1e293b' }}>
+                        Búsqueda de Turnos
+                    </Typography>
+                </Stack>
+            )}
 
-            {/* Contenedor vertical de los formularios */}
-            <Stack spacing={2.5}>
+            <Stack direction={isHorizontal ? 'row' : 'column'} spacing={isHorizontal ? 1.5 : 2.5} flexWrap={isHorizontal ? 'wrap' : undefined} useFlexGap={isHorizontal}>
 
-                {/* Profesional */}
-                <FormControl fullWidth size="small">
-                    <InputLabel id="profesional-label">Profesional</InputLabel>
+                {!isHorizontal && (
+                    <FormControl fullWidth size="small" sx={selectWidth}>
+                        <InputLabel id="doctor-label">Profesional</InputLabel>
+                        <Select
+                            labelId="doctor-label"
+                            value={doctorFilter?.id ?? 'Todos'}
+                            label="Profesional"
+                            onChange={handleDoctorChange}
+                        >
+                            <MenuItem value='Todos'>Todos</MenuItem>
+                            {doctors.map((d) => (
+                                <MenuItem key={d.id} value={d.id}>
+                                    {d.nombre}
+                                </MenuItem>
+                            ))}
+                        </Select>
+                    </FormControl>
+                )}
+
+                <FormControl fullWidth={!isHorizontal} size="small" sx={selectWidth}>
+                    <InputLabel id="speciality-label">Especialidad</InputLabel>
                     <Select
-                        labelId="profesional-label"
-                        value={profesional?.id ?? ""}
-                        label="Profesional"
-                        onChange={(e) => {
-                            const proSeleccionado = medicos.find(
-                                pro => pro.id === e.target.value
-                            );
-
-                            setProfesional(proSeleccionado);
-                            nuevosFiltros();
-                        }}
-                    >
-                        <MenuItem value="Todos">Todos</MenuItem>
-                        {medicos.map((pro) => (
-                            <MenuItem key={pro.id} value={pro.id}>
-                                {pro.nombre}
-                            </MenuItem>
-                        ))}
-                    </Select>
-                </FormControl>
-
-                {/* Especialidad */}
-                <FormControl fullWidth size="small">
-                    <InputLabel id="especialidad-label">Especialidad</InputLabel>
-                    <Select
-                        labelId="especialidad-label"
-                        value={especialidad?.id ?? ""}
+                        labelId="speciality-label"
+                        value={specialityFilter?.id ?? 'Todas'}
                         label="Especialidad"
-                        onChange={(e) => {
-                            const espSeleccionada = especialidades.find(
-                                esp => esp.id === e.target.value
-                            );
-
-                            setEspecialidad(espSeleccionada);
-                            setPractica("");
-                            nuevosFiltros();
-                        }}
+                        onChange={handleSpecialityChange}
                     >
-                        <MenuItem value="Todas">Todas</MenuItem>
-                        {especialidades.map((esp) => (
-                            <MenuItem key={esp.id} value={esp.id}>
-                                {esp.nombre}
+                        <MenuItem value='Todas'>Todas</MenuItem>
+                        {specialities.map((s) => (
+                            <MenuItem key={s.id} value={s.id}>
+                                {s.nombre}
                             </MenuItem>
                         ))}
                     </Select>
                 </FormControl>
 
-                {/* Práctica */}
-                <FormControl fullWidth size="small">
-                    <InputLabel id="practica-label">Práctica</InputLabel>
+                <FormControl fullWidth={!isHorizontal} size="small" sx={selectWidth}>
+                    <InputLabel id="practice-label">Práctica</InputLabel>
                     <Select
-                        labelId="practica-label"
-                        value={practica}
+                        labelId="practice-label"
+                        value={practiceFilter?.id ?? 'Todas'}
                         label="Práctica"
-                        onChange={(e) => {
-                            setPractica(e.target.value);
-                            nuevosFiltros();
-                        }}
+                        onChange={handlePracticeChange}
                     >
-                        <MenuItem value="Todas">Todas</MenuItem>
-                        {practicas
-                            .filter((practica) => practica.especialidadPadre === especialidad?.id || practica.especialidadPadre === null)
-                            .map((practica) => (
-                                <MenuItem key={practica.id} value={practica.id}>
-                                    {practica.nombre}
+                        <MenuItem value='Todas'>Todas</MenuItem>
+                        {practices
+                            .filter((p) => p.especialidadPadreId === specialityFilter?.id || p.especialidadPadre === null)
+                            .map((p) => (
+                                <MenuItem key={p.id} value={p.id}>
+                                    {p.nombre}
                                 </MenuItem>
                             ))}
                     </Select>
                 </FormControl>
 
-                {/* Sede de atención */}
-                <FormControl fullWidth size="small">
-                    <InputLabel id="sede-label">Sede de atención</InputLabel>
-                    <Select
-                        labelId="sede-label"
-                        value={sede}
-                        label="Sede de atención"
-                        onChange={(e) => {
-                            setSede(e.target.value);
-                            nuevosFiltros();
-                        }}
-                    >
-                        <MenuItem value="Todas">Todas</MenuItem>
-                        {sedes.map((sede) => (
-                            <MenuItem key={sede.id} value={sede.nombre}>
-                                {sede.nombre}
-                            </MenuItem>
-                        ))}
-                    </Select>
-                </FormControl>
+                {!isHorizontal && (
+                    <>
+                        <FormControl fullWidth size="small" sx={selectWidth}>
+                            <InputLabel id="branch-label">Sede de atención</InputLabel>
+                            <Select
+                                labelId="branch-label"
+                                value={branchFilter?.id ?? 'Todas'}
+                                label="Sede de atención"
+                                onChange={handleBranchChange}
+                            >
+                                <MenuItem value='Todas'>Todas</MenuItem>
+                                {branches.map((b) => (
+                                    <MenuItem key={b.id} value={b.id}>
+                                        {b.nombre}
+                                    </MenuItem>
+                                ))}
+                            </Select>
+                        </FormControl>
 
-                {/* Rango de Fechas */}
-                <Box>
-                    <Typography variant="caption" sx={{ display: 'block', fontWeight: 600, mb: 1, color: '#1e293b' }}>
-                        Rango de Fechas
-                    </Typography>
-                    <Stack direction="row" spacing={1}>
-                        <TextField
-                            size="small"
-                            type="date"
-                            //label="Desde"
-                            //InputLabelProps={{ shrink: true }}
-                            helperText="Desde"
-                            value={fechaDesde}
-                            onChange={(e) => {
-                                const fechaSeleccionada = new Date(e.target.value);
-                                const hoy = new Date().setHours(0, 0, 0, 0);
-                                if (fechaSeleccionada < hoy) {
-                                    alert("La fecha desde no puede ser anterior a hoy.");
-                                    return;
-                                }
-                                if (fechaHasta && e.target.value > fechaHasta) {
-                                    alert("La fecha desde no puede ser posterior a la fecha hasta.");
-                                    return;
-                                }
-                                setFechaDesde(e.target.value);
-                                nuevosFiltros();
-                            }}
-                            fullWidth
-                        />
-                        <TextField
-                            size="small"
-                            type="date"
-                            //label="Hasta"
-                            //InputLabelProps={{ shrink: true }}
-                            helperText="Hasta"
-                            value={fechaHasta}
-                            onChange={(e) => {
-                                const fechaSeleccionada = new Date(e.target.value);
-                                const hoy = new Date().setHours(0, 0, 0, 0);
-                                if (fechaSeleccionada <= hoy) {
-                                    alert("La fecha hasta no puede ser anterior a hoy.");
-                                    return;
-                                }
-                                if (fechaDesde && e.target.value < fechaDesde) {
-                                    alert("La fecha hasta no puede ser anterior a la fecha desde.");
-                                    return;
-                                }
-                                setFechaHasta(e.target.value);
-                                nuevosFiltros();
-                            }}
-                            fullWidth
-                        />
-                    </Stack>
-                </Box>
+                        <Box>
+                            <TextField
+                                size="small"
+                                type="date"
+                                helperText="Desde"
+                                value={fromDate}
+                                onChange={handleFromDateChange}
+                                fullWidth
+                            />
+                            <TextField
+                                size="small"
+                                type="date"
+                                helperText="Hasta"
+                                value={untilDate}
+                                onChange={handleUntilDateChange}
+                                fullWidth
+                            />
+                        </Box>
+                    </>
+                )}
             </Stack>
+
+            <Button
+                variant="contained"
+                onClick={() => onSearch?.()}
+                sx={{
+                    backgroundColor: 'primary',
+                    color: 'background',
+                    height: 40,
+                    minWidth: 120,
+                    whiteSpace: 'nowrap',
+                    '&:hover': { backgroundColor: 'primary.dark' },
+                    ...(!isHorizontal ? { width: '100%' } : {})
+                }}
+            >
+                Buscar
+            </Button>
         </Box>
     );
 }

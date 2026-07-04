@@ -82,7 +82,7 @@ export class UsuarioController {
                 password: "System00"
             },
             {
-                nombreUsuario: "Mariagomez",
+                nombreUsuario: "mariagomez@swiss.com",
                 password: "Password1"
             }
         ];

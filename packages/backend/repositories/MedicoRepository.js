@@ -6,7 +6,7 @@ const POPULATE_MEDICO_CONFIG = [
   "especialidades",
   {
     path: "practicas",
-    populate: { path: "especialidadPadre" }
+    populate: { path: "especialidadPadreId" }
   },
   {
     path: "disponibilidades",
@@ -15,7 +15,7 @@ const POPULATE_MEDICO_CONFIG = [
       {
         path: "servicio",
         populate: {
-          path: "especialidadPadre",
+          path: "especialidadPadreId",
           strictPopulate: false
         }
       }
@@ -53,11 +53,7 @@ export class MedicoRepository {
 
     let medicoGuardado = null;
     if (medico.id) {
-      medicoGuardado = await this.model.findByIdAndUpdate(
-        medico.id,
-        medico,
-        { new: true, runValidators: true },
-      );
+      medicoGuardado = await medico.save();
     } else {
       const nuevoMedico = new this.model(medico); //
       medicoGuardado = await nuevoMedico.save();
@@ -89,8 +85,7 @@ export class MedicoRepository {
     );
     const medico = await this.model
       .findOne({ usuario: idUsuario })
-      .populate(POPULATE_MEDICO_CONFIG)
-      .lean(); //TODO: faltan las sedes
+      .populate(POPULATE_MEDICO_CONFIG);
 
     const mensaje = medico
       ? "Medico obtenido: " + medico

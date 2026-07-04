@@ -52,7 +52,7 @@ export class MedicoService {
     logger.info("[MEDICO SERVICE]: Creando medico: ", medicoData);
 
     const medicoEntityData = {
-      usuario: usuario,
+      usuario: usuario.id,
       matricula: medicoData.matricula,
       nombre: medicoData.nombre,
       honorario: medicoData.honorario,
@@ -74,8 +74,16 @@ export class MedicoService {
     return this.toDto(medico);
   }
 
+  async findByIdUsuario(idUsuario) {
+    logger.info("[MEDICO SERVICE]: Obteniendo medico con usuario: ", idUsuario);
+    const medico = await this.medicoRepository.findByIdUsuario(idUsuario);
+    if (!medico) throw new NotFoundError("Médico no encontrado");
+    logger.info("[MEDICO SERVICE]: Medico obtenido: ", medico);
+    return this.toDto(medico);
+  }
+
   async findAll() {
-    logger.info("Consultando todos los médicos");
+    logger.info("[MEDICO SERVICE]: Obteniendo todos los medicos");
     const medicos = await this.medicoRepository.findAll();
     return medicos.map(m => this.toDto(m));
   }
@@ -102,6 +110,29 @@ export class MedicoService {
 
     logger.info(`Médico eliminado con ID: ${id}`);
     return this.toDto(medicoEliminado);
+  }
+
+  async update(id, medicoData) {
+    logger.info(`[MEDICO SERVICE]: Actualizando médico con ID: ${id}`);
+    const medico = await this.medicoRepository.findById(id);
+
+    if (!medico) {
+      throw new NotFoundError("Médico no encontrado");
+    }
+
+    if (medicoData.nombre !== undefined) {
+      medico.nombre = medicoData.nombre;
+    }
+    if (medicoData.honorario !== undefined) {
+      medico.honorario = medicoData.honorario;
+    }
+    if (medicoData.matricula !== undefined) {
+      medico.matricula = medicoData.matricula;
+    }
+
+    const medicoActualizado = await this.medicoRepository.save(medico);
+    logger.info(`[MEDICO SERVICE]: Médico actualizado: ${id}`);
+    return this.toDto(medicoActualizado);
   }
 
   async agregarSede(medicoId, sedeId) {
@@ -257,6 +288,21 @@ export class MedicoService {
     const servicio = await this.servicioService.getEntityById(idServicio);
     if (!medico || !servicio) throw new NotFoundError("Datos no encontrados");
 
+    // REGLA DE NEGOCIO: Para agregar una práctica, el médico ya debe poseer su especialidad padre
+    if (servicio.tipo === "Practica") {
+      const padreId = servicio.especialidadPadreId._id 
+        ? servicio.especialidadPadreId._id.toString() 
+        : servicio.especialidadPadreId.toString();
+
+      const tieneEspecialidadPadre = medico.especialidades.some(
+        (esp) => (esp._id || esp.id).toString() === padreId
+      );
+
+      if (!tieneEspecialidadPadre) {
+        throw new ConflictError("Para agregar esta práctica, primero debes tener asignada su especialidad correspondiente.");
+      }
+    }
+
     logger.info("[MEDICO SERVICE]: Guardando servicio con id: ", idServicio);
     medico.agregarServicio(servicio);
 
@@ -277,6 +323,34 @@ export class MedicoService {
 
     logger.info("[MEDICO SERVICE]: Eliminando servicio con id: ", idServicio);
     medico.eliminarServicio(servicio);
+
+    const deletedServiceIds = new Set();
+    deletedServiceIds.add((servicio._id || servicio.id).toString());
+
+    // REGLA DE NEGOCIO: Si se elimina una especialidad, se eliminan también sus prácticas asociadas (hijas)
+    if (servicio.tipo === "Especialidad") {
+      const espIdStr = (servicio._id || servicio.id).toString();
+
+      const practicasAEliminar = medico.practicas.filter(p => {
+        const padreId = p.especialidadPadreId && (p.especialidadPadreId._id 
+          ? p.especialidadPadreId._id.toString() 
+          : p.especialidadPadreId.toString());
+        return padreId === espIdStr;
+      });
+
+      practicasAEliminar.forEach(p => {
+        deletedServiceIds.add((p._id || p.id).toString());
+        medico.eliminarServicio(p);
+      });
+    }
+
+    // REGLA DE NEGOCIO: También se eliminan los horarios semanales (disponibilidades) asociados a los servicios eliminados
+    medico.disponibilidades = medico.disponibilidades.filter(disp => {
+      const dispServicioId = disp.servicio && (disp.servicio._id 
+        ? disp.servicio._id.toString() 
+        : disp.servicio.toString());
+      return !deletedServiceIds.has(dispServicioId);
+    });
 
     const guardadoGuardado = await this.medicoRepository.save(medico);
     logger.info("[MEDICO SERVICE]: Servicio eliminado con id: ", idServicio);
