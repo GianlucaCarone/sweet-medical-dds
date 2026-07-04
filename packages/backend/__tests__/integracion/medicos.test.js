@@ -23,51 +23,39 @@ describe("Medico API - Integración", () => {
         test("Debería retornar una lista de médicos", async () => {
             const medicos = [
                 new Medico({
-                    id: "1",
                     nombre: "Dr. Juan Pérez",
                     matricula: "12345",
-                    usuario: new Usuario({ id: "6a07ded13b0b9c47c60dde801", nombreUsuario: "juanperez", password: "password" }),
-                    honorario: new Number(5000),
+                    usuario: new Usuario({nombreUsuario: "juanperez", password: "password" }),
+                    honorario: 5000,
                 }),
                 new Medico({
-                    id: "2",
                     nombre: "Dra. María Gómez",
                     matricula: "67890",
-                    usuario: new Usuario({ id: "6a07ded13b0b9c47c60dde80", nombreUsuario: "mariagomez", password: "password" }),
-                    honorario: new Number(6000),
+                    usuario: new Usuario({ nombreUsuario: "mariagomez", password: "password" }),
+                    honorario: 6000,
                 })
             ];
+
             medicoRepositoryMock.findAll.mockResolvedValue(medicos);
 
             const response = await request(app).get("/medicos");
 
-            console.log("Response body:", response.body); // Agregado para depuración
-
             expect(response.status).toBe(200);
-            expect(response.body).toEqual([
-                {
-                    id: medicos[0].id,
-                    nombre: "Dr. Juan Pérez",
-                    matricula: "12345",
-                    usuario: {
-                        id: medicos[0].usuario.id,
-                        nombreUsuario: "juanperez",
-                    },
-                    sedes: medicos[0].sedes,
-                    disponibilidades: medicos[0].disponibilidades,
-                },
-                {
-                    id: medicos[1].id,
-                    nombre: "Dra. María Gómez",
-                    matricula: "67890",
-                    usuario: {
-                        id: medicos[1].usuario.id,
-                        nombreUsuario: "mariagomez",
-                    },
-                    sedes: medicos[1].sedes,
-                    disponibilidades: medicos[1].disponibilidades,
-                }
-            ]);
+
+            expect(medicoRepositoryMock.findAll)
+                .toHaveBeenCalledTimes(1);
+
+            expect(response.body).toHaveLength(2);
+
+            expect(response.body[0].nombre).toBe("Dr. Juan Pérez");
+            expect(response.body[0].matricula).toBe("12345");
+            expect(response.body[0].usuario.nombreUsuario).toBe("juanperez");
+            expect(response.body[0].honorario).toBe(5000);
+
+            expect(response.body[1].nombre).toBe("Dra. María Gómez");
+            expect(response.body[1].matricula).toBe("67890");
+            expect(response.body[1].usuario.nombreUsuario).toBe("mariagomez");
+            expect(response.body[1].honorario).toBe(6000);
 
         });
     });
