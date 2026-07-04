@@ -1,6 +1,7 @@
 import express from "express";
 import { UsuarioController } from "../controllers/UsuarioController.js";
 import notificacionRoutes from "./notificacionRoutes.js";
+import { authMiddleware } from "../middlewares/authMiddleware.js";
 
 /**
  * 
@@ -74,6 +75,10 @@ export default function usuarioRoutes(getController) {
      * 
      */
     .post((req, res, next) => usuarioController.create(req, res, next));
+
+  router
+    .route("/me")
+    .put(authMiddleware, (req, res, next) => usuarioController.updateMe(req, res, next));
 
   router
     .route("/:id")
