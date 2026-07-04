@@ -38,15 +38,12 @@ export class TurnoController {
       const { id } = idParamsSchema.parse(req.params);
       const cambioTurnoData = bodyCambioEstadoTurnoSchema.parse(req.body);
 
-      logger.info(
-        `[TURNOS CONTROLLER]: Cambiando estado del turno a ${cambioTurnoData.nuevoEstado}`,
-      );
-      const turnoActualizado = await this.turnoService.cambiarEstadoTurno(
-        id,
+      logger.info(`[TURNOS CONTROLLER]: Cambiando estado del turno a ${cambioTurnoData.nuevoEstado}`);
+      const quien = req.user.idEspecifico;
+      const turnoActualizado = await this.turnoService.cambiarEstadoTurno(id,
         cambioTurnoData.nuevoEstado,
-        cambioTurnoData.quien,
-        cambioTurnoData.motivo,
-      );
+        quien,
+        cambioTurnoData.motivo);
 
       logger.info("[TURNOS CONTROLLER]: Estado de turno actualizado");
       return res
@@ -133,6 +130,14 @@ export class TurnoController {
       const paginacion = this.extraerPaginacion(req.query);
       const filtros = this.extraerFiltros(req.query);
 
+      if (req.user) {
+        if (req.user.rol === "MEDICO") {
+          filtros.medicoId = req.user.idEspecifico;
+        } else if (req.user.rol === "PACIENTE") {
+          filtros.pacienteId = req.user.idEspecifico;
+        }
+      }
+
       logger.info(
         "[TURNOS CONTROLLER]: Obteniendo turnos de usuario paginados: ",
         filtros,
@@ -216,8 +221,8 @@ export class TurnoController {
   solicitarCambioFecha = async (req, res, next) => {
     try {
       const id = idParamsSchema.parse(req.params).id;
-      const { nuevaFechaHora, usuarioId } =
-        bodySolicitarCambioFechaSchema.parse(req.body);
+      const { nuevaFechaHora } = bodySolicitarCambioFechaSchema.parse(req.body);
+      const usuarioId = req.user.idEspecifico;
 
       logger.info(
         `[TURNOS CONTROLLER]: Solicitando cambio de fecha para turno ${id} a fecha ${nuevaFechaHora}`,
@@ -241,9 +246,8 @@ export class TurnoController {
   responderCambioFecha = async (req, res, next) => {
     try {
       const id = idParamsSchema.parse(req.params).id;
-      const { aceptado, usuarioId } = bodyResponderCambioFechaSchema.parse(
-        req.body,
-      );
+      const { aceptado } = bodyResponderCambioFechaSchema.parse(req.body);
+      const usuarioId = req.user.idEspecifico;
 
       logger.info(
         `[TURNOS CONTROLLER]: Respondiendo cambio de fecha para turno ${id} (Aceptado: ${aceptado})`,
@@ -268,14 +272,19 @@ export class TurnoController {
 
   obtenerContadores = async (req, res, next) => {
     try {
-      const { medicoId, pacienteId } = req.query;
-      logger.info(
-        `[TURNOS CONTROLLER]: Obteniendo contadores de turnos (Médico: ${medicoId}, Paciente: ${pacienteId})`,
-      );
-      const counts = await this.turnoService.obtenerContadores({
-        medicoId,
-        pacienteId,
-      });
+      let medicoId = null;
+      let pacienteId = null;
+
+      if (req.user) {
+        if (req.user.rol === "MEDICO") {
+          medicoId = req.user.idEspecifico;
+        } else if (req.user.rol === "PACIENTE") {
+          pacienteId = req.user.idEspecifico;
+        }
+      }
+
+      logger.info(`[TURNOS CONTROLLER]: Obteniendo contadores de turnos (Médico: ${medicoId}, Paciente: ${pacienteId})`);
+      const counts = await this.turnoService.obtenerContadores({ medicoId, pacienteId });
       return res.status(200).json({ status: "success", data: counts });
     } catch (error) {
       logger.error(

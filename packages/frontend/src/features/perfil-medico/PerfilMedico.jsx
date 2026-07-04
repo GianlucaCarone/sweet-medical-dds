@@ -1,11 +1,10 @@
 import React, { useState } from 'react';
 import {useAlert} from '../../context/AlertContext.jsx';
-import {useAuth} from '../../context/AuthContext.jsx';
 
 // Hooks
 import useMedicoProfile from './hooks/useMedicoProfile.js';
 import useTurnos from './hooks/useTurnos';
-import { useGetMedicoByIdUsuario } from './hooks/useMedicoProfile.js';
+import { useGetMiPerfilMedico } from './hooks/useMedicoProfile.js';
 
 // Componentes 
 import CabeceraPerfil from '../../components/medico/CabeceraPerfil';
@@ -26,8 +25,7 @@ import ModalAlerta from './modals/ModalAlerta';
 import './PerfilMedico.css';
 
 export default function PerfilMedico() {
-  const { user } = useAuth();
-  const { medico: medicoInicial, cargando, error } = useGetMedicoByIdUsuario(user?.id);
+  const { medico: medicoInicial, cargando, error } = useGetMiPerfilMedico();
 
   if (cargando) return <PerfilMedicoSkeleton />;
 

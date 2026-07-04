@@ -40,15 +40,14 @@ export class AuthController {
             password,
           );
           // Fetch perfiles de manera segura (si no existen, catch y retorna null)
-          let medicoId = null;
-          let pacienteId = null;
+          let idEspecifico = null;
           
           if (usuario.rol === "MEDICO") {
               const medico = await this.medicoService.findByIdUsuario(usuario.id).catch(() => null);
-              medicoId = medico ? medico.id : null;
+              idEspecifico = medico ? medico.id : null;
           } else if (usuario.rol === "PACIENTE") {
               const paciente = await this.pacienteService.findByUserId(usuario.id).catch(() => null);
-              pacienteId = paciente ? paciente.id : null;
+              idEspecifico = paciente ? paciente.id : null;
           }
 
           // Firmar el JWT con los datos del usuario + Custom Claims
@@ -57,8 +56,7 @@ export class AuthController {
               id: usuario.id,
               nombreUsuario: usuario.nombreUsuario,
               rol: usuario.rol,
-              medicoId,
-              pacienteId
+              idEspecifico: idEspecifico,
             },
             process.env.JWT_SECRET,
             { expiresIn: process.env.JWT_EXPIRATION || "1h" },

@@ -1,9 +1,7 @@
 import axiosInstance from "./axiosInstance";
 
-export const getMedicoByIdUsuario = async (idUsuario) => {
+export const getMiPerfilMedico = async () => {
     try {
-        // Obtenemos el perfil usando el JWT. El idUsuario ya no es necesario,
-        // pero mantenemos la firma de la función para no romper otros componentes
         const response = await axiosInstance.get(`/medicos/me`);
         return response.data;
     } catch (e) {
@@ -41,9 +39,9 @@ export const getListadoMedicos = async () => {
 }
 
 // --- SERVICIOS ---
-export const agregarServicio = async (idMedico, idServicio) => {
+export const agregarServicio = async ( idServicio) => {
     try {
-        const response = await axiosInstance.post(`/medicos/${idMedico}/servicios/${idServicio}`);
+        const response = await axiosInstance.post(`/medicos/me/servicios/${idServicio}`);
         return response.data;
     } catch (e) {
         console.error("Error agregando servicio:", e);
@@ -51,9 +49,9 @@ export const agregarServicio = async (idMedico, idServicio) => {
     }
 }
 
-export const eliminarServicio = async (idMedico, idServicio) => {
+export const eliminarServicio = async ( idServicio) => {
     try {
-        const response = await axiosInstance.delete(`/medicos/${idMedico}/servicios/${idServicio}`);
+        const response = await axiosInstance.delete(`/medicos/me/servicios/${idServicio}`);
         return response.data;
     } catch (e) {
         console.error("Error eliminando servicio:", e);
@@ -62,9 +60,9 @@ export const eliminarServicio = async (idMedico, idServicio) => {
 }
 
 // --- SEDES ---
-export const agregarSede = async (idMedico, idSede) => {
+export const agregarSede = async ( idSede) => {
     try {
-        const response = await axiosInstance.post(`/medicos/${idMedico}/sedes/${idSede}`);
+        const response = await axiosInstance.post(`/medicos/me/sedes/${idSede}`);
         return response.data;
     } catch (e) {
         console.error("Error agregando sede:", e);
@@ -72,9 +70,9 @@ export const agregarSede = async (idMedico, idSede) => {
     }
 }
 
-export const eliminarSede = async (idMedico, idSede) => {
+export const eliminarSede = async ( idSede) => {
     try {
-        const response = await axiosInstance.delete(`/medicos/${idMedico}/sedes/${idSede}`);
+        const response = await axiosInstance.delete(`/medicos/me/sedes/${idSede}`);
         return response.data;
     } catch (e) {
         console.error("Error eliminando sede:", e);
@@ -83,9 +81,9 @@ export const eliminarSede = async (idMedico, idSede) => {
 }
 
 // --- DISPONIBILIDADES ---
-export const agregarDisponibilidad = async (idMedico, disponibilidadData) => {
+export const agregarDisponibilidad = async ( disponibilidadData) => {
     try {
-        const response = await axiosInstance.post(`/medicos/${idMedico}/disponibilidades`, disponibilidadData);
+        const response = await axiosInstance.post(`/medicos/me/disponibilidades`, disponibilidadData);
         return response.data;
     } catch (e) {
         console.error("Error agregando disponibilidad:", e);
@@ -93,9 +91,9 @@ export const agregarDisponibilidad = async (idMedico, disponibilidadData) => {
     }
 }
 
-export const modificarDisponibilidad = async (idMedico, disponibilidadData) => {
+export const modificarDisponibilidad = async ( disponibilidadData) => {
     try {
-        const response = await axiosInstance.put(`/medicos/${idMedico}/disponibilidades`, disponibilidadData);
+        const response = await axiosInstance.put(`/medicos/me/disponibilidades`, disponibilidadData);
         return response.data;
     } catch (e) {
         console.error("Error modificando disponibilidad:", e);
@@ -103,9 +101,9 @@ export const modificarDisponibilidad = async (idMedico, disponibilidadData) => {
     }
 }
 
-export const eliminarDisponibilidad = async (idMedico, diaSemana) => {
+export const eliminarDisponibilidad = async ( diaSemana) => {
     try {
-        const response = await axiosInstance.delete(`/medicos/${idMedico}/disponibilidades`, { data: { diaSemana } });
+        const response = await axiosInstance.delete(`/medicos/me/disponibilidades`, { data: { diaSemana } });
         return response.data;
     } catch (e) {
         console.error("Error eliminando disponibilidad:", e);
@@ -113,9 +111,9 @@ export const eliminarDisponibilidad = async (idMedico, diaSemana) => {
     }
 }
 
-export const updateMedico = async (idMedico, medicoData) => {
+export const updateMedico = async ( medicoData) => {
     try {
-        const response = await axiosInstance.put(`/medicos/${idMedico}`, medicoData);
+        const response = await axiosInstance.put(`/medicos/me`, medicoData);
         return response.data;
     } catch (e) {
         console.error("Error actualizando medico:", e);

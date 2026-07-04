@@ -69,52 +69,49 @@ export class TurnoService {
       throw new BadRequestError("No se encontro el turno con el id " + id);
     }
 
-    if(nuevoEstado === turno.estado){
+    if (nuevoEstado === turno.estado) {
       throw new ConflictError("El turno ya tiene el estado " + nuevoEstado);
     }
 
-    // Determinar quién realiza el cambio (paciente o médico) y obtener remitente/destinatario
-    let remitente;
-    let destinatario;
-    let quienObj = null;
+    const { quienObj, remitente, destinatario } = await this.#resolverActor(turno, quien);
 
-    if (turno.paciente &&(turno.paciente.toString() === quien || turno.paciente.id === quien)) {
-      remitente = turno.paciente;
-      destinatario = turno.medico;
-      quienObj = await this.pacienteRepository.findById(quien);
-    } else if (
-      turno.medico &&
-      (turno.medico.toString() === quien || turno.medico.id === quien)
-    ) {
-      remitente = turno.medico;
-      destinatario = turno.paciente;
-      quienObj = await this.medicoRepository.findById(quien);
-    } else {
-      throw new BadRequestError("El turno no pertenece a este usuario");
+    try {
+      // Toda la validación de negocio (1 hora de anticipación, transiciones, etc.) vive en la entidad
+      turno.actualizarEstadoTurno({ nuevoEstado, quien: quienObj._id, motivo });
+    } catch (error) {
+      throw new BadRequestError(error.message);
     }
 
-    // La cancelación requiere motivo y 1 hora de anticipación
-    if (nuevoEstado === EstadoTurnoEnum.CANCELADO) {
-      if (!motivo || typeof motivo !== "string" || motivo.trim().length === 0) {
-        throw new BadRequestError("Para cancelar el turno se requiere un motivo");
-      }
+    // El error de la notificación no debe bloquear el cambio de estado (resiliencia)
+    await this.notificacionService
+      .crearNotificacionSegunEstadoTurno(turno, remitente, destinatario)
+      .catch((err) => logger.warn(`Falla al notificar cambio de estado del turno ${id}`, err));
 
-      const fechaTurno = new Date(turno.fechaHora).getTime();
-      const ahora = Date.now();
-      const diferenciaMs = fechaTurno - ahora;
-      const unaHoraMs = 60 * 60 * 1000;
-      if (diferenciaMs < unaHoraMs) {
-        throw new BadRequestError(
-          "No se puede cancelar un turno con menos de 1 hora de anticipación",
-        );
-      }
-    }
-
-    turno.actualizarEstadoTurno({ nuevoEstado, quien: quienObj._id, turno, motivo});
-    this.notificacionService.crearNotificacionSegunEstadoTurno(turno, remitente, destinatario);
     const turnoActualizado = await this.turnoRepository.update(id, turno);
     logger.info(`[TURNO SERVICE]: Estado de turno ${id} actualizado correctamente`);
     return this.toDto(turnoActualizado);
+  }
+
+  async #resolverActor(turno, quienId) {
+    const esPaciente = turno.paciente && (turno.paciente.toString() === quienId || turno.paciente.id === quienId);
+    const esMedico = turno.medico && (turno.medico.toString() === quienId || turno.medico.id === quienId);
+
+    if (!esPaciente && !esMedico) {
+      throw new BadRequestError("El usuario no está asociado a este turno");
+    }
+
+    const quienObj = esPaciente
+      ? await this.pacienteRepository.findById(quienId)
+      : await this.medicoRepository.findById(quienId);
+
+    if (!quienObj) throw new NotFoundError("Usuario no encontrado");
+
+    return {
+      quienObj,
+      remitente: esPaciente ? turno.paciente : turno.medico,
+      destinatario: esPaciente ? turno.medico : turno.paciente,
+      rol: esPaciente ? "paciente" : "médico"
+    };
   }
 
   async create(data) {

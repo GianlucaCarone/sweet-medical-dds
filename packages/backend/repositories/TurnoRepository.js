@@ -56,9 +56,11 @@ export class TurnoRepository {
         fechaNormalizada.setSeconds(0, 0);
 
         // .exists() es mucho más ligero y rápido en la DB que .findOne()
+        // Ignoramos turnos inactivos (CANCELADO) para que el slot pueda volver a ocuparse
         const turnoId = await this.model.exists({
             medico: medicoId,
-            fechaHora: fechaNormalizada
+            fechaHora: fechaNormalizada,
+            estado: { $nin: [EstadoTurnoEnum.CANCELADO] }
         }).exec(); 
 
         return turnoId !== null;

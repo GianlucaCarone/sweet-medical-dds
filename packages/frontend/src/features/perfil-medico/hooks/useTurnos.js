@@ -34,7 +34,7 @@ export default function useTurnos(medico, activeTab) {
   const cargarTodosLosContadores = useCallback(async () => {
     if (!medico?.id) return;
     try {
-      const response = await getContadoresTurnos({ medicoId: medico.id });
+      const response = await getContadoresTurnos();
       const rawCounts = response.data || {};
       setCounts({
         RESERVADOS: rawCounts.RESERVADO || 0,
@@ -55,7 +55,6 @@ export default function useTurnos(medico, activeTab) {
       const estadoMapeado = ESTADO_MAP[estadoTab];
       
       const queryParams = {
-        medicoId: medico.id,
         estado: estadoMapeado,
         page: paginaActual,
         limit: 4
@@ -110,9 +109,9 @@ export default function useTurnos(medico, activeTab) {
     try {
       if (aceptarCambio) {
           // El paciente acepta el cambio (o el médico acepta si la lógica fuera cruzada)
-          await cambiarEstadoTurno(idTurno, 'CONFIRMADO', medico?.id, motivo);
+          await cambiarEstadoTurno(idTurno, 'CONFIRMADO', motivo);
       } else {
-          await cambiarEstadoTurno(idTurno, nuevoEstado, medico?.id, motivo);
+          await cambiarEstadoTurno(idTurno, nuevoEstado, motivo);
       }
       await cargarTurnosMedico(turnosSubTab, turnosPage);
       await cargarTodosLosContadores();
@@ -128,7 +127,7 @@ export default function useTurnos(medico, activeTab) {
   const handleProponerCambioTurno = useCallback(async (idTurno, nuevaFechaHora) => {
     setIsFetching(true);
     try {
-      await solicitarCambioFecha(idTurno, nuevaFechaHora, medico?.id);
+      await solicitarCambioFecha(idTurno, nuevaFechaHora);
       await cargarTurnosMedico(turnosSubTab, turnosPage);
       await cargarTodosLosContadores();
       return true;

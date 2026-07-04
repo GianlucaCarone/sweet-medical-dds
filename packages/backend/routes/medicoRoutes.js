@@ -113,7 +113,7 @@ export default function medicoRoutes(getController) {
      */
     .get((req, res, next) => medicoController.seedGeneral(req, res, next));
 
-  router.route("/:id/disponibilidades")
+  router.route("/me/disponibilidades")
     /**
      * @swagger
      * /medicos/{id}/disponibilidades:
@@ -142,7 +142,7 @@ export default function medicoRoutes(getController) {
      *       400:
      *         $ref: '#/components/responses/E400'
      */
-    .get((req, res, next) => medicoController.consultarDisponibilidad(req, res, next)) // Puede ser que no vaya asi esto.
+    .get(authMiddleware, (req, res, next) => medicoController.consultarDisponibilidad(req, res, next))
     /**
      * @swagger
      * /medicos/{id}/disponibilidades:
@@ -175,7 +175,7 @@ export default function medicoRoutes(getController) {
      *       400:
      *         $ref: '#/components/responses/E400'
      */
-    .post((req, res, next) => medicoController.definirDisponibilidad(req, res, next)) // agrego una disponibilidad al medico
+    .post(authMiddleware, (req, res, next) => medicoController.definirDisponibilidad(req, res, next))
     /**
      * @swagger
      * /medicos/{id}/disponibilidades:
@@ -208,7 +208,7 @@ export default function medicoRoutes(getController) {
      *       400:
      *         $ref: '#/components/responses/E400'
      */
-    .put((req, res, next) => medicoController.modificarDisponibilidad(req, res, next)) // Reemplazar disponibilidad existente del medico
+    .put(authMiddleware, (req, res, next) => medicoController.modificarDisponibilidad(req, res, next))
     /**
      * @swagger
      * /medicos/{id}/disponibilidades:
@@ -241,10 +241,11 @@ export default function medicoRoutes(getController) {
      *       400:
      *         $ref: '#/components/responses/E400'
      */
-    .delete((req, res, next) => medicoController.eliminarDisponibilidad(req, res, next)); // Eliminar disponibilidad existente del medico
+    .delete(authMiddleware, (req, res, next) => medicoController.eliminarDisponibilidad(req, res, next));
 
   router.route("/me")
-    .get(authMiddleware, (req, res, next) => medicoController.buscarMiPerfil(req, res, next));
+    .get(authMiddleware, (req, res, next) => medicoController.buscarMiPerfil(req, res, next))
+    .put(authMiddleware, (req, res, next) => medicoController.update(req, res, next));
 
   router.route("/usuario/:id")
     /**
@@ -271,7 +272,7 @@ export default function medicoRoutes(getController) {
      *       400:
      *         $ref: '#/components/responses/E400'
      */
-    .get((req, res, next) => medicoController.findByIdUsuario(req, res, next));
+    .get(authMiddleware, (req, res, next) => medicoController.findByIdUsuario(req, res, next));
 
   router.route("/:id")
     /**
@@ -364,9 +365,9 @@ export default function medicoRoutes(getController) {
      *       400:
      *         $ref: '#/components/responses/E400'
      */
-    .put((req, res, next) => medicoController.update(req, res, next));
+    .put(authMiddleware, (req, res, next) => medicoController.update(req, res, next));
 
-  router.route("/:id/sedes/:sedeId")
+  router.route("/me/sedes/:sedeId")
     /**
      * @swagger
      * /medicos/{id}/sedes/{sedeId}:
@@ -398,9 +399,9 @@ export default function medicoRoutes(getController) {
      *       400:
      *         $ref: '#/components/responses/E400'
      */
-    .post((req, res, next) => medicoController.agregarSede(req, res, next));
+    .post(authMiddleware, (req, res, next) => medicoController.agregarSede(req, res, next));
 
-  router.route("/:id/sedes/:sedeId")
+  router.route("/me/sedes/:sedeId")
     /**
      * @swagger
      * /medicos/{id}/sedes/{sedeId}:
@@ -432,9 +433,9 @@ export default function medicoRoutes(getController) {
      *       400:
      *         $ref: '#/components/responses/E400'
      */
-    .delete((req, res, next) => medicoController.eliminarSede(req, res, next));
+    .delete(authMiddleware, (req, res, next) => medicoController.eliminarSede(req, res, next));
 
-  router.route("/:idMedico/servicios/:idServicio")
+  router.route("/me/servicios/:idServicio")
     /**
      * @swagger
      * /medicos/{idMedico}/servicios/{idServicio}:
@@ -465,7 +466,7 @@ export default function medicoRoutes(getController) {
      *                   $ref: '#/components/schemas/Medico'
      *                 message: { type: string }
      */
-    .post((req, res, next) => medicoController.agregarServicio(req, res, next)) // Agregar un servicio existente al medico
+    .post(authMiddleware, (req, res, next) => medicoController.agregarServicio(req, res, next)) // Agregar un servicio existente al medico
     /**
      * @swagger
      * /medicos/{idMedico}/servicios/{idServicio}:
@@ -496,7 +497,7 @@ export default function medicoRoutes(getController) {
      *                   $ref: '#/components/schemas/Medico'
      *                 message: { type: string }
      */
-    .delete((req, res, next) => medicoController.eliminarServicio(req, res, next)); // Eliminar servicio existente del medico
+    .delete(authMiddleware, (req, res, next) => medicoController.eliminarServicio(req, res, next)); // Eliminar servicio existente del medico
 
 
 
