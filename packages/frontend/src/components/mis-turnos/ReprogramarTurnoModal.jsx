@@ -17,10 +17,19 @@ export default function ReprogramarTurnoModal({
 
     if (!abierto) return null;
 
-    const puedeConfirmar = Boolean(nuevaFecha) && Boolean(nuevaHora) && !enviando;
+    const esFechaHoraValida = (fecha, hora) => {
+        if (!fecha || !hora) return false;
+
+        const fechaHoraSeleccionada = new Date(`${fecha}T${hora}`);
+        const ahora = new Date();
+
+        return fechaHoraSeleccionada.getTime() > ahora.getTime();
+    };
+
+    const puedeConfirmar = esFechaHoraValida(nuevaFecha, nuevaHora) && !enviando;
 
     const confirmarCambio = async () => {
-        if (!nuevaFecha || !nuevaHora) return;
+        if (!esFechaHoraValida(nuevaFecha, nuevaHora)) return;
 
         const nuevoHorario = { fecha: nuevaFecha, hora: nuevaHora };
 
@@ -78,6 +87,8 @@ export default function ReprogramarTurnoModal({
                         />
                     </label>
                 </div>
+
+                {(nuevaFecha || nuevaHora && !esFechaHoraValida(nuevaFecha, nuevaHora)) && <p className="reprogramar-error">Ingrese una fecha válida</p>}
 
                 <div className="modal-actions">
                     <button className="btn-no-cancelar" onClick={onCerrar}>
