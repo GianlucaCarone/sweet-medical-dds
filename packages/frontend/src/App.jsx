@@ -12,6 +12,7 @@ import ProtectedRoute from "./components/auth/ProtectedRoute.jsx";
 import Home from "./features/home/Home.jsx"
 
 import "./App.css";
+import { FilterProvider } from "./context/FilterContext.jsx";
 
 function App() {
   const [message, setMessage] = useState("");
@@ -28,54 +29,56 @@ function App() {
   return (
     <AlertProvider>
       <CartProvider>
-        <Routes>
-          <Route
-            path="/"
-            element={
-              <Layout />
-            }>
-            {/* Búsqueda de turnos: visible sin login (el TP lo muestra en búsqueda pública) */}
+        <FilterProvider>
+          <Routes>
             <Route
-              path="busqueda-turnos"
+              path="/"
               element={
-                <BusquedaTurnos />
-              }
-            />
+                <Layout />
+              }>
+              {/* Búsqueda de turnos: visible sin login (el TP lo muestra en búsqueda pública) */}
+              <Route
+                path="busqueda-turnos"
+                element={
+                  <BusquedaTurnos />
+                }
+              />
 
-            {/* Mis Turnos: solo para PACIENTE logueado */}
-            <Route
-              path="mis-turnos"
-              element={
-                <ProtectedRoute allowedRoles={["PACIENTE"]}>
-                  <MisTurnos />
-                </ProtectedRoute>
-              }
-            />
+              {/* Mis Turnos: solo para PACIENTE logueado */}
+              <Route
+                path="mis-turnos"
+                element={
+                  <ProtectedRoute allowedRoles={["PACIENTE"]}>
+                    <MisTurnos />
+                  </ProtectedRoute>
+                }
+              />
 
-            {/* Mi Perfil: cualquier usuario logueado */}
-            <Route
-              path="mi-perfil"
-              element={
-                <ProtectedRoute>
-                  <MiPerfil />
-                </ProtectedRoute>
-              }
-            />
+              {/* Mi Perfil: cualquier usuario logueado */}
+              <Route
+                path="mi-perfil"
+                element={
+                  <ProtectedRoute>
+                    <MiPerfil />
+                  </ProtectedRoute>
+                }
+              />
 
-            {/* Perfil Médico: solo para MEDICO logueado */}
-            <Route
-              path="perfil-medico"
-              element={
-                <ProtectedRoute allowedRoles={["MEDICO"]}>
-                  <PerfilMedico />
-                </ProtectedRoute>
-              }
-            />
+              {/* Perfil Médico: solo para MEDICO logueado */}
+              <Route
+                path="perfil-medico"
+                element={
+                  <ProtectedRoute allowedRoles={["MEDICO"]}>
+                    <PerfilMedico />
+                  </ProtectedRoute>
+                }
+              />
 
-            <Route index element={<Home />} />
-          </Route>
-          <Route path="/login" element={<Login />} />
-        </Routes>
+              <Route index element={<Home />} />
+            </Route>
+            <Route path="/login" element={<Login />} />
+          </Routes>
+        </FilterProvider>
       </CartProvider>
     </AlertProvider>
   );
