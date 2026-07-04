@@ -29,7 +29,10 @@
 .banner {
     grid-area: banner;
     background: var(--color-primary);
-    color: white
+    color: white;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
 }
 .infoEstadistica {
     grid-area: infoEstadistica;

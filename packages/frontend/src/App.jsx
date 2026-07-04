@@ -10,6 +10,7 @@ import { AlertProvider } from "./context/AlertContext.jsx";
 import Home from "./features/home/Home.jsx"
 
 import "./App.css";
+import { FilterProvider } from "./context/FilterContext.jsx";
 
 function App() {
   const [message, setMessage] = useState("");
@@ -26,33 +27,35 @@ function App() {
   return (
     <AlertProvider>
       <CartProvider>
-        <Routes>
-          <Route
-            path="/"
-            element={
-              <Layout />
-            }>
+        <FilterProvider>
+          <Routes>
             <Route
-              path="busqueda-turnos"
+              path="/"
               element={
-                <BusquedaTurnos />
-              }
-            />
+                <Layout />
+              }>
+              <Route
+                path="busqueda-turnos"
+                element={
+                  <BusquedaTurnos />
+                }
+              />
 
-            <Route
-              path="mis-turnos"
-              element={<MisTurnos />}
-            />
+              <Route
+                path="mis-turnos"
+                element={<MisTurnos />}
+              />
 
-            <Route
-              path="perfil-medico"
-              element={<PerfilMedico />}
-            />
+              <Route
+                path="perfil-medico"
+                element={<PerfilMedico />}
+              />
 
-            <Route index element={<Home />} />
-          </Route>
-          <Route path="/login" element={<Login />} />
-        </Routes>
+              <Route index element={<Home />} />
+            </Route>
+            <Route path="/login" element={<Login />} />
+          </Routes>
+        </FilterProvider>
       </CartProvider>
     </AlertProvider>
   );
