@@ -1,20 +1,9 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Avatar } from '@mui/material';
 import CardTurnoReprogramar from "../cards/CardTurno/CardTurnoReprogramar.jsx"
 import CalendarMonthRoundedIcon from "@mui/icons-material/CalendarMonthRounded";
+import { useAlert } from "../../context/AlertContext.jsx";
 import "./ReprogramarTurnoModal.css";
-
-const turnosDisponiblesMock = [
-    { id: 1, fecha: "9 Jun", hora: "08:00" },
-    { id: 2, fecha: "9 Jun", hora: "08:30" },
-    { id: 3, fecha: "9 Jun", hora: "14:00" },
-    { id: 4, fecha: "10 Jun", hora: "08:00" },
-    { id: 5, fecha: "10 Jun", hora: "08:30" },
-    { id: 6, fecha: "10 Jun", hora: "14:00" },
-    { id: 7, fecha: "11 Jun", hora: "08:00" },
-    { id: 8, fecha: "11 Jun", hora: "08:30" },
-    { id: 9, fecha: "12 Jun", hora: "14:30" },
-];
 
 export default function ReprogramarTurnoModal({
     abierto,
@@ -22,29 +11,32 @@ export default function ReprogramarTurnoModal({
     onCerrar,
     onConfirmar,
 }) {
-    const [turnoSeleccionado, setTurnoSeleccionado] = useState(null);
-    const [loadingSlots, setLoadingSlots] = useState(false);
-
-    useEffect(() => {
-        if (!abierto) return;
-
-        setLoadingSlots(true);
-
-        const timer = setTimeout(() => {
-            setLoadingSlots(false);
-        }, 500);
-
-        return () => clearTimeout(timer);
-    }, [abierto]);
+    const [nuevaFecha, setNuevaFecha] = useState("");
+    const [nuevaHora, setNuevaHora] = useState("");
+    const [enviando, setEnviando] = useState(false);
 
     if (!abierto) return null;
 
-    const confirmarCambio = () => {
-        if (!turnoSeleccionado) return;
+    const puedeConfirmar = Boolean(nuevaFecha) && Boolean(nuevaHora) && !enviando;
 
-        onConfirmar(turno.id, turnoSeleccionado);
-        setTurnoSeleccionado(null);
-        onCerrar();
+    const confirmarCambio = async () => {
+        if (!nuevaFecha || !nuevaHora) return;
+
+        const nuevoHorario = { fecha: nuevaFecha, hora: nuevaHora };
+
+        setEnviando(true);
+
+        try {
+            //await reprogramarTurno(turno.id, nuevoHorario);
+            onConfirmar(turno.id, nuevoHorario);
+            setNuevaFecha("");
+            setNuevaHora("");
+            onCerrar();
+        } catch (err) {
+            useAlert(err.message, "error");
+        } finally {
+            setEnviando(false);
+        }
     };
 
     return (
@@ -53,7 +45,7 @@ export default function ReprogramarTurnoModal({
                 <div className="reprogramar-header">
                     <div>
                         <h2>Cambiar fecha</h2>
-                        <p>Elegí un nuevo horario disponible para este turno.</p>
+                        <p>Elegí la nueva fecha y horario para este turno.</p>
                     </div>
 
                     <button className="modal-close-btn" onClick={onCerrar}>
@@ -63,29 +55,29 @@ export default function ReprogramarTurnoModal({
 
                 <CardTurnoReprogramar turno={turno}></CardTurnoReprogramar>
 
-                <h4>Próximos turnos disponibles</h4>
+                <h4>Nuevo horario</h4>
 
-                {loadingSlots ? (
-                    <div className="slots-loading">
-                        <div className="medical-loader"></div>
-                        <p>Buscando turnos disponibles...</p>
-                    </div>
-                ) : (
-                    <div className="slots-grid">
-                        {turnosDisponiblesMock.map((slot) => (
-                            <button
-                                key={slot.id}
-                                className={`slot-btn ${turnoSeleccionado?.id === slot.id ? "selected" : ""
-                                    }`}
-                                onClick={() => setTurnoSeleccionado(slot)}
-                            >
-                                <CalendarMonthRoundedIcon fontSize="small" />
-                                <span>{slot.fecha}</span>
-                                <strong>{slot.hora}</strong>
-                            </button>
-                        ))}
-                    </div>
-                )}
+                <div className="nuevo-horario-form">
+                    <label className="campo-horario">
+                        <span>
+                            <CalendarMonthRoundedIcon fontSize="small" /> Fecha
+                        </span>
+                        <input
+                            type="date"
+                            value={nuevaFecha}
+                            onChange={(e) => setNuevaFecha(e.target.value)}
+                        />
+                    </label>
+
+                    <label className="campo-horario">
+                        <span>Hora</span>
+                        <input
+                            type="time"
+                            value={nuevaHora}
+                            onChange={(e) => setNuevaHora(e.target.value)}
+                        />
+                    </label>
+                </div>
 
                 <div className="modal-actions">
                     <button className="btn-no-cancelar" onClick={onCerrar}>
@@ -94,10 +86,10 @@ export default function ReprogramarTurnoModal({
 
                     <button
                         className="btn-confirmar-reprogramacion"
-                        disabled={!turnoSeleccionado}
+                        disabled={!puedeConfirmar}
                         onClick={confirmarCambio}
                     >
-                        Confirmar cambio
+                        {enviando ? "Guardando..." : "Confirmar cambio"}
                     </button>
                 </div>
             </div>

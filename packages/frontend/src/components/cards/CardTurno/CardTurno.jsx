@@ -66,8 +66,8 @@ export default function CardTurno({ turno, onCancelar }) {
   const [modalCancelarAbierto, setModalCancelarAbierto] = useState(false);
   const [modalReprogramarAbierto, setModalReprogramarAbierto] = useState(false);
 
-  const confirmarReprogramacion = (turnoId, nuevoTurno) => {
-    console.log('Reprogramando turno:', turnoId, 'Nuevo horario:', nuevoTurno);
+  const confirmarReprogramacion = (turnoId, nuevoHorario) => {
+    console.log('Reprogramando turno:', turnoId, 'Nuevo horario:', nuevoHorario);
     setModalReprogramarAbierto(false);
   };
 

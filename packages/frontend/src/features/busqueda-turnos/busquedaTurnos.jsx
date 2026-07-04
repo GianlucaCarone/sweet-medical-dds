@@ -11,6 +11,7 @@ import './busquedaTurnos.css';
 import { useAuth } from '../../context/AuthContext.jsx';
 import { useCart } from '../../context/CartContext.jsx';
 import TituloSeccion from "../../shared/TituloSeccion/TituloSeccion.jsx"
+import TurnosEmptyState from '../../components/mis-turnos/TurnosEmptyState.jsx';
 
 export default function BusquedaTurnos() {
     const { user } = useAuth();
@@ -83,7 +84,6 @@ export default function BusquedaTurnos() {
 
     const nuevosFiltros = async (filtrosInput = {}) => {
         filtrosActualesRef.current = filtrosInput;
-        //cargarTurnos(filtrosInput);
     };
 
     const cargarTurnos = async (filtrosInput = filtrosActualesRef.current, pagina = dataPaginacion.page, orden = ordenarPor) => {
@@ -127,8 +127,6 @@ export default function BusquedaTurnos() {
 
     return (
         <div className="container-busqueda">
-
-            {/* Sidebar de filtros desarrollado con Material UI */}
             <SidebarFiltros
                 medicos={medicos}
                 sedes={sedes}
@@ -138,7 +136,6 @@ export default function BusquedaTurnos() {
                 cargarTurnos={cargarTurnos}
             />
 
-            {/* Contenedor de Resultados */}
             <main className="contenido-resultados">
                 <header className="header-resultados">
                     <TituloSeccion>{dataPaginacion.totalTurnos} turnos disponibles</TituloSeccion>
@@ -154,7 +151,6 @@ export default function BusquedaTurnos() {
                     </div>
                 </header>
 
-                {/* Listado dinámico de las tarjetas de turnos */}
                 <section className="lista-turno">
                     {loading
                         ? Array.from({ length: dataPaginacion.limitePorPagina }).map((_, i) => ( //que la cantidad de skeletons sea igual al tamaño de pagina
@@ -170,13 +166,19 @@ export default function BusquedaTurnos() {
                             />
                         ))}
                 </section>
-                <Pagination color="#137333"
+                {sinResultados ? (<TurnosEmptyState
+                        titulo="No se encontro ningun turno"
+                        descripcion="Intenta cambiar tus filtros de busqueda."
+                        textoBoton={null}
+                        onClick={null}
+                        />) :
+                (<Pagination color="#137333"
                     count={dataPaginacion.totalPaginas}
                     page={dataPaginacion.page}
                     onChange={(e, page) => {
                         cargarTurnos(filtrosActualesRef.current, page);
                     }}
-                />
+                />)}
             </main>
         </div>
     );
