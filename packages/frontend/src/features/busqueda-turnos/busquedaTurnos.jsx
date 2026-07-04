@@ -11,11 +11,16 @@ import { useCart } from '../../context/CartContext.jsx';
 import TituloSeccion from "../../shared/TituloSeccion/TituloSeccion.jsx"
 import { useFilters } from '../../context/FilterContext.jsx';
 import { Typography } from '@mui/material';
+import ModalLogin from "../../components/login/ModalLogin.jsx";
+import { useNavigate } from "react-router-dom";
 
 export default function BusquedaTurnos() {
     const { user } = useAuth();
     const { doctors, specialities, practices, branches, buildApiFilters } = useFilters();
     const { manejoCarritoDrawer, agregarAlCarrito } = useCart();
+    const navigate = useNavigate();
+    const [loginModalOpen, setLoginModalOpen] = useState(false);
+    const [turnoPendienteReserva, setTurnoPendienteReserva] = useState(null);
 
     const [turnos, setTurnos] = useState([]);
     const [turnGroups, setTurnGroups] = useState([]);
@@ -85,12 +90,18 @@ export default function BusquedaTurnos() {
     }, [sortBy, pageNumber]);
 
     const addTurnToCart = (id) => {
+        if (!user) {
+            setTurnoPendienteReserva(id);
+            setLoginModalOpen(true);
+            return;
+        }
+
         const turno = turnos.find(t => t.id === id);
         agregarAlCarrito(turno);
         manejoCarritoDrawer.abrir();
     };
 
-    useEffect(() => {
+   useEffect(() => {
         const initialFilters = buildApiFilters();
         fetchTurns(initialFilters);
     }, []);
@@ -150,6 +161,26 @@ export default function BusquedaTurnos() {
                     />
                 }
             </main>
+
+            <ModalLogin
+                open={loginModalOpen}
+                onClose={() => setLoginModalOpen(false)}
+                onLoginSuccess={() => {
+                    setLoginModalOpen(false);
+                
+                    if (turnoPendienteReserva) {
+                        const turno = turnos.find(t => t.id === turnoPendienteReserva);
+                    
+                        if (turno) {
+                            agregarAlCarrito(turno);
+                            manejoCarritoDrawer.abrir();
+                        }
+                    
+                        setTurnoPendienteReserva(null);
+                    }
+                }}
+            />
+
         </div>
     );
 }
