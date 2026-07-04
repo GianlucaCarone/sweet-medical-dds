@@ -296,9 +296,7 @@ export class TurnoService {
     const turnos = await this.turnoRepository.findByEstado(estado);
 
     if (turnos.length === 0) {
-      throw new NotFoundError(
-        `No se encontró ningún turno con el estado ${estado}`,
-      );
+      return [];
     }
 
     logger.info(`[TURNO SERVICE]: Se encontraron ${turnos.length} turnos con estado ${estado}`);

@@ -65,6 +65,9 @@ export class NotificacionService {
         logger.info("[NOTIFICACIONES SERVICE]: Obteniendo notificaciones " + ((leido) ? "leidas" : "no leidas") + " del usuario " + idDestinatario);
         const notificaciones = await this.notificacionRepository.getByDestinatarioIdAndLeido(idDestinatario, leido);
         logger.info("[NOTIFICACIONES SERVICE]: Se obtuvieron las notificaciones: ", notificaciones);
+        if(notificaciones.length === 0) {
+            return [];
+        }
         return notificaciones.map(n => this.toDto(n));
     }
 
