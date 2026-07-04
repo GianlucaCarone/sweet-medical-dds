@@ -365,7 +365,7 @@ export default function medicoRoutes(getController) {
      *       400:
      *         $ref: '#/components/responses/E400'
      */
-    .put((req, res, next) => medicoController.update(req, res, next));
+    .put(authMiddleware, (req, res, next) => medicoController.update(req, res, next));
 
   router.route("/me/sedes/:sedeId")
     /**
