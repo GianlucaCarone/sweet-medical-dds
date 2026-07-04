@@ -48,16 +48,26 @@ Esto instalará todas las dependencias para la raíz y para los paquetes `fronte
 
 ### 2\. Configuración de Variables de Entorno
 
-Crea un archivo `.env` en el directorio `packages/backend`. Puedes usar el archivo `.env.example` como plantilla.
+Crea un archivo `.env` en el directorio `packages/backend`. Para ello, debes copiar el archivo `.env.example` que se encuentra en `packages/backend/` y renombrarlo a `.env`.
 
 ```
-# packages/backend/.env
-ALLOWED_ORIGINS=http://localhost:3000,http://127.0.0.1:3000
+# packages/backend/.env.example
+ALLOWED_ORIGINS=http://localhost:3000,http://127.0.0.1:3000,http://localhost:3001
 SERVER_PORT=3001
+JWT_SECRET=escriba_aqui_su_secreto_local
+JWT_EXPIRATION=1h
+MONGODB_URI=mongodb://localhost:27017
+MONGODB_DB_NAME=Sweet-Medical-Local
+ITEMS_PER_PAGE=10
 ```
 
-- **`ALLOWED_ORIGINS`**: Define los orígenes permitidos para las solicitudes CORS. Asegurate de incluir la URL donde se ejecuta tu frontend (por defecto, `http://localhost:3000` para Create React App). Cuando se haga el despliegue en nube acá se deberá incluir la URL donde se desplegó el frontend.
-- **`SERVER_PORT`**: El puerto en el que se ejecutará el servidor backend (ej. `8000`).
+Este archivo `.env.example` **sí** debe subirse al repositorio para que todos los miembros del equipo sepan qué variables configurar. El archivo `.env` real será ignorado por Git.
+
+- **`ALLOWED_ORIGINS`**: Define los orígenes permitidos para las solicitudes CORS. Asegurate de incluir la URL donde se ejecuta tu frontend.
+- **`SERVER_PORT`**: El puerto en el que se ejecutará el servidor backend (ej. `3001`).
+- **`JWT_SECRET`** y **`JWT_EXPIRATION`**: Configuración para la generación de tokens de sesión.
+- **`MONGODB_URI`** y **`MONGODB_DB_NAME`**: Credenciales y configuración de la base de datos local.
+- **`ITEMS_PER_PAGE`**: Paginación global para las listas.
 
 ### 3\. Ejecución de la Aplicación
 

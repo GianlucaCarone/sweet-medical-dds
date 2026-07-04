@@ -12,10 +12,7 @@ export const crearPacienteSchema = z.object({
         .min(3, "El nombre debe tener al menos 3 caracteres")
         .trim(),
     obraSocial: objectIdSchema("obra social").optional().nullable(),
-    plan: z.string()
-        .min(1, "El plan debe ser válido")
-        .optional()
-        .nullable()
+    plan: objectIdSchema("plan").optional().nullable(),
 });
 
 export const actualizarPacienteSchema = crearPacienteSchema.partial();

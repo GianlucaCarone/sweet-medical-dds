@@ -52,7 +52,7 @@ export class MedicoService {
     logger.info("[MEDICO SERVICE]: Creando medico: ", medicoData);
 
     const medicoEntityData = {
-      usuario: usuario,
+      usuario: usuario.id,
       matricula: medicoData.matricula,
       nombre: medicoData.nombre,
       honorario: medicoData.honorario,
@@ -74,8 +74,16 @@ export class MedicoService {
     return this.toDto(medico);
   }
 
+  async findByIdUsuario(idUsuario) {
+    logger.info("[MEDICO SERVICE]: Obteniendo medico con usuario: ", idUsuario);
+    const medico = await this.medicoRepository.findByIdUsuario(idUsuario);
+    if (!medico) throw new NotFoundError("Médico no encontrado");
+    logger.info("[MEDICO SERVICE]: Medico obtenido: ", medico);
+    return this.toDto(medico);
+  }
+
   async findAll() {
-    logger.info("Consultando todos los médicos");
+    logger.info("[MEDICO SERVICE]: Obteniendo todos los medicos");
     const medicos = await this.medicoRepository.findAll();
     return medicos.map(m => this.toDto(m));
   }
@@ -102,6 +110,29 @@ export class MedicoService {
 
     logger.info(`Médico eliminado con ID: ${id}`);
     return this.toDto(medicoEliminado);
+  }
+
+  async update(id, medicoData) {
+    logger.info(`[MEDICO SERVICE]: Actualizando médico con ID: ${id}`);
+    const medico = await this.medicoRepository.findById(id);
+
+    if (!medico) {
+      throw new NotFoundError("Médico no encontrado");
+    }
+
+    if (medicoData.nombre !== undefined) {
+      medico.nombre = medicoData.nombre;
+    }
+    if (medicoData.honorario !== undefined) {
+      medico.honorario = medicoData.honorario;
+    }
+    if (medicoData.matricula !== undefined) {
+      medico.matricula = medicoData.matricula;
+    }
+
+    const medicoActualizado = await this.medicoRepository.save(medico);
+    logger.info(`[MEDICO SERVICE]: Médico actualizado: ${id}`);
+    return this.toDto(medicoActualizado);
   }
 
   async agregarSede(medicoId, sedeId) {
@@ -186,7 +217,17 @@ export class MedicoService {
       disponibilidad,
     );
 
-    return this.toDto(await this.medicoRepository.save(medico));
+    const medicoGuardado = await this.medicoRepository.save(medico);
+
+    try {
+      const { TurnoService } = await import("./TurnoService.js"); //Evitamos error ciclico de llamadas al importar
+      const turnoService = new TurnoService();
+      await turnoService.refrescarTurnosDisponiblesDelMedico(medicoGuardado);
+    } catch (err) {
+      logger.error(`Error al regenerar turnos del médico ${id} tras definir disponibilidad`, err);
+    }
+
+    return this.toDto(medicoGuardado);
   }
 
   async modificarDisponibilidadPara(disponibilidadData, medicoId) {
@@ -212,16 +253,17 @@ export class MedicoService {
     });
 
     medico.modificarDisponibilidad(disponibilidad);
-    /*Si un médico modifica su disponibilidad: 
-    ○ Los turnos existentes con fecha previa a la actual no se modifican. 
-    ○ Los turnos existentes RESERVADOS con fecha posterior a la actual, 
-    no se modifican. 
-    ○ El cambio impacta únicamente en la generación de turnos futuros y 
-    para turnos existentes futuros pero en estado DISPONIBLE. */
-    // TODO avisar al turno service que genere los turnos.
-    //await this.turnoService.refrescarTurnosDisponiblesDelMedico(medico);
+    const medicoGuardado = await this.medicoRepository.save(medico);
 
-    return this.toDto(await this.medicoRepository.save(medico));
+    try {
+      const { TurnoService } = await import("./TurnoService.js");
+      const turnoService = new TurnoService();
+      await turnoService.refrescarTurnosDisponiblesDelMedico(medicoGuardado);
+    } catch (err) {
+      logger.error(`Error al regenerar turnos del médico ${medicoId} tras modificar disponibilidad`, err);
+    }
+
+    return this.toDto(medicoGuardado);
   }
 
   async eliminarDisponibilidadPara(medicoId, diaSemana) {
@@ -232,10 +274,17 @@ export class MedicoService {
 
     medico.eliminarDisponibilidad(diaSemana);
 
-    // TODO avisar al turno service que genere los turnos.
-    //await this.turnoService.regenerarTurnosDisponiblesDelMedico(medico.id);
+    const medicoGuardado = await this.medicoRepository.save(medico);
 
-    return this.toDto(await this.medicoRepository.save(medico));
+    try {
+      const { TurnoService } = await import("./TurnoService.js");
+      const turnoService = new TurnoService();
+      await turnoService.refrescarTurnosDisponiblesDelMedico(medicoGuardado);
+    } catch (err) {
+      logger.error(`Error al regenerar turnos del médico ${medicoId} tras eliminar disponibilidad`, err);
+    }
+
+    return this.toDto(medicoGuardado);
   }
 
   async consultarDisponibilidad(medicoId) {
@@ -257,6 +306,21 @@ export class MedicoService {
     const servicio = await this.servicioService.getEntityById(idServicio);
     if (!medico || !servicio) throw new NotFoundError("Datos no encontrados");
 
+    // REGLA DE NEGOCIO: Para agregar una práctica, el médico ya debe poseer su especialidad padre
+    if (servicio.tipo === "Practica") {
+      const padreId = servicio.especialidadPadreId._id 
+        ? servicio.especialidadPadreId._id.toString() 
+        : servicio.especialidadPadreId.toString();
+
+      const tieneEspecialidadPadre = medico.especialidades.some(
+        (esp) => (esp._id || esp.id).toString() === padreId
+      );
+
+      if (!tieneEspecialidadPadre) {
+        throw new ConflictError("Para agregar esta práctica, primero debes tener asignada su especialidad correspondiente.");
+      }
+    }
+
     logger.info("[MEDICO SERVICE]: Guardando servicio con id: ", idServicio);
     medico.agregarServicio(servicio);
 
@@ -277,6 +341,34 @@ export class MedicoService {
 
     logger.info("[MEDICO SERVICE]: Eliminando servicio con id: ", idServicio);
     medico.eliminarServicio(servicio);
+
+    const deletedServiceIds = new Set();
+    deletedServiceIds.add((servicio._id || servicio.id).toString());
+
+    // REGLA DE NEGOCIO: Si se elimina una especialidad, se eliminan también sus prácticas asociadas (hijas)
+    if (servicio.tipo === "Especialidad") {
+      const espIdStr = (servicio._id || servicio.id).toString();
+
+      const practicasAEliminar = medico.practicas.filter(p => {
+        const padreId = p.especialidadPadreId && (p.especialidadPadreId._id 
+          ? p.especialidadPadreId._id.toString() 
+          : p.especialidadPadreId.toString());
+        return padreId === espIdStr;
+      });
+
+      practicasAEliminar.forEach(p => {
+        deletedServiceIds.add((p._id || p.id).toString());
+        medico.eliminarServicio(p);
+      });
+    }
+
+    // REGLA DE NEGOCIO: También se eliminan los horarios semanales (disponibilidades) asociados a los servicios eliminados
+    medico.disponibilidades = medico.disponibilidades.filter(disp => {
+      const dispServicioId = disp.servicio && (disp.servicio._id 
+        ? disp.servicio._id.toString() 
+        : disp.servicio.toString());
+      return !deletedServiceIds.has(dispServicioId);
+    });
 
     const guardadoGuardado = await this.medicoRepository.save(medico);
     logger.info("[MEDICO SERVICE]: Servicio eliminado con id: ", idServicio);

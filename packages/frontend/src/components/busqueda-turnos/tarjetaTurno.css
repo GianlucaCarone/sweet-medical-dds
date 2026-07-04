@@ -1,14 +1,5 @@
-:root {
-    --blanco: #ffffff;
-    --texto-oscuro: #1e293b;
-    --texto-mutado: #64748b;
-    --verde-badge: #e6f4ea;
-    --verde-texto: #137333;
-    --borde-gris: #e2e8f0;
-}
-
 .tarjeta-turno {
-    background-color: var(--blanco);
+    background-color: var(--color-surface);
     padding: 20px;
     margin-bottom: 16px;
 }
@@ -28,7 +19,7 @@
 }
 
 .calificacion .votos {
-    color: var(--texto-mutado);
+    color: var(--color-text-muted);
     font-size: 10px;
     font-weight: normal;
     margin-left: 2px;
@@ -43,7 +34,7 @@
 .titulo-turnos {
     margin: 0;
     font-size: 11px;
-    color: var(--texto-mutado);
+    color: var(--color-text-muted);
     font-weight: 500;
 }
 
@@ -64,7 +55,7 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    background-color: #edf7ed;
+    background-color: var(--color-success-light);
     border: 1px solid transparent;
     padding: 6px 16px;
     border-radius: 8px;
@@ -73,13 +64,13 @@
 }
 
 .boton-turno.seleccionado {
-    border-color: var(--verde-texto);
-    background-color: #e1f0e1;
+    border-color: var(--color-success-dark);
+    background-color: var(--color-success-light);
 }
 
 .boton-turno:hover {
-    background-color: #e1f0e1;
-    border-color: var(--verde-texto);
+    background-color: var(--color-success-light);
+    border-color: var(--color-success-dark);
     transform: translateY(-1px);
 }
 
@@ -91,14 +82,14 @@
 
 .fecha-turno {
     font-size: 10px;
-    color: #1e4620;
+    color: var(--color-success-dark);
     margin-bottom: 2px;
 }
 
 .hora-turno {
     font-size: 12px;
     font-weight: 700;
-    color: var(--verde-texto);
+    color: var(--color-success-dark);
 }
 
 .acciones {
@@ -108,7 +99,7 @@
 }
 
 .boton-reservar:disabled {
-    background-color: #ccc;
+    background-color: var(--color-secondary);
     border: none;
     padding: 8px 8px;
     border-radius: 8px;
@@ -119,8 +110,8 @@
 }
 
 .boton-reservar:not(:disabled) {
-    background-color: #137333;
-    color: var(--blanco);
+    background-color: var(--color-success-dark);
+    color: var(--color-surface);
     border: none;
     padding: 8px 8px;
     border-radius: 8px;
@@ -130,6 +121,6 @@
 }
 
 .boton-reservar:not(:disabled):hover {
-    background-color: #0e5724;
+    background-color: var(--color-success);
     transform: translateY(-1px);
 }

@@ -1,8 +1,8 @@
 .turnos-empty-state {
     min-height: 210px;
 
-    background: rgba(255, 255, 255, 0.72);
-    border: 1px dashed #cbd5e1;
+    background: var(--color-surface);
+    border: 1px dashed var(--color-divider);
     border-radius: 22px;
 
     display: flex;
@@ -13,7 +13,7 @@
     text-align: center;
 
     padding: 32px;
-    color: #64748b;
+    color: var(--color-text-muted);
 }
 
 .empty-icon {
@@ -24,7 +24,7 @@
     align-items: center;
     justify-content: center;
 
-    color: #94a3b8;
+    color: var(--color-text-muted);
     margin-bottom: 12px;
 }
 
@@ -34,7 +34,7 @@
 
 .turnos-empty-state h3 {
     margin: 0 0 8px;
-    color: #334155;
+    color: var(--color-text);
     font-size: 22px;
 }
 
@@ -46,7 +46,7 @@
 .empty-action-btn {
     border: none;
     background: transparent;
-    color: #087f73;
+    color: var(--color-primary);
 
     font-size: 16px;
     font-weight: 800;

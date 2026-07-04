@@ -256,6 +256,7 @@ Para garantizar consistencia, todas las vistas deben reusar:
 4. Crear componentes de botones oficiales si es necesario (envoltorios sobre MUI).
 5. Revisar y actualizar `BadgeEstado` para que use los colores semánticos oficiales.
 6. Eliminar colores hardcodeados y duplicaciones en styled-components y CSS sueltos.
+7. Resolver skeletons de tarjetas para que usen `CardBase`.
 
 ---
 

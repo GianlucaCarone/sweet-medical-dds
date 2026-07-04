@@ -2,13 +2,11 @@ import React from "react";
 import styled, { keyframes } from "styled-components";
 import CardBase from "../../shared/CardBase/CardBase";
 
-// 1. Diccionario de colores (Configuration Object)
-// Esto es clave para escalar: si mañana te piden un nuevo tipo, solo lo agregás acá.
 const coloresConfig = {
-  azul: { bg: "#dbeafe", text: "#2563eb" },
-  verde: { bg: "#dcfce7", text: "#059669" },
-  rojo: { bg: "#fee2e2", text: "#dc2626" },
-  naranja: { bg: "#ffedd5", text: "#ea580c" },
+  azul: { bg: "var(--color-info-light)", text: "var(--color-info)" },
+  verde: { bg: "var(--color-success-light)", text: "var(--color-success)" },
+  rojo: { bg: "var(--color-error-light)", text: "var(--color-error)" },
+  naranja: { bg: "var(--color-warning-light)", text: "var(--color-warning-dark)" },
 };
 
 // 2. Animación definida con keyframes de styled-components
@@ -40,7 +38,7 @@ const StatTop = styled.div`
 
   p {
     margin: 0;
-    color: #526173;
+    color: var(--color-text-muted);
     font-size: 17px;
     padding-bottom: 15px;
     font-weight: 600;
@@ -57,8 +55,8 @@ const StatIcon = styled.div`
   
   /* Buscamos el color en nuestro diccionario usando la prop $tipo */
   /* Si por algún motivo nos pasan un tipo que no existe, le damos un fallback gris */
-  background-color: ${({ $tipo }) => coloresConfig[$tipo]?.bg || "#e2e8f0"};
-  color: ${({ $tipo }) => coloresConfig[$tipo]?.text || "#64748b"};
+  background-color: ${({ $tipo }) => coloresConfig[$tipo]?.bg || "var(--color-divider)"};
+  color: ${({ $tipo }) => coloresConfig[$tipo]?.text || "var(--color-text-muted)"};
 `;
 
 const StatNumero = styled.span`
@@ -68,7 +66,7 @@ const StatNumero = styled.span`
   padding-left: 2px;
   z-index: 1;
   
-  color: ${({ $tipo }) => coloresConfig[$tipo]?.text || "#0f172a"};
+  color: ${({ $tipo }) => coloresConfig[$tipo]?.text || "var(--color-text)"};
 `;
 
 // 4. Componente Principal React

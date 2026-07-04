@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Modal from './Modal';
 
-export default function ModalDisponibilidad({ isOpen, onClose, doctor, handleAgregarDisponibilidad, initialData, editingDispId }) {
+export default function ModalDisponibilidad({ isOpen, onClose, medico, handleAgregarDisponibilidad, initialData, editingDispId }) {
   const [formDispDia, setFormDispDia] = useState('LUNES');
   const [formDispSede, setFormDispSede] = useState('');
   const [formDispSrv, setFormDispSrv] = useState('');
@@ -13,10 +13,10 @@ export default function ModalDisponibilidad({ isOpen, onClose, doctor, handleAgr
     if (isOpen) {
       if (initialData) {
         setFormDispDia(initialData.diaSemana || 'LUNES');
-        setFormDispSede(initialData.sede?._id || '');
-        setFormDispSrv(initialData.servicio?._id || '');
-        setFormDispHoraInicio(initialData.horaInicio || '');
-        setFormDispHoraFin(initialData.horaFin || '');
+        setFormDispSede(initialData.sede?.id || '');
+        setFormDispSrv(initialData.servicio?.id || '');
+        setFormDispHoraInicio(initialData.horaDesde || '');
+        setFormDispHoraFin(initialData.horaHasta || '');
       } else {
         setFormDispDia('LUNES');
         setFormDispSede('');
@@ -33,7 +33,7 @@ export default function ModalDisponibilidad({ isOpen, onClose, doctor, handleAgr
     onClose();
   };
 
-  const onSubmit = (e) => {
+  const onSubmit = async (e) => {
     e.preventDefault();
     setErrorDisp('');
     if (!formDispSrv || !formDispSede || !formDispHoraInicio || !formDispHoraFin) {
@@ -54,7 +54,7 @@ export default function ModalDisponibilidad({ isOpen, onClose, doctor, handleAgr
       formDispHoraFin
     };
 
-    const result = handleAgregarDisponibilidad(dispData, editingDispId);
+    const result = await handleAgregarDisponibilidad(dispData, editingDispId);
     if (!result.success) {
       setErrorDisp(result.error);
     } else {
@@ -72,7 +72,7 @@ export default function ModalDisponibilidad({ isOpen, onClose, doctor, handleAgr
 
         <div className="row g-2">
           <div className="col-6">
-            <label className="form-label font-weight-bold text-dark small mb-1">Día</label>
+            <label className="form-label font-weight-bold text-default small mb-1">Día</label>
             <select
               className="form-select form-select-sm"
               value={formDispDia}
@@ -91,7 +91,7 @@ export default function ModalDisponibilidad({ isOpen, onClose, doctor, handleAgr
             </select>
           </div>
           <div className="col-6">
-            <label className="form-label font-weight-bold text-dark small mb-1">Sede</label>
+            <label className="form-label font-weight-bold text-default small mb-1">Sede</label>
             <select
               required
               className="form-select form-select-sm"
@@ -102,9 +102,9 @@ export default function ModalDisponibilidad({ isOpen, onClose, doctor, handleAgr
               }}
             >
               <option value="" disabled>-- Seleccionar Sede --</option>
-              {doctor.sedesAsignadas.map(s => <option key={s._id} value={s._id}>{s.nombre}</option>)}
+              {medico.sedes.map(s => <option key={s.id} value={s.id}>{s.nombre}</option>)}
             </select>
-            {doctor.sedesAsignadas.length === 0 && (
+            {medico.sedes.length === 0 && (
               <div className="text-danger mt-1 font-weight-bold" style={{ fontSize: '10px' }}>
                 Vincula una sede primero desde la pestaña de Sedes.
               </div>
@@ -112,14 +112,9 @@ export default function ModalDisponibilidad({ isOpen, onClose, doctor, handleAgr
           </div>
         </div>
 
-        {errorDisp && (
-          <div className="error-message text-center w-100 d-block">
-            {errorDisp}
-          </div>
-        )}
 
         <div>
-          <label className="form-label font-weight-bold text-dark small mb-1">Especialidad / Práctica</label>
+          <label className="form-label font-weight-bold text-default small mb-1">Especialidad / Práctica</label>
           <select
             required
             className="form-select form-select-sm"
@@ -130,16 +125,16 @@ export default function ModalDisponibilidad({ isOpen, onClose, doctor, handleAgr
             }}
           >
             <option value="" disabled>-- Seleccionar un servicio de tu perfil --</option>
-            {doctor.serviciosAsignados.map(srv => (
-              <option key={srv._id} value={srv._id}>[{srv.tipo}] {srv.nombre} ({srv.duracionEstimada} min)</option>
+            {[...(medico.especialidades || []), ...(medico.practicas || [])].map(srv => (
+              <option key={srv.id} value={srv.id}>[{srv.tipo}] {srv.nombre} ({srv.duracionTurnoEnMins} min)</option>
             ))}
           </select>
         </div>
 
-        <div className="bg-light p-3 rounded" style={{ border: '1px solid #e2e8f0' }}>
+        <div className="bg-neutral-light p-3 rounded" style={{ border: '1px solid var(--color-divider)' }}>
           <div className="row g-2">
             <div className="col-6">
-              <label className="form-label font-weight-bold text-dark small mb-1">Hora de Inicio</label>
+              <label className="form-label font-weight-bold text-default small mb-1">Hora de Inicio</label>
               <input
                 type="time"
                 required
@@ -152,7 +147,7 @@ export default function ModalDisponibilidad({ isOpen, onClose, doctor, handleAgr
               />
             </div>
             <div className="col-6">
-              <label className="form-label font-weight-bold text-dark small mb-1">Hora de Fin</label>
+              <label className="form-label font-weight-bold text-default small mb-1">Hora de Fin</label>
               <input
                 type="time"
                 required
@@ -167,11 +162,18 @@ export default function ModalDisponibilidad({ isOpen, onClose, doctor, handleAgr
           </div>
         </div>
 
+
+        {errorDisp && (
+          <div className="alert alert-danger p-2 small mb-0 mt-2">
+            {errorDisp}
+          </div>
+        )}
+
         <div className="d-flex justify-content-end gap-2 mt-2">
           <button
             type="button"
             onClick={handleClose}
-            className="btn btn-light btn-sm font-weight-bold text-secondary"
+            className="btn btn-light btn-sm font-weight-bold text-muted"
           >
             Cancelar
           </button>

@@ -14,7 +14,7 @@ const TurnoFooter = styled.div`
 
 const CoberturaLabel = styled.div`
   display: inline-flex;
-  color: #2d8077;
+  color: var(--color-primary);
   padding: 4px;
   font-size: 14px;
   font-weight: 800;
@@ -26,19 +26,18 @@ const TurnoActions = styled.div`
   gap: 12px;
 `;
 
-// Pro-tip: Así se estilizan componentes de librerías externas (MUI) con styled-components
 const BtnSecundario = styled(Button)`
   && {
     border-radius: 999px;
-   border: 2px solid #137333;
-    color: #137333;
+    border: 2px solid var(--color-success-dark);
+    color: var(--color-success-dark);
     transition: all 0.2s ease-in-out;
     text-transform: none;
     font-weight: 600;
     padding: 6px 18px;
 
-        &:hover {
-      background: #e8f5e9;
+    &:hover {
+      background: var(--color-success-light);
       transform: translateY(-1px);
       box-shadow: 0 4px 6px rgba(19, 115, 51, 0.15);
     }
@@ -48,14 +47,14 @@ const BtnSecundario = styled(Button)`
 const BtnCancelar = styled(Button)`
   && {
     border-radius: 999px;
-    background-color: #f36969;
+    background-color: var(--color-error);
     color: white;
     text-transform: none;
     font-weight: 600;
     padding: 6px 18px;
 
     &:hover {
-      background-color: #dc2626;
+      background-color: var(--color-error-dark);
       transform: translateY(-1px);
     }
   }
@@ -81,8 +80,8 @@ export default function CardTurno({ turno, onCancelar }) {
       <TurnoCardLayout turno={turno}>
         <TurnoFooter>
           <CoberturaLabel>
-            {'Cobertura: '}
-            {turno.estadoCobertura}
+            {'Estado: '}
+            {turno.estado.toLowerCase()}
           </CoberturaLabel>
 
           <TurnoActions>

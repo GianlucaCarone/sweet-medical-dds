@@ -1,9 +1,8 @@
 import React from 'react';
 import DatosPersonales from './DatosPersonales';
-import SeguridadCard from './SeguridadCard';
 
 export default function CabeceraPerfil({
-  doctor,
+  medico,
   handleGuardarDatosPersonales,
   setAlertConfig
 }) {
@@ -12,7 +11,7 @@ export default function CabeceraPerfil({
       <div className="row g-4">
 
         {/* Columna 1: Perfil e Iniciales Rediseñado */}
-        <div className="col-12 col-lg-4 col-border-right d-flex align-items-center px-4 py-3">
+        <div className="col-12 col-lg-6 col-border-right d-flex align-items-center px-4 py-3">
           <div className="d-flex align-items-center gap-3 w-100">
 
             {/* Avatar Circular Premium */}
@@ -23,11 +22,11 @@ export default function CabeceraPerfil({
                 height: '64px',
                 fontSize: '22px',
                 flexShrink: 0,
-                background: 'linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%)',
+                background: 'linear-gradient(135deg, var(--color-info) 0%, var(--color-info-dark) 100%)',
                 letterSpacing: '0.5px'
               }}
             >
-              {doctor.nombre?.charAt(0)}{doctor.apellido ? doctor.apellido.charAt(0) : ''}
+              {medico.nombre?.charAt(0)}{medico.apellido ? medico.apellido.charAt(0) : ''}
             </div>
 
             {/* Textos Informativos Alabados */}
@@ -37,11 +36,11 @@ export default function CabeceraPerfil({
                 style={{
                   fontSize: '20px',
                   fontWeight: '700',
-                  color: '#1E293B',
+                  color: 'var(--color-text)',
                   letterSpacing: '-0.3px'
                 }}
               >
-                {doctor.nombre} {doctor.apellido || ''}
+                {medico.nombre} {medico.apellido || ''}
               </h3>
 
               <span
@@ -62,12 +61,9 @@ export default function CabeceraPerfil({
 
         {/* Columna 2: Datos Personales */}
         <DatosPersonales 
-          doctor={doctor} 
+          medico={medico} 
           handleGuardarDatosPersonales={handleGuardarDatosPersonales} 
         />
-
-        {/* Columna 3: Seguridad / Contraseña */}
-        <SeguridadCard setAlertConfig={setAlertConfig} />
 
       </div>
     </header>

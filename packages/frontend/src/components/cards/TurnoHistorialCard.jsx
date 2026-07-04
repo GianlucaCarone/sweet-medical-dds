@@ -14,8 +14,8 @@ const DoctorAvatar = styled.div`
   width: 52px;
   height: 52px;
   border-radius: 14px;
-  background: #e7f1ef;
-  color: #087f73;
+  background: var(--color-primary-light);
+  color: var(--color-primary);
   font-weight: 800;
   display: flex;
   align-items: center;
@@ -41,8 +41,8 @@ const BtnSecundario = styled.button`
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 2px solid #bac4c2;
-  color: #526173;
+  border: 2px solid var(--color-divider);
+  color: var(--color-text-muted);
   background: transparent;
   cursor: pointer;
   transition: all 0.2s ease-in-out;
@@ -50,7 +50,7 @@ const BtnSecundario = styled.button`
   align-self: end;
 
   &:hover {
-    background: #bcc5cfc7;
+    background: var(--color-divider);
     transform: translateY(-1px);
 
   }

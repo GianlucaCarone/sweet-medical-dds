@@ -24,7 +24,7 @@ export class ServicioRepository {
             const nuevoServicio = new modelo(servicio);
             servicioGuardado = await nuevoServicio.save();
         }
-        if (servicioGuardado.tipo === "Practica") await servicioGuardado.populate("especialidadPadre");
+        if (servicio.tipo === "Practica") await servicioGuardado.populate("especialidadPadreId");
         logger.info("[SERVICIO REPOSTIRORY]: Servicio guardado: ", servicioGuardado);
 
         return servicioGuardado;
@@ -41,7 +41,7 @@ export class ServicioRepository {
         const servicio = await this.model.findById(idServicio);
         const mensaje = (servicio) ? ("Servicio obtenido: " + servicio) : ("No se encontro el servicio con id: " + idServicio);
         logger.info("[SERVICIO REPOSTIRORY]: " + mensaje);
-        if (servicio && servicio.tipo === "Practica") await servicio.populate("especialidadPadre");
+        if (servicio && servicio.tipo === "Practica") await servicio.populate("especialidadPadreId");
 
         return servicio;
     }
@@ -51,7 +51,7 @@ export class ServicioRepository {
         const servicio = await this.model.findOne({ nombre: nombreServicio });
         const mensaje = (servicio) ? ("Servicio obtenido: " + servicio) : ("No se encontro el servicio con nombre: " + nombreServicio);
         logger.info("[SERVICIO REPOSTIRORY]: " + mensaje);
-        if (servicio && servicio.tipo === "Practica") await servicio.populate("especialidadPadre");
+        if (servicio && servicio.tipo === "Practica") await servicio.populate("especialidadPadreId");
 
         return servicio;
     }

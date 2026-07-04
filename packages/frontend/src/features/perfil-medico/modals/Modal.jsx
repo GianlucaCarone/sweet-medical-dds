@@ -7,11 +7,11 @@ export default function Modal({ isOpen, onClose, title, children }) {
   return (
     <div className="modal-overlay-custom" onClick={onClose}>
       <div className="modal-content-custom" onClick={(e) => e.stopPropagation()}>
-        <div className="modal-header-custom bg-light">
-          <h5 className="modal-title font-weight-bold text-dark m-0">{title}</h5>
+        <div className="modal-header-custom bg-neutral-light">
+          <h5 className="modal-title font-weight-bold text-default m-0">{title}</h5>
           <button 
             onClick={onClose} 
-            className="btn btn-link text-secondary p-1 border-0" 
+            className="btn btn-link text-muted p-1 border-0" 
             style={{ textDecoration: 'none' }}
           >
             <X size={22} />

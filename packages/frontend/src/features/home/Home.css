@@ -8,7 +8,6 @@
 }
 
 .home-grid {
-    /* height: calc(100vh - 80px); */
     overflow: auto;
     display: grid;
     grid-template-areas:
@@ -29,9 +28,11 @@
 
 .banner {
     grid-area: banner;
-    /* TODO           Evaluar estos colores, cambiarlos por los primary y secundary */
     background: var(--color-primary);
-    color: white
+    color: white;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
 }
 .infoEstadistica {
     grid-area: infoEstadistica;
@@ -47,7 +48,7 @@
     color: white;
 }
 .tieneObraSocialSubtitulo {
-    color: rgb(230, 230, 230);
+    color: var(--color-text-muted);
     font-weight: bold;
 }
 
@@ -65,7 +66,7 @@
 }
 
 .banner .banner-subtitulo {
-    color: rgb(230, 230, 230);
+    color: var(--color-text-muted);
     font-weight: bold;
 }
 .titulo {

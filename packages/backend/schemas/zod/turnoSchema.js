@@ -9,7 +9,7 @@ export const idParamsSchema = z.object({
 
 export const bodyCambioEstadoTurnoSchema = z.object({
     nuevoEstado: z.enum(EstadoTurnoEnum, { error: "El estado del turno no es válido" }),
-    quien: objectIdSchema("usuario"),
+    quien: objectIdSchema("usuario").optional(),
     motivo: z.string("El motivo debe ser una cadena de texto").optional()
 });
 
@@ -57,12 +57,12 @@ export const turnoBaseSchema = z.object({
 
 export const bodySolicitarCambioFechaSchema = z.object({
     nuevaFechaHora: z.coerce.date({ invalid_type_error: "La nueva fecha debe ser una fecha válida" }),
-    usuarioId: z.string({ required_error: "El id del usuario es requerido" })
+    usuarioId: z.string({ required_error: "El id del usuario es requerido" }).optional()
 });
 
 export const bodyResponderCambioFechaSchema = z.object({
     aceptado: z.boolean({ required_error: "Debe indicar si el cambio es aceptado o no" }),
-    usuarioId: z.string({ required_error: "El id del usuario es requerido" })
+    usuarioId: z.string({ required_error: "El id del usuario es requerido" }).optional()
 });
 
 export const bodyUpdateTurnoSchema = turnoBaseSchema.partial();

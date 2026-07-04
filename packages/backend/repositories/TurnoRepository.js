@@ -27,7 +27,13 @@ export class TurnoRepository {
     async findById(id) {
         return await this.model.findById(id)
             .populate("medico", "nombre matricula usuario")
-            .populate("paciente", "nombre dni idUsuario obraSocial plan")
+            .populate({
+                path: "paciente",
+                select: "nombre dni idUsuario obraSocial plan",
+                populate: [
+                    { path: "obraSocial", select: "nombre planes" }
+                ]
+            })
             .populate("sede", "nombre direccion")
             .populate("servicio", "nombre costo duracionTurnoEnMins")
             .exec();
@@ -50,9 +56,11 @@ export class TurnoRepository {
         fechaNormalizada.setSeconds(0, 0);
 
         // .exists() es mucho más ligero y rápido en la DB que .findOne()
+        // Ignoramos turnos inactivos (CANCELADO) para que el slot pueda volver a ocuparse
         const turnoId = await this.model.exists({
             medico: medicoId,
-            fechaHora: fechaNormalizada
+            fechaHora: fechaNormalizada,
+            estado: { $nin: [EstadoTurnoEnum.CANCELADO] }
         }).exec(); 
 
         return turnoId !== null;
@@ -147,6 +155,10 @@ disponible:
         if (filtros.medicoId !== undefined) {
             query.medico = filtros.medicoId;
         }
+        
+        if (filtros.pacienteId !== undefined) {
+            query.paciente = filtros.pacienteId;
+        }
 
         if (filtros.servicioId !== undefined) {
             query.servicio = filtros.servicioId;
@@ -165,7 +177,13 @@ disponible:
         const [turnos, totalTurnos] = await Promise.all([
             this.model.find(query)
                 .populate("medico", "nombre matricula usuario")
-                .populate("paciente", "nombre dni idUsuario obraSocial plan")
+                .populate({
+                    path: "paciente",
+                    select: "nombre dni idUsuario obraSocial plan",
+                    populate: [
+                        { path: "obraSocial", select: "nombre planes" }
+                    ]
+                })
                 .populate("sede", "nombre direccion")
                 .populate("servicio", "nombre costo duracionTurnoEnMins")
                 .sort(ordenamiento)
@@ -194,5 +212,24 @@ disponible:
             estado: EstadoTurnoEnum.DISPONIBLE,
             fechaHora: { $gt: fechaActual }
         });
+    }
+
+    async obtenerContadores({ medicoId, pacienteId }) {
+        const query = {};
+        if (medicoId) query.medico = medicoId;
+        if (pacienteId) query.paciente = pacienteId;
+
+        const estados = Object.values(EstadoTurnoEnum);
+        const promesas = estados.map(async (estado) => {
+            const count = await this.model.countDocuments({ ...query, estado }).exec();
+            return { estado, count };
+        });
+
+        const resultados = await Promise.all(promesas);
+        const counts = {};
+        resultados.forEach(res => {
+            counts[res.estado] = res.count;
+        });
+        return counts;
     }
 }
