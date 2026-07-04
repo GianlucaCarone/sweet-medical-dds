@@ -11,7 +11,7 @@ import {
   updateMedico
 } from '../../../api/medico';
 
-export const useGetMedicoByIdUsuario = (idUsuario) => {
+export const useGetMiPerfilMedico = () => {
   const [medico, setMedico] = useState(null);
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState(null);
@@ -21,8 +21,7 @@ export const useGetMedicoByIdUsuario = (idUsuario) => {
       try {
         setCargando(true);
         setError(null);
-        const datos = await getMedicoByIdUsuario(idUsuario);
-        // getMedicoByIdUsuario devuelve data directamente o envuelto en { data: ... }
+        const datos = await getMedicoByIdUsuario();
         setMedico(datos);
       } catch (err) {
         setError(err);
@@ -30,10 +29,8 @@ export const useGetMedicoByIdUsuario = (idUsuario) => {
         setCargando(false);
       }
     }
-    if (idUsuario) {
-      cargarMedico();
-    }
-  }, [idUsuario]);
+    cargarMedico();
+  }, []);
 
   return { medico, cargando, error };
 }
@@ -60,7 +57,7 @@ export default function useMedicoProfile(medicoInicial, triggerConfirm, setAlert
   const handleAgregarServicio = async (idServicioElegido) => {
     if (!idServicioElegido) return false;
     try {
-      const resp = await agregarServicio(medico.id, idServicioElegido);
+      const resp = await agregarServicio(idServicioElegido);
       actualizarEstado(resp);
       return true;
     } catch (e) {
@@ -75,7 +72,7 @@ export default function useMedicoProfile(medicoInicial, triggerConfirm, setAlert
       "¿Estás seguro de que quieres eliminar este servicio? También se eliminarán los horarios semanales de atención asociados.",
       async () => {
         try {
-          const resp = await eliminarServicio(medico.id, idSrv);
+          const resp = await eliminarServicio(idSrv);
           actualizarEstado(resp);
         } catch (e) {
           handleError(e, "No se pudo eliminar el servicio.");
@@ -98,11 +95,10 @@ export default function useMedicoProfile(medicoInicial, triggerConfirm, setAlert
 
     try {
       if (editingDispId) {
-        // En el backend la ruta PUT /disponibilidades actualiza por diaSemana
-        const resp = await modificarDisponibilidad(medico.id, payload);
+        const resp = await modificarDisponibilidad(payload);
         actualizarEstado(resp);
       } else {
-        const resp = await agregarDisponibilidad(medico.id, payload);
+        const resp = await agregarDisponibilidad(payload);
         actualizarEstado(resp);
       }
       return { success: true };
@@ -126,7 +122,7 @@ export default function useMedicoProfile(medicoInicial, triggerConfirm, setAlert
              if (dispObj) dia = dispObj.diaSemana;
           }
           if (dia) {
-            const resp = await eliminarDisponibilidad(medico.id, dia);
+            const resp = await eliminarDisponibilidad(dia);
             actualizarEstado(resp);
           }
         } catch (e) {
@@ -139,7 +135,7 @@ export default function useMedicoProfile(medicoInicial, triggerConfirm, setAlert
   // --- MANEJADORES DE SEDES ---
   const handleAsociarSede = async (sede) => {
     try {
-      const resp = await agregarSede(medico.id, sede.id);
+      const resp = await agregarSede(sede.id);
       actualizarEstado(resp);
       if (showAlert) showAlert('La sede fue vinculada con éxito.', 'success');
     } catch (e) {
@@ -153,7 +149,7 @@ export default function useMedicoProfile(medicoInicial, triggerConfirm, setAlert
       "¿Estás seguro de que quieres desvincular esta sede? Se eliminarán los horarios asociados a ella.",
       async () => {
         try {
-          const resp = await eliminarSede(medico.id, idSede);
+          const resp = await eliminarSede(idSede);
           actualizarEstado(resp);
           if (showAlert) showAlert('La sede fue desvinculada con éxito.', 'success');
         } catch (e) {
@@ -178,7 +174,7 @@ export default function useMedicoProfile(medicoInicial, triggerConfirm, setAlert
         nombre: nuevosDatos.nombre,
         honorario: Number(nuevosDatos.honorario)
       };
-      const resp = await updateMedico(medico.id, payload);
+      const resp = await updateMedico(payload);
       actualizarEstado(resp);
       if (showAlert) showAlert('Datos personales actualizados con éxito.', 'success');
       return true;

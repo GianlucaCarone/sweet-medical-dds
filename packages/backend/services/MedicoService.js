@@ -217,7 +217,17 @@ export class MedicoService {
       disponibilidad,
     );
 
-    return this.toDto(await this.medicoRepository.save(medico));
+    const medicoGuardado = await this.medicoRepository.save(medico);
+
+    try {
+      const { TurnoService } = await import("./TurnoService.js"); //Evitamos error ciclico de llamadas al importar
+      const turnoService = new TurnoService();
+      await turnoService.refrescarTurnosDisponiblesDelMedico(medicoGuardado);
+    } catch (err) {
+      logger.error(`Error al regenerar turnos del médico ${id} tras definir disponibilidad`, err);
+    }
+
+    return this.toDto(medicoGuardado);
   }
 
   async modificarDisponibilidadPara(disponibilidadData, medicoId) {
@@ -243,16 +253,17 @@ export class MedicoService {
     });
 
     medico.modificarDisponibilidad(disponibilidad);
-    /*Si un médico modifica su disponibilidad: 
-    ○ Los turnos existentes con fecha previa a la actual no se modifican. 
-    ○ Los turnos existentes RESERVADOS con fecha posterior a la actual, 
-    no se modifican. 
-    ○ El cambio impacta únicamente en la generación de turnos futuros y 
-    para turnos existentes futuros pero en estado DISPONIBLE. */
-    // TODO avisar al turno service que genere los turnos.
-    //await this.turnoService.refrescarTurnosDisponiblesDelMedico(medico);
+    const medicoGuardado = await this.medicoRepository.save(medico);
 
-    return this.toDto(await this.medicoRepository.save(medico));
+    try {
+      const { TurnoService } = await import("./TurnoService.js");
+      const turnoService = new TurnoService();
+      await turnoService.refrescarTurnosDisponiblesDelMedico(medicoGuardado);
+    } catch (err) {
+      logger.error(`Error al regenerar turnos del médico ${medicoId} tras modificar disponibilidad`, err);
+    }
+
+    return this.toDto(medicoGuardado);
   }
 
   async eliminarDisponibilidadPara(medicoId, diaSemana) {
@@ -263,10 +274,17 @@ export class MedicoService {
 
     medico.eliminarDisponibilidad(diaSemana);
 
-    // TODO avisar al turno service que genere los turnos.
-    //await this.turnoService.regenerarTurnosDisponiblesDelMedico(medico.id);
+    const medicoGuardado = await this.medicoRepository.save(medico);
 
-    return this.toDto(await this.medicoRepository.save(medico));
+    try {
+      const { TurnoService } = await import("./TurnoService.js");
+      const turnoService = new TurnoService();
+      await turnoService.refrescarTurnosDisponiblesDelMedico(medicoGuardado);
+    } catch (err) {
+      logger.error(`Error al regenerar turnos del médico ${medicoId} tras eliminar disponibilidad`, err);
+    }
+
+    return this.toDto(medicoGuardado);
   }
 
   async consultarDisponibilidad(medicoId) {

@@ -12,32 +12,29 @@ export const getMisTurnos = async (params) => {
     return response.data;
 };
 
-export const cambiarEstadoTurno = async (id, nuevoEstado, quien, motivo = '') => {
+export const cambiarEstadoTurno = async (id, nuevoEstado, motivo = '') => {
     const response = await axiosInstance.patch(`/turno/${id}/cambiar-estado`, {
         nuevoEstado,
-        quien,
         motivo
     });
     return response.data;
 };
 
-export const solicitarCambioFecha = async (id, nuevaFechaHora, usuarioId) => {
+export const solicitarCambioFecha = async (id, nuevaFechaHora) => {
     const response = await axiosInstance.patch(`/turno/${id}/solicitar-cambio-fecha`, {
-        nuevaFechaHora,
-        usuarioId
+        nuevaFechaHora
     });
     return response.data;
 };
 
-export const responderCambioFecha = async (id, aceptado, usuarioId) => {
+export const responderCambioFecha = async (id, aceptado) => {
     const response = await axiosInstance.patch(`/turno/${id}/responder-cambio-fecha`, {
-        aceptado,
-        usuarioId
+        aceptado
     });
     return response.data;
 };
 
-export const getContadoresTurnos = async (params) => {
-    const response = await axiosInstance.get('/turno/contadores', { params });
+export const getContadoresTurnos = async () => {
+    const response = await axiosInstance.get('/turno/contadores');
     return response.data;
 };

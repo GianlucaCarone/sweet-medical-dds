@@ -89,6 +89,12 @@ export default function TurnosTab({
     }) + ' hs';
   };
 
+  const obtenerFechaMinimaLocal = () => {
+    const d = new Date();
+    const pad = (n) => String(n).padStart(2, '0');
+    return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+  };
+
   // Validar si un turno es cancelable (más de 1 hora de anticipación)
   const puedesCancelar = (fechaHoraStr) => {
     const ahora = new Date();
@@ -144,14 +150,6 @@ export default function TurnosTab({
   };
 
   const handleConfirmarReprogramacion = async (turnoId) => {
-    if (!nuevaFechaHoraPropuesta) {
-      setCustomAlert({
-        isOpen: true,
-        title: 'Fecha Requerida',
-        message: 'Por favor, selecciona una nueva fecha y hora para proponer la reprogramación.'
-      });
-      return;
-    }
     const ok = await onProponerCambio(turnoId, nuevaFechaHoraPropuesta);
     if (!ok) {
       setCustomAlert({
@@ -341,20 +339,41 @@ export default function TurnosTab({
                         </div>
                       </div>
                     ) : reprogrammingId === turno.id ? (
-                      <div className="p-2 bg-neutral-light rounded-3 border">
+                      <form
+                        onSubmit={(e) => {
+                          e.preventDefault();
+                          handleConfirmarReprogramacion(turno.id);
+                        }}
+                        className="p-2 bg-neutral-light rounded-3 border"
+                      >
                         <label className="form-label small font-weight-bold text-default mb-1">Selecciona Fecha y Hora Propuesta</label>
                         <input
                           type="datetime-local"
                           className="form-control form-control-sm mb-2"
                           value={nuevaFechaHoraPropuesta}
                           onChange={e => setNuevaFechaHoraPropuesta(e.target.value)}
+                          min={obtenerFechaMinimaLocal()}
+                          required
                           style={{ fontSize: '12px' }}
                         />
                         <div className="d-flex justify-content-end gap-2">
-                          <button className="btn btn-xs btn-light px-2 py-1 border" style={{ fontSize: '11px' }} onClick={() => setReprogrammingId(null)}>Cancelar</button>
-                          <button className="btn btn-xs btn-primary px-2 py-1 font-weight-bold" style={{ fontSize: '11px' }} onClick={() => handleConfirmarReprogramacion(turno.id)}>Enviar Propuesta</button>
+                          <button
+                            type="button"
+                            className="btn btn-xs btn-light px-2 py-1 border"
+                            style={{ fontSize: '11px' }}
+                            onClick={() => setReprogrammingId(null)}
+                          >
+                            Cancelar
+                          </button>
+                          <button
+                            type="submit"
+                            className="btn btn-xs btn-primary px-2 py-1 font-weight-bold"
+                            style={{ fontSize: '11px' }}
+                          >
+                            Enviar Propuesta
+                          </button>
                         </div>
-                      </div>
+                      </form>
                     ) : (
                       <div className="d-flex flex-wrap gap-2 align-items-center w-100">
                         {turno.estado === 'RESERVADO' && (
