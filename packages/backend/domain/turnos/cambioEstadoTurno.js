@@ -10,7 +10,7 @@ export class CambioEstadoTurno{
     motivo;
 
     constructor({estado,usuario,turno,motivo}){
-        if(!estado || !usuario || !turno || !motivo){
+        if(!estado || !usuario || !turno ){
             throw new ErrorDatosObligatorios();
         }
         if (typeof motivo !== "string") {

@@ -47,6 +47,39 @@ export class MedicoController {
     }
   };
 
+  findByIdUsuario = async (req, res, next) => {
+    try {
+      const { id } = idParamObjectIdSchema.parse(req.params);
+      logger.info("[MEDICO CONTROLLER]: Obteniendo medico de usuario: ", id);
+      const medico = await this.medicoService.findByIdUsuario(id);
+      if (!medico) {
+        return res.status(404).json({ message: "Médico no encontrado" });
+      }
+      logger.info("[MEDICO CONTROLLER]: Medico obtenido: ", medico);
+      res.status(200).json(medico);
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  /**
+   * GET /medicos/me
+   * Protegido por authMiddleware. Obtiene el perfil del medico del usuario logueado.
+   * El id del usuario se extrae del JWT (req.user.id).
+   */
+  buscarMiPerfil = async (req, res, next) => {
+    try {
+      logger.info("[MEDICO CONTROLLER]: Obteniendo mi perfil médico para usuario: ", req.user.id);
+      const medico = await this.medicoService.findByIdUsuario(req.user.id);
+      if (!medico) {
+        return res.status(404).json({ message: "Perfil médico no encontrado" });
+      }
+      res.status(200).json(medico);
+    } catch (error) {
+      next(error);
+    }
+  };
+
   delete = async (req, res, next) => {
     try {
       const { id } = idParamObjectIdSchema.parse(req.params);
@@ -59,6 +92,19 @@ export class MedicoController {
       res.status(200).json(medicoEliminado);
     } catch (error) {
       return next(error);
+    }
+  };
+
+  update = async (req, res, next) => {
+    try {
+      const { id } = idParamObjectIdSchema.parse(req.params);
+      const medicoData = medicoSchema.partial().parse(req.body);
+      logger.info("[MEDICO CONTROLLER]: Actualizando medico de id: ", id, " con datos: ", medicoData);
+      const medicoActualizado = await this.medicoService.update(id, medicoData);
+      logger.info("[MEDICO CONTROLLER]: Medico actualizado: ", medicoActualizado);
+      res.status(200).json(medicoActualizado);
+    } catch (error) {
+      next(error);
     }
   };
 

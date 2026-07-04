@@ -10,8 +10,7 @@ export class PacienteRepository {
   async findAll() {
     logger.info("[PACIENTE REPOSITORY]: Buscando todos los pacientes");
     const pacientes = await this.#model.find()
-      .populate("idUsuario")
-      .populate("obraSocial");
+      .populate("idUsuario obraSocial plan");
     logger.info("[PACIENTE REPOSITORY]: Pacientes obtenidos: ", pacientes);
     return pacientes;
   }
@@ -19,7 +18,7 @@ export class PacienteRepository {
   async findById(idPaciente) {
     logger.info("[PACIENTE REPOSITORY]: Buscando paciente por id: ", idPaciente);
     const paciente = await this.#model.findById(idPaciente)
-      .populate("idUsuario obraSocial");
+      .populate("idUsuario obraSocial plan");
     
     if (!paciente) {
       logger.info("[PACIENTE REPOSITORY]: Paciente no encontrado: ", idPaciente);
@@ -33,8 +32,7 @@ export class PacienteRepository {
   async findByIdUsuario(idUsuario) {
     logger.info("[PACIENTE REPOSITORY]: Buscando paciente por id de usuario: ", idUsuario);
     const paciente = await this.#model.findOne({ idUsuario: idUsuario })
-      .populate("idUsuario")
-      .populate("obraSocial");
+      .populate("idUsuario obraSocial plan");
     
     if (!paciente) {
       logger.info("[PACIENTE REPOSITORY]: Paciente no encontrado para usuario: ", idUsuario);
@@ -47,11 +45,19 @@ export class PacienteRepository {
 
   async save(paciente) {
     logger.info("[PACIENTE REPOSITORY]: Guardando paciente: ", paciente);
-    const nuevoPaciente = new this.#model(paciente);
-    const pacienteGuardado = await nuevoPaciente.save();
 
-    await pacienteGuardado.populate("idUsuario");
-    await pacienteGuardado.populate("obraSocial");
+    let pacienteGuardado;
+    if (paciente._id) {
+      // Documento existente (update): usar save() del documento de Mongoose
+      pacienteGuardado = await paciente.save();
+    } else {
+      // Documento nuevo (create)
+      const nuevoPaciente = new this.#model(paciente);
+      pacienteGuardado = await nuevoPaciente.save();
+    }
+
+    // Siempre re-populamos para tener los datos completos en el DTO
+    await pacienteGuardado.populate("idUsuario obraSocial plan");
 
     logger.info("[PACIENTE REPOSITORY]: Paciente guardado: ", pacienteGuardado);
     return pacienteGuardado;
@@ -60,8 +66,7 @@ export class PacienteRepository {
   async delete(idPaciente) {
     logger.info("[PACIENTE REPOSITORY]: Eliminando paciente: ", idPaciente);
     const pacienteEliminado = await this.#model.findByIdAndDelete(idPaciente)
-      .populate("idUsuario")
-      .populate("obraSocial");
+      .populate("idUsuario obraSocial plan");
     
     if (!pacienteEliminado) {
       logger.info("[PACIENTE REPOSITORY]: Paciente no encontrado para eliminar: ", idPaciente);
