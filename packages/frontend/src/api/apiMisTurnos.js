@@ -1,11 +1,10 @@
 import axiosInstance from "./axiosInstance.js";
 
-export const getTurnosProximosUsuario = async (idPaciente, paginacion) => {
+export const getTurnosProximosUsuario = async (paginacion) => {
     try {
         const filtros = {
             estados: ['CONFIRMADO', 'RESERVADO', 'PENDIENTECAMBIO'],
             fechaHoraInicio: new Date(),
-            pacienteId: idPaciente,
             ordenPorFecha: 'asc'
         }
         const params = Object.fromEntries(
@@ -20,11 +19,10 @@ export const getTurnosProximosUsuario = async (idPaciente, paginacion) => {
     }
 }
 
-export const getHistorialUsuario = async (idPaciente, paginacion) => {
+export const getHistorialUsuario = async (paginacion) => {
     try {
         const filtros = {
             estados: ['REALIZADO', 'CANCELADO'],
-            pacienteId: idPaciente,
             ordenPorFecha: 'asc'
         }
         const params = Object.fromEntries(
@@ -39,12 +37,10 @@ export const getHistorialUsuario = async (idPaciente, paginacion) => {
     }
 }
 
-export const cancelarTurno = async (idTurno, motivo, idUsuario) => {
+export const cancelarTurno = async (idTurno, motivo) => {
     try {
         const response = await axiosInstance.patch('/turno/' + idTurno + '/cambiar-estado', {
             nuevoEstado: 'CANCELADO',
-            //TODO: USAR AUTH
-            quien: idUsuario,
             motivo: motivo
         });
         return response.data;

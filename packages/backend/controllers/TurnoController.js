@@ -133,15 +133,7 @@ export class TurnoController {
         }
       }
 
-      if (req.user) {
-        if (req.user.rol === "MEDICO") {
-          filtros.medicoId = req.user.idEspecifico;
-        } else if (req.user.rol === "PACIENTE") {
-          filtros.pacienteId = req.user.idEspecifico;
-        }
-      }
-
-      logger.info("[TURNOS CONTROLLER]: Obteniendo turnos de usuario paginados: " + JSON.stringify(req.query));
+      logger.info("[TURNOS CONTROLLER]: Obteniendo turnos de usuario paginados: " + JSON.stringify(filtros));
       const resultado = await this.turnoService.obtenerTurnosDeUsuario(
         filtros,
         paginacion.numeroPagina,

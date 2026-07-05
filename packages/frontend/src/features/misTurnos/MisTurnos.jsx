@@ -11,7 +11,6 @@ import TurnoCardSkeleton from '../../components/mis-turnos/TurnoCardSkeleton';
 import EstadisticaTurnoCardSkeleton from '../../components/mis-turnos/EstadisticaTurnoCardSkeleton';
 import TurnoHistorialSkeleton from '../../components/mis-turnos/TurnoHistorialSkeleton';
 import { useNavigate } from 'react-router-dom';
-import Toast from '../../components/mis-turnos/Toast';
 import { mockRespuestaPaginada, historialTurnos } from '../../mockdata/turnos';
 import TituloSeccion from '../../shared/TituloSeccion/TituloSeccion';
 import { Button } from '@mui/material';
@@ -40,7 +39,6 @@ const StatsGrid = styled.div`
 `;
 
 export default function MisTurnos() {
-  const { user } = useAuth();
   const [counts, setCounts] = useState({
     RESERVADOS: 0,
     CONFIRMADOS: 0,
@@ -90,14 +88,10 @@ export default function MisTurnos() {
 
   const handleTurnoCancelado = async (turnoId, motivo) => {
     console.log('Turno cancelado:', turnoId, motivo);
-    const response = cancelarTurno(turnoId, motivo, user?.id);
+    const response = cancelarTurno(turnoId, motivo);
     setTurnosProximos(turnosProximos.filter((t) => t.id != turnoId));
 
-    setToastVisible(true);
-
-    setTimeout(() => {
-      setToastVisible(false);
-    }, 1500);
+    showAlert("Tu turno fue cancelado correctamente.", "success");
   };
 
   const cargarTodosLosContadores = async () => {
@@ -122,7 +116,7 @@ export default function MisTurnos() {
         'page': page,
         'limit': dataPaginacionProximos.limitePorPagina
       }
-      const proximosTurnos = await getTurnosProximosUsuario(user?.idEspecifico, paginacion);
+      const proximosTurnos = await getTurnosProximosUsuario(paginacion);
       setTurnosProximos(proximosTurnos.data);
       setDataPaginacionProximos(proximosTurnos.paginacion);
     } catch (error) {
@@ -136,7 +130,7 @@ export default function MisTurnos() {
         'page': page,
         'limit': dataPaginacionHistorial.limitePorPagina
       }
-      const historialPaginado = await getHistorialUsuario(user?.idEspecifico, paginacion);
+      const historialPaginado = await getHistorialUsuario(paginacion);
       setTurnosHistorial(historialPaginado.data);
       setDataPaginacionHistorial(historialPaginado.paginacion);
       setLoading(false)
@@ -173,8 +167,6 @@ export default function MisTurnos() {
           </p>
         </div>
       </StyledTarjetaWrapper>
-
-      <Toast visible={toastVisible} mensaje="Turno cancelado correctamente." />
 
       <StatsGrid>
         {loading
