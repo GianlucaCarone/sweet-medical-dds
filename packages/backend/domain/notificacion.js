@@ -11,7 +11,7 @@ export class Notificacion {
     leida = false;
 
     constructor({ destinatario, remitente, mensaje }) {
-        if (!remitente || !mensaje) {
+        if (!destinatario || !remitente || !mensaje) {
             throw new ErrorDatosObligatorios();
         }
         this.destinatario = destinatario;
