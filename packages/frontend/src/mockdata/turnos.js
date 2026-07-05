@@ -218,7 +218,7 @@ const proximosTurnos = [
       costo: 10000,
     },
     // Fecha en el futuro
-    fechaHora: '2026-08-15T11:00:00.000Z',
+    fechaHora: new Date(Date.now() + 30 * 60 * 1000).toISOString(),
     sede: {
       _id: '6a08ff8d198602a8b2bcfbd6',
       nombre: 'Hospital Británico',
