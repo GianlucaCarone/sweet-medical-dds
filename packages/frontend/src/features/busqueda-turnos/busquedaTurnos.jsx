@@ -1,5 +1,5 @@
 import React from 'react';
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import SidebarFiltros from '../../components/busqueda-turnos/sidebarFiltros.jsx';
 import TarjetaTurno from '../../components/busqueda-turnos/tarjetaTurno.jsx';
 import TarjetaTurnoSkeleton from '../../components/busqueda-turnos/tarjetaTurnoSkeleton.jsx';
@@ -11,11 +11,11 @@ import { useCart } from '../../context/CartContext.jsx';
 import TituloSeccion from "../../shared/TituloSeccion/TituloSeccion.jsx"
 import { useFilters } from '../../context/FilterContext.jsx';
 import { Typography } from '@mui/material';
+import TurnosEmptyState from '../../components/mis-turnos/TurnosEmptyState.jsx';
 import ModalLogin from "../../components/login/ModalLogin.jsx";
 import { useNavigate, Navigate } from "react-router-dom";
 
 export default function BusquedaTurnos() {
-    const { user } = useAuth();
     const { doctors, specialities, practices, branches, buildApiFilters } = useFilters();
     const { manejoCarritoDrawer, agregarAlCarrito } = useCart();
     const navigate = useNavigate();
@@ -24,9 +24,9 @@ export default function BusquedaTurnos() {
 
     const [turnos, setTurnos] = useState([]);
     const [turnGroups, setTurnGroups] = useState([]);
-    const [paginationData, setPaginationData] = useState({ limitePorPagina: 5 });
-    const [pageNumber, setPageNumber] = useState(1);
+    const [paginationData, setPaginationData] = useState({page: 1, limitePorPagina: 5 });
     const [sortBy, setSortBy] = useState("ordenPorFecha");
+    const yaCargado = useRef(false);
     const [loading, setLoading] = useState(true);
     const [noResults, setNoResults] = useState(false);
 
@@ -58,23 +58,19 @@ export default function BusquedaTurnos() {
         return Array.from(mapa.values());
     };
 
-    const fetchTurns = useCallback(async (filtersInput = {}, page = pageNumber, order = sortBy) => {
+    const fetchTurns = async (filtersInput = {}, page = paginationData.page, order = sortBy) => {
         setLoading(true);
         setTimeout(() => setLoading(false), 200);
         setNoResults(false);
 
-        const pageParam = { page };
+        const pageParam = { 
+            page: page 
+        };
         const completeFilters = {
             ...filtersInput,
             estado: 'DISPONIBLE',
-            orden: "asc"
+            [order]: "asc"
         };
-
-        if (order === "ordenPorCosto") {
-            completeFilters.ordenPorCosto = "asc";
-        } else if (order === "ordenPorFecha") {
-            completeFilters.ordenPorFecha = "asc";
-        }
 
         try {
             const response = await getTurnosDisponiblesFiltradoPaginado(completeFilters, pageParam);
@@ -87,7 +83,7 @@ export default function BusquedaTurnos() {
         } finally {
             setLoading(false);
         }
-    }, [sortBy, pageNumber]);
+    };
 
     const addTurnToCart = (id) => {
         if (!user) {
@@ -146,24 +142,19 @@ export default function BusquedaTurnos() {
                             />
                         ))}
                 </section>
-                {noResults
-                  ? <>
-                        <Typography variant="h6" fontWeight="bold">
-                            Lo sentimos, no contamos con turnos disponibles
-                        </Typography>
-                    </>
-                  : <Pagination
-                      count={paginationData.totalPaginas}
-                      color="primary"
-                      page={pageNumber}
-                      onChange={
-                        (e, page) => {
-                          setPageNumber(page);
-                          fetchTurns(buildApiFilters(), page);
-                        }
-                      }
-                    />
-                }
+                {noResults ? (<TurnosEmptyState
+                        titulo="No se encontró ningún turno"
+                        descripcion="Intentá cambiar tus filtros de busqueda"
+                        textoBoton={null}
+                        onClick={null}
+                        />) :
+                (<Pagination color="#137333"
+                    count={paginationData.totalPaginas}
+                    page={paginationData.page}
+                    onChange={(e, page) => {
+                        cargarTurnos(filtrosActualesRef.current, page);
+                    }}
+                />)}
             </main>
 
             <ModalLogin

@@ -78,17 +78,25 @@ const BtnVolverAPedir = styled.button`
 export default function TurnoHistorialCard({ turno }) {
   const navigate = useNavigate();
 
-  const transformarFecha = (fechaHora) => {
-    const opciones = { year: 'numeric', month: 'long', day: 'numeric' };
-    return new Date(fechaHora).toLocaleDateString('es-AR', opciones);
-  };
+  const formatoFechaHora = (isoString) => {
+  const fecha = new Date(isoString);
+  const texto = fecha.toLocaleString("es-AR", {
+    weekday: "short",
+    day: "2-digit",
+    month: "short",
+    hour: "2-digit",
+    minute: "2-digit",
+    timeZone: "UTC"
+  });
+  return texto.charAt(0).toUpperCase() + texto.slice(1);
+};
 
   const nombreMedico =
     typeof turno.medico === 'string' ? turno.medico : turno.medico?.nombre || 'Médico';
 
   const especialidad = turno.servicio?.nombre || turno.servicio?.tipo || 'Consulta';
 
-  const fecha = transformarFecha(turno.fechaHora);
+  const fecha = formatoFechaHora(turno.fechaHora);
 
   return (
     <CardBase>
@@ -104,7 +112,7 @@ export default function TurnoHistorialCard({ turno }) {
         <Box>
           <Typography variant='h3'>{nombreMedico}</Typography>
           <Typography>
-            {transformarFecha(fecha)} · {especialidad}
+            {fecha} · {especialidad}
           </Typography>
         </Box>
       </HistorialInfo>

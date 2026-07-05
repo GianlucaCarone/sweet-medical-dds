@@ -5,7 +5,7 @@ import CalendarMonthRoundedIcon from '@mui/icons-material/CalendarMonthRounded';
 import CheckCircleRoundedIcon from '@mui/icons-material/CheckCircleRounded';
 import CancelRoundedIcon from '@mui/icons-material/CancelRounded';
 import NotificationsRoundedIcon from '@mui/icons-material/NotificationsRounded';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import TurnosEmptyState from '../../components/mis-turnos/TurnosEmptyState';
 import TurnoCardSkeleton from '../../components/mis-turnos/TurnoCardSkeleton';
 import EstadisticaTurnoCardSkeleton from '../../components/mis-turnos/EstadisticaTurnoCardSkeleton';
@@ -15,9 +15,13 @@ import { mockRespuestaPaginada, historialTurnos } from '../../mockdata/turnos';
 import TituloSeccion from '../../shared/TituloSeccion/TituloSeccion';
 import { Button } from '@mui/material';
 import CardBase from '../../shared/CardBase/CardBase'
+import Pagination from '@mui/material/Pagination';
 // Contextos y hooks
 import { useAlert } from "../../context/AlertContext.jsx";
 import TurnoHistorialCard from '../../components/cards/TurnoHistorialCard';
+import { getTurnosProximosUsuario, getHistorialUsuario, cancelarTurno } from '../../api/apiMisTurnos.js';
+import { useAuth } from "../../context/AuthContext.jsx"
+import { getContadoresTurnos } from '../../api/turno.js';
 import styled from 'styled-components';
 
 const StyledTarjetaWrapper = styled(CardBase)`
@@ -35,69 +39,117 @@ const StatsGrid = styled.div`
 `;
 
 export default function MisTurnos() {
-  const [paginaProximos, setPaginaProximos] = useState(1);
-  const [paginaHistorial, setPaginaHistorial] = useState(1);
+  const [counts, setCounts] = useState({
+    RESERVADOS: 0,
+    CONFIRMADOS: 0,
+    PROPUESTAS: 0,
+    REALIZADOS: 0,
+    CANCELADOS: 0
+  });
+  const [dataPaginacionProximos, setDataPaginacionProximos] = useState({page: 1, limitePorPagina: 4})
+  const [dataPaginacionHistorial, setDataPaginacionHistorial] = useState({page: 1, limitePorPagina: 5});
   const [loading, setLoading] = useState(true);
+  const [toastVisible, setToastVisible] = useState(false);
+  const [turnosProximos, setTurnosProximos] = useState(mockRespuestaPaginada.data);
+  const [turnosHistorial, setTurnosHistorial] = useState(historialTurnos);
+  const yaCargado = useRef(false);
   const turnosPorPagina = 3;
   const navigate = useNavigate();
 
   // accionees alertaContext
   const {showAlert} = useAlert(); 
 
-  const totalPaginasProximos = Math.ceil(
-    mockRespuestaPaginada.paginacion.totalTurnos / turnosPorPagina
-  );
-
-  const proximosTurnosAMostrar = mockRespuestaPaginada.data;
-
   const estadisticasData = [
     {
-      id: 1,
-      numero: proximosTurnosAMostrar.length.toString(),
+      numero: counts.RESERVADOS,
       texto: 'Turnos próximos',
       tipo: 'azul',
       icono: <CalendarMonthRoundedIcon />,
     },
     {
-      id: 2,
-      numero: '1', // TODO: Traer del backend
+      numero: counts.REALIZADOS,
       texto: 'Turnos realizados',
       tipo: 'verde',
       icono: <CheckCircleRoundedIcon />,
     },
     {
-      id: 3,
-      numero: '1', // TODO: Traer del backend
+      numero: counts.CANCELADOS,
       texto: 'Cancelados',
       tipo: 'rojo',
       icono: <CancelRoundedIcon />,
     },
     {
-      id: 4,
-      numero: '2', // TODO: Traer del backend
-      texto: 'Notif. sin leer',
+      numero: counts.PROPUESTAS,
+      texto: 'Turnos pendientes de revision',
       tipo: 'naranja',
       icono: <NotificationsRoundedIcon />,
     },
   ];
 
-  const handleTurnoCancelado = (turnoId, motivo) => {
-    console.log("Turno cancelado:", turnoId, motivo);
+  const handleTurnoCancelado = async (turnoId, motivo) => {
+    console.log('Turno cancelado:', turnoId, motivo);
+    const response = cancelarTurno(turnoId, motivo);
+    setTurnosProximos(turnosProximos.filter((t) => t.id != turnoId));
 
     showAlert("Tu turno fue cancelado correctamente.", "success");
   };
 
-  const totalPaginasHistorial = Math.ceil(historialTurnos.length / turnosPorPagina);
+  const cargarTodosLosContadores = async () => {
+    try {
+      const response = await getContadoresTurnos();
+      const rawCounts = response.data || {};
+      setCounts({
+        RESERVADOS: rawCounts.RESERVADO || 0,
+        CONFIRMADOS: rawCounts.CONFIRMADO || 0,
+        PROPUESTAS: rawCounts.PENDIENTECAMBIO || 0,
+        REALIZADOS: rawCounts.REALIZADO || 0,
+        CANCELADOS: rawCounts.CANCELADO || 0
+      });
+    } catch (err) {
+      console.error("Error al obtener contadores de turnos:", err);
+    }
+  };
 
-  const historialTurnosAMostrar = historialTurnos.slice(
-    (paginaHistorial - 1) * turnosPorPagina,
-    paginaHistorial * turnosPorPagina
-  );
+  const cargarProximosTurnos = async (page = dataPaginacionProximos.page) => {
+    try {
+      const paginacion = {
+        'page': page,
+        'limit': dataPaginacionProximos.limitePorPagina
+      }
+      const proximosTurnos = await getTurnosProximosUsuario(paginacion);
+      setTurnosProximos(proximosTurnos.data);
+      setDataPaginacionProximos(proximosTurnos.paginacion);
+    } catch (error) {
+      console.error("Error cargando turnos proximos:", error);
+    }
+  }
 
-  useEffect(() => {
-    setTimeout(() => {
-      setLoading(false);
-    }, 500);
+  const cargarHistorialTurnos = async (page = dataPaginacionHistorial.page) => {
+    try {
+      const paginacion = {
+        'page': page,
+        'limit': dataPaginacionHistorial.limitePorPagina
+      }
+      const historialPaginado = await getHistorialUsuario(paginacion);
+      setTurnosHistorial(historialPaginado.data);
+      setDataPaginacionHistorial(historialPaginado.paginacion);
+      setLoading(false)
+    } catch (error) {
+      console.error("Error cargando historial:", error);
+    }
+  }
+
+  useEffect(() => { //renderizado inicial
+    if (yaCargado.current) return;
+    yaCargado.current = true;
+
+    const cargarTodo = async () => {
+      await cargarTodosLosContadores()
+      await cargarProximosTurnos();
+      await cargarHistorialTurnos();
+    };
+
+    cargarTodo();
   }, []);
 
   return (
@@ -110,7 +162,7 @@ export default function MisTurnos() {
           </span>
 
           <p>
-            Tenés <strong>{proximosTurnosAMostrar.length}</strong> turnos próximos programados.
+            Tenés <strong>{counts.CONFIRMADOS}</strong> turnos próximos programados confirmados.
             Desde acá podés consultar, reprogramar o cancelar tus citas médicas.
           </p>
         </div>
@@ -126,7 +178,6 @@ export default function MisTurnos() {
           : /* 4. Mapeamos nuestra data real */
             estadisticasData.map((stat) => (
               <EstadisticaTurnoCard
-                key={stat.id}
                 numero={stat.numero}
                 texto={stat.texto}
                 tipo={stat.tipo}
@@ -143,7 +194,7 @@ export default function MisTurnos() {
           <TurnoCardSkeleton />
           <TurnoCardSkeleton />
         </>
-      ) : proximosTurnosAMostrar.length === 0 ? (
+      ) : turnosProximos.length === 0 ? (
         <TurnosEmptyState
           titulo="No tenés turnos próximos"
           descripcion="Cuando reserves un turno, lo vas a ver listado en esta sección."
@@ -153,12 +204,12 @@ export default function MisTurnos() {
       ) : (
         <>
           <div className="turnos-lista">
-            {proximosTurnosAMostrar.map((turno) => (
+            {turnosProximos.map((turno) => (
               <CardTurno key={turno.id} turno={turno} onCancelar={handleTurnoCancelado} />
             ))}
           </div>
 
-          {totalPaginasProximos > 1 && (
+          {/*dataPaginacionProximos.totalPaginas > 1 && (
             <div className="paginacion-turnos">
               <Button
                 disabled={paginaProximos === 1}
@@ -168,17 +219,25 @@ export default function MisTurnos() {
               </Button>
 
               <span>
-                Página {paginaProximos} de {totalPaginasProximos}
+                Página {paginaProximos} de {dataPaginacionProximos.totalPaginas}
               </span>
 
               <Button
-                disabled={paginaProximos === totalPaginasProximos}
+                disabled={paginaProximos === dataPaginacionProximos.totalPaginas}
                 onClick={() => setPaginaProximos(paginaProximos + 1)}
               >
                 Siguiente
               </Button>
             </div>
-          )}
+          )*/}
+
+          <Pagination color="#137333"
+            count={dataPaginacionProximos.totalPaginas} 
+            page={dataPaginacionProximos.page}
+            onChange={(e, page) => {
+              cargarProximosTurnos(page);
+            }}
+          />
         </>
       )}
 
@@ -190,7 +249,7 @@ export default function MisTurnos() {
           <TurnoHistorialSkeleton />
           <TurnoHistorialSkeleton />
         </>
-      ) : historialTurnos.length === 0 ? (
+      ) : turnosHistorial.length === 0 ? (
         <div className="historial-empty-state">
           <span>📋</span>
           <p>No tenés turnos previos.</p>
@@ -198,32 +257,18 @@ export default function MisTurnos() {
       ) : (
         <>
           <div className="turnos-lista">
-            {historialTurnosAMostrar.map((turno) => (
+            {turnosHistorial.map((turno) => (
               <TurnoHistorialCard key={turno.id} turno={turno} />
             ))}
           </div>
 
-          {totalPaginasHistorial > 1 && (
-            <div className="paginacion-turnos">
-              <button
-                disabled={paginaHistorial === 1}
-                onClick={() => setPaginaHistorial(paginaHistorial - 1)}
-              >
-                Anterior
-              </button>
-
-              <span>
-                Página {paginaHistorial} de {totalPaginasHistorial}
-              </span>
-
-              <button
-                disabled={paginaHistorial === totalPaginasHistorial}
-                onClick={() => setPaginaHistorial(paginaHistorial + 1)}
-              >
-                Siguiente
-              </button>
-            </div>
-          )}
+          <Pagination color="#137333"
+            count={dataPaginacionHistorial.totalPaginas} 
+            page={dataPaginacionHistorial.page}
+            onChange={(e, page) => {
+                cargarHistorialTurnos(page);
+            }}
+          />
         </>
       )}
     </section>
