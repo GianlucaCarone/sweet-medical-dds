@@ -98,4 +98,9 @@ export class NotificacionRepository {
             totalNotificaciones
         };
     }*/
+
+    async countByDestinatarioIdAndLeido(idDestinatario, leida) {
+        logger.info("[NOTIFICACIONES REPOSITORY]: Contando notificaciones " + (leida ? "leidas" : "no leidas") + " del destinatario " + idDestinatario);
+        return await this.model.countDocuments({ destinatario: idDestinatario, leida: leida });
+    }
 }

@@ -1,21 +1,23 @@
 import axiosInstance from "./axiosInstance";
 
-export const getNotificacionesLeidas = async (idUsuario) => {
-  const response = await axiosInstance.get(`/usuarios/${idUsuario}/notificaciones/leidas`);
+export const getNotificacionesMe = async (leido = false, page = 1, limit = 5) => {
+  const response = await axiosInstance.get(
+    `/usuarios/me/notificaciones?leido=${leido}&page=${page}&limit=${limit}`
+  );
   return response.data;
 };
 
-export const getNotificacionesNoLeidas = async (idUsuario) => {
-  const response = await axiosInstance.get(`/usuarios/${idUsuario}/notificaciones/no-leidas`);
+export const getContadoresMe = async () => {
+  const response = await axiosInstance.get("/usuarios/me/notificaciones/contadores");
   return response.data;
 };
 
-export const marcarNotificacionComoLeida = async (idUsuario, idNotificacion) => {
-  const response = await axiosInstance.patch(`/usuarios/${idUsuario}/notificaciones/${idNotificacion}/leer`);
+export const marcarNotificacionComoLeida = async (idNotificacion) => {
+  const response = await axiosInstance.patch(`/usuarios/me/notificaciones/${idNotificacion}/leer`);
   return response.data;
 };
 
-export const marcarNotificacionComoNoLeida = async (idUsuario, idNotificacion) => {
-  const response = await axiosInstance.patch(`/usuarios/${idUsuario}/notificaciones/${idNotificacion}/desleer`);
+export const marcarNotificacionComoNoLeida = async (idNotificacion) => {
+  const response = await axiosInstance.patch(`/usuarios/me/notificaciones/${idNotificacion}/desleer`);
   return response.data;
 };

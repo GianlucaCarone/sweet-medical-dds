@@ -6,6 +6,7 @@ import MisTurnos from "./features/misTurnos/MisTurnos.jsx";
 import BusquedaTurnos from "./features/busqueda-turnos/busquedaTurnos.jsx";
 import PerfilMedico from "./features/perfil-medico/PerfilMedico.jsx";
 import MiPerfil from "./features/perfil-usuario/MiPerfil.jsx";
+import MisNotificaciones from "./features/notificaciones/MisNotificaciones.jsx";
 import { CartProvider } from './context/CartContext.jsx';
 import { AlertProvider } from "./context/AlertContext.jsx";
 import ProtectedRoute from "./components/auth/ProtectedRoute.jsx";
@@ -72,6 +73,16 @@ function App() {
                 element={
                   <ProtectedRoute allowedRoles={["MEDICO"]}>
                     <PerfilMedico />
+                  </ProtectedRoute>
+                }
+              />
+
+              {/* Mis Notificaciones: cualquier usuario logueado */}
+              <Route
+                path="mis-notificaciones"
+                element={
+                  <ProtectedRoute>
+                    <MisNotificaciones />
                   </ProtectedRoute>
                 }
               />

@@ -28,6 +28,9 @@ export default function notificacionRoutes(getController) {
     const router = express.Router({ mergeParams: true });
     const notificacionController = getController(NotificacionController);
 
+    router.route("/").get((req, res, next) => notificacionController.getNotificaciones(req, res, next));
+    router.route("/contadores").get((req, res, next) => notificacionController.getContadores(req, res, next));
+
     /**
      * @swagger
      * /usuarios/{idUsuario}/notificaciones/leidas:

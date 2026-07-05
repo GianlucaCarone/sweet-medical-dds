@@ -20,17 +20,23 @@ import CheckIcon from "@mui/icons-material/Check";
 import UndoIcon from '@mui/icons-material/Undo';
 import NotificationsOffIcon from "@mui/icons-material/NotificationsOff";
 import { useNotificaciones } from "../../context/NotificacionContext";
+import { useNavigate } from "react-router-dom";
 
 export default function CampanitaNotification() {
+  const navigate = useNavigate();
   const {
     notificacionesLeidas,
     notificacionesNoLeidas,
     cargando,
     cantidadNoLeidas,
     cantidadLeidas,
+    hasMoreNoLeidas,
+    hasMoreLeidas,
     marcarComoLeida,
     marcarComoNoLeida,
-    marcarTodasComoLeidas
+    marcarTodasComoLeidas,
+    cargarMasNoLeidas,
+    cargarMasLeidas
   } = useNotificaciones();
 
   const [anchorEl, setAnchorEl] = useState(null);
@@ -243,6 +249,18 @@ export default function CampanitaNotification() {
                   ))}
                 </List>
               )}
+              {hasMoreNoLeidas && (
+                <Box display="flex" justifyContent="center" p={1.5} borderTop={1} borderColor="divider">
+                  <Button
+                    size="small"
+                    onClick={cargarMasNoLeidas}
+                    disabled={cargando}
+                    sx={{ textTransform: "none", fontWeight: "bold" }}
+                  >
+                    {cargando ? "Cargando..." : "Cargar más"}
+                  </Button>
+                </Box>
+              )}
             </>
           )}
 
@@ -323,8 +341,44 @@ export default function CampanitaNotification() {
                   ))}
                 </List>
               )}
+              {hasMoreLeidas && (
+                <Box display="flex" justifyContent="center" p={1.5} borderTop={1} borderColor="divider">
+                  <Button
+                    size="small"
+                    onClick={cargarMasLeidas}
+                    disabled={cargando}
+                    sx={{ textTransform: "none", fontWeight: "bold" }}
+                  >
+                    {cargando ? "Cargando..." : "Cargar más"}
+                  </Button>
+                </Box>
+              )}
             </>
           )}
+        </Box>
+
+        {/* Pie del Popover */}
+        <Box
+          sx={{
+            p: 1.5,
+            borderTop: 1,
+            borderColor: "divider",
+            display: "flex",
+            justifyContent: "center",
+            bgcolor: "background.default"
+          }}
+        >
+          <Button
+            size="small"
+            fullWidth
+            onClick={() => {
+              navigate("/mis-notificaciones");
+              handleClose();
+            }}
+            sx={{ textTransform: "none", fontWeight: "bold" }}
+          >
+            Ver todas las notificaciones
+          </Button>
         </Box>
       </Popover>
     </>

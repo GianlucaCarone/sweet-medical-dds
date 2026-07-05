@@ -1,6 +1,7 @@
 import express from "express";
 import { UsuarioController } from "../controllers/UsuarioController.js";
 import notificacionRoutes from "./notificacionRoutes.js";
+import { authMiddleware } from "../middlewares/authMiddleware.js";
 
 /**
  * 
@@ -144,6 +145,7 @@ export default function usuarioRoutes(getController) {
      */
     .put((req, res, next) => usuarioController.update(req, res, next));
 
+  router.use("/me/notificaciones", authMiddleware, notificacionRoutes(getController));
   router.use("/:idUsuario/notificaciones", notificacionRoutes(getController));
 
   return router;

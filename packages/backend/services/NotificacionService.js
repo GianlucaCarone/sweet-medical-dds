@@ -98,11 +98,19 @@ export class NotificacionService {
         };
     }*/
 
-    async leer(idNotificacion) {
+    async leer(idNotificacion, idUsuarioAutenticado) {
         logger.info("[NOTIFICACIONES SERVICE]: Obteniendo los datos necesarios para leer la notificacion");
         const notificacion = await this.notificacionRepository.getById(idNotificacion);
 
         if (!notificacion) throw new NotFoundError("No se encontro la notificacion con el id " + idNotificacion);
+
+        if (idUsuarioAutenticado) {
+            const destinatarioIdStr = notificacion.destinatario?._id?.toString() || notificacion.destinatario?.toString();
+            if (destinatarioIdStr !== idUsuarioAutenticado.toString()) {
+                throw new NotFoundError("No se encontro la notificacion con el id " + idNotificacion);
+            }
+        }
+
         logger.info("[NOTIFICACIONES SERVICE]: Leyendo notificacion: ", idNotificacion);
         if (notificacion.leida === true) return this.toDto(notificacion); //de ultima que tire BadRequestError
         notificacion.marcarComoLeida();
@@ -112,11 +120,19 @@ export class NotificacionService {
         return this.toDto(notificacionGuardada);
     }
 
-    async desleer(idNotificacion) {
+    async desleer(idNotificacion, idUsuarioAutenticado) {
         logger.info("[NOTIFICACIONES SERVICE]: Obteniendo los datos necesarios para desleer la notificacion");
         const notificacion = await this.notificacionRepository.getById(idNotificacion);
 
         if (!notificacion) throw new NotFoundError("No se encontro la notificacion con el id " + idNotificacion);
+
+        if (idUsuarioAutenticado) {
+            const destinatarioIdStr = notificacion.destinatario?._id?.toString() || notificacion.destinatario?.toString();
+            if (destinatarioIdStr !== idUsuarioAutenticado.toString()) {
+                throw new NotFoundError("No se encontro la notificacion con el id " + idNotificacion);
+            }
+        }
+
         logger.info("[NOTIFICACIONES SERVICE]: Marcando notificacion como no leida: ", idNotificacion);
         if (notificacion.leida === false) return this.toDto(notificacion);
         notificacion.marcarComoNoLeida();
@@ -124,6 +140,15 @@ export class NotificacionService {
         logger.info("[NOTIFICACIONES SERVICE]: Notificacion marcada como no leida: ", notificacionGuardada);
 
         return this.toDto(notificacionGuardada);
+    }
+
+    async getContadores(idDestinatario) {
+        logger.info("[NOTIFICACIONES SERVICE]: Obteniendo contadores de notificaciones del usuario " + idDestinatario);
+        const [leidas, noLeidas] = await Promise.all([
+            this.notificacionRepository.countByDestinatarioIdAndLeido(idDestinatario, true),
+            this.notificacionRepository.countByDestinatarioIdAndLeido(idDestinatario, false)
+        ]);
+        return { leidas, noLeidas };
     }
 
     async setUsuarioSistema(usuarioSistemaId) {
