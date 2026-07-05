@@ -166,19 +166,14 @@ export default function turnoRoutes(getController) {
          */
         .get(authMiddleware, (req, res, next) => turnoController.findAllPaginatedByUsuario(req, res, next));
 
-    router.route("/:id/asignar")
+    router.route("/asignar")
         /**
          * @swagger
-         * /turno/{id}/asignar:
+         * /turno/asignar:
          *   put:
-         *     summary: Asignar turno a un paciente
+         *     summary: Asignar turnos a un paciente
          *     tags: [Turnos]
          *     parameters:
-         *       - in: path
-         *         name: id
-         *         required: true
-         *         schema:
-         *           $ref: '#/components/schemas/ObjectId'
          *     requestBody:
          *       required: true
          *       content:
@@ -199,7 +194,7 @@ export default function turnoRoutes(getController) {
          *       400:
          *         $ref: '#/components/responses/E400'
          */
-        .put((req, res, next) => turnoController.asignarTurno(req, res, next));
+        .put((req, res, next) => turnoController.asignarTurnos(req, res, next));
 
     router.route("/:id/cambiar-estado")
         /**
@@ -312,7 +307,7 @@ export default function turnoRoutes(getController) {
     router.route("/:estadoId")
         /**
          * @swagger
-         * /turno/{estado}:
+         * /turno/estado/{estado}:
          *   get:
          *     summary: Buscar turnos por estado
          *     tags: [Turnos]
@@ -399,5 +394,6 @@ export default function turnoRoutes(getController) {
          *         $ref: '#/components/responses/E400'
          */
         .patch((req, res, next) => turnoController.update(req, res, next));
+
     return router;
 }

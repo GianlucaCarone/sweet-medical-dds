@@ -159,30 +159,7 @@ export default function useMedicoProfile(medicoInicial, triggerConfirm, setAlert
     );
   };
 
-  const handleGuardarDatosPersonales = async (nuevosDatos) => {
-    if (Number(nuevosDatos.honorario) <= 0) {
-      setAlertConfig({
-        isOpen: true,
-        title: 'Honorario Inválido',
-        message: 'El honorario base debe ser mayor a 0.',
-        type: 'error'
-      });
-      return false;
-    }
-    try {
-      const payload = {
-        nombre: nuevosDatos.nombre,
-        honorario: Number(nuevosDatos.honorario)
-      };
-      const resp = await updateMedico(payload);
-      actualizarEstado(resp);
-      if (showAlert) showAlert('Datos personales actualizados con éxito.', 'success');
-      return true;
-    } catch (e) {
-      handleError(e, "No se pudieron actualizar los datos personales.");
-      return false;
-    }
-  };
+
 
   return {
     medico,
@@ -192,7 +169,6 @@ export default function useMedicoProfile(medicoInicial, triggerConfirm, setAlert
     handleAgregarDisponibilidad,
     handleEliminarDisponibilidad,
     handleAsociarSede,
-    handleDesvincularSede,
-    handleGuardarDatosPersonales
+    handleDesvincularSede
   };
 }

@@ -77,6 +77,10 @@ export default function usuarioRoutes(getController) {
     .post((req, res, next) => usuarioController.create(req, res, next));
 
   router
+    .route("/me")
+    .put(authMiddleware, (req, res, next) => usuarioController.updateMe(req, res, next));
+
+  router
     .route("/:id")
     /**
      * @swagger

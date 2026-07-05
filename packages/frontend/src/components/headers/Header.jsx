@@ -72,6 +72,8 @@ const Header = () => {
               src="logo.jpg"
               alt="Logo del Centro Médico"
               className="brand-logo"
+              width="36"
+              height="36"
             />
             <span className="brand-name">Sweet Medical</span>
           </Link>
