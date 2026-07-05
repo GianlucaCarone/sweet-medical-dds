@@ -11,7 +11,6 @@ import TurnoCardSkeleton from '../../components/mis-turnos/TurnoCardSkeleton';
 import EstadisticaTurnoCardSkeleton from '../../components/mis-turnos/EstadisticaTurnoCardSkeleton';
 import TurnoHistorialSkeleton from '../../components/mis-turnos/TurnoHistorialSkeleton';
 import { useNavigate } from 'react-router-dom';
-import Toast from '../../components/mis-turnos/Toast';
 import { mockRespuestaPaginada, historialTurnos } from '../../mockdata/turnos';
 import TituloSeccion from '../../shared/TituloSeccion/TituloSeccion';
 import { Button } from '@mui/material';
@@ -39,7 +38,6 @@ export default function MisTurnos() {
   const [paginaProximos, setPaginaProximos] = useState(1);
   const [paginaHistorial, setPaginaHistorial] = useState(1);
   const [loading, setLoading] = useState(true);
-  const [toastVisible, setToastVisible] = useState(false);
   const turnosPorPagina = 3;
   const navigate = useNavigate();
 
@@ -84,13 +82,9 @@ export default function MisTurnos() {
   ];
 
   const handleTurnoCancelado = (turnoId, motivo) => {
-    console.log('Turno cancelado:', turnoId, motivo);
+    console.log("Turno cancelado:", turnoId, motivo);
 
-    setToastVisible(true);
-
-    setTimeout(() => {
-      setToastVisible(false);
-    }, 1500);
+    showAlert("Turno cancelado correctamente.", "success");
   };
 
   const totalPaginasHistorial = Math.ceil(historialTurnos.length / turnosPorPagina);
@@ -121,8 +115,6 @@ export default function MisTurnos() {
           </p>
         </div>
       </StyledTarjetaWrapper>
-
-      <Toast visible={toastVisible} mensaje="Turno cancelado correctamente." />
 
       <StatsGrid>
         {loading
