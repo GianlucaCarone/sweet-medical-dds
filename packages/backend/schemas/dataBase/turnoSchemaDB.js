@@ -40,6 +40,10 @@ const turnoSchema = new mongoose.Schema({
         type: Number,
         required: true,
     },
+    estadoCobertura: {
+        type: String,
+        required: false
+    },
     eliminado: {
         type: Boolean,
         required: true,

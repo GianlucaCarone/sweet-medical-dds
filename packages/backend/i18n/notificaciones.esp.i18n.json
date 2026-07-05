@@ -8,5 +8,5 @@
     "CANCELADO": "El turno fue cancelado por el paciente {{paciente}} {{tipoServicio}} {{servicio}} en la sede {{sede}}",
     "CONFIRMADO": "El turno fue confirmado por el medico {{medico}} {{tipoServicio}} {{servicio}} en la sede {{sede}}"
   },
-  "recordatorio": "`Hola, señor/a {{destinatario}}! Su turno {{tipoServicio}} {{servicio}} en la sede {{sede}} es el día de mañana."
+  "recordatorio": "Hola, señor/a {{destinatario}}! Su turno {{tipoServicio}} {{servicio}} en la sede {{sede}} es el día de mañana."
 }

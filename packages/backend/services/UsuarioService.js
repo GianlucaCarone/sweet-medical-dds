@@ -162,7 +162,20 @@ export class UsuarioService {
     }
     usuarioExistente.nombreUsuario =
       usuario.nombreUsuario || usuarioExistente.nombreUsuario;
-    usuarioExistente.password = usuario.password || usuarioExistente.password;
+    
+    if (usuario.password) {
+      try {
+        usuarioExistente.password = await argon2.hash(usuario.password, {
+          type: argon2.argon2id,
+          memoryCost: 2 ** 16,
+          timeCost: 3,
+          parallelism: 4,
+        });
+      } catch (error) {
+        logger.error("[USUARIO SERVICE]: Error al hashear la contraseña en update: ", error);
+        throw new Error("Error al procesar la contraseña");
+      }
+    }
 
     const usuarioActualizado =
       await this.usuarioRepository.update(usuarioExistente);

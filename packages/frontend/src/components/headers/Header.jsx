@@ -10,6 +10,7 @@ import ModalRegistro from "../auth/ModalRegistro.jsx";
 import { useAuth } from "../../context/AuthContext.jsx";
 import { useCart } from '../../context/CartContext.jsx';
 import { useThemeContext } from '../../context/ThemeContext.jsx';
+import CampanitaNotification from "./CampanitaNotification.jsx";
 import {
   Drawer,
   Badge,
@@ -71,6 +72,8 @@ const Header = () => {
               src="logo.jpg"
               alt="Logo del Centro Médico"
               className="brand-logo"
+              width="36"
+              height="36"
             />
             <span className="brand-name">Sweet Medical</span>
           </Link>
@@ -93,6 +96,8 @@ const Header = () => {
               <ShoppingCartIcon sx={{ color: "primary" }} />
             </Badge>
           </IconButton>
+
+          {user && <CampanitaNotification />}
 
           {user ? (
             <MenuUsuario

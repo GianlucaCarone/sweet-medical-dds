@@ -55,22 +55,19 @@ export class TurnoController {
     }
   };
 
-  asignarTurno = async (req, res, next) => {
+  asignarTurnos = async (req, res, next) => {
     try {
-      const { id } = idParamsSchema.parse(req.params);
       const turnoData = bodyAsignarTurnoSchema.parse(req.body);
+      const quien = req.user.idEspecifico;
 
-      logger.info(
-        `[TURNOS CONTROLLER]: Asignando turno a paciente: ${turnoData.pacienteId}`,
-      );
-      const turnoAsignado = await this.turnoService.asignarTurno(
-        id,
-        turnoData.pacienteId,
-        turnoData.costoTurno,
+      logger.info(`[TURNOS CONTROLLER]: Asignando turno a paciente: ${quien}`);
+      const turnosAsignados = await this.turnoService.asignarTurnos(
+        turnoData.idsTurnos,
+        quien
       );
 
       logger.info("[TURNOS CONTROLLER]: Turno asignado con éxito");
-      return res.status(200).json({ status: "success", data: turnoAsignado });
+      return res.status(200).json({ status: "success", data: turnosAsignados });
     } catch (error) {
       logger.error("[TURNOS CONTROLLER]: Error al asignar paciente al turno");
       return next(error);
@@ -106,12 +103,10 @@ export class TurnoController {
         filtros,
       );
 
-      logger.info(
-        `[TURNOS CONTROLLER]: Turnos obtenidos: ${resultado.turnosConCobertura.length}`,
-      );
+      logger.info(`[TURNOS CONTROLLER]: Turnos obtenidos: ${resultado.turnosFinal.length}`);
       res.status(200).json({
         status: "success",
-        data: resultado.turnosConCobertura,
+        data: resultado.turnosFinal,
         paginacion: {
           numeroPagina: resultado.numeroPagina,
           limitePorPagina: resultado.limitePorPagina,
@@ -138,10 +133,7 @@ export class TurnoController {
         }
       }
 
-      logger.info(
-        "[TURNOS CONTROLLER]: Obteniendo turnos de usuario paginados: ",
-        filtros,
-      );
+      logger.info("[TURNOS CONTROLLER]: Obteniendo turnos de usuario paginados: " + JSON.stringify(filtros));
       const resultado = await this.turnoService.obtenerTurnosDeUsuario(
         filtros,
         paginacion.numeroPagina,
@@ -221,6 +213,7 @@ export class TurnoController {
   solicitarCambioFecha = async (req, res, next) => {
     try {
       const id = idParamsSchema.parse(req.params).id;
+      logger.info("[TC]: solicitando cambio de fecha con: " + JSON.stringify(req.body));
       const { nuevaFechaHora } = bodySolicitarCambioFechaSchema.parse(req.body);
       const usuarioId = req.user.idEspecifico;
 
@@ -238,7 +231,7 @@ export class TurnoController {
         .status(200)
         .json({ status: "success", data: turnoActualizado });
     } catch (error) {
-      logger.error("[TURNOS CONTROLLER]: Error al solicitar cambio de fecha");
+      logger.error("[TURNOS CONTROLLER]: Error al solicitar cambio de fecha: " + error.message);
       return next(error);
     }
   };
@@ -306,17 +299,14 @@ export class TurnoController {
     if (query.estado !== undefined) {
       filtros.estado = query.estado;
     }
+    if (query.estados !== undefined) {
+      // Con claves repetidas (estados=A&estados=B) un solo valor llega como
+      // string; lo normalizamos a array para que el schema (z.array) valide bien.
+      filtros.estados = Array.isArray(query.estados) ? query.estados : [query.estados];
+    }
     if (query.servicioId !== undefined) {
       filtros.servicioId = query.servicioId;
     }
-    /* en el repo espera servicio id, no especialidad o practica (el turno tiene servicio)
-    if (query.especialidadId !== undefined) {
-      filtros.especialidadId = query.especialidadId;
-    }
-    if (query.practicaId !== undefined) {
-      filtros.practicaId = query.practicaId;
-    }
-    */
     if (query.sedeId !== undefined) {
       filtros.sedeId = query.sedeId;
     }
