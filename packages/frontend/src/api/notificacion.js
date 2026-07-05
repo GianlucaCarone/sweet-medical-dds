@@ -21,3 +21,8 @@ export const marcarNotificacionComoNoLeida = async (idNotificacion) => {
   const response = await axiosInstance.patch(`/usuarios/me/notificaciones/${idNotificacion}/desleer`);
   return response.data;
 };
+
+export const marcarTodasLasNotificacionesComoLeidas = async () => {
+  const response = await axiosInstance.patch("/usuarios/me/notificaciones/leer-todas");
+  return response.data;
+};

@@ -4,7 +4,8 @@ import {
   getNotificacionesMe,
   getContadoresMe,
   marcarNotificacionComoLeida,
-  marcarNotificacionComoNoLeida
+  marcarNotificacionComoNoLeida,
+  marcarTodasLasNotificacionesComoLeidas
 } from "../api/notificacion";
 
 const NotificacionContext = createContext();
@@ -115,23 +116,49 @@ export const NotificacionProvider = ({ children }) => {
     }
   }, [user, cantidadNoLeidas]);
 
+  const refrescarNotificacionesSilenciosamente = useCallback(async () => {
+    if (!user) return;
+    try {
+      const [contadoresRes, noLeidasRes, leidasRes] = await Promise.all([
+        getContadoresMe(),
+        getNotificacionesMe(false, 1, 5),
+        getNotificacionesMe(true, 1, 5)
+      ]);
+      setCantidadNoLeidas(contadoresRes.data.noLeidas);
+      setCantidadLeidas(contadoresRes.data.leidas);
+      setNotificacionesNoLeidas(noLeidasRes.data || []);
+      setPageNoLeidas(1);
+      setHasMoreNoLeidas(noLeidasRes.page < noLeidasRes.totalPages);
+      setNotificacionesLeidas(leidasRes.data || []);
+      setPageLeidas(1);
+      setHasMoreLeidas(leidasRes.page < leidasRes.totalPages);
+    } catch (error) {
+      console.error("[NotificacionContext]: Error en refresco silencioso", error);
+    }
+  }, [user]);
+
   // Marcar una notificación individual como leída
   const marcarComoLeida = async (idNotificacion) => {
     if (!user) return;
     const targetNotif = notificacionesNoLeidas.find((n) => n.id === idNotificacion);
-    if (!targetNotif) return;
 
-    // Modificación optimista
-    setNotificacionesNoLeidas((prev) => prev.filter((n) => n.id !== idNotificacion));
-    setNotificacionesLeidas((prev) => [
-      { ...targetNotif, leida: true, fechaHoraLeida: new Date().toISOString() },
-      ...prev
-    ]);
+    // Modificación optimista si está en la lista de la campanita
+    if (targetNotif) {
+      setNotificacionesNoLeidas((prev) => prev.filter((n) => n.id !== idNotificacion));
+      setNotificacionesLeidas((prev) => [
+        { ...targetNotif, leida: true, fechaHoraLeida: new Date().toISOString() },
+        ...prev
+      ]);
+    }
     setCantidadNoLeidas((prev) => Math.max(0, prev - 1));
     setCantidadLeidas((prev) => prev + 1);
 
     try {
       await marcarNotificacionComoLeida(idNotificacion);
+      if (!targetNotif) {
+        // Refresco silencioso para sincronizar de fondo
+        refrescarNotificacionesSilenciosamente();
+      }
     } catch (error) {
       console.error("[NotificacionContext]: Error al marcar como leída", error);
       obtenerNotificaciones();
@@ -142,19 +169,23 @@ export const NotificacionProvider = ({ children }) => {
   const marcarComoNoLeida = async (idNotificacion) => {
     if (!user) return;
     const targetNotif = notificacionesLeidas.find((n) => n.id === idNotificacion);
-    if (!targetNotif) return;
 
-    // Modificación optimista
-    setNotificacionesLeidas((prev) => prev.filter((n) => n.id !== idNotificacion));
-    setNotificacionesNoLeidas((prev) => [
-      { ...targetNotif, leida: false, fechaHoraLeida: null },
-      ...prev
-    ]);
+    // Modificación optimista si está en la lista de la campanita
+    if (targetNotif) {
+      setNotificacionesLeidas((prev) => prev.filter((n) => n.id !== idNotificacion));
+      setNotificacionesNoLeidas((prev) => [
+        { ...targetNotif, leida: false, fechaHoraLeida: null },
+        ...prev
+      ]);
+    }
     setCantidadLeidas((prev) => Math.max(0, prev - 1));
     setCantidadNoLeidas((prev) => prev + 1);
 
     try {
       await marcarNotificacionComoNoLeida(idNotificacion);
+      if (!targetNotif) {
+        refrescarNotificacionesSilenciosamente();
+      }
     } catch (error) {
       console.error("[NotificacionContext]: Error al marcar como no leída", error);
       obtenerNotificaciones();
@@ -163,20 +194,16 @@ export const NotificacionProvider = ({ children }) => {
 
   // Marcar todas las notificaciones pendientes como leídas
   const marcarTodasComoLeidas = async () => {
-    if (!user || notificacionesNoLeidas.length === 0) return;
-    const noLeidasClon = [...notificacionesNoLeidas];
+    if (!user) return;
 
     // Modificación optimista
     setNotificacionesNoLeidas([]);
-    setNotificacionesLeidas((prev) => [
-      ...noLeidasClon.map((n) => ({ ...n, leida: true, fechaHoraLeida: new Date().toISOString() })),
-      ...prev
-    ]);
     setCantidadLeidas((prev) => prev + cantidadNoLeidas);
     setCantidadNoLeidas(0);
 
     try {
-      await Promise.all(noLeidasClon.map((n) => marcarNotificacionComoLeida(n.id)));
+      await marcarTodasLasNotificacionesComoLeidas();
+      refrescarNotificacionesSilenciosamente();
     } catch (error) {
       console.error("[NotificacionContext]: Error al marcar todas como leídas", error);
       obtenerNotificaciones();

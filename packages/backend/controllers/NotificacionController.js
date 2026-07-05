@@ -160,6 +160,20 @@ export class NotificacionController {
         }
     };
 
+    marcarTodasComoLeidas = async (req, res, next) => {
+        try {
+            const idUsuario = req.user.id;
+            logger.info("[NOTIFICACIONES CONTROLLER]: Marcando todas las notificaciones como leídas para el usuario: ", idUsuario);
+            await this.notificacionService.marcarTodasComoLeidas(idUsuario);
+            res.status(200).json({
+                status: "success",
+                message: "Todas las notificaciones fueron marcadas como leídas exitosamente."
+            });
+        } catch (error) {
+            next(error);
+        }
+    };
+
     /*getNotificacionesPaginadas = async (req, res, next) => {
         try {
             const paginacion = this.extraerPaginacion(req.query);

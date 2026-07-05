@@ -7,27 +7,22 @@ import {
   Tabs,
   Tab,
   List,
-  ListItem,
-  ListItemText,
-  IconButton,
-  Tooltip,
   Divider,
   Pagination,
   Button,
-  CircularProgress,
+  Skeleton,
   Fade
 } from "@mui/material";
-import CheckIcon from "@mui/icons-material/Check";
-import RestoreIcon from "@mui/icons-material/Restore";
 import NotificationsOffIcon from "@mui/icons-material/NotificationsOff";
 import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
 import { useNavigate } from "react-router-dom";
 import { useNotificaciones } from "../../context/NotificacionContext";
 import { getNotificacionesMe } from "../../api/notificacion";
+import ItemNotificacion from "../../components/headers/ItemNotificacion";
 
 export default function MisNotificaciones() {
   const navigate = useNavigate();
-  const { marcarComoLeida, marcarComoNoLeida, marcarTodasComoLeidas, obtenerNotificaciones } = useNotificaciones();
+  const { marcarComoLeida, marcarComoNoLeida, marcarTodasComoLeidas, obtenerNotificaciones, cantidadNoLeidas } = useNotificaciones();
 
   const [tabValue, setTabValue] = useState(0);
   const [cargando, setCargando] = useState(false);
@@ -84,29 +79,13 @@ export default function MisNotificaciones() {
     cargarHistorial(tabValue === 1, 1);
   };
 
-  const formatearFecha = (fechaStr) => {
-    if (!fechaStr) return "";
-    try {
-      const fecha = new Date(fechaStr);
-      return fecha.toLocaleString("es-AR", {
-        day: "2-digit",
-        month: "2-digit",
-        year: "numeric",
-        hour: "2-digit",
-        minute: "2-digit",
-      });
-    } catch {
-      return fechaStr;
-    }
-  };
-
   return (
     <Container maxWidth="md" sx={{ mt: 4, mb: 4 }}>
       {/* Botón de volver */}
       <Button
         startIcon={<KeyboardBackspaceIcon />}
         onClick={() => navigate(-1)}
-        sx={{ mb: 2, textTransform: "none", fontWeight: "bold" }}
+        sx={{ mb: 2, textTransform: 'none', fontWeight: 'bold' }}
       >
         Volver
       </Button>
@@ -116,21 +95,21 @@ export default function MisNotificaciones() {
           elevation={0}
           sx={{
             p: 4,
-            borderRadius: "16px",
-            boxShadow: "0px 10px 30px rgba(0, 0, 0, 0.08)",
-            border: "1px solid",
-            borderColor: "divider",
+            borderRadius: '16px',
+            boxShadow: '0px 10px 30px rgba(0, 0, 0, 0.08)',
+            border: '1px solid',
+            borderColor: 'divider',
           }}
         >
           {/* Cabecera */}
           <Box
             sx={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
               mb: 3,
-              flexWrap: "wrap",
-              gap: 2
+              flexWrap: 'wrap',
+              gap: 2,
             }}
           >
             <Box>
@@ -147,7 +126,7 @@ export default function MisNotificaciones() {
                 variant="outlined"
                 color="primary"
                 onClick={handleMarcarTodas}
-                sx={{ textTransform: "none", borderRadius: "20px", fontWeight: "bold" }}
+                sx={{ textTransform: 'none', borderRadius: '20px', fontWeight: 'bold' }}
               >
                 Marcar todo como leído
               </Button>
@@ -155,24 +134,32 @@ export default function MisNotificaciones() {
           </Box>
 
           {/* Pestañas */}
-          <Box sx={{ borderBottom: 1, borderColor: "divider", mb: 3 }}>
+          <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 3 }}>
             <Tabs value={tabValue} onChange={handleTabChange} aria-label="historial tabs">
               <Tab
-                label={`Sin leer ${tabValue === 0 && totalItems > 0 ? `(${totalItems})` : ""}`}
-                sx={{ textTransform: "none", fontWeight: "bold", fontSize: "16px" }}
+                label={cantidadNoLeidas > 0 ? `Sin leer (${cantidadNoLeidas})` : "Sin leer"}
+                sx={{ textTransform: 'none', fontWeight: 'bold', fontSize: '16px' }}
               />
               <Tab
-                label={`Leídas ${tabValue === 1 && totalItems > 0 ? `(${totalItems})` : ""}`}
-                sx={{ textTransform: "none", fontWeight: "bold", fontSize: "16px" }}
+                label="Leídas"
+                sx={{ textTransform: 'none', fontWeight: 'bold', fontSize: '16px' }}
               />
             </Tabs>
           </Box>
 
           {/* Listado */}
-          <Box sx={{ minHeight: 350, display: "flex", flexDirection: "column" }}>
+          <Box sx={{ minHeight: 350, display: 'flex', flexDirection: 'column' }}>
             {cargando ? (
-              <Box display="flex" justifyContent="center" alignItems="center" flexGrow={1}>
-                <CircularProgress />
+              <Box sx={{ width: '100%', py: 2 }}>
+                {[1, 2, 3, 4].map((i) => (
+                  <Box key={i} sx={{ mb: 2.5, p: 2.5, border: '1px solid', borderColor: 'divider', borderRadius: '8px' }}>
+                    <Skeleton variant="text" width="80%" height={22} />
+                    <Box sx={{ display: "flex", justifyContent: "space-between", mt: 1.5 }}>
+                      <Skeleton variant="text" width="40%" height={16} />
+                      <Skeleton variant="text" width="20%" height={16} />
+                    </Box>
+                  </Box>
+                ))}
               </Box>
             ) : notificaciones.length === 0 ? (
               <Box
@@ -183,14 +170,16 @@ export default function MisNotificaciones() {
                 flexGrow={1}
                 py={6}
               >
-                <NotificationsOffIcon sx={{ fontSize: 60, color: "text.secondary", mb: 2, opacity: 0.5 }} />
+                <NotificationsOffIcon
+                  sx={{ fontSize: 60, color: 'text.secondary', mb: 2, opacity: 0.5 }}
+                />
                 <Typography variant="h6" color="text.secondary" fontWeight="600">
                   Historial vacío
                 </Typography>
                 <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
                   {tabValue === 0
-                    ? "No tienes notificaciones sin leer."
-                    : "No tienes notificaciones leídas registradas."}
+                    ? 'No tienes notificaciones sin leer.'
+                    : 'No tienes notificaciones leídas registradas.'}
                 </Typography>
               </Box>
             ) : (
@@ -198,89 +187,12 @@ export default function MisNotificaciones() {
                 <List disablePadding>
                   {notificaciones.map((n, index) => (
                     <React.Fragment key={n.id || index}>
-                      <ListItem
-                        sx={{
-                          p: 2.5,
-                          borderRadius: "8px",
-                          mb: 1.5,
-                          bgcolor: tabValue === 0 ? "action.hover" : "transparent",
-                          border: "1px solid",
-                          borderColor: tabValue === 0 ? "action.selected" : "divider",
-                          transition: "all 0.2s",
-                          "&:hover": {
-                            boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.04)",
-                            bgcolor: tabValue === 0 ? "action.selected" : "action.hover"
-                          },
-                          pr: 8
-                        }}
-                      >
-                        <ListItemText
-                          primary={
-                            <Typography
-                              variant="body1"
-                              fontWeight={tabValue === 0 ? "600" : "400"}
-                              color="text.primary"
-                            >
-                              {n.mensaje}
-                            </Typography>
-                          }
-                          secondary={
-                            <Box
-                              sx={{
-                                display: "flex",
-                                justifyContent: "space-between",
-                                mt: 1,
-                                flexWrap: "wrap",
-                                gap: 1
-                              }}
-                            >
-                              <Typography variant="body2" color="text.secondary">
-                                Remitente: <strong>{n.remitente}</strong>
-                              </Typography>
-                              <Typography variant="body2" color="text.secondary">
-                                {formatearFecha(n.fechaHoraCreacion)}
-                              </Typography>
-                            </Box>
-                          }
-                        />
-
-                        {tabValue === 0 ? (
-                          <Tooltip title="Marcar como leída">
-                            <IconButton
-                              onClick={() => handleMarcarLeida(n.id)}
-                              sx={{
-                                position: "absolute",
-                                right: 16,
-                                top: "50%",
-                                transform: "translateY(-50%)",
-                                color: "success.main",
-                                bgcolor: "success.light",
-                                opacity: 0.9,
-                                "&:hover": { bgcolor: "success.light", opacity: 1 },
-                              }}
-                            >
-                              <CheckIcon />
-                            </IconButton>
-                          </Tooltip>
-                        ) : (
-                          <Tooltip title="Marcar como no leída">
-                            <IconButton
-                              onClick={() => handleMarcarNoLeida(n.id)}
-                              sx={{
-                                position: "absolute",
-                                right: 16,
-                                top: "50%",
-                                transform: "translateY(-50%)",
-                                color: "text.secondary",
-                                bgcolor: "action.disabledBackground",
-                                "&:hover": { bgcolor: "action.focus" },
-                              }}
-                            >
-                              <RestoreIcon />
-                            </IconButton>
-                          </Tooltip>
-                        )}
-                      </ListItem>
+                      <ItemNotificacion
+                        notificacion={n}
+                        onMarcarLeida={handleMarcarLeida}
+                        onMarcarNoLeida={handleMarcarNoLeida}
+                        pantallaCompleta={true}
+                      />
                     </React.Fragment>
                   ))}
                 </List>

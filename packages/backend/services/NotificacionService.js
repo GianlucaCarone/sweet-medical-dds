@@ -151,6 +151,11 @@ export class NotificacionService {
         return { leidas, noLeidas };
     }
 
+    async marcarTodasComoLeidas(idUsuario) {
+        logger.info("[NOTIFICACIONES SERVICE]: Marcando todas las notificaciones como leídas para el usuario " + idUsuario);
+        return await this.notificacionRepository.marcarTodasComoLeidas(idUsuario);
+    }
+
     async setUsuarioSistema(usuarioSistemaId) {
         logger.info("[NOTIFICACIONES SERVICE]: Configurando usuario sistema para el factory de notificaciones");
         const usuarioSistema = await this.usuarioService.findEntityById(usuarioSistemaId);

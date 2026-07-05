@@ -10,17 +10,14 @@ import {
   Tabs,
   Tab,
   List,
-  ListItem,
-  ListItemText,
   Divider,
-  CircularProgress,
+  Skeleton,
 } from '@mui/material';
 import NotificationsIcon from "@mui/icons-material/Notifications";
-import CheckIcon from "@mui/icons-material/Check";
-import UndoIcon from '@mui/icons-material/Undo';
 import NotificationsOffIcon from "@mui/icons-material/NotificationsOff";
 import { useNotificaciones } from "../../context/NotificacionContext";
 import { useNavigate } from "react-router-dom";
+import ItemNotificacion from "./ItemNotificacion";
 
 export default function CampanitaNotification() {
   const navigate = useNavigate();
@@ -57,22 +54,6 @@ export default function CampanitaNotification() {
   const open = Boolean(anchorEl);
   const id = open ? "notification-popover" : undefined;
 
-  const formatearFecha = (fechaStr) => {
-    if (!fechaStr) return "";
-    try {
-      const fecha = new Date(fechaStr);
-      return fecha.toLocaleString("es-AR", {
-        day: "2-digit",
-        month: "2-digit",
-        year: "numeric",
-        hour: "2-digit",
-        minute: "2-digit",
-      });
-    } catch {
-      return fechaStr;
-    }
-  };
-
   return (
     <>
       <Tooltip title="Notificaciones">
@@ -83,7 +64,18 @@ export default function CampanitaNotification() {
           className="notification-btn"
           sx={{ color: 'primary.main' }}
         >
-          <Badge color="error" variant="dot" invisible={cantidadNoLeidas === 0}>
+          <Badge
+            color="error"
+            badgeContent={cantidadNoLeidas}
+            invisible={cantidadNoLeidas === 0}
+            sx={{
+              '& .MuiBadge-badge': {
+                color: '#fff',
+                fontWeight: 'bold',
+                fontSize: '10px'
+              }
+            }}
+          >
             <NotificationsIcon />
           </Badge>
         </IconButton>
@@ -105,7 +97,7 @@ export default function CampanitaNotification() {
         slotProps={{
           paper: {
             sx: {
-              width: 380,
+              width: 480, // Ensanchado a 480px para que entren remitentes largos en una sola línea
               maxHeight: 500,
               display: 'flex',
               flexDirection: 'column',
@@ -151,12 +143,12 @@ export default function CampanitaNotification() {
             aria-label="notificaciones tabs"
           >
             <Tab
-              label={`Sin leer (${cantidadNoLeidas})`}
+              label={cantidadNoLeidas > 0 ? `Sin leer (${cantidadNoLeidas})` : "Sin leer"}
               id="tab-no-leidas"
               sx={{ textTransform: 'none', fontWeight: 'bold' }}
             />
             <Tab
-              label={`Leídas (${cantidadLeidas})`}
+              label="Leídas"
               id="tab-leidas"
               sx={{ textTransform: 'none', fontWeight: 'bold' }}
             />
@@ -164,10 +156,19 @@ export default function CampanitaNotification() {
         </Box>
 
         {/* Contenido / Listado */}
-        <Box sx={{ flexGrow: 1, overflowY: 'auto', minHeight: 180, display: 'flex', flexDirection: 'column', width: '100%' }}>
+        <Box sx={{ flexGrow: 1, overflowY: 'auto', minHeight: 180, display: 'flex', flexDirection: 'column', width: '100%', scrollbarGutter: 'stable' }}>
           {cargando && (
-            <Box display="flex" justifyContent="center" alignItems="center" p={4}>
-              <CircularProgress size={24} />
+            <Box sx={{ p: 2, display: "flex", flexDirection: "column", gap: 2 }}>
+              {[1, 2, 3].map((i) => (
+                <Box key={i} sx={{ width: "100%" }}>
+                  <Skeleton variant="text" width="85%" height={20} />
+                  <Box sx={{ display: "flex", justifyContent: "space-between", mt: 1 }}>
+                    <Skeleton variant="text" width="45%" height={14} />
+                    <Skeleton variant="text" width="25%" height={14} />
+                  </Box>
+                  {i < 3 && <Divider sx={{ mt: 1.5 }} />}
+                </Box>
+              ))}
             </Box>
           )}
 
@@ -198,52 +199,12 @@ export default function CampanitaNotification() {
                 <List disablePadding>
                   {notificacionesNoLeidas.map((n, index) => (
                     <React.Fragment key={n.id || index}>
-                      <ListItem
-                        alignItems="flex-start"
-                        sx={{
-                          bgcolor: 'action.hover',
-                          transition: 'background-color 0.2s',
-                          '&:hover': { bgcolor: 'action.selected' },
-                          pr: 7, // Espacio para el botón de acción
-                        }}
-                      >
-                        <ListItemText
-                          primary={
-                            <Typography variant="body2" fontWeight="600" color="text.primary">
-                              {n.mensaje}
-                            </Typography>
-                          }
-                          secondary={
-                            <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 0.5 }}>
-                              <Typography variant="caption" color="text.secondary">
-                                De: {n.remitente}
-                              </Typography>
-                              <Typography variant="caption" color="text.secondary">
-                                {formatearFecha(n.fechaHoraCreacion)}
-                              </Typography>
-                            </Box>
-                          }
-                        />
-                        <Tooltip title="Marcar como leída">
-                          <IconButton
-                            edge="end"
-                            size="small"
-                            onClick={() => marcarComoLeida(n.id)}
-                            sx={{
-                              position: 'absolute',
-                              right: 16,
-                              top: '50%',
-                              transform: 'translateY(-50%)',
-                              color: 'success.main',
-                              bgcolor: 'success.light',
-                              opacity: 0.8,
-                              '&:hover': { bgcolor: 'success.light', opacity: 1 },
-                            }}
-                          >
-                            <CheckIcon fontSize="small" />
-                          </IconButton>
-                        </Tooltip>
-                      </ListItem>
+                      <ItemNotificacion
+                        notificacion={n}
+                        onMarcarLeida={marcarComoLeida}
+                        onMarcarNoLeida={marcarComoNoLeida}
+                        pantallaCompleta={false}
+                      />
                       {index < notificacionesNoLeidas.length - 1 && <Divider component="li" />}
                     </React.Fragment>
                   ))}
@@ -291,51 +252,12 @@ export default function CampanitaNotification() {
                 <List disablePadding>
                   {notificacionesLeidas.map((n, index) => (
                     <React.Fragment key={n.id || index}>
-                      <ListItem
-                        alignItems="flex-start"
-                        sx={{
-                          opacity: 0.8,
-                          transition: 'background-color 0.2s',
-                          '&:hover': { bgcolor: 'action.hover' },
-                          pr: 7,
-                        }}
-                      >
-                        <ListItemText
-                          primary={
-                            <Typography variant="body2" color="text.primary">
-                              {n.mensaje}
-                            </Typography>
-                          }
-                          secondary={
-                            <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 0.5 }}>
-                              <Typography variant="caption" color="text.secondary">
-                                De: {n.remitente}
-                              </Typography>
-                              <Typography variant="caption" color="text.secondary">
-                                {formatearFecha(n.fechaHoraCreacion)}
-                              </Typography>
-                            </Box>
-                          }
-                        />
-                        <Tooltip title="Marcar como no leída">
-                          <IconButton
-                            edge="end"
-                            size="small"
-                            onClick={() => marcarComoNoLeida(n.id)}
-                            sx={{
-                              position: 'absolute',
-                              right: 16,
-                              top: '50%',
-                              transform: 'translateY(-50%)',
-                              color: 'text.secondary',
-                              bgcolor: 'action.disabledBackground',
-                              '&:hover': { bgcolor: 'action.focus' },
-                            }}
-                          >
-                            <UndoIcon fontSize="small" />
-                          </IconButton>
-                        </Tooltip>
-                      </ListItem>
+                      <ItemNotificacion
+                        notificacion={n}
+                        onMarcarLeida={marcarComoLeida}
+                        onMarcarNoLeida={marcarComoNoLeida}
+                        pantallaCompleta={false}
+                      />
                       {index < notificacionesLeidas.length - 1 && <Divider component="li" />}
                     </React.Fragment>
                   ))}

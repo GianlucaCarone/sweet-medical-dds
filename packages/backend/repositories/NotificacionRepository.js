@@ -103,4 +103,12 @@ export class NotificacionRepository {
         logger.info("[NOTIFICACIONES REPOSITORY]: Contando notificaciones " + (leida ? "leidas" : "no leidas") + " del destinatario " + idDestinatario);
         return await this.model.countDocuments({ destinatario: idDestinatario, leida: leida });
     }
+
+    async marcarTodasComoLeidas(idUsuario) {
+        logger.info("[NOTIFICACIONES REPOSITORY]: Marcando todas las notificaciones como leidas del usuario " + idUsuario);
+        return await this.model.updateMany(
+            { destinatario: idUsuario, leida: false },
+            { $set: { leida: true, fechaHoraLeida: new Date() } }
+        );
+    }
 }

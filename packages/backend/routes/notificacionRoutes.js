@@ -30,6 +30,7 @@ export default function notificacionRoutes(getController) {
 
     router.route("/").get((req, res, next) => notificacionController.getNotificaciones(req, res, next));
     router.route("/contadores").get((req, res, next) => notificacionController.getContadores(req, res, next));
+    router.route("/leer-todas").patch((req, res, next) => notificacionController.marcarTodasComoLeidas(req, res, next));
 
     /**
      * @swagger
