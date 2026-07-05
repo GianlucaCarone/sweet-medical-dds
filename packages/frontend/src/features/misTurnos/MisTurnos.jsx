@@ -38,7 +38,6 @@ export default function MisTurnos() {
   const [paginaProximos, setPaginaProximos] = useState(1);
   const [paginaHistorial, setPaginaHistorial] = useState(1);
   const [loading, setLoading] = useState(true);
-  const [toastVisible, setToastVisible] = useState(false);
   const turnosPorPagina = 3;
   const navigate = useNavigate();
 

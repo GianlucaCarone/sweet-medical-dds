@@ -30,20 +30,33 @@ const TurnoActions = styled.div`
 const BtnSecundario = styled(Button)`
   && {
     border-radius: 999px;
+<<<<<<< HEAD
+    background: var(--color-success-dark);
+    border: 2px solid var(--color-success-dark);
+    color: white;
+
+=======
     background-color: var(--color-success-dark);
     color: white;
     border: 2px solid var(--color-success-dark);
 
     transition: all 0.2s ease-in-out;
+>>>>>>> origin/develop
     text-transform: none;
     font-weight: 600;
     padding: 6px 18px;
+
+    transition: all 0.2s ease-in-out;
 
     &:hover {
       background: var(--color-primary);
       border-color: var(--color-primary);
       transform: translateY(-1px);
+<<<<<<< HEAD
+      box-shadow: 0 4px 8px rgba(0,0,0,.15);
+=======
       box-shadow: 0 4px 6px rgba(19, 115, 51, 0.18);
+>>>>>>> origin/develop
     }
   }
 `;
@@ -61,14 +74,13 @@ const BtnCancelar = styled(Button)`
       background-color: var(--color-error-dark);
       transform: translateY(-1px);
     }
-
     &:disabled {
-      background: rgba(220, 38, 38, 0.08);
-      border: 2px solid rgba(220, 38, 38, 0.35);
-      color: rgba(248, 113, 113, 0.7);
-      cursor: not-allowed;
-      transform: none;
-      box-shadow: none;
+    background: rgba(220, 38, 38, 0.08);
+    border: 2px solid rgba(220, 38, 38, 0.35);
+    color: rgba(248, 113, 113, 0.7);
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
     }
   }
 `;
@@ -110,31 +122,31 @@ export default function CardTurno({ turno, onCancelar }) {
 
           <TurnoActions>
             <BtnSecundario
-              variant="contained"
-              onClick={() => setModalReprogramarAbierto(true)}
+                variant="contained"
+                onClick={() => setModalReprogramarAbierto(true)}
             >
-              Cambiar fecha
+                Cambiar fecha
             </BtnSecundario>
-            <Tooltip
+
+            {puedeCancelar ? (
+              <BtnCancelar
+                variant="contained"
+                onClick={() => setModalCancelarAbierto(true)}
+              >
+                Cancelar
+              </BtnCancelar>
+            ) : (
+              <Tooltip
                 title="No se puede cancelar un turno con menos de 1 hora de anticipación."
                 arrow
-                disableHoverListener={puedeCancelar}
-                disableFocusListener={puedeCancelar}
-            >
+              >
                 <span>
-                    <BtnCancelar
-                        variant="contained"
-                        disabled={!puedeCancelar}
-                        onClick={() => {
-                            if (puedeCancelar) {
-                                setModalCancelarAbierto(true);
-                            }
-                        }}
-                    >
-                        Cancelar
-                    </BtnCancelar>
+                  <BtnCancelar variant="contained" disabled>
+                    Cancelar
+                  </BtnCancelar>
                 </span>
-            </Tooltip>
+              </Tooltip>
+            )}
           </TurnoActions>
         </TurnoFooter>
       </TurnoCardLayout>
