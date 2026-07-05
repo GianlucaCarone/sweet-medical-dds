@@ -67,7 +67,7 @@ function App() {
 
               {/* Perfil Médico: solo para MEDICO logueado */}
               <Route
-                path="perfil-medico"
+                path="mi-agenda"
                 element={
                   <ProtectedRoute allowedRoles={["MEDICO"]}>
                     <PerfilMedico />

@@ -45,7 +45,7 @@ const Navbar = () => {
         {/* Solo para MEDICO */}
         {rol === "MEDICO" && (
           <li className="nav-item">
-            <NavLink to="/perfil-medico" className="nav-link">
+            <NavLink to="/mi-agenda" className="nav-link">
               <span className="nav-icon"><EventNoteIcon fontSize="small" /></span>
               Mi Agenda
             </NavLink>

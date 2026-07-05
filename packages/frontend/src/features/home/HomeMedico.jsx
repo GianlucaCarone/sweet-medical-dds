@@ -16,13 +16,13 @@ const HomeMedico = ({ user }) => {
       icon: <EventNoteIcon fontSize="large" />,
       title: "Mi Agenda y Turnos",
       description: "Revisá tus turnos del día, confirmá asistencias y gestioná tu disponibilidad horaria.",
-      path: "/perfil-medico"
+      path: "/mi-agenda"
     },
     {
       icon: <LocalHospitalIcon fontSize="large" />,
       title: "Servicios y Sedes",
       description: "Administrá las prácticas que ofreces y las sedes donde atendés a tus pacientes.",
-      path: "/perfil-medico"
+      path: "/mi-agenda"
     },
     {
       icon: <PersonIcon fontSize="large" />,
