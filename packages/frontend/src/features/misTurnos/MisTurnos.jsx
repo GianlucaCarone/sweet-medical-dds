@@ -11,7 +11,6 @@ import TurnoCardSkeleton from '../../components/mis-turnos/TurnoCardSkeleton';
 import EstadisticaTurnoCardSkeleton from '../../components/mis-turnos/EstadisticaTurnoCardSkeleton';
 import TurnoHistorialSkeleton from '../../components/mis-turnos/TurnoHistorialSkeleton';
 import { useNavigate } from 'react-router-dom';
-import Toast from '../../components/mis-turnos/Toast';
 import { mockRespuestaPaginada, historialTurnos } from '../../mockdata/turnos';
 import TituloSeccion from '../../shared/TituloSeccion/TituloSeccion';
 import { Button } from '@mui/material';
@@ -93,11 +92,7 @@ export default function MisTurnos() {
     const response = cancelarTurno(turnoId, motivo, user?.id);
     setTurnosProximos(turnosProximos.filter((t) => t.id != turnoId));
 
-    setToastVisible(true);
-
-    setTimeout(() => {
-      setToastVisible(false);
-    }, 1500);
+    showAlert("Tu turno fue cancelado correctamente.", "success");
   };
 
   const cargarTodosLosContadores = async () => {
@@ -173,8 +168,6 @@ export default function MisTurnos() {
           </p>
         </div>
       </StyledTarjetaWrapper>
-
-      <Toast visible={toastVisible} mensaje="Turno cancelado correctamente." />
 
       <StatsGrid>
         {loading
