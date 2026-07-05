@@ -194,7 +194,7 @@ export default function turnoRoutes(getController) {
          *       400:
          *         $ref: '#/components/responses/E400'
          */
-        .put((req, res, next) => turnoController.asignarTurnos(req, res, next));
+        .put(authMiddleware, (req, res, next) => turnoController.asignarTurnos(req, res, next));
 
     router.route("/:id/cambiar-estado")
         /**

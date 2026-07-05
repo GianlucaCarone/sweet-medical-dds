@@ -57,13 +57,13 @@ export class TurnoController {
 
   asignarTurnos = async (req, res, next) => {
     try {
-      logger.info("intentando asignar turnos a un paciente: " + JSON.stringify(req.body));
       const turnoData = bodyAsignarTurnoSchema.parse(req.body);
+      const quien = req.user.idEspecifico;
 
-      logger.info(`[TURNOS CONTROLLER]: Asignando turno a paciente: ${turnoData.pacienteId}`);
+      logger.info(`[TURNOS CONTROLLER]: Asignando turno a paciente: ${quien}`);
       const turnosAsignados = await this.turnoService.asignarTurnos(
         turnoData.idsTurnos,
-        turnoData.pacienteId,
+        quien
       );
 
       logger.info("[TURNOS CONTROLLER]: Turno asignado con éxito");

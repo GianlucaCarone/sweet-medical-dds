@@ -16,6 +16,7 @@ import ModalLogin from "../../components/login/ModalLogin.jsx";
 import { useNavigate, Navigate } from "react-router-dom";
 
 export default function BusquedaTurnos() {
+    const { user } = useAuth();
     const { doctors, specialities, practices, branches, buildApiFilters } = useFilters();
     const { manejoCarritoDrawer, agregarAlCarrito } = useCart();
     const navigate = useNavigate();
@@ -114,7 +115,7 @@ export default function BusquedaTurnos() {
 
             <main className="contenido-resultados">
                 <header className="header-resultados">
-                    <TituloSeccion>{paginationData.totalTurnos} {paginationData.totalTurnos > 1 ? 'Turnos disponibles' : 'Turno disponible'}</TituloSeccion>
+                    <TituloSeccion>{paginationData.totalTurnos} {paginationData.totalTurnos == 1 ? 'Turno disponible' : 'Turnos disponibles'}</TituloSeccion>
                     <div className="ordenar-por">
                         <label>Ordenar por:</label>
                         <select defaultValue="ordenPorFecha" onChange={(e) => {
@@ -148,13 +149,13 @@ export default function BusquedaTurnos() {
                         textoBoton={null}
                         onClick={null}
                         />) :
-                (<Pagination color="#137333"
+                <Pagination color="#137333"
                     count={paginationData.totalPaginas}
                     page={paginationData.page}
                     onChange={(e, page) => {
                         cargarTurnos(filtrosActualesRef.current, page);
                     }}
-                />)}
+                />}
             </main>
 
             <ModalLogin

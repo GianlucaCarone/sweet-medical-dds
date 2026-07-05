@@ -14,7 +14,6 @@ export const bodyCambioEstadoTurnoSchema = z.object({
 });
 
 export const bodyAsignarTurnoSchema = z.object({
-    pacienteId: objectIdSchema("paciente"),
     idsTurnos: z.array(z.string("El id del turno debe ser un UUID válido")).min(1, "Debe indicar al menos un turno")
 });
 

@@ -122,6 +122,7 @@ export default function CardTurno({ turno, onCancelar }) {
 
           <TurnoActions>
             <BtnSecundario
+                disabled={turno.estado == "PENDIENTECAMBIO"}
                 variant="contained"
                 onClick={() => setModalReprogramarAbierto(true)}
             >
