@@ -59,124 +59,135 @@ export default function BusquedaTurnos() {
         return Array.from(mapa.values());
     };
 
-    const fetchTurns = async (filtersInput = {}, page = paginationData.page, order = sortBy) => {
-        setLoading(true);
-        setTimeout(() => setLoading(false), 200);
-        setNoResults(false);
+    const fetchTurns = async (
+      filtersInput = filtrosActualesRef.current,
+      page = paginationData.page,
+      order = sortBy
+    ) => {
+      setLoading(true);
+      setTimeout(() => setLoading(false), 200);
+      setNoResults(false);
 
-        const pageParam = { 
-            page: page 
-        };
-        const completeFilters = {
-            ...filtersInput,
-            estado: 'DISPONIBLE',
-            [order]: "asc"
-        };
+      const pageParam = {
+        page: page,
+      };
+      const completeFilters = {
+        ...filtersInput,
+        estado: 'DISPONIBLE',
+        [order]: 'asc',
+      };
 
-        try {
-            const response = await getTurnosDisponiblesFiltradoPaginado(completeFilters, pageParam);
-            setTurnos(response.data);
-            setNoResults(response.data.length === 0);
-            setTurnGroups(createTurnGroups(response.data));
-            setPaginationData(response.paginacion);
-        } catch (e) {
-            console.error("Error fetching turns:", e);
-        } finally {
-            setLoading(false);
-        }
+      try {
+        const response = await getTurnosDisponiblesFiltradoPaginado(completeFilters, pageParam);
+        setTurnos(response.data);
+        setNoResults(response.data.length === 0);
+        setTurnGroups(createTurnGroups(response.data));
+        setPaginationData(response.paginacion);
+      } catch (e) {
+        console.error('Error fetching turns:', e);
+      } finally {
+        setLoading(false);
+      }
     };
 
     const addTurnToCart = (id) => {
-        if (!user) {
-            setTurnoPendienteReserva(id);
-            setLoginModalOpen(true);
-            return;
-        }
+      if (!user) {
+        setTurnoPendienteReserva(id);
+        setLoginModalOpen(true);
+        return;
+      }
 
-        const turno = turnos.find(t => t.id === id);
-        agregarAlCarrito(turno);
-        manejoCarritoDrawer.abrir();
+      const turno = turnos.find((t) => t.id === id);
+      agregarAlCarrito(turno);
+      manejoCarritoDrawer.abrir();
     };
 
-   useEffect(() => {
-        const initialFilters = buildApiFilters();
-        fetchTurns(initialFilters);
+    useEffect(() => {
+      const initialFilters = buildApiFilters();
+      fetchTurns(initialFilters);
     }, []);
 
-    if (user?.rol === "MEDICO") {
-        return <Navigate to="/" replace />;
+    if (user?.rol === 'MEDICO') {
+      return <Navigate to="/" replace />;
     }
 
     return (
-        <div className="container-busqueda">
-            <SidebarFiltros
-                onSearch={() => fetchTurns(buildApiFilters())}
-            />
+      <div className="container-busqueda">
+        <SidebarFiltros onSearch={() => fetchTurns(buildApiFilters())} />
 
-            <main className="contenido-resultados">
-                <header className="header-resultados">
-                    <TituloSeccion>{paginationData.totalTurnos} {paginationData.totalTurnos == 1 ? 'Turno disponible' : 'Turnos disponibles'}</TituloSeccion>
-                    <div className="ordenar-por">
-                        <label>Ordenar por:</label>
-                        <select defaultValue="ordenPorFecha" onChange={(e) => {
-                            setSortBy(e.target.value);
-                            fetchTurns(buildApiFilters(), null, e.target.value);
-                        }}>
-                            <option value="ordenPorFecha">Fecha (más próximos)</option>
-                            <option value="ordenPorCosto">Costo (más barato)</option>
-                        </select>
-                    </div>
-                </header>
-
-                <section className="lista-turno">
-                    {loading
-                        ? Array.from({ length: paginationData.limitePorPagina }).map((_, i) => (
-                            <TarjetaTurnoSkeleton key={i} />
-                        ))
-                        : turnGroups.map((turno) => (
-                            <TarjetaTurno
-                                key={turno.id}
-                                turno={turno}
-                                especialidades={specialities}
-                                practicas={practices}
-                                onReservar={addTurnToCart}
-                            />
-                        ))}
-                </section>
-                {noResults ? (<TurnosEmptyState
-                        titulo="No se encontró ningún turno"
-                        descripcion="Intentá cambiar tus filtros de busqueda"
-                        textoBoton={null}
-                        onClick={null}
-                        />) :
-                <Pagination color="#137333"
-                    count={paginationData.totalPaginas}
-                    page={paginationData.page}
-                    onChange={(e, page) => {
-                        cargarTurnos(filtrosActualesRef.current, page);
-                    }}
-                />}
-            </main>
-
-            <ModalLogin
-                open={loginModalOpen}
-                onClose={() => setLoginModalOpen(false)}
-                onLoginSuccess={() => {
-                    setLoginModalOpen(false);
-                
-                    if (turnoPendienteReserva) {
-                        const turno = turnos.find(t => t.id === turnoPendienteReserva);
-                    
-                        if (turno) {
-                            agregarAlCarrito(turno);
-                            manejoCarritoDrawer.abrir();
-                        }
-                    
-                        setTurnoPendienteReserva(null);
-                    }
+        <main className="contenido-resultados">
+          <header className="header-resultados">
+            <TituloSeccion>
+              {paginationData.totalTurnos}{' '}
+              {paginationData.totalTurnos == 1 ? 'Turno disponible' : 'Turnos disponibles'}
+            </TituloSeccion>
+            <div className="ordenar-por">
+              <label>Ordenar por:</label>
+              <select
+                defaultValue="ordenPorFecha"
+                onChange={(e) => {
+                  setSortBy(e.target.value);
+                  fetchTurns(buildApiFilters(), null, e.target.value);
                 }}
-            />
+              >
+                <option value="ordenPorFecha">Fecha (más próximos)</option>
+                <option value="ordenPorCosto">Costo (más barato)</option>
+              </select>
+            </div>
+          </header>
 
-        </div>
+          <section className="lista-turno">
+            {loading
+              ? Array.from({ length: paginationData.limitePorPagina }).map((_, i) => (
+                  <TarjetaTurnoSkeleton key={i} />
+                ))
+              : turnGroups.map((turno) => (
+                  <TarjetaTurno
+                    key={turno.id}
+                    turno={turno}
+                    especialidades={specialities}
+                    practicas={practices}
+                    onReservar={addTurnToCart}
+                  />
+                ))}
+          </section>
+          {noResults ? (
+            <TurnosEmptyState
+              titulo="No se encontró ningún turno"
+              descripcion="Intentá cambiar tus filtros de busqueda"
+              textoBoton={null}
+              onClick={null}
+            />
+          ) : (
+            <Pagination
+              color="#137333"
+              count={paginationData.totalPaginas}
+              page={paginationData.page}
+              onChange={(e, page) => {
+                fetchTurns(filtrosActualesRef.current, page);
+              }}
+            />
+          )}
+        </main>
+
+        <ModalLogin
+          open={loginModalOpen}
+          onClose={() => setLoginModalOpen(false)}
+          onLoginSuccess={() => {
+            setLoginModalOpen(false);
+
+            if (turnoPendienteReserva) {
+              const turno = turnos.find((t) => t.id === turnoPendienteReserva);
+
+              if (turno) {
+                agregarAlCarrito(turno);
+                manejoCarritoDrawer.abrir();
+              }
+
+              setTurnoPendienteReserva(null);
+            }
+          }}
+        />
+      </div>
     );
 }
