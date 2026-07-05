@@ -56,10 +56,9 @@ export const getListadoSedes = async () => {
     }
 }
 
-export const reservarTurnos = async (idTurnosArray, pacienteId) => {
+export const reservarTurnos = async (idTurnosArray) => {
     try {
         const response = await axiosInstance.put('/turno/asignar', {
-            pacienteId: pacienteId,
             idsTurnos: idTurnosArray,
         });
         return response.data;

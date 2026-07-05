@@ -27,7 +27,6 @@ const formatoFechaHora = (isoString) => {
 };
 
 export default function CarritoTurnos({ items, onEliminar, onConfirmar, onCerrar }) {
-  const pacienteID = "6a0b720ada9b7c8a035d96a9"; //por ahora; hasta tener el login
   const total = items.reduce((acc, item) => acc + item.costo, 0);
   const navigate = useNavigate();
   const { showAlert } = useAlert();
@@ -119,7 +118,7 @@ export default function CarritoTurnos({ items, onEliminar, onConfirmar, onCerrar
           startIcon={<CheckCircleIcon />}
           onClick={async () => {
             try {
-              await reservarTurnos(items.map((t) => t.id), pacienteID);
+              await reservarTurnos(items.map((t) => t.id));
               showAlert("Turnos reservados exitosamente", "success");
               onCerrar();
               onConfirmar();
