@@ -1,303 +1,556 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   Box,
   Avatar,
   Typography,
-  Grid,
   TextField,
-  Collapse,
-  Link,
-  Divider,
   Button,
   Select,
   MenuItem,
   FormControl,
   InputLabel,
   CircularProgress,
-  Alert,
+  Stack,
+  Divider,
+  Chip
 } from "@mui/material";
+import { Edit, Save, Cancel } from "@mui/icons-material";
 import { useAuth } from "../../context/AuthContext.jsx";
+import { useAlert } from "../../context/AlertContext.jsx";
 import { getMiPerfil, actualizarPaciente } from "../../api/pacienteApi.js";
+import { getMiPerfilMedico, updateMedico } from "../../api/medico.js";
 import { getObrasSociales } from "../../api/obraSocialApi.js";
+import { actualizarUsuario } from "../../api/usuarioApi.js";
+
+import "../perfil-medico/PerfilMedico.css";
 
 export default function MiPerfil() {
   const { user } = useAuth();
+  const { showAlert } = useAlert();
 
-  const [paciente, setPaciente] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
-  const [saving, setSaving] = useState(false);
-  const [modoEdicion, setModoEdicion] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
-
-  // Obras sociales cargadas desde el backend (cada una ya incluye sus planes)
+  const [perfil, setPerfil] = useState(null);
   const [obrasSociales, setObrasSociales] = useState([]);
-  // Selección actual en modo edición
-  const [obraSocialSeleccionada, setObraSocialSeleccionada] = useState("");
-  const [planSeleccionado, setPlanSeleccionado] = useState(""); // ObjectId del subdocumento plan
+  const [loading, setLoading] = useState(true);
+
+  const [isEditingPerfil, setIsEditingPerfil] = useState(false);
+  const [formPerfil, setFormPerfil] = useState({ nombre: "", dni: "", honorario: 0 });
+  const nombreRef = useRef(null);
+
+  const [isEditingCobertura, setIsEditingCobertura] = useState(false);
+  const [formCobertura, setFormCobertura] = useState({ obraSocial: "", plan: "" });
+  const coberturaRef = useRef(null);
+
+  const [isEditingUsuario, setIsEditingUsuario] = useState(false);
+  const [formUsuario, setFormUsuario] = useState({ nombreUsuario: "", password: "", confirmPassword: "" });
+  const usuarioRef = useRef(null);
+
+  const mainRef = useRef(null);
 
   useEffect(() => {
     const fetchDatos = async () => {
       try {
-        // Carga paralela: perfil del paciente + lista de obras sociales
-        const [pac, obras] = await Promise.all([
-          getMiPerfil(),
-          getObrasSociales(),
-        ]);
-
-        setPaciente(pac);
-        setObrasSociales(obras);
-
-        // Inicializar selects con los valores actuales del paciente
-        // El DTO usa "id" (no "_id") tanto en obraSocial como en plan
-        if (pac.obraSocial?.id) setObraSocialSeleccionada(pac.obraSocial.id);
-        if (pac.plan?.id) setPlanSeleccionado(pac.plan.id);
+        if (user?.rol === "PACIENTE") {
+          const [pac, obras] = await Promise.all([
+            getMiPerfil(),
+            getObrasSociales(),
+          ]);
+          setPerfil(pac);
+          setObrasSociales(obras);
+          setFormPerfil({ nombre: pac.nombre || "", dni: pac.dni || "", honorario: 0 });
+          setFormCobertura({ 
+            obraSocial: pac.obraSocial?.id || "", 
+            plan: pac.plan?.id || "" 
+          });
+        } else if (user?.rol === "MEDICO") {
+          const med = await getMiPerfilMedico();
+          setPerfil(med);
+          setFormPerfil({ nombre: med.nombre || "", dni: "", honorario: med.honorario || 0 });
+        }
+        setFormUsuario({ nombreUsuario: user?.nombreUsuario || "", password: "", confirmPassword: "" });
       } catch (err) {
         console.error("Error al cargar el perfil:", err);
-        setError("Error al cargar los datos del perfil.");
+        showAlert("Error al cargar los datos del perfil.", "error");
       } finally {
         setLoading(false);
       }
     };
 
-    fetchDatos();
-  }, []);
+    if (user) {
+      fetchDatos();
+    }
+  }, [user, showAlert]);
 
-  const handleGuardarCambios = async () => {
-    setSaving(true);
-    setError("");
-    setSuccess("");
+  useEffect(() => {
+    if (!loading && perfil) {
+      // Enfoca el contenedor principal para habilitar accesibilidad por teclado y scroll directo
+      mainRef.current?.focus();
+    }
+  }, [loading, perfil]);
+
+  const handleGuardarPerfil = async (e) => {
+    e.preventDefault();
+    if (!formPerfil.nombre.trim()) {
+      showAlert("El nombre completo es requerido.", "error");
+      return;
+    }
+    if (user.rol === "PACIENTE") {
+      const dniNum = Number(formPerfil.dni);
+      if (!formPerfil.dni || isNaN(dniNum) || dniNum < 1000000) {
+        showAlert("El DNI debe ser un número válido mayor a 1.000.000.", "error");
+        return;
+      }
+    }
+    if (user.rol === "MEDICO" && Number(formPerfil.honorario) < 0) {
+      showAlert("El honorario no puede ser negativo.", "error");
+      return;
+    }
+    
     try {
-      await actualizarPaciente(paciente.id, {
-        obraSocial: obraSocialSeleccionada || null,
-        plan: planSeleccionado || null,
-      });
-
-      // Actualizar estado local para reflejar los cambios sin recargar
-      // El DTO de ObraSocial usa "id" (no "_id")
-      const obraSocialDoc = obrasSociales.find((os) => os.id === obraSocialSeleccionada);
-      const planDoc = obraSocialDoc?.planes?.find((p) => p.id === planSeleccionado);
-
-      setPaciente((prev) => ({
-        ...prev,
-        obraSocial: obraSocialDoc
-          ? { id: obraSocialDoc.id, nombre: obraSocialDoc.nombre }
-          : null,
-        plan: planDoc
-          ? { id: planDoc.id, nombre: planDoc.nombre }
-          : null,
-      }));
-
-      setSuccess("Perfil actualizado correctamente.");
-      setModoEdicion(false);
+      if (user.rol === "PACIENTE") {
+        const payload = { nombre: formPerfil.nombre, dni: Number(formPerfil.dni) };
+        const updated = await actualizarPaciente(perfil.id, payload);
+        setPerfil(prev => ({ ...prev, ...updated }));
+      } else if (user.rol === "MEDICO") {
+        const payload = { nombre: formPerfil.nombre, honorario: Number(formPerfil.honorario) };
+        const updated = await updateMedico(payload);
+        setPerfil(prev => ({ ...prev, ...updated }));
+      }
+      setIsEditingPerfil(false);
+      showAlert("Datos personales actualizados correctamente.", "success");
     } catch (err) {
-      setError(err.message || "Error al actualizar el perfil.");
-    } finally {
-      setSaving(false);
+      showAlert(err.response?.data?.message || "Error al actualizar datos personales.", "error");
     }
   };
 
-  const handleCancelarEdicion = () => {
-    // Restaurar valores originales
-    if (paciente?.obraSocial?.id) setObraSocialSeleccionada(paciente.obraSocial.id);
-    else setObraSocialSeleccionada("");
-    if (paciente?.plan?.id) setPlanSeleccionado(paciente.plan.id);
-    else setPlanSeleccionado("");
-    setModoEdicion(false);
-    setError("");
+  const handleGuardarCobertura = async (e) => {
+    e.preventDefault();
+    try {
+      await actualizarPaciente(perfil.id, {
+        obraSocial: formCobertura.obraSocial || null,
+        plan: formCobertura.plan || null,
+      });
+
+      const obraSocialDoc = obrasSociales.find((os) => os.id === formCobertura.obraSocial);
+      const planDoc = obraSocialDoc?.planes?.find((p) => p.id === formCobertura.plan);
+
+      setPerfil((prev) => ({
+        ...prev,
+        obraSocial: obraSocialDoc ? { id: obraSocialDoc.id, nombre: obraSocialDoc.nombre } : null,
+        plan: planDoc ? { id: planDoc.id, nombre: planDoc.nombre } : null,
+      }));
+      setIsEditingCobertura(false);
+      showAlert("Cobertura médica actualizada correctamente.", "success");
+    } catch (err) {
+      showAlert(err.response?.data?.message || "Error al actualizar cobertura médica.", "error");
+    }
+  };
+
+  const handleGuardarUsuario = async (e) => {
+    e.preventDefault();
+    if (!formUsuario.nombreUsuario.trim()) {
+      showAlert("El nombre de usuario es requerido.", "error");
+      return;
+    }
+    if (formUsuario.password) {
+      if (formUsuario.password.length < 6) {
+        showAlert("La contraseña debe tener al menos 6 caracteres.", "error");
+        return;
+      }
+      if (formUsuario.password !== formUsuario.confirmPassword) {
+        showAlert("Las contraseñas no coinciden.", "error");
+        return;
+      }
+    }
+    
+    try {
+      const payload = { nombreUsuario: formUsuario.nombreUsuario };
+      if (formUsuario.password) {
+        payload.password = formUsuario.password;
+      }
+      
+      await actualizarUsuario(payload);
+      
+      setFormUsuario(prev => ({ ...prev, password: "", confirmPassword: "" }));
+      setIsEditingUsuario(false);
+      showAlert("Datos de cuenta actualizados correctamente.", "success");
+    } catch (err) {
+      showAlert(err.response?.data?.message || "Error al actualizar datos de cuenta.", "error");
+    }
   };
 
   if (loading) {
     return (
-      <Box sx={{ display: "flex", justifyContent: "center", mt: 10 }}>
+      <main className="container-perfil" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '50vh' }}>
         <CircularProgress />
-      </Box>
+      </main>
     );
   }
 
-  if (!paciente) {
-    return (
-      <Box sx={{ p: 4, maxWidth: 800, mx: "auto" }}>
-        <Alert severity="error">No se encontraron los datos del paciente.</Alert>
-      </Box>
-    );
-  }
+  if (!perfil) return null;
 
-  // Planes disponibles para la obra social actualmente seleccionada en el select
-  // El DTO de ObraSocial usa "id" (no "_id")
-  const obraSocialActual = obrasSociales.find((os) => os.id === obraSocialSeleccionada);
-  const planesDisponibles = obraSocialActual?.planes ?? [];
-
-  // Texto a mostrar cuando NO estamos en modo edición
-  const textoCobertura = paciente.obraSocial
-    ? `${paciente.obraSocial.nombre} — Plan: ${paciente.plan?.nombre ?? "Sin plan"}`
-    : "No tiene obra social cargada";
+  const planesDisponibles = obrasSociales.find((os) => os.id === formCobertura.obraSocial)?.planes ?? [];
 
   return (
-    <Box
-      sx={{
-        p: { xs: 2, md: 4 },
-        maxWidth: 800,
-        mx: "auto",
-        mt: 4,
-        bgcolor: "background.paper",
-        borderRadius: 2,
-        boxShadow: 1,
-      }}
-    >
-      <Typography variant="h4" sx={{ mb: 4, fontWeight: "bold" }}>
-        Mi Perfil
-      </Typography>
-
-      {error && <Alert severity="error" sx={{ mb: 3 }}>{error}</Alert>}
-      {success && <Alert severity="success" sx={{ mb: 3 }}>{success}</Alert>}
-
-      {/* ── SECCIÓN 1: Avatar, Nombre y DNI ── */}
-      <Box sx={{ display: "flex", alignItems: "center", gap: 3, mb: 4 }}>
-        <Avatar sx={{ width: 90, height: 90, fontSize: "2.5rem", bgcolor: "primary.main" }}>
-          {paciente.nombre?.[0]?.toUpperCase() ?? "U"}
+    <main ref={mainRef} tabIndex={-1} className="container-perfil" style={{ outline: 'none' }}>
+      
+      {/* Encabezado Principal */}
+      <Box className="perfil-card" sx={{ mb: 4, display: 'flex', alignItems: 'center', gap: 3 }}>
+        <Avatar 
+          sx={{ 
+            width: 72, 
+            height: 72, 
+            fontSize: "24px", 
+            fontWeight: "bold",
+            background: "linear-gradient(135deg, var(--color-info) 0%, var(--color-info-dark) 100%)",
+            color: "white"
+          }}
+        >
+          {perfil.nombre?.[0]?.toUpperCase() ?? "U"}{perfil.apellido ? perfil.apellido.charAt(0).toUpperCase() : ''}
         </Avatar>
         <Box>
-          <Typography variant="h4" sx={{ fontWeight: "bold" }}>
-            {paciente.nombre}
+          <Typography variant="h5" component="h1" sx={{ fontWeight: 700, color: 'var(--color-text)', mb: 0.5 }}>
+            {perfil.nombre} {perfil.apellido || ''}
           </Typography>
-          <Typography variant="subtitle1" sx={{ color: "text.secondary" }}>
-            DNI: {paciente.dni}
-          </Typography>
+          <Box display="flex" alignItems="center" gap={1.5}>
+            <Typography variant="overline" sx={{ color: 'var(--color-info)', fontWeight: 700, letterSpacing: '0.8px' }}>
+              {user?.rol === "PACIENTE" ? "Paciente" : "Médico Especialista"}
+            </Typography>
+            <Chip 
+              label={user?.rol === "PACIENTE" ? `DNI: ${perfil.dni}` : `Matrícula: ${perfil.matricula}`} 
+              size="small" 
+              sx={{ bgcolor: 'var(--color-bg)', color: 'var(--color-text-muted)', fontWeight: 600 }}
+            />
+          </Box>
         </Box>
       </Box>
 
-      {/* ── SECCIÓN 2: Obra Social / Plan y Usuario ── */}
-      <Grid container spacing={4} sx={{ mb: 3 }}>
-        {/* Cobertura médica */}
-        <Grid item xs={12} sm={6}>
-          <Box sx={{ display: "flex", alignItems: "baseline", gap: 1, mb: 1 }}>
-            <Typography variant="h6" sx={{ fontWeight: "bold" }}>
-              Cobertura médica
+      {/* TODAS LAS SECCIONES DENTRO DE UNA ÚNICA TARJETA GRANDE */}
+      <Box className="perfil-card">
+        
+        {/* SECCIÓN: DATOS PERSONALES */}
+        <section aria-labelledby="section-datos-personales" style={{ marginBottom: '32px' }}>
+          <Box style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} className="card-title-custom">
+            <Typography id="section-datos-personales" variant="subtitle1" component="h2" sx={{ fontSize: '16px', fontWeight: 700, color: 'var(--color-text)', m: 0 }}>
+              Datos Personales
             </Typography>
-            {!modoEdicion && (
-              <Link
-                component="button"
-                underline="none"
-                color="primary"
-                sx={{ fontSize: "0.875rem" }}
-                onClick={() => setModoEdicion(true)}
+            {!isEditingPerfil && (
+              <Button 
+                startIcon={<Edit />} 
+                onClick={() => {
+                  setIsEditingPerfil(true);
+                  setTimeout(() => nombreRef.current?.focus(), 100);
+                }}
+                size="small"
+                aria-label="Editar datos personales"
               >
-                editar
-              </Link>
+                Editar
+              </Button>
             )}
           </Box>
+          
+          <Box sx={{ pt: 1 }}>
+            {isEditingPerfil ? (
+              <form onSubmit={handleGuardarPerfil} aria-label="Formulario de edición de datos personales">
+                <Stack spacing={3}>
+                  <Stack direction={{ xs: 'column', sm: 'row' }} spacing={3}>
+                    <TextField
+                      fullWidth
+                      inputRef={nombreRef}
+                      label="Nombre Completo"
+                      value={formPerfil.nombre}
+                      onChange={(e) => setFormPerfil({ ...formPerfil, nombre: e.target.value })}
+                      required
+                    />
+                    {user?.rol === "PACIENTE" && (
+                      <TextField
+                        fullWidth
+                        label="DNI"
+                        type="number"
+                        value={formPerfil.dni}
+                        onChange={(e) => setFormPerfil({ ...formPerfil, dni: e.target.value })}
+                        required
+                        inputProps={{ min: 1000000 }}
+                        sx={{
+                          '& input[type=number]': {
+                            '-moz-appearance': 'textfield'
+                          },
+                          '& input[type=number]::-webkit-outer-spin-button': {
+                            '-webkit-appearance': 'none',
+                            margin: 0
+                          },
+                          '& input[type=number]::-webkit-inner-spin-button': {
+                            '-webkit-appearance': 'none',
+                            margin: 0
+                          }
+                        }}
+                      />
+                    )}
+                    {user?.rol === "MEDICO" && (
+                      <TextField
+                        fullWidth
+                        label="Honorario Base (ARS)"
+                        type="number"
+                        value={formPerfil.honorario}
+                        onChange={(e) => setFormPerfil({ ...formPerfil, honorario: e.target.value })}
+                        required
+                        inputProps={{ min: 0 }}
+                        sx={{
+                          '& input[type=number]': {
+                            '-moz-appearance': 'textfield'
+                          },
+                          '& input[type=number]::-webkit-outer-spin-button': {
+                            '-webkit-appearance': 'none',
+                            margin: 0
+                          },
+                          '& input[type=number]::-webkit-inner-spin-button': {
+                            '-webkit-appearance': 'none',
+                            margin: 0
+                          }
+                        }}
+                      />
+                    )}
+                  </Stack>
+                  <Box display="flex" justifyContent="flex-end" gap={2}>
+                    <Button 
+                      color="error" 
+                      variant="outlined"
+                      onClick={() => {
+                        setIsEditingPerfil(false);
+                        setFormPerfil({ nombre: perfil.nombre, dni: perfil.dni, honorario: perfil.honorario });
+                      }}
+                      startIcon={<Cancel />}
+                    >
+                      Cancelar
+                    </Button>
+                    <Button 
+                      type="submit" 
+                      variant="contained" 
+                      color="primary"
+                      startIcon={<Save />}
+                    >
+                      Guardar
+                    </Button>
+                  </Box>
+                </Stack>
+              </form>
+            ) : (
+              <Stack direction={{ xs: 'column', sm: 'row' }} spacing={4}>
+                <Box>
+                  <Typography variant="overline" color="text.secondary">Nombre Completo</Typography>
+                  <Typography variant="body1" fontWeight="600">{perfil.nombre}</Typography>
+                </Box>
+                {user?.rol === "PACIENTE" && (
+                  <Box>
+                    <Typography variant="overline" color="text.secondary">DNI</Typography>
+                    <Typography variant="body1" fontWeight="600">{perfil.dni}</Typography>
+                  </Box>
+                )}
+                {user?.rol === "MEDICO" && (
+                  <Box>
+                    <Typography variant="overline" color="text.secondary">Honorario Base</Typography>
+                    <Typography variant="body1" fontWeight="700" color="success.main">${Number(perfil.honorario).toLocaleString('es-AR')}</Typography>
+                  </Box>
+                )}
+              </Stack>
+            )}
+          </Box>
+        </section>
 
-          {modoEdicion ? (
-            <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-              <FormControl fullWidth variant="outlined" size="small">
-                <InputLabel id="os-edit-label">Obra Social</InputLabel>
-                <Select
-                  labelId="os-edit-label"
-                  id="os-edit-select"
-                  value={obraSocialSeleccionada}
-                  label="Obra Social"
-                  onChange={(e) => {
-                    setObraSocialSeleccionada(e.target.value);
-                    setPlanSeleccionado(""); // resetear plan al cambiar OS
+        {/* SECCIÓN: COBERTURA MÉDICA (Solo Pacientes) */}
+        {user?.rol === "PACIENTE" && (
+          <section aria-labelledby="section-cobertura-medica" style={{ marginBottom: '32px' }}>
+            <Box style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} className="card-title-custom">
+              <Typography id="section-cobertura-medica" variant="subtitle1" component="h2" sx={{ fontSize: '16px', fontWeight: 700, color: 'var(--color-text)', m: 0 }}>
+                Cobertura Médica
+              </Typography>
+              {!isEditingCobertura && (
+                <Button 
+                  startIcon={<Edit />} 
+                  onClick={() => {
+                    setIsEditingCobertura(true);
+                    setTimeout(() => coberturaRef.current?.focus(), 100);
                   }}
+                  size="small"
+                  aria-label="Editar cobertura médica"
                 >
-                  <MenuItem value=""><em>Ninguna</em></MenuItem>
-                  {obrasSociales.map((os) => (
-                    // El DTO de ObraSocial usa "id" (no "_id")
-                    <MenuItem key={os.id} value={os.id}>{os.nombre}</MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-
-              <FormControl fullWidth variant="outlined" size="small" disabled={!obraSocialSeleccionada}>
-                <InputLabel id="plan-edit-label">Plan</InputLabel>
-                <Select
-                  labelId="plan-edit-label"
-                  id="plan-edit-select"
-                  value={planSeleccionado}
-                  label="Plan"
-                  onChange={(e) => setPlanSeleccionado(e.target.value)}
-                >
-                  <MenuItem value=""><em>Ningún plan</em></MenuItem>
-                  {planesDisponibles.map((plan) => (
-                    // El DTO de Plan usa "id" (no "_id")
-                    <MenuItem key={plan.id} value={plan.id}>{plan.nombre}</MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-
-              <Box sx={{ display: "flex", gap: 1 }}>
-                <Button size="small" variant="contained" color="primary" onClick={handleGuardarCambios} disabled={saving}>
-                  {saving ? "Guardando..." : "Guardar"}
+                  Editar
                 </Button>
-                <Button size="small" color="inherit" onClick={handleCancelarEdicion} disabled={saving}>
-                  Cancelar
-                </Button>
-              </Box>
+              )}
             </Box>
-          ) : (
-            <Typography variant="body1">{textoCobertura}</Typography>
-          )}
-        </Grid>
 
-        {/* Usuario */}
-        <Grid item xs={12} sm={6}>
-          <Typography variant="h6" sx={{ fontWeight: "bold", mb: 1 }}>
-            Usuario / Email
-          </Typography>
-          <Typography variant="body1">{user?.nombreUsuario ?? "Desconocido"}</Typography>
-        </Grid>
-      </Grid>
+            <Box sx={{ pt: 1 }}>
+              {isEditingCobertura ? (
+                <form onSubmit={handleGuardarCobertura} aria-label="Formulario de edición de cobertura médica">
+                  <Stack spacing={3}>
+                    <Stack direction={{ xs: 'column', sm: 'row' }} spacing={3}>
+                      <FormControl fullWidth>
+                        <InputLabel id="os-label">Obra Social</InputLabel>
+                        <Select
+                          labelId="os-label"
+                          label="Obra Social"
+                          inputRef={coberturaRef}
+                          value={formCobertura.obraSocial}
+                          onChange={(e) => setFormCobertura({ obraSocial: e.target.value, plan: "" })}
+                        >
+                          <MenuItem value=""><em>Ninguna</em></MenuItem>
+                          {obrasSociales.map((os) => (
+                            <MenuItem key={os.id} value={os.id}>{os.nombre}</MenuItem>
+                          ))}
+                        </Select>
+                      </FormControl>
+                      <FormControl fullWidth disabled={!formCobertura.obraSocial}>
+                        <InputLabel id="plan-label">Plan</InputLabel>
+                        <Select
+                          labelId="plan-label"
+                          label="Plan"
+                          value={formCobertura.plan}
+                          onChange={(e) => setFormCobertura({ ...formCobertura, plan: e.target.value })}
+                        >
+                          <MenuItem value=""><em>Ningún plan</em></MenuItem>
+                          {planesDisponibles.map((plan) => (
+                            <MenuItem key={plan.id} value={plan.id}>{plan.nombre}</MenuItem>
+                          ))}
+                        </Select>
+                      </FormControl>
+                    </Stack>
+                    <Box display="flex" justifyContent="flex-end" gap={2}>
+                      <Button 
+                        color="error" 
+                        variant="outlined"
+                        onClick={() => {
+                          setIsEditingCobertura(false);
+                          setFormCobertura({ obraSocial: perfil.obraSocial?.id || "", plan: perfil.plan?.id || "" });
+                        }}
+                        startIcon={<Cancel />}
+                      >
+                        Cancelar
+                      </Button>
+                      <Button 
+                        type="submit" 
+                        variant="contained" 
+                        color="primary"
+                        startIcon={<Save />}
+                      >
+                        Guardar
+                      </Button>
+                    </Box>
+                  </Stack>
+                </form>
+              ) : (
+                <Stack direction={{ xs: 'column', sm: 'row' }} spacing={4}>
+                  <Box>
+                    <Typography variant="overline" color="text.secondary">Obra Social</Typography>
+                    <Typography variant="body1" fontWeight="600">{perfil.obraSocial?.nombre || "No tiene obra social cargada"}</Typography>
+                  </Box>
+                  {perfil.obraSocial && (
+                    <Box>
+                      <Typography variant="overline" color="text.secondary">Plan</Typography>
+                      <Typography variant="body1" fontWeight="600">{perfil.plan?.nombre || "Sin plan específico"}</Typography>
+                    </Box>
+                  )}
+                </Stack>
+              )}
+            </Box>
+          </section>
+        )}
 
-      <Divider sx={{ borderColor: "primary.main", borderWidth: 1, my: 3, opacity: 0.2 }} />
+        {/* SECCIÓN: CUENTA Y SEGURIDAD */}
+        <section aria-labelledby="section-cuenta-seguridad">
+          <Box style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} className="card-title-custom">
+            <Typography id="section-cuenta-seguridad" variant="subtitle1" component="h2" sx={{ fontSize: '16px', fontWeight: 700, color: 'var(--color-text)', m: 0 }}>
+              Cuenta y Seguridad
+            </Typography>
+            {!isEditingUsuario && (
+              <Button 
+                startIcon={<Edit />} 
+                onClick={() => {
+                  setIsEditingUsuario(true);
+                  setTimeout(() => usuarioRef.current?.focus(), 100);
+                }}
+                size="small"
+                aria-label="Editar cuenta y seguridad"
+              >
+                Editar
+              </Button>
+            )}
+          </Box>
+          
+          <Box sx={{ pt: 1 }}>
+            {isEditingUsuario ? (
+              <form onSubmit={handleGuardarUsuario} aria-label="Formulario de edición de cuenta y seguridad">
+                <Stack spacing={3}>
+                  <Stack direction={{ xs: 'column', sm: 'row' }} spacing={3}>
+                    <TextField
+                      fullWidth
+                      inputRef={usuarioRef}
+                      label="Nombre de Usuario (Email)"
+                      value={formUsuario.nombreUsuario}
+                      onChange={(e) => setFormUsuario({ ...formUsuario, nombreUsuario: e.target.value })}
+                      required
+                      helperText="Se utilizará para iniciar sesión"
+                    />
+                    <Stack spacing={2} fullWidth sx={{ width: '100%' }}>
+                      <TextField
+                        fullWidth
+                        type="password"
+                        label="Nueva Contraseña"
+                        value={formUsuario.password}
+                        onChange={(e) => setFormUsuario({ ...formUsuario, password: e.target.value })}
+                        inputProps={{ minLength: 6 }}
+                        helperText="Dejá en blanco si no deseas cambiarla"
+                      />
+                      {formUsuario.password && (
+                        <TextField
+                          fullWidth
+                          type="password"
+                          label="Confirmar Nueva Contraseña"
+                          value={formUsuario.confirmPassword}
+                          inputProps={{ minLength: 6 }}
+                          onChange={(e) => setFormUsuario({ ...formUsuario, confirmPassword: e.target.value })}
+                        />
+                      )}
+                    </Stack>
+                  </Stack>
+                  <Box display="flex" justifyContent="flex-end" gap={2}>
+                    <Button 
+                      color="error" 
+                      variant="outlined"
+                      onClick={() => {
+                        setIsEditingUsuario(false);
+                        setFormUsuario({ nombreUsuario: user?.nombreUsuario || "", password: "", confirmPassword: "" });
+                      }}
+                      startIcon={<Cancel />}
+                    >
+                      Cancelar
+                    </Button>
+                    <Button 
+                      type="submit" 
+                      variant="contained" 
+                      color="primary"
+                      startIcon={<Save />}
+                    >
+                      Guardar
+                    </Button>
+                  </Box>
+                </Stack>
+              </form>
+            ) : (
+              <Stack direction={{ xs: 'column', sm: 'row' }} spacing={4}>
+                <Box>
+                  <Typography variant="overline" color="text.secondary">Nombre de Usuario</Typography>
+                  <Typography variant="body1" fontWeight="600">{user?.nombreUsuario || "Desconocido"}</Typography>
+                </Box>
+                <Box>
+                  <Typography variant="overline" color="text.secondary">Contraseña</Typography>
+                  <Typography variant="body1" fontWeight="600">••••••••</Typography>
+                </Box>
+              </Stack>
+            )}
+          </Box>
+        </section>
 
-      {/* ── SECCIÓN 3: Cambiar Contraseña (UI, funcionalidad pendiente) ── */}
-      <Box sx={{ mb: 2 }}>
-        <Link
-          component="button"
-          variant="subtitle1"
-          onClick={() => setShowPassword((prev) => !prev)}
-          underline="none"
-          sx={{ fontWeight: "bold", color: "primary.main", display: "flex", alignItems: "center" }}
-        >
-          {showPassword ? "- ocultar opciones de contraseña" : "+ cambiar contraseña"}
-        </Link>
       </Box>
 
-      <Collapse in={showPassword}>
-        <Grid container spacing={3} sx={{ mt: 1 }}>
-          <Grid item xs={12} sm={6}>
-            <Typography variant="subtitle2" sx={{ fontWeight: "bold", mb: 0.5 }}>
-              Contraseña actual
-            </Typography>
-            <TextField fullWidth size="small" type="password" variant="outlined" />
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <Box sx={{ mb: 2 }}>
-              <Typography variant="subtitle2" sx={{ fontWeight: "bold", mb: 0.5 }}>
-                Nueva contraseña
-              </Typography>
-              <TextField fullWidth size="small" type="password" variant="outlined" />
-            </Box>
-            <Box>
-              <Typography variant="subtitle2" sx={{ fontWeight: "bold", mb: 0.5 }}>
-                Confirmar nueva contraseña
-              </Typography>
-              <TextField fullWidth size="small" type="password" variant="outlined" />
-            </Box>
-          </Grid>
-          <Grid item xs={12}>
-            <Button variant="outlined" color="primary">
-              Actualizar Contraseña
-            </Button>
-            <Typography variant="caption" sx={{ ml: 2, color: "text.secondary" }}>
-              (Funcionalidad en desarrollo)
-            </Typography>
-          </Grid>
-        </Grid>
-      </Collapse>
-    </Box>
+    </main>
   );
 }

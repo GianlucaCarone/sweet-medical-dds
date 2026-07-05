@@ -10,6 +10,13 @@ const HistorialInfo = styled.div`
   gap: 16px;
 `;
 
+const HistorialActions = styled.div`
+  display: flex;
+  justify-content: flex-end;
+  width: 100%;
+  margin-top: 16px;
+`;
+
 const DoctorAvatar = styled.div`
   width: 52px;
   height: 52px;
@@ -34,27 +41,32 @@ const DoctorAvatar = styled.div`
   }
 `;
 
-const BtnSecundario = styled.button`
+const BtnVolverAPedir = styled.button`
   height: 42px;
   padding: 0 20px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  width: fit-content;
 
   border: none;
   border-radius: 999px;
 
-  width: fit-content;
-  align-self: flex-end;
-
   background: var(--color-text-muted);
   color: white;
 
+  font-size: 14px;
   font-weight: 600;
+
   cursor: pointer;
   transition: all .2s ease;
 
   box-shadow: 0 4px 10px rgba(0,0,0,.12);
 
   &:hover {
-    filter: brightness(0.9);
+    filter: brightness(.9);
     transform: translateY(-1px);
   }
 
@@ -105,19 +117,21 @@ export default function TurnoHistorialCard({ turno }) {
         </Box>
       </HistorialInfo>
 
-      <BtnSecundario
-        onClick={() =>
-          navigate('/busqueda-turnos', {
-            state: {
-              medico: turno.medico,
-              especialidad: turno.especialidad,
-              sede: turno.sede,
-            },
-          })
-        }
-      >
-        Volver a pedir
-      </BtnSecundario>
+      <HistorialActions>
+        <BtnVolverAPedir
+            onClick={() =>
+                navigate("/busqueda-turnos", {
+                    state: {
+                        medico: turno.medico,
+                        especialidad: turno.especialidad,
+                        sede: turno.sede,
+                    },
+                })
+            }
+        >
+            Volver a pedir
+        </BtnVolverAPedir>
+      </HistorialActions>
     </CardBase>
   );
 }

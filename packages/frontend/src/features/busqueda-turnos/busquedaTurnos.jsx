@@ -13,7 +13,7 @@ import { useFilters } from '../../context/FilterContext.jsx';
 import { Typography } from '@mui/material';
 import TurnosEmptyState from '../../components/mis-turnos/TurnosEmptyState.jsx';
 import ModalLogin from "../../components/login/ModalLogin.jsx";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Navigate } from "react-router-dom";
 
 export default function BusquedaTurnos() {
     const { doctors, specialities, practices, branches, buildApiFilters } = useFilters();
@@ -101,6 +101,10 @@ export default function BusquedaTurnos() {
         const initialFilters = buildApiFilters();
         fetchTurns(initialFilters);
     }, []);
+
+    if (user?.rol === "MEDICO") {
+        return <Navigate to="/" replace />;
+    }
 
     return (
         <div className="container-busqueda">
