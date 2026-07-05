@@ -11,7 +11,6 @@ import {
   InputLabel,
   CircularProgress,
   Stack,
-  Divider,
   Chip
 } from "@mui/material";
 import { Edit, Save, Cancel } from "@mui/icons-material";
@@ -25,25 +24,23 @@ import { actualizarUsuario } from "../../api/usuarioApi.js";
 import "../perfil-medico/PerfilMedico.css";
 
 export default function MiPerfil() {
-  const { user } = useAuth();
+  const { user, actualizarUsuarioContexto } = useAuth();
   const { showAlert } = useAlert();
 
   const [perfil, setPerfil] = useState(null);
   const [obrasSociales, setObrasSociales] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  // Estados de edición independientes por entidad
   const [isEditingPerfil, setIsEditingPerfil] = useState(false);
-  const [formPerfil, setFormPerfil] = useState({ nombre: "", dni: "", honorario: 0 });
-  const nombreRef = useRef(null);
-
-  const [isEditingCobertura, setIsEditingCobertura] = useState(false);
-  const [formCobertura, setFormCobertura] = useState({ obraSocial: "", plan: "" });
-  const coberturaRef = useRef(null);
-
   const [isEditingUsuario, setIsEditingUsuario] = useState(false);
-  const [formUsuario, setFormUsuario] = useState({ nombreUsuario: "", password: "", confirmPassword: "" });
-  const usuarioRef = useRef(null);
 
+  const [formPerfil, setFormPerfil] = useState({ nombre: "", dni: "", honorario: 0 });
+  const [formCobertura, setFormCobertura] = useState({ obraSocial: "", plan: "" });
+  const [formUsuario, setFormUsuario] = useState({ nombreUsuario: "", password: "", confirmPassword: "" });
+
+  const nombreRef = useRef(null);
+  const usuarioRef = useRef(null);
   const mainRef = useRef(null);
 
   useEffect(() => {
@@ -58,8 +55,8 @@ export default function MiPerfil() {
           setObrasSociales(obras);
           setFormPerfil({ nombre: pac.nombre || "", dni: pac.dni || "", honorario: 0 });
           setFormCobertura({ 
-            obraSocial: pac.obraSocial?.id || "", 
-            plan: pac.plan?.id || "" 
+            obraSocial: pac.obraSocial?.id || pac.obraSocial || "", 
+            plan: pac.plan?.id || pac.plan || "" 
           });
         } else if (user?.rol === "MEDICO") {
           const med = await getMiPerfilMedico();
@@ -82,17 +79,40 @@ export default function MiPerfil() {
 
   useEffect(() => {
     if (!loading && perfil) {
-      // Enfoca el contenedor principal para habilitar accesibilidad por teclado y scroll directo
       mainRef.current?.focus();
     }
   }, [loading, perfil]);
 
+  const handleCancelarPerfil = () => {
+    setIsEditingPerfil(false);
+    if (perfil) {
+      setFormPerfil({
+        nombre: perfil.nombre || "",
+        dni: perfil.dni || "",
+        honorario: perfil.honorario || 0
+      });
+      setFormCobertura({
+        obraSocial: perfil.obraSocial?.id || perfil.obraSocial || "",
+        plan: perfil.plan?.id || perfil.plan || ""
+      });
+    }
+  };
+
+  const handleEditarPerfil = () => {
+    // Cerrar otra pestaña si está abierta
+    handleCancelarUsuario();
+    setIsEditingPerfil(true);
+    setTimeout(() => nombreRef.current?.focus(), 100);
+  };
+
   const handleGuardarPerfil = async (e) => {
     e.preventDefault();
+
     if (!formPerfil.nombre.trim()) {
       showAlert("El nombre completo es requerido.", "error");
       return;
     }
+
     if (user.rol === "PACIENTE") {
       const dniNum = Number(formPerfil.dni);
       if (!formPerfil.dni || isNaN(dniNum) || dniNum < 1000000) {
@@ -100,60 +120,77 @@ export default function MiPerfil() {
         return;
       }
     }
+
     if (user.rol === "MEDICO" && Number(formPerfil.honorario) < 0) {
       showAlert("El honorario no puede ser negativo.", "error");
       return;
     }
-    
+
     try {
       if (user.rol === "PACIENTE") {
-        const payload = { nombre: formPerfil.nombre, dni: Number(formPerfil.dni) };
-        const updated = await actualizarPaciente(perfil.id, payload);
-        setPerfil(prev => ({ ...prev, ...updated }));
+        const payload = {
+          nombre: formPerfil.nombre,
+          dni: Number(formPerfil.dni),
+          obraSocial: formCobertura.obraSocial || null,
+          plan: formCobertura.plan || null
+        };
+        const updatedPaciente = await actualizarPaciente(perfil.id, payload);
+        setPerfil(updatedPaciente);
       } else if (user.rol === "MEDICO") {
-        const payload = { nombre: formPerfil.nombre, honorario: Number(formPerfil.honorario) };
-        const updated = await updateMedico(payload);
-        setPerfil(prev => ({ ...prev, ...updated }));
+        const payload = {
+          nombre: formPerfil.nombre,
+          honorario: Number(formPerfil.honorario)
+        };
+        const updatedMedico = await updateMedico(payload);
+        setPerfil(updatedMedico);
       }
       setIsEditingPerfil(false);
-      showAlert("Datos personales actualizados correctamente.", "success");
+      showAlert("Datos del perfil actualizados correctamente.", "success");
     } catch (err) {
-      showAlert(err.response?.data?.message || "Error al actualizar datos personales.", "error");
+      console.error("Error al guardar perfil:", err);
+      showAlert(err.response?.data?.message || err.message || "Error al actualizar el perfil.", "error");
     }
   };
 
-  const handleGuardarCobertura = async (e) => {
-    e.preventDefault();
-    try {
-      await actualizarPaciente(perfil.id, {
-        obraSocial: formCobertura.obraSocial || null,
-        plan: formCobertura.plan || null,
-      });
+  const handleCancelarUsuario = () => {
+    setIsEditingUsuario(false);
+    setFormUsuario({
+      nombreUsuario: user?.nombreUsuario || "",
+      password: "",
+      confirmPassword: ""
+    });
+  };
 
-      const obraSocialDoc = obrasSociales.find((os) => os.id === formCobertura.obraSocial);
-      const planDoc = obraSocialDoc?.planes?.find((p) => p.id === formCobertura.plan);
-
-      setPerfil((prev) => ({
-        ...prev,
-        obraSocial: obraSocialDoc ? { id: obraSocialDoc.id, nombre: obraSocialDoc.nombre } : null,
-        plan: planDoc ? { id: planDoc.id, nombre: planDoc.nombre } : null,
-      }));
-      setIsEditingCobertura(false);
-      showAlert("Cobertura médica actualizada correctamente.", "success");
-    } catch (err) {
-      showAlert(err.response?.data?.message || "Error al actualizar cobertura médica.", "error");
-    }
+  const handleEditarUsuario = () => {
+    // Cerrar otra pestaña si está abierta
+    handleCancelarPerfil();
+    setIsEditingUsuario(true);
+    setTimeout(() => usuarioRef.current?.focus(), 100);
   };
 
   const handleGuardarUsuario = async (e) => {
     e.preventDefault();
+
     if (!formUsuario.nombreUsuario.trim()) {
-      showAlert("El nombre de usuario es requerido.", "error");
+      showAlert("El nombre de usuario (Email) es requerido.", "error");
       return;
     }
+
     if (formUsuario.password) {
-      if (formUsuario.password.length < 6) {
-        showAlert("La contraseña debe tener al menos 6 caracteres.", "error");
+      if (formUsuario.password.length < 8) {
+        showAlert("La contraseña debe tener al menos 8 caracteres.", "error");
+        return;
+      }
+      if (!/(?=.*[A-Z])/.test(formUsuario.password)) {
+        showAlert("La contraseña debe contener al menos una letra mayúscula.", "error");
+        return;
+      }
+      if (!/(?=.*[a-z])/.test(formUsuario.password)) {
+        showAlert("La contraseña debe contener al menos una letra minúscula.", "error");
+        return;
+      }
+      if (!/(?=.*\d)/.test(formUsuario.password)) {
+        showAlert("La contraseña debe contener al menos un número.", "error");
         return;
       }
       if (formUsuario.password !== formUsuario.confirmPassword) {
@@ -161,26 +198,37 @@ export default function MiPerfil() {
         return;
       }
     }
-    
+
     try {
-      const payload = { nombreUsuario: formUsuario.nombreUsuario };
+      const payload = {
+        nombreUsuario: formUsuario.nombreUsuario
+      };
       if (formUsuario.password) {
         payload.password = formUsuario.password;
       }
+
+      const response = await actualizarUsuario(payload);
       
-      await actualizarUsuario(payload);
-      
-      setFormUsuario(prev => ({ ...prev, password: "", confirmPassword: "" }));
+      // Sincronizar en el context el usuario DTO retornado
+      actualizarUsuarioContexto(response);
+
+      setFormUsuario({
+        nombreUsuario: response.nombreUsuario,
+        password: "",
+        confirmPassword: ""
+      });
+
       setIsEditingUsuario(false);
-      showAlert("Datos de cuenta actualizados correctamente.", "success");
+      showAlert("Datos de la cuenta actualizados correctamente.", "success");
     } catch (err) {
-      showAlert(err.response?.data?.message || "Error al actualizar datos de cuenta.", "error");
+      console.error("Error al guardar cuenta:", err);
+      showAlert(err.response?.data?.message || err.message || "Error al actualizar la cuenta.", "error");
     }
   };
 
   if (loading) {
     return (
-      <main className="container-perfil" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '50vh' }}>
+      <main className="perfil-loading-container">
         <CircularProgress />
       </main>
     );
@@ -191,27 +239,28 @@ export default function MiPerfil() {
   const planesDisponibles = obrasSociales.find((os) => os.id === formCobertura.obraSocial)?.planes ?? [];
 
   return (
-    <main ref={mainRef} tabIndex={-1} className="container-perfil" style={{ outline: 'none' }}>
+    <main ref={mainRef} tabIndex={-1} className="container-perfil">
       
       {/* Encabezado Principal */}
-      <Box className="perfil-card" sx={{ mb: 4, display: 'flex', alignItems: 'center', gap: 3 }}>
+      <Box className="perfil-card" sx={{ mb: 4, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center', p: 4 }}>
         <Avatar 
           sx={{ 
-            width: 72, 
-            height: 72, 
-            fontSize: "24px", 
+            width: 90, 
+            height: 90, 
+            fontSize: "32px", 
             fontWeight: "bold",
             background: "linear-gradient(135deg, var(--color-info) 0%, var(--color-info-dark) 100%)",
-            color: "white"
+            color: "white",
+            mb: 2
           }}
         >
           {perfil.nombre?.[0]?.toUpperCase() ?? "U"}{perfil.apellido ? perfil.apellido.charAt(0).toUpperCase() : ''}
         </Avatar>
         <Box>
-          <Typography variant="h5" component="h1" sx={{ fontWeight: 700, color: 'var(--color-text)', mb: 0.5 }}>
+          <Typography variant="h5" component="h1" sx={{ fontWeight: 700, color: 'var(--color-text)', mb: 1 }}>
             {perfil.nombre} {perfil.apellido || ''}
           </Typography>
-          <Box display="flex" alignItems="center" gap={1.5}>
+          <Box display="flex" alignItems="center" justifyContent="center" gap={1.5}>
             <Typography variant="overline" sx={{ color: 'var(--color-info)', fontWeight: 700, letterSpacing: '0.8px' }}>
               {user?.rol === "PACIENTE" ? "Paciente" : "Médico Especialista"}
             </Typography>
@@ -224,33 +273,54 @@ export default function MiPerfil() {
         </Box>
       </Box>
 
-      {/* TODAS LAS SECCIONES DENTRO DE UNA ÚNICA TARJETA GRANDE */}
+      {/* TARJETA GRANDE DE PERFIL */}
       <Box className="perfil-card">
         
-        {/* SECCIÓN: DATOS PERSONALES */}
-        <section aria-labelledby="section-datos-personales" style={{ marginBottom: '32px' }}>
-          <Box style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} className="card-title-custom">
-            <Typography id="section-datos-personales" variant="subtitle1" component="h2" sx={{ fontSize: '16px', fontWeight: 700, color: 'var(--color-text)', m: 0 }}>
-              Datos Personales
-            </Typography>
-            {!isEditingPerfil && (
-              <Button 
-                startIcon={<Edit />} 
-                onClick={() => {
-                  setIsEditingPerfil(true);
-                  setTimeout(() => nombreRef.current?.focus(), 100);
-                }}
-                size="small"
-                aria-label="Editar datos personales"
-              >
-                Editar
-              </Button>
-            )}
-          </Box>
+        {/* FORMULARIO DE DATOS DE PERFIL (Datos Personales + Cobertura si corresponde) */}
+        <Box component="form" onSubmit={handleGuardarPerfil}>
           
-          <Box sx={{ pt: 1 }}>
-            {isEditingPerfil ? (
-              <form onSubmit={handleGuardarPerfil} aria-label="Formulario de edición de datos personales">
+          {/* SECCIÓN: DATOS PERSONALES */}
+          <section aria-labelledby="section-datos-personales" className="perfil-section">
+            <Box className="card-title-custom">
+              <Typography id="section-datos-personales" variant="subtitle1" component="h2" sx={{ fontSize: '20px', fontWeight: 700, color: 'var(--color-text)', m: 0 }}>
+                Datos Personales
+              </Typography>
+              {isEditingPerfil ? (
+                <Box display="flex" gap={1.5}>
+                  <Button
+                    size="small"
+                    color="error"
+                    variant="outlined"
+                    onClick={handleCancelarPerfil}
+                    startIcon={<Cancel />}
+                  >
+                    Cancelar
+                  </Button>
+                  <Button
+                    size="small"
+                    type="submit"
+                    variant="contained"
+                    color="primary"
+                    startIcon={<Save />}
+                  >
+                    Confirmar
+                  </Button>
+                </Box>
+              ) : (
+                <Button
+                  variant="text"
+                  color="primary"
+                  startIcon={<Edit />}
+                  onClick={handleEditarPerfil}
+                  aria-label="Editar datos personales y cobertura"
+                >
+                  Editar
+                </Button>
+              )}
+            </Box>
+            
+            <Box sx={{ pt: 1 }}>
+              {isEditingPerfil ? (
                 <Stack spacing={3}>
                   <Stack direction={{ xs: 'column', sm: 'row' }} spacing={3}>
                     <TextField
@@ -310,77 +380,43 @@ export default function MiPerfil() {
                       />
                     )}
                   </Stack>
-                  <Box display="flex" justifyContent="flex-end" gap={2}>
-                    <Button 
-                      color="error" 
-                      variant="outlined"
-                      onClick={() => {
-                        setIsEditingPerfil(false);
-                        setFormPerfil({ nombre: perfil.nombre, dni: perfil.dni, honorario: perfil.honorario });
-                      }}
-                      startIcon={<Cancel />}
-                    >
-                      Cancelar
-                    </Button>
-                    <Button 
-                      type="submit" 
-                      variant="contained" 
-                      color="primary"
-                      startIcon={<Save />}
-                    >
-                      Guardar
-                    </Button>
-                  </Box>
                 </Stack>
-              </form>
-            ) : (
-              <Stack direction={{ xs: 'column', sm: 'row' }} spacing={4}>
-                <Box>
-                  <Typography variant="overline" color="text.secondary">Nombre Completo</Typography>
-                  <Typography variant="body1" fontWeight="600">{perfil.nombre}</Typography>
-                </Box>
-                {user?.rol === "PACIENTE" && (
+              ) : (
+                <Stack direction={{ xs: 'column', sm: 'row' }} spacing={8}>
                   <Box>
-                    <Typography variant="overline" color="text.secondary">DNI</Typography>
-                    <Typography variant="body1" fontWeight="600">{perfil.dni}</Typography>
+                    <Typography className="perfil-label">Nombre Completo</Typography>
+                    <Typography className="perfil-value">{perfil.nombre}</Typography>
                   </Box>
-                )}
-                {user?.rol === "MEDICO" && (
-                  <Box>
-                    <Typography variant="overline" color="text.secondary">Honorario Base</Typography>
-                    <Typography variant="body1" fontWeight="700" color="success.main">${Number(perfil.honorario).toLocaleString('es-AR')}</Typography>
-                  </Box>
-                )}
-              </Stack>
-            )}
-          </Box>
-        </section>
-
-        {/* SECCIÓN: COBERTURA MÉDICA (Solo Pacientes) */}
-        {user?.rol === "PACIENTE" && (
-          <section aria-labelledby="section-cobertura-medica" style={{ marginBottom: '32px' }}>
-            <Box style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} className="card-title-custom">
-              <Typography id="section-cobertura-medica" variant="subtitle1" component="h2" sx={{ fontSize: '16px', fontWeight: 700, color: 'var(--color-text)', m: 0 }}>
-                Cobertura Médica
-              </Typography>
-              {!isEditingCobertura && (
-                <Button 
-                  startIcon={<Edit />} 
-                  onClick={() => {
-                    setIsEditingCobertura(true);
-                    setTimeout(() => coberturaRef.current?.focus(), 100);
-                  }}
-                  size="small"
-                  aria-label="Editar cobertura médica"
-                >
-                  Editar
-                </Button>
+                  {user?.rol === "PACIENTE" && (
+                    <Box>
+                      <Typography className="perfil-label">DNI</Typography>
+                      <Typography className="perfil-value">{perfil.dni}</Typography>
+                    </Box>
+                  )}
+                  {user?.rol === "MEDICO" && (
+                    <Box>
+                      <Typography className="perfil-label">Honorario Base</Typography>
+                      <Typography className="perfil-value" color="success.main" sx={{ fontWeight: 700 }}>
+                        ${Number(perfil.honorario).toLocaleString('es-AR')}
+                      </Typography>
+                    </Box>
+                  )}
+                </Stack>
               )}
             </Box>
+          </section>
 
-            <Box sx={{ pt: 1 }}>
-              {isEditingCobertura ? (
-                <form onSubmit={handleGuardarCobertura} aria-label="Formulario de edición de cobertura médica">
+          {/* SECCIÓN: COBERTURA MÉDICA (Solo Pacientes) */}
+          {user?.rol === "PACIENTE" && (
+            <section aria-labelledby="section-cobertura-medica" className="perfil-section">
+              <Box className="card-title-custom">
+                <Typography id="section-cobertura-medica" variant="subtitle1" component="h2" sx={{ fontSize: '20px', fontWeight: 700, color: 'var(--color-text)', m: 0 }}>
+                  Cobertura Médica
+                </Typography>
+              </Box>
+
+              <Box sx={{ pt: 1 }}>
+                {isEditingPerfil ? (
                   <Stack spacing={3}>
                     <Stack direction={{ xs: 'column', sm: 'row' }} spacing={3}>
                       <FormControl fullWidth>
@@ -388,7 +424,6 @@ export default function MiPerfil() {
                         <Select
                           labelId="os-label"
                           label="Obra Social"
-                          inputRef={coberturaRef}
                           value={formCobertura.obraSocial}
                           onChange={(e) => setFormCobertura({ obraSocial: e.target.value, plan: "" })}
                         >
@@ -413,91 +448,94 @@ export default function MiPerfil() {
                         </Select>
                       </FormControl>
                     </Stack>
-                    <Box display="flex" justifyContent="flex-end" gap={2}>
-                      <Button 
-                        color="error" 
-                        variant="outlined"
-                        onClick={() => {
-                          setIsEditingCobertura(false);
-                          setFormCobertura({ obraSocial: perfil.obraSocial?.id || "", plan: perfil.plan?.id || "" });
-                        }}
-                        startIcon={<Cancel />}
-                      >
-                        Cancelar
-                      </Button>
-                      <Button 
-                        type="submit" 
-                        variant="contained" 
-                        color="primary"
-                        startIcon={<Save />}
-                      >
-                        Guardar
-                      </Button>
-                    </Box>
                   </Stack>
-                </form>
-              ) : (
-                <Stack direction={{ xs: 'column', sm: 'row' }} spacing={4}>
-                  <Box>
-                    <Typography variant="overline" color="text.secondary">Obra Social</Typography>
-                    <Typography variant="body1" fontWeight="600">{perfil.obraSocial?.nombre || "No tiene obra social cargada"}</Typography>
-                  </Box>
-                  {perfil.obraSocial && (
+                ) : (
+                  <Stack direction={{ xs: 'column', sm: 'row' }} spacing={8}>
                     <Box>
-                      <Typography variant="overline" color="text.secondary">Plan</Typography>
-                      <Typography variant="body1" fontWeight="600">{perfil.plan?.nombre || "Sin plan específico"}</Typography>
+                      <Typography className="perfil-label">Obra Social</Typography>
+                      <Typography className="perfil-value">{perfil.obraSocial?.nombre || "No tiene obra social cargada"}</Typography>
                     </Box>
-                  )}
-                </Stack>
+                    {perfil.obraSocial && (
+                      <Box>
+                        <Typography className="perfil-label">Plan</Typography>
+                        <Typography className="perfil-value">{perfil.plan?.nombre || "Sin plan específico"}</Typography>
+                      </Box>
+                    )}
+                  </Stack>
+                )}
+              </Box>
+            </section>
+          )}
+
+        </Box>
+
+        {/* FORMULARIO DE CUENTA Y SEGURIDAD */}
+        <Box component="form" onSubmit={handleGuardarUsuario} sx={{ mt: 4 }}>
+          
+          {/* SECCIÓN: CUENTA Y SEGURIDAD */}
+          <section aria-labelledby="section-cuenta-seguridad">
+            <Box className="card-title-custom">
+              <Typography id="section-cuenta-seguridad" variant="subtitle1" component="h2" sx={{ fontSize: '20px', fontWeight: 700, color: 'var(--color-text)', m: 0 }}>
+                Cuenta y Seguridad
+              </Typography>
+              {isEditingUsuario ? (
+                <Box display="flex" gap={1.5}>
+                  <Button
+                    size="small"
+                    color="error"
+                    variant="outlined"
+                    onClick={handleCancelarUsuario}
+                    startIcon={<Cancel />}
+                  >
+                    Cancelar
+                  </Button>
+                  <Button
+                    size="small"
+                    type="submit"
+                    variant="contained"
+                    color="primary"
+                    startIcon={<Save />}
+                  >
+                    Confirmar
+                  </Button>
+                </Box>
+              ) : (
+                <Button
+                  variant="text"
+                  color="primary"
+                  startIcon={<Edit />}
+                  onClick={handleEditarUsuario}
+                  aria-label="Editar cuenta y contraseña"
+                >
+                  Editar
+                </Button>
               )}
             </Box>
-          </section>
-        )}
-
-        {/* SECCIÓN: CUENTA Y SEGURIDAD */}
-        <section aria-labelledby="section-cuenta-seguridad">
-          <Box style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} className="card-title-custom">
-            <Typography id="section-cuenta-seguridad" variant="subtitle1" component="h2" sx={{ fontSize: '16px', fontWeight: 700, color: 'var(--color-text)', m: 0 }}>
-              Cuenta y Seguridad
-            </Typography>
-            {!isEditingUsuario && (
-              <Button 
-                startIcon={<Edit />} 
-                onClick={() => {
-                  setIsEditingUsuario(true);
-                  setTimeout(() => usuarioRef.current?.focus(), 100);
-                }}
-                size="small"
-                aria-label="Editar cuenta y seguridad"
-              >
-                Editar
-              </Button>
-            )}
-          </Box>
-          
-          <Box sx={{ pt: 1 }}>
-            {isEditingUsuario ? (
-              <form onSubmit={handleGuardarUsuario} aria-label="Formulario de edición de cuenta y seguridad">
+            
+            <Box sx={{ pt: 1 }}>
+              {isEditingUsuario ? (
                 <Stack spacing={3}>
                   <Stack direction={{ xs: 'column', sm: 'row' }} spacing={3}>
-                    <TextField
-                      fullWidth
-                      inputRef={usuarioRef}
-                      label="Nombre de Usuario (Email)"
-                      value={formUsuario.nombreUsuario}
-                      onChange={(e) => setFormUsuario({ ...formUsuario, nombreUsuario: e.target.value })}
-                      required
-                      helperText="Se utilizará para iniciar sesión"
-                    />
-                    <Stack spacing={2} fullWidth sx={{ width: '100%' }}>
+                    <Box sx={{ width: '100%' }}>
+                      <TextField
+                        fullWidth
+                        inputRef={usuarioRef}
+                        label="Nombre de Usuario (Email)"
+                        value={formUsuario.nombreUsuario}
+                        onChange={(e) => setFormUsuario({ ...formUsuario, nombreUsuario: e.target.value })}
+                        required
+                        helperText="Se utilizará para iniciar sesión"
+                      />
+                    </Box>
+                    <Stack spacing={2} sx={{ width: '100%' }}>
                       <TextField
                         fullWidth
                         type="password"
                         label="Nueva Contraseña"
                         value={formUsuario.password}
                         onChange={(e) => setFormUsuario({ ...formUsuario, password: e.target.value })}
-                        inputProps={{ minLength: 6 }}
-                        helperText="Dejá en blanco si no deseas cambiarla"
+                        inputProps={{ minLength: 8 }}
+                        helperText="Dejá en blanco si no deseas cambiarla (Mínimo 8 caracteres, una mayúscula, una minúscula y un número)"
                       />
                       {formUsuario.password && (
                         <TextField
@@ -505,49 +543,29 @@ export default function MiPerfil() {
                           type="password"
                           label="Confirmar Nueva Contraseña"
                           value={formUsuario.confirmPassword}
-                          inputProps={{ minLength: 6 }}
+                          inputProps={{ minLength: 8 }}
                           onChange={(e) => setFormUsuario({ ...formUsuario, confirmPassword: e.target.value })}
                         />
                       )}
                     </Stack>
                   </Stack>
-                  <Box display="flex" justifyContent="flex-end" gap={2}>
-                    <Button 
-                      color="error" 
-                      variant="outlined"
-                      onClick={() => {
-                        setIsEditingUsuario(false);
-                        setFormUsuario({ nombreUsuario: user?.nombreUsuario || "", password: "", confirmPassword: "" });
-                      }}
-                      startIcon={<Cancel />}
-                    >
-                      Cancelar
-                    </Button>
-                    <Button 
-                      type="submit" 
-                      variant="contained" 
-                      color="primary"
-                      startIcon={<Save />}
-                    >
-                      Guardar
-                    </Button>
+                </Stack>
+              ) : (
+                <Stack direction={{ xs: 'column', sm: 'row' }} spacing={8}>
+                  <Box>
+                    <Typography className="perfil-label">Nombre de Usuario</Typography>
+                    <Typography className="perfil-value">{user?.nombreUsuario || "Desconocido"}</Typography>
+                  </Box>
+                  <Box>
+                    <Typography className="perfil-label">Contraseña</Typography>
+                    <Typography className="perfil-value">••••••••</Typography>
                   </Box>
                 </Stack>
-              </form>
-            ) : (
-              <Stack direction={{ xs: 'column', sm: 'row' }} spacing={4}>
-                <Box>
-                  <Typography variant="overline" color="text.secondary">Nombre de Usuario</Typography>
-                  <Typography variant="body1" fontWeight="600">{user?.nombreUsuario || "Desconocido"}</Typography>
-                </Box>
-                <Box>
-                  <Typography variant="overline" color="text.secondary">Contraseña</Typography>
-                  <Typography variant="body1" fontWeight="600">••••••••</Typography>
-                </Box>
-              </Stack>
-            )}
-          </Box>
-        </section>
+              )}
+            </Box>
+          </section>
+
+        </Box>
 
       </Box>
 
