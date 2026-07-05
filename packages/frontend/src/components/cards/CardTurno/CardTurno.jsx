@@ -30,10 +30,18 @@ const TurnoActions = styled.div`
 const BtnSecundario = styled(Button)`
   && {
     border-radius: 999px;
+<<<<<<< HEAD
     background: var(--color-success-dark);
     border: 2px solid var(--color-success-dark);
     color: white;
 
+=======
+    background-color: var(--color-success-dark);
+    color: white;
+    border: 2px solid var(--color-success-dark);
+
+    transition: all 0.2s ease-in-out;
+>>>>>>> origin/develop
     text-transform: none;
     font-weight: 600;
     padding: 6px 18px;
@@ -44,7 +52,11 @@ const BtnSecundario = styled(Button)`
       background: var(--color-primary);
       border-color: var(--color-primary);
       transform: translateY(-1px);
+<<<<<<< HEAD
       box-shadow: 0 4px 8px rgba(0,0,0,.15);
+=======
+      box-shadow: 0 4px 6px rgba(19, 115, 51, 0.18);
+>>>>>>> origin/develop
     }
   }
 `;
@@ -77,7 +89,10 @@ const puedeCancelarTurno = (fechaHora) => {
   const fechaTurno = new Date(fechaHora);
   const ahora = new Date();
 
-  return fechaTurno.getTime() - ahora.getTime() >= 60 * 60 * 1000;
+  const diferenciaMs = fechaTurno.getTime() - ahora.getTime();
+  const unaHoraMs = 60 * 60 * 1000;
+
+  return diferenciaMs >= unaHoraMs;
 };
 
 // --- 2. Componente Principal ---

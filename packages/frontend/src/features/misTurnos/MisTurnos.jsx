@@ -84,7 +84,7 @@ export default function MisTurnos() {
   const handleTurnoCancelado = (turnoId, motivo) => {
     console.log("Turno cancelado:", turnoId, motivo);
 
-    showAlert("Turno cancelado correctamente.", "success");
+    showAlert("Tu turno fue cancelado correctamente.", "success");
   };
 
   const totalPaginasHistorial = Math.ceil(historialTurnos.length / turnosPorPagina);

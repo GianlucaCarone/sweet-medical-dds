@@ -69,7 +69,7 @@ export default function MenuUsuario({ userName = "Usuario", onLogoutSuccess }) {
         }}
       >
         {/* "Mi Perfil" navega a /mi-perfil (PACIENTE) */}
-        {user?.rol === "PACIENTE" && (
+        {(user?.rol === "MEDICO" || user?.rol === "PACIENTE") && (
           <MenuItem onClick={() => { navigate("/mi-perfil"); handleMenuClose(); }}>
             <ListItemIcon>
               <AccountCircleIcon fontSize="small" />
@@ -77,17 +77,6 @@ export default function MenuUsuario({ userName = "Usuario", onLogoutSuccess }) {
             Mi Perfil
           </MenuItem>
         )}
-
-        {/* "Perfil Médico" solo visible para usuarios con rol MEDICO */}
-        {user?.rol === "MEDICO" && (
-          <MenuItem onClick={() => { navigate("/perfil-medico"); handleMenuClose(); }}>
-            <ListItemIcon>
-              <MedicalServicesIcon fontSize="small" />
-            </ListItemIcon>
-            Perfil Médico
-          </MenuItem>
-        )}
-
         <Divider />
 
         <MenuItem onClick={handleLogout}>
