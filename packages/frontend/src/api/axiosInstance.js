@@ -26,6 +26,15 @@ axiosInstance.interceptors.response.use(
         if (mensajeBackend) {
             error.message = mensajeBackend;
         }
+
+        if (status === 403) {
+            window.location.href = "/403";
+        }
+
+        if (status >= 500) {
+            window.location.href = "/500";
+        }
+
         return Promise.reject(error);
     }
 );
