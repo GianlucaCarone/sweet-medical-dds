@@ -12,7 +12,7 @@ import TituloSeccion from "../../shared/TituloSeccion/TituloSeccion.jsx"
 import { useFilters } from '../../context/FilterContext.jsx';
 import { Typography } from '@mui/material';
 import ModalLogin from "../../components/login/ModalLogin.jsx";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Navigate } from "react-router-dom";
 
 export default function BusquedaTurnos() {
     const { user } = useAuth();
@@ -105,6 +105,10 @@ export default function BusquedaTurnos() {
         const initialFilters = buildApiFilters();
         fetchTurns(initialFilters);
     }, []);
+
+    if (user?.rol === "MEDICO") {
+        return <Navigate to="/" replace />;
+    }
 
     return (
         <div className="container-busqueda">

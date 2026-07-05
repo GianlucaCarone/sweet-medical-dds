@@ -86,8 +86,7 @@ function PerfilMedicoContent({ medicoInicial }) {
     handleAgregarDisponibilidad,
     handleEliminarDisponibilidad,
     handleAsociarSede,
-    handleDesvincularSede,
-    handleGuardarDatosPersonales
+    handleDesvincularSede
   } = useMedicoProfile(medicoInicial, triggerConfirm, setAlertConfig, showAlert);
 
   const turnosHook = useTurnos(medico, activeTab);
@@ -116,7 +115,6 @@ function PerfilMedicoContent({ medicoInicial }) {
           
           <CabeceraPerfil
             medico={medico}
-            handleGuardarDatosPersonales={handleGuardarDatosPersonales}
             setAlertConfig={setAlertConfig}
           />
 

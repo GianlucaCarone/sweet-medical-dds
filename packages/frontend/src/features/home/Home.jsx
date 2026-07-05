@@ -11,10 +11,13 @@ import CardBase from "../../shared/CardBase/CardBase";
 import SidebarFiltros from "../../components/busqueda-turnos/sidebarFiltros";
 import { useFilters } from "../../context/FilterContext";
 import { useEffect } from "react";
+import { useAuth } from "../../context/AuthContext";
+import HomeMedico from "./HomeMedico";
 
 const Home = () => {
 
   const { resetFilters } = useFilters();
+  const { user } = useAuth();
   const navigate = useNavigate();
   const howItWorksCards = [
     {
@@ -43,7 +46,11 @@ const Home = () => {
   };
   useEffect( () => {
     resetFilters();
-  }, []);
+  }, [resetFilters]);
+
+  if (user?.rol === "MEDICO") {
+    return <HomeMedico user={user} />;
+  }
 
   return <>
     <div className="home-grid">
