@@ -37,9 +37,18 @@ export class Agenda {
     obtenerProximosDias(cantidadDias) {
         const fechas = [];
 
+        const hoyArgentina = new Date(
+            new Intl.DateTimeFormat("en-CA", {
+                timeZone: "America/Argentina/Buenos_Aires",
+                year: "numeric",
+                month: "2-digit",
+                day: "2-digit",
+            }).format(new Date()) + "T00:00:00-03:00"
+        );
+
         for (let i = 0; i < cantidadDias; i++) {
-            const fecha = new Date();
-            fecha.setDate(fecha.getDate() + i);
+            const fecha = new Date(hoyArgentina);
+            fecha.setDate(hoyArgentina.getDate() + i);
             fechas.push(fecha);
         }
 
@@ -47,17 +56,22 @@ export class Agenda {
     }
 
     obtenerDiaSemana(fecha) {
-        const dias = [
-            DiaSemana.DOMINGO,
-            DiaSemana.LUNES,
-            DiaSemana.MARTES,
-            DiaSemana.MIERCOLES,
-            DiaSemana.JUEVES,
-            DiaSemana.VIERNES,
-            DiaSemana.SABADO
-        ];
-
-        return dias[fecha.getDay()];
+        const dias = {
+            domingo: DiaSemana.DOMINGO,
+            lunes: DiaSemana.LUNES,
+            martes: DiaSemana.MARTES,
+            miércoles: DiaSemana.MIERCOLES,
+            jueves: DiaSemana.JUEVES,
+            viernes: DiaSemana.VIERNES,
+            sábado: DiaSemana.SABADO,
+        };
+    
+        const dia = new Intl.DateTimeFormat("es-AR", {
+            weekday: "long",
+            timeZone: "America/Argentina/Buenos_Aires",
+        }).format(fecha);
+    
+        return dias[dia];
     }
 
     generarSlots(fechaBase, disponibilidad, duracionEnMinutos) {
@@ -70,12 +84,12 @@ export class Agenda {
         while (actual < fin) {
             const posibleFin = new Date(actual.getTime() + duracionEnMinutos * 60 * 1000);
 
-
-            if (posibleFin <= fin && actual > ahora) {
-                slots.push(new Date(actual));
-            } else {
-                // Si el slot sobrepasa la hora limite, cortamos el ciclo
+            if (posibleFin > fin) {
                 break;
+            }
+
+            if (actual > ahora) {
+                slots.push(new Date(actual));
             }
 
             actual = posibleFin;
