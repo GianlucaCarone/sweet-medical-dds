@@ -77,7 +77,6 @@ export default function BusquedaTurnos() {
         estado: 'DISPONIBLE',
         [order]: 'asc',
       };
-      
         try {
             const response = await getTurnosDisponiblesFiltradoPaginado(completeFilters, pageParam);
             setTurnos(response.data);

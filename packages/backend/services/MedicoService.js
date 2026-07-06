@@ -165,6 +165,24 @@ export class MedicoService {
 
     medico.eliminarSede(sedeId);
 
+    const disponibilidadesAEliminar = medico.disponibilidades.filter(disp => {
+      return disp.sede && (disp.sede._id 
+        ? disp.sede._id.toString() 
+        : disp.sede.toString()) === sedeId;
+    });
+
+    disponibilidadesAEliminar.forEach(disp => {
+      medico.eliminarDisponibilidad(disp.diaSemana);
+    });
+
+    try {
+      const { TurnoService } = await import("./TurnoService.js");
+      const turnoService = new TurnoService();
+      await turnoService.refrescarTurnosDisponiblesDelMedico(medico);
+    } catch (err) {
+      logger.error(`Error al regenerar turnos del médico ${medicoId} tras eliminar sede`, err);
+    }
+
     const medicoActualizado = await this.medicoRepository.save(medico);
     return this.toDto(medicoActualizado);
   }
@@ -373,6 +391,14 @@ export class MedicoService {
 
       return !deletedServiceIds.has(dispServicioId);
     });
+
+    try {
+      const { TurnoService } = await import("./TurnoService.js");
+      const turnoService = new TurnoService();
+      await turnoService.refrescarTurnosDisponiblesDelMedico(medico);
+    } catch (err) {
+      logger.error(`Error al regenerar turnos del médico ${idMedico} tras eliminar disponibilidad`, err);
+    }
 
     const guardadoGuardado = await this.medicoRepository.save(medico);
     logger.info("[MEDICO SERVICE]: Servicio eliminado con id: ", idServicio);
