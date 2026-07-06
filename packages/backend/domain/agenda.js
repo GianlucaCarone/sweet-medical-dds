@@ -65,11 +65,13 @@ export class Agenda {
 
         let actual = this.fechaConHora(fechaBase, disponibilidad.horaDesde);
         const fin = this.fechaConHora(fechaBase, disponibilidad.horaHasta);
+        const ahora = new Date();
 
         while (actual < fin) {
             const posibleFin = new Date(actual.getTime() + duracionEnMinutos * 60 * 1000);
 
-            if (posibleFin <= fin) {
+
+            if (posibleFin <= fin && actual > ahora) {
                 slots.push(new Date(actual));
             } else {
                 // Si el slot sobrepasa la hora limite, cortamos el ciclo
@@ -85,14 +87,15 @@ export class Agenda {
     fechaConHora(fechaBase, hora) {
         const [horas, minutos] = hora.split(":").map(Number);
 
-        const fecha = new Date(fechaBase);
-        fecha.setHours(horas, minutos, 0, 0);
+        const fechaArgentina = new Intl.DateTimeFormat("en-CA", {
+            timeZone: "America/Argentina/Buenos_Aires",
+            year: "numeric",
+            month: "2-digit",
+            day: "2-digit",
+        }).format(fechaBase);
 
-        return fecha;
-    }
-
-
-    refresacarTurnosSegunDisponibilidad({medico}) {
-        return [];
+        return new Date(
+            `${fechaArgentina}T${String(horas).padStart(2, "0")}:${String(minutos).padStart(2, "0")}:00-03:00`
+        );
     }
 }
