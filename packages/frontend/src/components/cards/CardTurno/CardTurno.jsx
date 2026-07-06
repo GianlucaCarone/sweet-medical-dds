@@ -4,6 +4,8 @@ import { Button } from '@mui/material';
 import CancelarTurnoModal from '../../mis-turnos/CancelarTurnoModal.jsx';
 import ReprogramarTurnoModal from '../../mis-turnos/ReprogramarTurnoModal.jsx';
 import TurnoCardLayout from '../../../shared/TurnoCardLayout.jsx';
+import Tooltip from "@mui/material/Tooltip";
+import { useAuth } from '../../../context/AuthContext.jsx';
 
 // --- 1. Styled Components ---
 const TurnoFooter = styled.div`
@@ -29,17 +31,21 @@ const TurnoActions = styled.div`
 const BtnSecundario = styled(Button)`
   && {
     border-radius: 999px;
+    background-color: var(--color-success-dark);
+    color: white;
     border: 2px solid var(--color-success-dark);
-    color: var(--color-success-dark);
     transition: all 0.2s ease-in-out;
     text-transform: none;
     font-weight: 600;
     padding: 6px 18px;
 
+    transition: all 0.2s ease-in-out;
+
     &:hover {
-      background: var(--color-success-light);
+      background: var(--color-primary);
+      border-color: var(--color-primary);
       transform: translateY(-1px);
-      box-shadow: 0 4px 6px rgba(19, 115, 51, 0.15);
+      box-shadow: 0 4px 6px rgba(19, 115, 51, 0.18);
     }
   }
 `;
@@ -57,16 +63,37 @@ const BtnCancelar = styled(Button)`
       background-color: var(--color-error-dark);
       transform: translateY(-1px);
     }
+    &:disabled {
+    background: rgba(220, 38, 38, 0.08);
+    border: 2px solid rgba(220, 38, 38, 0.35);
+    color: rgba(248, 113, 113, 0.7);
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+    }
   }
 `;
 
+const puedeCancelarTurno = (fechaHora) => {
+  const fechaTurno = new Date(fechaHora);
+  const ahora = new Date();
+
+  const diferenciaMs = fechaTurno.getTime() - ahora.getTime();
+  const unaHoraMs = 60 * 60 * 1000;
+
+  return diferenciaMs >= unaHoraMs;
+};
+
 // --- 2. Componente Principal ---
-export default function CardTurno({ turno, onCancelar }) {
+export default function CardTurno({ turno, onCancelar, onAceptar, onReprogramar }) {
   const [modalCancelarAbierto, setModalCancelarAbierto] = useState(false);
   const [modalReprogramarAbierto, setModalReprogramarAbierto] = useState(false);
+  const puedeCancelar = puedeCancelarTurno(turno.fechaHora);
 
-  const confirmarReprogramacion = (turnoId, nuevoTurno) => {
-    console.log('Reprogramando turno:', turnoId, 'Nuevo horario:', nuevoTurno);
+  const confirmarReprogramacion = (turnoId, nuevoHorario) => {
+    if (onReprogramar) {
+      onReprogramar(turnoId, nuevoHorario);
+    }
     setModalReprogramarAbierto(false);
   };
 
@@ -75,23 +102,61 @@ export default function CardTurno({ turno, onCancelar }) {
     setModalCancelarAbierto(false);
   };
 
+  const ultimoCambio = turno.historialEstado?.slice().reverse().find(h => h.estado === 'PENDIENTECAMBIO');
+  const medicoIdStr = turno.medico?.id?.toString() || turno.medico?._id?.toString();
+  const propuestoPorMedico = ultimoCambio?.usuario?.toString() === medicoIdStr;
+
   return (
     <>
       <TurnoCardLayout turno={turno}>
         <TurnoFooter>
           <CoberturaLabel>
-            {'Estado: '}
-            {turno.estado.toLowerCase()}
+            {'Turno '}
+            {turno.estado === "PENDIENTECAMBIO" ? "pendiente de revision" : turno.estado.toLowerCase()}
           </CoberturaLabel>
 
           <TurnoActions>
-            <BtnSecundario variant="outlined" onClick={() => setModalReprogramarAbierto(true)}>
-              Cambiar fecha
-            </BtnSecundario>
+            {turno.estado === "PENDIENTECAMBIO" ? (
+              propuestoPorMedico ? (
+                <BtnSecundario
+                  variant="contained"
+                  onClick={() => { if (onAceptar) onAceptar(turno.id); }}
+                >
+                  Aceptar cambio
+                </BtnSecundario>
+              ) : (
+                <span style={{ fontSize: '12px', color: 'var(--color-text-muted)', fontStyle: 'italic', marginRight: '8px', alignSelf: 'center' }}>
+                  Esperando confirmación...
+                </span>
+              )
+            ) : (
+              <BtnSecundario
+                  variant="contained"
+                  onClick={() => setModalReprogramarAbierto(true)}
+              >
+                  Cambiar fecha
+              </BtnSecundario>
+            )}
 
-            <BtnCancelar variant="contained" onClick={() => setModalCancelarAbierto(true)}>
-              Cancelar
-            </BtnCancelar>
+            {puedeCancelar ? (
+              <BtnCancelar
+                variant="contained"
+                onClick={() => setModalCancelarAbierto(true)}
+              >
+                Cancelar
+              </BtnCancelar>
+            ) : (
+              <Tooltip
+                title="No se puede cancelar un turno con menos de 1 hora de anticipación."
+                arrow
+              >
+                <span>
+                  <BtnCancelar variant="contained" disabled>
+                    Cancelar
+                  </BtnCancelar>
+                </span>
+              </Tooltip>
+            )}
           </TurnoActions>
         </TurnoFooter>
       </TurnoCardLayout>

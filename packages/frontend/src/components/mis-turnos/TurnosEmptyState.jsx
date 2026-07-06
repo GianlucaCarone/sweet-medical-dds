@@ -17,12 +17,12 @@ export default function TurnosEmptyState({
 
             <p>{descripcion}</p>
 
-            <button
+            {textoBoton !== null && (<button
                 className="empty-action-btn"
                 onClick={onClick}
             >
                 {textoBoton}
-            </button>
+            </button>)}
         </div>
     );
 }

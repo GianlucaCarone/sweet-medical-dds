@@ -1,6 +1,7 @@
 import express from "express";
 import { UsuarioController } from "../controllers/UsuarioController.js";
 import notificacionRoutes from "./notificacionRoutes.js";
+import { authMiddleware } from "../middlewares/authMiddleware.js";
 
 /**
  * 
@@ -76,6 +77,10 @@ export default function usuarioRoutes(getController) {
     .post((req, res, next) => usuarioController.create(req, res, next));
 
   router
+    .route("/me")
+    .put(authMiddleware, (req, res, next) => usuarioController.updateMe(req, res, next));
+
+  router
     .route("/:id")
     /**
      * @swagger
@@ -144,6 +149,7 @@ export default function usuarioRoutes(getController) {
      */
     .put((req, res, next) => usuarioController.update(req, res, next));
 
+  router.use("/me/notificaciones", authMiddleware, notificacionRoutes(getController));
   router.use("/:idUsuario/notificaciones", notificacionRoutes(getController));
 
   return router;

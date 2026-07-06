@@ -1,4 +1,4 @@
-import { mongoose } from "mongoose";
+import mongoose from "mongoose";
 import { Turno } from "../../domain/turnos/turno.js";
 import { historialEstadoTurnoSchema } from "./historialEstadoTurnoSchema.js";
 
@@ -39,6 +39,10 @@ const turnoSchema = new mongoose.Schema({
     costo: {
         type: Number,
         required: true,
+    },
+    estadoCobertura: {
+        type: String,
+        required: false
     },
     eliminado: {
         type: Boolean,

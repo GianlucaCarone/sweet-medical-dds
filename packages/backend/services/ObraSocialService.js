@@ -44,7 +44,7 @@ export class ObraSocialService {
     async buscarTodos() {
         const obrasSociales = await this.#obraSocialRepository.findAll();
         if (obrasSociales.length === 0) {
-            throw new BadRequestError("No se encontraron obras sociales");
+            return [];
         }
         return obrasSociales.map(obraSocial => this.toDto(obraSocial));
     }

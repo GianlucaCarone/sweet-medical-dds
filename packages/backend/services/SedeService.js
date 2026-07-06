@@ -18,7 +18,7 @@ export class SedeService {
   async findAll() {
     const sedes = await this.sedeRepository.findAll();
     if (sedes.length === 0) {
-      throw new NotFoundError("No se encontró ninguna sede");
+      return [];
     }
     return sedes.map(sede => this.toDto(sede));
   }

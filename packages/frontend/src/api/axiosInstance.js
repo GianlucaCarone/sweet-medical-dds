@@ -9,6 +9,10 @@ const axiosInstance = axios.create({
     // las cookies HttpOnly automáticamente en requests cross-origin.
     // Sin esto, las cookies nunca viajan entre frontend y backend.
     withCredentials: true,
+    // Serializa los arrays como claves repetidas (estados=A&estados=B) en vez de
+    // usar corchetes (estados[]=A). Así el query parser del backend los recibe
+    // bajo la clave "estados" y no "estados[]".
+    paramsSerializer: { indexes: null },
 });
 
 // Interceptor de respuesta: normaliza los errores del backend.
@@ -22,6 +26,15 @@ axiosInstance.interceptors.response.use(
         if (mensajeBackend) {
             error.message = mensajeBackend;
         }
+
+        if (status === 403) {
+            window.location.href = "/403";
+        }
+
+        if (status >= 500) {
+            window.location.href = "/500";
+        }
+
         return Promise.reject(error);
     }
 );

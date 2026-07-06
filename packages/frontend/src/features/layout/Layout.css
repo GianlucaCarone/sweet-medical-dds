@@ -16,7 +16,6 @@
 
 .app-main {
     grid-area: main;
-    min-height: calc(100vh - 80px);
 
     background:
         radial-gradient(circle at 20% 10%, rgba(3, 33, 53, 0.18), transparent 30%),

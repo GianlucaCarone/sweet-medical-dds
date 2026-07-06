@@ -6,8 +6,8 @@
 
 cat > /usr/share/nginx/html/env-config.js << EOF
 window._env_ = {
-  REACT_APP_API_URL: '${REACT_APP_API_URL:-http://localhost:3000}'
+  REACT_APP_API_URL: '${REACT_APP_API_URL:-https://two026-1c-1c-lu-sa-grupo-05.onrender.com}'
 };
 EOF
 
-echo "env-config.js generado: REACT_APP_API_URL=${REACT_APP_API_URL:-http://localhost:3000}"
+echo "env-config.js generado: REACT_APP_API_URL=${REACT_APP_API_URL:-https://two026-1c-1c-lu-sa-grupo-05.onrender.com}"

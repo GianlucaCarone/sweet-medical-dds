@@ -28,6 +28,10 @@ export default function notificacionRoutes(getController) {
     const router = express.Router({ mergeParams: true });
     const notificacionController = getController(NotificacionController);
 
+    router.route("/").get((req, res, next) => notificacionController.getNotificaciones(req, res, next));
+    router.route("/contadores").get((req, res, next) => notificacionController.getContadores(req, res, next));
+    router.route("/leer-todas").patch((req, res, next) => notificacionController.marcarTodasComoLeidas(req, res, next));
+
     /**
      * @swagger
      * /usuarios/{idUsuario}/notificaciones/leidas:
@@ -125,6 +129,7 @@ export default function notificacionRoutes(getController) {
      *         $ref: '#/components/responses/E400'
      */
     router.route("/:idNotificacion/leer").patch((req, res, next) => notificacionController.leer(req, res, next));
+    router.route("/:idNotificacion/desleer").patch((req, res, next) => notificacionController.desleer(req, res, next));
 
     return router;
 }

@@ -202,6 +202,7 @@ const datosPaginacionEjemplo = {
 
 // 1. PRÓXIMOS TURNOS (Estados: RESERVADO, CONFIRMADO - Fechas en el futuro)
 const proximosTurnos = [
+  
   {
     id: '6a2f3a68b58424e0c2f0d2bc',
     medico: {
@@ -218,7 +219,7 @@ const proximosTurnos = [
       costo: 10000,
     },
     // Fecha en el futuro
-    fechaHora: '2026-08-15T11:00:00.000Z',
+    fechaHora: new Date(Date.now() + 30 * 60 * 1000).toISOString(),
     sede: {
       _id: '6a08ff8d198602a8b2bcfbd6',
       nombre: 'Hospital Británico',
@@ -281,10 +282,12 @@ const proximosTurnos = [
     costo: 8000,
     estadoCobertura: 'NO_CUBIERTA',
   },
+  
 ];
 
 // 2. HISTORIAL DE TURNOS (Estados: FINALIZADO, CANCELADO - Fechas en el pasado)
 const historialTurnos = [
+  
   {
     id: '6a2f3a68b58424e0c2f0d2d4',
     medico: {
@@ -339,6 +342,7 @@ const historialTurnos = [
     costo: 12000,
     estadoCobertura: 'PARCIAL',
   },
+  
 ];
 
 // 3. ENVOLTORIO PAGINADO (Opcional: Si querés simular la respuesta HTTP completa)
