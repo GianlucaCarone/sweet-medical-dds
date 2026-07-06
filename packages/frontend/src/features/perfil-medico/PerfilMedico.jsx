@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import {useAlert} from '../../context/AlertContext.jsx';
+import { useNavigate } from "react-router-dom";
+import { handleApiError } from "../../utils/handleApiError";
 
 // Hooks
 import useMedicoProfile from './hooks/useMedicoProfile.js';
@@ -26,10 +28,15 @@ import './PerfilMedico.css';
 
 export default function PerfilMedico() {
   const { medico: medicoInicial, cargando, error } = useGetMiPerfilMedico();
+  const navigate = useNavigate();
 
   if (cargando) return <PerfilMedicoSkeleton />;
 
   if (error) {
+    const fueManejado = handleApiError(error, navigate);
+    
+    if (fueManejado) return null;
+    
     return (
       <main className="container-perfil">
         <PerfilEmptyState

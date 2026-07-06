@@ -14,6 +14,7 @@ import { Typography } from '@mui/material';
 import TurnosEmptyState from '../../components/mis-turnos/TurnosEmptyState.jsx';
 import ModalLogin from "../../components/login/ModalLogin.jsx";
 import { useNavigate, Navigate } from "react-router-dom";
+import { handleApiError } from "../../utils/handleApiError";
 
 export default function BusquedaTurnos() {
     const { user } = useAuth();
@@ -77,6 +78,23 @@ export default function BusquedaTurnos() {
         [order]: 'asc',
       };
 
+<<<<<<< HEAD
+        try {
+            const response = await getTurnosDisponiblesFiltradoPaginado(completeFilters, pageParam);
+            setTurnos(response.data);
+            setNoResults(response.data.length === 0);
+            setTurnGroups(createTurnGroups(response.data));
+            setPaginationData(response.paginacion);
+        } catch (e) {
+            const fueManejado = handleApiError(e, navigate);
+                
+            if (!fueManejado) {
+                console.error("Error fetching turns:", e);
+            }
+        } finally {
+            setLoading(false);
+        }
+=======
       try {
         const response = await getTurnosDisponiblesFiltradoPaginado(completeFilters, pageParam);
         setTurnos(response.data);
@@ -88,6 +106,7 @@ export default function BusquedaTurnos() {
       } finally {
         setLoading(false);
       }
+>>>>>>> origin/develop
     };
 
     const addTurnToCart = (id) => {

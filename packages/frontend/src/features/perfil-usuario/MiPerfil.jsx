@@ -20,6 +20,7 @@ import { getMiPerfil, actualizarPaciente } from "../../api/pacienteApi.js";
 import { getMiPerfilMedico, updateMedico } from "../../api/medico.js";
 import { getObrasSociales } from "../../api/obraSocialApi.js";
 import { actualizarUsuario } from "../../api/usuarioApi.js";
+import { handleApiError } from "../../utils/handleApiError";
 
 import "../perfil-medico/PerfilMedico.css";
 
@@ -65,8 +66,11 @@ export default function MiPerfil() {
         }
         setFormUsuario({ nombreUsuario: user?.nombreUsuario || "", password: "", confirmPassword: "" });
       } catch (err) {
-        console.error("Error al cargar el perfil:", err);
-        showAlert("Error al cargar los datos del perfil.", "error");
+        const fueManejado = handleApiError(err, navigate);
+        if (!fueManejado) {
+          console.error("Error al cargar el perfil:", err);
+          showAlert("Error al cargar los datos del perfil.", "error");
+        }
       } finally {
         setLoading(false);
       }
@@ -147,8 +151,11 @@ export default function MiPerfil() {
       setIsEditingPerfil(false);
       showAlert("Datos del perfil actualizados correctamente.", "success");
     } catch (err) {
-      console.error("Error al guardar perfil:", err);
-      showAlert(err.response?.data?.message || err.message || "Error al actualizar el perfil.", "error");
+      const fueManejado = handleApiError(err, navigate);
+      if (!fueManejado) {
+        console.error("Error al guardar perfil:", err);
+        showAlert(err.response?.data?.message || err.message || "Error al actualizar el perfil.", "error");
+      }
     }
   };
 
@@ -221,8 +228,11 @@ export default function MiPerfil() {
       setIsEditingUsuario(false);
       showAlert("Datos de la cuenta actualizados correctamente.", "success");
     } catch (err) {
-      console.error("Error al guardar cuenta:", err);
-      showAlert(err.response?.data?.message || err.message || "Error al actualizar la cuenta.", "error");
+      const fueManejado = handleApiError(err, navigate);
+      if (!fueManejado) {
+        console.error("Error al guardar cuenta:", err);
+        showAlert(err.response?.data?.message || err.message || "Error al actualizar la cuenta.", "error");
+      }
     }
   };
 

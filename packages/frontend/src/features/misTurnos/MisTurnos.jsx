@@ -23,6 +23,7 @@ import { getTurnosProximosUsuario, getHistorialUsuario, cancelarTurno } from '..
 import { useAuth } from "../../context/AuthContext.jsx"
 import { getContadoresTurnos } from '../../api/turno.js';
 import styled from 'styled-components';
+import { handleApiError } from "../../utils/handleApiError";
 
 const StyledTarjetaWrapper = styled(CardBase)`
   flex-direction: column;
@@ -106,7 +107,10 @@ export default function MisTurnos() {
         CANCELADOS: rawCounts.CANCELADO || 0
       });
     } catch (err) {
-      console.error("Error al obtener contadores de turnos:", err);
+      const fueManejado = handleApiError(err, navigate);
+      if (!fueManejado) {
+        console.error("Error al obtener contadores de turnos:", err);
+      }
     }
   };
 
@@ -120,7 +124,10 @@ export default function MisTurnos() {
       setTurnosProximos(proximosTurnos.data);
       setDataPaginacionProximos(proximosTurnos.paginacion);
     } catch (error) {
-      console.error("Error cargando turnos proximos:", error);
+      const fueManejado = handleApiError(error, navigate);
+      if (!fueManejado) {
+        console.error("Error cargando turnos proximos:", error);
+      }
     }
   }
 
@@ -135,7 +142,10 @@ export default function MisTurnos() {
       setDataPaginacionHistorial(historialPaginado.paginacion);
       setLoading(false)
     } catch (error) {
-      console.error("Error cargando historial:", error);
+      const fueManejado = handleApiError(error, navigate);
+      if (!fueManejado) {
+        console.error("Error cargando historial:", error);
+      }
     }
   }
 
