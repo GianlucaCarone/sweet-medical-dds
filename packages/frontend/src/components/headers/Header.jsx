@@ -11,12 +11,14 @@ import { useAuth } from "../../context/AuthContext.jsx";
 import { useCart } from '../../context/CartContext.jsx';
 import { useThemeContext } from '../../context/ThemeContext.jsx';
 import CampanitaNotification from "./CampanitaNotification.jsx";
+import HamburgerMenu from "./HamburgerMenu.jsx";
 import {
   Drawer,
   Badge,
   IconButton,
   Button,
   Box,
+  useMediaQuery,
 } from "@mui/material";
 import DarkModeIcon from '@mui/icons-material/DarkMode';
 import LightModeIcon from '@mui/icons-material/LightMode';
@@ -28,6 +30,7 @@ const Header = () => {
   const navigate = useNavigate();
   const { carrito, limpiarCarrito,  eliminarDelCarrito, manejoCarritoDrawer, counterCarrito } = useCart();
   const {showAlert} = useAlert();
+  const isMobile = useMediaQuery('(max-width:859px)')
 
   const [cantUnidades, setCantUnidades] = useState(0);
   const [loginAbierto, setLoginAbierto] = useState(false);
@@ -79,13 +82,15 @@ const Header = () => {
           </Link>
         </div>
 
+        {isMobile ? <HamburgerMenu onAbrirLogin={abrirLogin} onAbrirRegistro={abrirRegistro} /> : <></>}
+
         <Navbar />
 
         <div className="header-actions">
           <IconButton onClick={toggleTheme} aria-label="Cambiar modo claro/oscuro">
             { mode == 'light' ? <LightModeIcon sx={{ color: "primary" }}></LightModeIcon> : <DarkModeIcon sx={{ color: "primary" }}></DarkModeIcon>}
           </IconButton>
-          {user.rol === "PACIENTE" && (
+          {user?.rol === "PACIENTE" && (
             <IconButton
               onClick={() => manejoCarritoDrawer.abrir()}
               aria-label="carrito de turnos"

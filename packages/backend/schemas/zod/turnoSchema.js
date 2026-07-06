@@ -8,7 +8,7 @@ export const idParamsSchema = z.object({
 });
 
 export const bodyCambioEstadoTurnoSchema = z.object({
-    nuevoEstado: z.enum(EstadoTurnoEnum, { error: "El estado del turno no es válido" }),
+    nuevoEstado: z.nativeEnum(EstadoTurnoEnum, { error: "El estado del turno no es válido" }),
     quien: objectIdSchema("usuario").optional(),
     motivo: z.string("El motivo debe ser una cadena de texto").optional()
 });
@@ -19,8 +19,8 @@ export const bodyAsignarTurnoSchema = z.object({
 
 export const filtrosTurnoSchema = z.object({
     pacienteId: objectIdSchema("paciente").optional(),
-    estado: z.enum(EstadoTurnoEnum, { error: "El estado del turno no es válido" }).optional(),
-    estados: z.array(z.enum(EstadoTurnoEnum, { error: "El estado del turno no es válido" })).optional(),
+    estado: z.nativeEnum(EstadoTurnoEnum, { error: "El estado del turno no es válido" }).optional(),
+    estados: z.array(z.nativeEnum(EstadoTurnoEnum, { error: "El estado del turno no es válido" })).optional(),
     medicoId: objectIdSchema("medico").optional(),
     servicioId: objectIdSchema("servicio").optional(),
     sedeId: objectIdSchema("sede").optional(),
@@ -49,7 +49,7 @@ export const turnoBaseSchema = z.object({
     medicoId: objectIdSchema("medico"),
     sedeId: objectIdSchema("sede"),
     servicioId: objectIdSchema("servicio"),
-    estado: z.enum(EstadoTurnoEnum, { error: "El estado del turno no es válido" }),
+    estado: z.nativeEnum(EstadoTurnoEnum, { error: "El estado del turno no es válido" }),
     fechaHora: z.coerce.date({ invalid_type_error: "Fecha inválida" }),
     costo: z.number("El costo del turno debe ser un número").nonnegative("El costo del turno no puede ser negativo").optional()
 });
