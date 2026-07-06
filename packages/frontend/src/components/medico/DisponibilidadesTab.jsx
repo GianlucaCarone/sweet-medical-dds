@@ -1,5 +1,6 @@
 import React from 'react';
 import { Plus, Clock, MapPin, Trash2, Edit } from 'lucide-react';
+import { Button, IconButton } from '@mui/material';
 
 export default function DisponibilidadesTab({ disponibilidades, onAdd, onEdit, onEliminar }) {
   const diasSemana = ['LUNES', 'MARTES', 'MIERCOLES', 'JUEVES', 'VIERNES', 'SABADO', 'DOMINGO'];
@@ -8,13 +9,16 @@ export default function DisponibilidadesTab({ disponibilidades, onAdd, onEdit, o
     <div className="fade-in">
       <div className="d-flex justify-content-between align-items-center mb-4">
         <h4 className="font-weight-bold text-default m-0">Horario Semanal de Atención</h4>
-        <button 
+        <Button 
+          variant="contained"
+          color="success"
           onClick={onAdd} 
-          className="btn btn-success d-flex align-items-center gap-2 font-weight-bold px-3 py-2"
-          style={{ borderRadius: '10px' }}
+          startIcon={<Plus size={18} />}
+          sx={{ borderRadius: '10px', fontWeight: 'bold', px: 3, py: 1, textTransform: 'none', color: 'white' }}
+          aria-label="Agregar Horario"
         >
-          <Plus size={18} /> Agregar Horario
-        </button>
+          Agregar Horario
+        </Button>
       </div>
 
       <div className="semana-grid">
@@ -54,20 +58,26 @@ export default function DisponibilidadesTab({ disponibilidades, onAdd, onEdit, o
                           <span>{disp.sede.nombre}</span>
                         </div>
                         <div className="d-flex gap-1">
-                          <button 
+                          <IconButton 
                             onClick={() => onEdit(disp)} 
-                            className="disp-slot-edit-btn" 
+                            size="small"
+                            color="primary"
                             title="Editar Horario"
+                            aria-label="Editar Horario"
+                            sx={{ p: 0.5 }}
                           >
-                            <Edit size={10} />
-                          </button>
-                          <button 
+                            <Edit size={14} />
+                          </IconButton>
+                          <IconButton 
                             onClick={() => onEliminar(disp.id)} 
-                            className="disp-slot-delete-btn" 
+                            size="small"
+                            color="error"
                             title="Eliminar Horario"
+                            aria-label="Eliminar Horario"
+                            sx={{ p: 0.5 }}
                           >
-                            <Trash2 size={10} />
-                          </button>
+                            <Trash2 size={14} />
+                          </IconButton>
                         </div>
                       </div>
                     </div>
