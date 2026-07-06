@@ -46,8 +46,8 @@ export default function MisTurnos() {
     REALIZADOS: 0,
     CANCELADOS: 0
   });
-  const [dataPaginacionProximos, setDataPaginacionProximos] = useState({page: 1, limitePorPagina: 4})
-  const [dataPaginacionHistorial, setDataPaginacionHistorial] = useState({page: 1, limitePorPagina: 5});
+  const [dataPaginacionProximos, setDataPaginacionProximos] = useState({ numeroPagina: 1, limitePorPagina: 4, totalPaginas: 1, totalTurnos: 0 });
+  const [dataPaginacionHistorial, setDataPaginacionHistorial] = useState({ numeroPagina: 1, limitePorPagina: 5, totalPaginas: 1, totalTurnos: 0 });
   const [loading, setLoading] = useState(true);
   const [toastVisible, setToastVisible] = useState(false);
   const [turnosProximos, setTurnosProximos] = useState(mockRespuestaPaginada.data);
@@ -110,7 +110,7 @@ export default function MisTurnos() {
     }
   };
 
-  const cargarProximosTurnos = async (page = dataPaginacionProximos.page) => {
+  const cargarProximosTurnos = async (page = dataPaginacionProximos.numeroPagina) => {
     try {
       const paginacion = {
         'page': page,
@@ -124,7 +124,7 @@ export default function MisTurnos() {
     }
   }
 
-  const cargarHistorialTurnos = async (page = dataPaginacionHistorial.page) => {
+  const cargarHistorialTurnos = async (page = dataPaginacionHistorial.numeroPagina) => {
     try {
       const paginacion = {
         'page': page,
@@ -233,7 +233,7 @@ export default function MisTurnos() {
 
           <Pagination color="#137333"
             count={dataPaginacionProximos.totalPaginas} 
-            page={dataPaginacionProximos.page}
+            page={dataPaginacionProximos.numeroPagina}
             onChange={(e, page) => {
               cargarProximosTurnos(page);
             }}
@@ -264,7 +264,7 @@ export default function MisTurnos() {
 
           <Pagination color="#137333"
             count={dataPaginacionHistorial.totalPaginas} 
-            page={dataPaginacionHistorial.page}
+            page={dataPaginacionHistorial.numeroPagina}
             onChange={(e, page) => {
                 cargarHistorialTurnos(page);
             }}
