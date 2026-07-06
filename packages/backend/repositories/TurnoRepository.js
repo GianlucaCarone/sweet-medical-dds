@@ -98,9 +98,17 @@ disponible:
             query.sede = filtros.sedeId;
         }
         if (filtros.fechaHoraInicio !== undefined || filtros.fechaHoraFin !== undefined) {
-            query.fechaHora = {};
-            if (filtros.fechaHoraInicio !== undefined) query.fechaHora.$gte = filtros.fechaHoraInicio;
-            if (filtros.fechaHoraFin !== undefined) query.fechaHora.$lte = filtros.fechaHoraFin;
+            const fechaHoraCond = {};
+            if (filtros.fechaHoraInicio !== undefined) fechaHoraCond.$gte = filtros.fechaHoraInicio;
+            if (filtros.fechaHoraFin !== undefined) fechaHoraCond.$lte = filtros.fechaHoraFin;
+
+            query.$or = [
+                { fechaHora: fechaHoraCond },
+                { 
+                    estado: EstadoTurnoEnum.PENDIENTECAMBIO, 
+                    fechaHoraPropuesta: fechaHoraCond 
+                }
+            ];
         }
         if (filtros.estado === EstadoTurnoEnum.DISPONIBLE) {
           query.fechaHora = {
@@ -153,9 +161,17 @@ disponible:
             query.sede = filtros.sedeId;
         }
         if (filtros.fechaHoraInicio !== undefined || filtros.fechaHoraFin !== undefined) {
-            query.fechaHora = {};
-            if (filtros.fechaHoraInicio !== undefined) query.fechaHora.$gte = filtros.fechaHoraInicio;
-            if (filtros.fechaHoraFin !== undefined) query.fechaHora.$lte = filtros.fechaHoraFin;
+            const fechaHoraCond = {};
+            if (filtros.fechaHoraInicio !== undefined) fechaHoraCond.$gte = filtros.fechaHoraInicio;
+            if (filtros.fechaHoraFin !== undefined) fechaHoraCond.$lte = filtros.fechaHoraFin;
+
+            query.$or = [
+                { fechaHora: fechaHoraCond },
+                { 
+                    estado: EstadoTurnoEnum.PENDIENTECAMBIO, 
+                    fechaHoraPropuesta: fechaHoraCond 
+                }
+            ];
         }
         if (filtros.estado === EstadoTurnoEnum.DISPONIBLE) {
           query.fechaHora = {
