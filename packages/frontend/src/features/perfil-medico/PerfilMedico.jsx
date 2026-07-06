@@ -68,8 +68,23 @@ export default function PerfilMedico() {
 
 function PerfilMedicoContent({ medicoInicial }) {
   const location = useLocation();
-  const queryParams = new URLSearchParams(location.search);
-  const [activeTab, setActiveTab] = useState(queryParams.get('tab') || 'servicios');
+  const searchParams = new URLSearchParams(location.search);
+  const tabFromUrl = searchParams.get('tab');
+  
+  const initialTab = ['servicios', 'disponibilidades', 'sedes', 'turnos'].includes(tabFromUrl) 
+    ? tabFromUrl 
+    : 'servicios';
+
+  const [activeTab, setActiveTab] = React.useState(initialTab);
+  const navigate = useNavigate();
+
+  React.useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const tab = params.get('tab');
+    if (tab && ['servicios', 'disponibilidades', 'sedes', 'turnos'].includes(tab)) {
+      setActiveTab(tab);
+    }
+  }, [location.search]);
   const [modalOpen, setModalOpen] = useState(null);
   const { showAlert } = useAlert();
   const navigate = useNavigate();
