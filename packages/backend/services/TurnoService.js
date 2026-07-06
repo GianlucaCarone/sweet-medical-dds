@@ -205,7 +205,7 @@ export class TurnoService {
         turnosFinal.push(turnoActualizado);
       } catch (error) {
         console.error(error.message);
-        throw error;
+        throw new BadRequestError(error.message);
       }
     }
     return turnosFinal.map((t) => this.toDto(t));
@@ -411,8 +411,12 @@ export class TurnoService {
       throw new BadRequestError("El turno no pertenece a este usuario");
     }
 
-    turno.fechaHoraPropuesta = nuevaFechaHora;
-    turno.actualizarEstadoTurno({nuevoEstado: EstadoTurnoEnum.PENDIENTECAMBIO, quien: quien._id, turno, motivo: `El ${rol} propone cambio de fecha a ${nuevaFechaHora}`});
+    try {
+      turno.fechaHoraPropuesta = nuevaFechaHora;
+      turno.actualizarEstadoTurno({nuevoEstado: EstadoTurnoEnum.PENDIENTECAMBIO, quien: quien._id, turno, motivo: `El ${rol} propone cambio de fecha a ${nuevaFechaHora}`});
+    } catch (error) {
+      throw new BadRequestError(error.message);
+    }
 
     this.notificacionService.crearNotificacionSegunEstadoTurno(turno, quien, receptor);
 
@@ -447,25 +451,29 @@ export class TurnoService {
       throw new BadRequestError("El turno no pertenece a este usuario");
     }
 
-    if (aceptado) {
-      turno.fechaHora = turno.fechaHoraPropuesta;
-      turno.fechaHoraPropuesta = undefined;
-      turno.actualizarEstadoTurno({
-        nuevoEstado: EstadoTurnoEnum.CONFIRMADO,
-        quien: quien._id,
-        turno,
-        motivo: `El ${rol} aceptó la propuesta de cambio de fecha`,
-      });
-      this.notificacionService.crearNotificacionSegunEstadoTurno(turno, quien, receptor);
-    } else {
-      turno.fechaHoraPropuesta = undefined;
-      turno.actualizarEstadoTurno({
-        nuevoEstado: EstadoTurnoEnum.RESERVADO,
-        quien: quien._id,
-        turno,
-        motivo: `El ${rol} rechazó el cambio de fecha. Se conserva la original.`,
-      });
-      this.notificacionService.crearNotificacionSegunEstadoTurno(turno, quien, receptor);
+    try {
+      if (aceptado) {
+        turno.fechaHora = turno.fechaHoraPropuesta;
+        turno.fechaHoraPropuesta = undefined;
+        turno.actualizarEstadoTurno({
+          nuevoEstado: EstadoTurnoEnum.CONFIRMADO,
+          quien: quien._id,
+          turno,
+          motivo: `El ${rol} aceptó la propuesta de cambio de fecha`,
+        });
+        this.notificacionService.crearNotificacionSegunEstadoTurno(turno, quien, receptor);
+      } else {
+        turno.fechaHoraPropuesta = undefined;
+        turno.actualizarEstadoTurno({
+          nuevoEstado: EstadoTurnoEnum.RESERVADO,
+          quien: quien._id,
+          turno,
+          motivo: `El ${rol} rechazó el cambio de fecha. Se conserva la original.`,
+        });
+        this.notificacionService.crearNotificacionSegunEstadoTurno(turno, quien, receptor);
+      }
+    } catch (error) {
+      throw new BadRequestError(error.message);
     }
 
     const turnoActualizado = await this.turnoRepository.update(idTurno, turno);
