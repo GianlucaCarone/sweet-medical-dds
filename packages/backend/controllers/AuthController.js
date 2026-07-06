@@ -106,12 +106,23 @@ export class AuthController {
                 plan,
             });
 
+            let idEspecifico = null;
+          
+            if (usuario.rol === "MEDICO") {
+                const medico = await this.medicoService.findByIdUsuario(usuario.id).catch(() => null);
+                idEspecifico = medico ? medico.id : null;
+            } else if (usuario.rol === "PACIENTE") {
+                const paciente = await this.pacienteService.findByUserId(usuario.id).catch(() => null);
+                idEspecifico = paciente ? paciente.id : null;
+            }
+
             // Auto-login: firmar JWT igual que en /login
             const token = jwt.sign(
                 {
                     id: usuario.id,
                     nombreUsuario: usuario.nombreUsuario,
                     rol: usuario.rol,
+                    idEspecifico: idEspecifico,
                 },
                 process.env.JWT_SECRET,
                 { expiresIn: process.env.JWT_EXPIRATION || "1h" },
