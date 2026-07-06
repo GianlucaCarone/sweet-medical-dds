@@ -17,6 +17,7 @@ export default function TurnosTab({
   counts,
   onActualizarEstado,
   onProponerCambio,
+  onResponderCambioFecha,
   onObtenerHistorialPaciente
 }) {
   const theme = useTheme();
@@ -441,10 +442,10 @@ export default function TurnosTab({
                             <Button
                               onClick={() => onActualizarEstado(turno.id, 'REALIZADO', "Turno realizado")}
                               variant="contained"
-                              color="primary"
+                              color="success"
                               size="small"
                               startIcon={<Check size={12} />}
-                              sx={{ fontSize: '11px', fontWeight: 'bold', borderRadius: '6px' }}
+                              sx={{ fontSize: '11px', fontWeight: 'bold', borderRadius: '6px', color: 'white' }}
                               aria-label={`Marcar turno de ${turno.paciente ? turno.paciente.nombre : 'paciente'} como realizado`}
                             >
                               Marcar Realizado
@@ -478,7 +479,7 @@ export default function TurnosTab({
                           <>
                             {turno.historialEstado?.slice().reverse().find(h => h.estado === 'PENDIENTECAMBIO')?.usuario !== medico?.id ? (
                               <Button
-                                onClick={() => onActualizarEstado(turno.id, 'CONFIRMADO', 'Turno aceptado', true)}
+                                onClick={() => onResponderCambioFecha(turno.id, true)}
                                 variant="contained"
                                 color="success"
                                 size="small"

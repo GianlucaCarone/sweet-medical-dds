@@ -216,6 +216,7 @@ function PerfilMedicoContent({ medicoInicial }) {
                   onPageChange={turnosHook.setTurnosPage}
                   onActualizarEstado={turnosHook.handleActualizarEstadoTurno}
                   onProponerCambio={turnosHook.handleProponerCambioTurno}
+                  onResponderCambioFecha={turnosHook.handleResponderCambioFecha}
                   onObtenerHistorialPaciente={turnosHook.handleObtenerHistorialPaciente}
                 />
               )}
