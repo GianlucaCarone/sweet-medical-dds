@@ -26,7 +26,7 @@ export default function BusquedaTurnos() {
 
     const [turnos, setTurnos] = useState([]);
     const [turnGroups, setTurnGroups] = useState([]);
-    const [paginationData, setPaginationData] = useState({page: 1, limitePorPagina: 5 });
+    const [paginationData, setPaginationData] = useState({ numeroPagina: 1, limitePorPagina: 5, totalPaginas: 1, totalTurnos: 0 });
     const [sortBy, setSortBy] = useState("ordenPorFecha");
     const yaCargado = useRef(false);
     const [loading, setLoading] = useState(true);
@@ -61,8 +61,8 @@ export default function BusquedaTurnos() {
     };
 
     const fetchTurns = async (
-      filtersInput = filtrosActualesRef.current,
-      page = paginationData.page,
+      filtersInput = buildApiFilters(),
+      page = 1,
       order = sortBy
     ) => {
       setLoading(true);
@@ -132,7 +132,7 @@ export default function BusquedaTurnos() {
                 defaultValue="ordenPorFecha"
                 onChange={(e) => {
                   setSortBy(e.target.value);
-                  fetchTurns(buildApiFilters(), null, e.target.value);
+                  fetchTurns(buildApiFilters(), 1, e.target.value);
                 }}
               >
                 <option value="ordenPorFecha">Fecha (más próximos)</option>
@@ -167,9 +167,9 @@ export default function BusquedaTurnos() {
             <Pagination
               color="#137333"
               count={paginationData.totalPaginas}
-              page={paginationData.page}
+              page={paginationData.numeroPagina}
               onChange={(e, page) => {
-                fetchTurns(filtrosActualesRef.current, page);
+                fetchTurns(buildApiFilters(), page, sortBy);
               }}
             />
           )}
