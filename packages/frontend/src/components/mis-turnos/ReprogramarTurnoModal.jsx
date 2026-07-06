@@ -1,9 +1,5 @@
 import { useState } from "react";
-import { Avatar } from '@mui/material';
 import CardTurnoReprogramar from "../cards/CardTurno/CardTurnoReprogramar.jsx"
-import CalendarMonthRoundedIcon from "@mui/icons-material/CalendarMonthRounded";
-import { useAlert } from "../../context/AlertContext.jsx";
-import { solicitarCambioFecha } from "../../api/turno.js"
 import "./ReprogramarTurnoModal.css";
 
 export default function ReprogramarTurnoModal({
@@ -13,8 +9,6 @@ export default function ReprogramarTurnoModal({
     onConfirmar,
 }) {
     const [nuevaFechaHoraPropuesta, setNuevaFechaHoraPropuesta] = useState("");
-    const [enviando, setEnviando] = useState(false);
-    const { showAlert } = useAlert();
 
     if (!abierto) return null;
 
@@ -33,24 +27,14 @@ export default function ReprogramarTurnoModal({
         return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
     };
 
-    const puedeConfirmar = esFechaHoraValida(nuevaFechaHoraPropuesta) && !enviando;
+    const puedeConfirmar = esFechaHoraValida(nuevaFechaHoraPropuesta);
 
-    const confirmarCambio = async () => {
+    const confirmarCambio = () => {
         if (!esFechaHoraValida(nuevaFechaHoraPropuesta)) return;
 
-        setEnviando(true);
-
-        try {
-            await solicitarCambioFecha(turno.id, nuevaFechaHoraPropuesta);
-            onConfirmar(turno.id, nuevaFechaHoraPropuesta);
-            setNuevaFechaHoraPropuesta("")
-            onCerrar();
-            showAlert("Solicitud de cambio de fecha del turno enviada correctamente", "success");
-        } catch (err) {
-            showAlert(err.message, "error");
-        } finally {
-            setEnviando(false);
-        }
+        onConfirmar(turno.id, nuevaFechaHoraPropuesta);
+        setNuevaFechaHoraPropuesta("");
+        onCerrar();
     };
 
     return (
@@ -64,7 +48,7 @@ export default function ReprogramarTurnoModal({
 
                     <button className="modal-close-btn" onClick={onCerrar}>
                         ×
-                    </button>
+                     </button>
                 </div>
 
                 <CardTurnoReprogramar turno={turno}></CardTurnoReprogramar>
@@ -95,7 +79,7 @@ export default function ReprogramarTurnoModal({
                         disabled={!puedeConfirmar}
                         onClick={confirmarCambio}
                     >
-                        {enviando ? "Guardando..." : "Confirmar cambio"}
+                        Confirmar cambio
                     </button>
                 </div>
             </div>

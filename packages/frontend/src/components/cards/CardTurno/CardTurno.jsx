@@ -5,7 +5,6 @@ import CancelarTurnoModal from '../../mis-turnos/CancelarTurnoModal.jsx';
 import ReprogramarTurnoModal from '../../mis-turnos/ReprogramarTurnoModal.jsx';
 import TurnoCardLayout from '../../../shared/TurnoCardLayout.jsx';
 import Tooltip from "@mui/material/Tooltip";
-import { useAuth } from '../../../context/AuthContext.jsx';
 
 // --- 1. Styled Components ---
 const TurnoFooter = styled.div`
