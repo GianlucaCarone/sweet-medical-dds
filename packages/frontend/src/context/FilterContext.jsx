@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useState, useCallback } from "react";
 import { getListadoMedicos, getListadoServicios, getListadoSedes } from '../api/apiBusquedaTurnos.js';
 
 const FilterContext = createContext();
@@ -39,16 +39,16 @@ export const FilterProvider = ({ children }) => {
     loadOptions();
   }, []);
 
-  const updateFilters = (overrides = {}) => {
+  const updateFilters = useCallback((overrides = {}) => {
     if (overrides.doctor !== undefined) setDoctorFilter(overrides.doctor);
     if (overrides.speciality !== undefined) setSpecialityFilter(overrides.speciality);
     if (overrides.practice !== undefined) setPracticeFilter(overrides.practice);
     if (overrides.branch !== undefined) setBranchFilter(overrides.branch);
     if (overrides.fromDate !== undefined) setFromDate(overrides.fromDate);
     if (overrides.untilDate !== undefined) setUntilDate(overrides.untilDate);
-  };
+  }, []);
 
-  const buildApiFilters = () => {
+  const buildApiFilters = useCallback(() => {
     let service = null;
     if (specialityFilter !== 'Todas') {
       service = practiceFilter !== 'Todas' ? practiceFilter : specialityFilter;
@@ -65,16 +65,16 @@ export const FilterProvider = ({ children }) => {
     return Object.fromEntries(
       Object.entries(filters).filter(([_, v]) => v !== null && v !== undefined && v !== '')
     );
-  };
+  }, [specialityFilter, practiceFilter, doctorFilter, branchFilter, fromDate, untilDate]);
 
-  const resetFilters = () => {
+  const resetFilters = useCallback(() => {
     setDoctorFilter('Todos');
     setSpecialityFilter('Todas');
     setPracticeFilter('Todas');
     setBranchFilter('Todas');
     setFromDate('');
     setUntilDate('');
-  };
+  }, []);
 
   return (
     <FilterContext.Provider value={{

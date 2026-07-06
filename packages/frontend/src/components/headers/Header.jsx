@@ -11,12 +11,14 @@ import { useAuth } from "../../context/AuthContext.jsx";
 import { useCart } from '../../context/CartContext.jsx';
 import { useThemeContext } from '../../context/ThemeContext.jsx';
 import CampanitaNotification from "./CampanitaNotification.jsx";
+import HamburgerMenu from "./HamburgerMenu.jsx";
 import {
   Drawer,
   Badge,
   IconButton,
   Button,
   Box,
+  useMediaQuery,
 } from "@mui/material";
 import DarkModeIcon from '@mui/icons-material/DarkMode';
 import LightModeIcon from '@mui/icons-material/LightMode';
@@ -28,6 +30,7 @@ const Header = () => {
   const navigate = useNavigate();
   const { carrito, limpiarCarrito,  eliminarDelCarrito, manejoCarritoDrawer, counterCarrito } = useCart();
   const {showAlert} = useAlert();
+  const isMobile = useMediaQuery('(max-width:859px)')
 
   const [cantUnidades, setCantUnidades] = useState(0);
   const [loginAbierto, setLoginAbierto] = useState(false);
@@ -79,23 +82,32 @@ const Header = () => {
           </Link>
         </div>
 
+        {isMobile
+          ? <>
+              <Box sx={{display: 'flex'}}>
+                {user && <CampanitaNotification />}
+                <HamburgerMenu onAbrirLogin={abrirLogin} onAbrirRegistro={abrirRegistro} />
+              </Box>
+            </> 
+          : <></>}
+
         <Navbar />
 
         <div className="header-actions">
           <IconButton onClick={toggleTheme} aria-label="Cambiar modo claro/oscuro">
             { mode == 'light' ? <LightModeIcon sx={{ color: "primary" }}></LightModeIcon> : <DarkModeIcon sx={{ color: "primary" }}></DarkModeIcon>}
           </IconButton>
-          <IconButton
-            onClick={() => manejoCarritoDrawer.abrir()}
-            aria-label="carrito de turnos"
-            sx={{ marginRight: 1 }}
-          >
-            <Badge badgeContent={cantUnidades} color="primary">
-              {/* Le puse color 'inherit' asumiendo que el fondo de tu header es oscuro. 
-                  Si es blanco, borrale el sx y usá color="primary" */}
-              <ShoppingCartIcon sx={{ color: "primary" }} />
-            </Badge>
-          </IconButton>
+          {user?.rol === "PACIENTE" && (
+            <IconButton
+              onClick={() => manejoCarritoDrawer.abrir()}
+              aria-label="carrito de turnos"
+              sx={{ marginRight: 1 }}
+            >
+              <Badge badgeContent={cantUnidades} color="primary">
+                <ShoppingCartIcon sx={{ color: "primary" }} />
+              </Badge>
+            </IconButton>
+          )}
 
           {user && <CampanitaNotification />}
 

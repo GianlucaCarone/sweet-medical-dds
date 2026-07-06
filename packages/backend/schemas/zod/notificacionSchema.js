@@ -1,17 +1,18 @@
 import { z } from "zod";
+import { objectIdSchema } from "./objectIdSchema.js";
 
 export const notificacionIdParamsSchema = z.object({
-    idNotificacion: z.string()
+    idNotificacion: objectIdSchema("notificación")
 });
 
 export const notificacionSchema = z.object({
-    mensaje: z.string().min(15, "El mensaje debe tener como minimo 5 caracteres."),
-    destinatarioId: z.string().uuid("El id del destinatario debe ser un UUID válido."),
-    remitente: z.string().uuid("El id del remitente debe ser un UUID válido.")
+    mensaje: z.string().min(15, "El mensaje debe tener como minimo 15 caracteres."),
+    destinatarioId: objectIdSchema("destinatario"),
+    remitente: objectIdSchema("remitente")
 });
 
 export const filtrosNotificacionSchema = z.object({
-    destinatarioId: z.string().uuid("El id del destinatario debe ser un UUID válido.").optional(),
-    remitenteId: z.string().uuid("El id del remitente debe ser un UUID válido.").optional(),
-    leida: z.boolean("Leida debe ser booleano").optional()
+    destinatarioId: objectIdSchema("destinatario").optional(),
+    remitenteId: objectIdSchema("remitente").optional(),
+    leida: z.boolean({ error: () => "Leida debe ser booleano" }).optional()
 });

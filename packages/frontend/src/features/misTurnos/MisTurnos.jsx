@@ -19,7 +19,7 @@ import Pagination from '@mui/material/Pagination';
 // Contextos y hooks
 import { useAlert } from "../../context/AlertContext.jsx";
 import TurnoHistorialCard from '../../components/cards/TurnoHistorialCard';
-import { getMisTurnos, cambiarEstadoTurno, solicitarCambioFecha, getContadoresTurnos } from '../../api/turno.js';
+import { getMisTurnos, cambiarEstadoTurno, solicitarCambioFecha, getContadoresTurnos, responderCambioFecha } from '../../api/turno.js';
 import styled from 'styled-components';
 import { handleApiError } from "../../utils/handleApiError";
 
@@ -45,8 +45,8 @@ export default function MisTurnos() {
     REALIZADOS: 0,
     CANCELADOS: 0
   });
-  const [dataPaginacionProximos, setDataPaginacionProximos] = useState({page: 1, limitePorPagina: 4})
-  const [dataPaginacionHistorial, setDataPaginacionHistorial] = useState({page: 1, limitePorPagina: 5});
+  const [dataPaginacionProximos, setDataPaginacionProximos] = useState({ numeroPagina: 1, limitePorPagina: 4, totalPaginas: 1, totalTurnos: 0 });
+  const [dataPaginacionHistorial, setDataPaginacionHistorial] = useState({ numeroPagina: 1, limitePorPagina: 5, totalPaginas: 1, totalTurnos: 0 });
   const [loading, setLoading] = useState(true);
   const [toastVisible, setToastVisible] = useState(false);
   const [turnosProximos, setTurnosProximos] = useState(mockRespuestaPaginada.data);
@@ -97,10 +97,17 @@ export default function MisTurnos() {
 
   const handleTurnoAceptado = async (turnoId) => {
     try {
-      await cambiarEstadoTurno(turnoId, 'CONFIRMADO', 'Cambio aceptado por paciente');
-      // Actualizamos localmente el estado del turno
+      const response = await responderCambioFecha(turnoId, true);
+      const turnoActualizado = response.data;
+      // Actualizamos localmente el estado y datos del turno
       setTurnosProximos(turnosProximos.map(t => 
-        t.id === turnoId ? { ...t, estado: 'CONFIRMADO' } : t
+        t.id === turnoId ? { 
+          ...t, 
+          estado: turnoActualizado.estado,
+          fechaHora: turnoActualizado.fechaHora,
+          fechaHoraPropuesta: turnoActualizado.fechaHoraPropuesta,
+          historialEstado: turnoActualizado.historialEstado 
+        } : t
       ));
       showAlert("Cambio de turno aceptado correctamente.", "success");
     } catch (e) {
@@ -141,7 +148,7 @@ export default function MisTurnos() {
     }
   };
 
-  const cargarProximosTurnos = async (page = dataPaginacionProximos.page) => {
+  const cargarProximosTurnos = async (page = dataPaginacionProximos.numeroPagina) => {
     try {
       const paginacion = {
         'page': page,
@@ -163,7 +170,7 @@ export default function MisTurnos() {
     }
   }
 
-  const cargarHistorialTurnos = async (page = dataPaginacionHistorial.page) => {
+  const cargarHistorialTurnos = async (page = dataPaginacionHistorial.numeroPagina) => {
     try {
       const paginacion = {
         'page': page,
@@ -279,7 +286,7 @@ export default function MisTurnos() {
 
           <Pagination color="#137333"
             count={dataPaginacionProximos.totalPaginas} 
-            page={dataPaginacionProximos.page}
+            page={dataPaginacionProximos.numeroPagina}
             onChange={(e, page) => {
               cargarProximosTurnos(page);
             }}
@@ -310,7 +317,7 @@ export default function MisTurnos() {
 
           <Pagination color="#137333"
             count={dataPaginacionHistorial.totalPaginas} 
-            page={dataPaginacionHistorial.page}
+            page={dataPaginacionHistorial.numeroPagina}
             onChange={(e, page) => {
                 cargarHistorialTurnos(page);
             }}

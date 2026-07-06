@@ -72,8 +72,8 @@ export default function CampanitaNotification() {
               '& .MuiBadge-badge': {
                 color: '#fff',
                 fontWeight: 'bold',
-                fontSize: '10px'
-              }
+                fontSize: '10px',
+              },
             }}
           >
             <NotificationsIcon />
@@ -97,7 +97,7 @@ export default function CampanitaNotification() {
         slotProps={{
           paper: {
             sx: {
-              width: 480, // Ensanchado a 480px para que entren remitentes largos en una sola línea
+              width: 480,
               maxHeight: 500,
               display: 'flex',
               flexDirection: 'column',
@@ -143,7 +143,7 @@ export default function CampanitaNotification() {
             aria-label="notificaciones tabs"
           >
             <Tab
-              label={cantidadNoLeidas > 0 ? `Sin leer (${cantidadNoLeidas})` : "Sin leer"}
+              label={cantidadNoLeidas > 0 ? `Sin leer (${cantidadNoLeidas})` : 'Sin leer'}
               id="tab-no-leidas"
               sx={{ textTransform: 'none', fontWeight: 'bold' }}
             />
@@ -158,11 +158,11 @@ export default function CampanitaNotification() {
         {/* Contenido / Listado */}
         <Box sx={{ flexGrow: 1, overflowY: 'auto', minHeight: 180, display: 'flex', flexDirection: 'column', width: '100%', px: 1, scrollbarGutter: 'stable' }}>
           {cargando && (
-            <Box sx={{ p: 2, display: "flex", flexDirection: "column", gap: 2 }}>
+            <Box sx={{ p: 2, display: 'flex', flexDirection: 'column', gap: 2 }}>
               {[1, 2, 3].map((i) => (
-                <Box key={i} sx={{ width: "100%" }}>
+                <Box key={i} sx={{ width: '100%' }}>
                   <Skeleton variant="text" width="85%" height={20} />
-                  <Box sx={{ display: "flex", justifyContent: "space-between", mt: 1 }}>
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 1 }}>
                     <Skeleton variant="text" width="45%" height={14} />
                     <Skeleton variant="text" width="25%" height={14} />
                   </Box>
@@ -177,15 +177,15 @@ export default function CampanitaNotification() {
               {notificacionesNoLeidas.length === 0 ? (
                 <Box
                   sx={{
-                    display: "flex",
-                    flexDirection: "column",
-                    alignItems: "center",
-                    justifyContent: "center",
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
                     flexGrow: 1,
                     p: 4,
-                    textAlign: "center",
-                    width: "100%",
-                    minHeight: 180
+                    textAlign: 'center',
+                    width: '100%',
+                    minHeight: 180,
                   }}
                 >
                   <NotificationsOffIcon
@@ -211,14 +211,20 @@ export default function CampanitaNotification() {
                 </List>
               )}
               {hasMoreNoLeidas && (
-                <Box display="flex" justifyContent="center" p={1.5} borderTop={1} borderColor="divider">
+                <Box
+                  display="flex"
+                  justifyContent="center"
+                  p={1.5}
+                  borderTop={1}
+                  borderColor="divider"
+                >
                   <Button
                     size="small"
                     onClick={cargarMasNoLeidas}
                     disabled={cargando}
-                    sx={{ textTransform: "none", fontWeight: "bold" }}
+                    sx={{ textTransform: 'none', fontWeight: 'bold' }}
                   >
-                    {cargando ? "Cargando..." : "Cargar más"}
+                    {cargando ? 'Cargando...' : 'Cargar más'}
                   </Button>
                 </Box>
               )}
@@ -230,15 +236,15 @@ export default function CampanitaNotification() {
               {notificacionesLeidas.length === 0 ? (
                 <Box
                   sx={{
-                    display: "flex",
-                    flexDirection: "column",
-                    alignItems: "center",
-                    justifyContent: "center",
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
                     flexGrow: 1,
                     p: 4,
-                    textAlign: "center",
-                    width: "100%",
-                    minHeight: 180
+                    textAlign: 'center',
+                    width: '100%',
+                    minHeight: 180,
                   }}
                 >
                   <NotificationsOffIcon
@@ -264,14 +270,20 @@ export default function CampanitaNotification() {
                 </List>
               )}
               {hasMoreLeidas && (
-                <Box display="flex" justifyContent="center" p={1.5} borderTop={1} borderColor="divider">
+                <Box
+                  display="flex"
+                  justifyContent="center"
+                  p={1.5}
+                  borderTop={1}
+                  borderColor="divider"
+                >
                   <Button
                     size="small"
                     onClick={cargarMasLeidas}
                     disabled={cargando}
-                    sx={{ textTransform: "none", fontWeight: "bold" }}
+                    sx={{ textTransform: 'none', fontWeight: 'bold' }}
                   >
-                    {cargando ? "Cargando..." : "Cargar más"}
+                    {cargando ? 'Cargando...' : 'Cargar más'}
                   </Button>
                 </Box>
               )}
@@ -284,20 +296,20 @@ export default function CampanitaNotification() {
           sx={{
             p: 1.5,
             borderTop: 1,
-            borderColor: "divider",
-            display: "flex",
-            justifyContent: "center",
-            bgcolor: "background.default"
+            borderColor: 'divider',
+            display: 'flex',
+            justifyContent: 'center',
+            bgcolor: 'background.default',
           }}
         >
           <Button
             size="small"
             fullWidth
             onClick={() => {
-              navigate("/mis-notificaciones");
+              navigate('/mis-notificaciones');
               handleClose();
             }}
-            sx={{ textTransform: "none", fontWeight: "bold" }}
+            sx={{ textTransform: 'none', fontWeight: 'bold' }}
           >
             Ver todas las notificaciones
           </Button>

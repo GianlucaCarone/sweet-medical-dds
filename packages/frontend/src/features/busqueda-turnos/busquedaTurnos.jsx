@@ -18,7 +18,7 @@ import { handleApiError } from "../../utils/handleApiError";
 
 export default function BusquedaTurnos() {
     const { user } = useAuth();
-    const { doctors, specialities, practices, branches, buildApiFilters } = useFilters();
+    const { doctors, specialities, practices, branches, buildApiFilters, specialityFilter } = useFilters();
     const { manejoCarritoDrawer, agregarAlCarrito } = useCart();
     const navigate = useNavigate();
     const [loginModalOpen, setLoginModalOpen] = useState(false);
@@ -26,11 +26,14 @@ export default function BusquedaTurnos() {
 
     const [turnos, setTurnos] = useState([]);
     const [turnGroups, setTurnGroups] = useState([]);
-    const [paginationData, setPaginationData] = useState({page: 1, limitePorPagina: 5 });
+    const [paginationData, setPaginationData] = useState({ numeroPagina: 1, limitePorPagina: 5, totalPaginas: 1, totalTurnos: 0 });
     const [sortBy, setSortBy] = useState("ordenPorFecha");
     const yaCargado = useRef(false);
     const [loading, setLoading] = useState(true);
     const [noResults, setNoResults] = useState(false);
+    const [hasSearched, setHasSearched] = useState(false);
+
+    const isSpecialitySelected = specialityFilter && specialityFilter !== 'Todas';
 
     const createTurnGroups = (turnos) => {
         const mapa = new Map();
@@ -61,8 +64,8 @@ export default function BusquedaTurnos() {
     };
 
     const fetchTurns = async (
-      filtersInput = filtrosActualesRef.current,
-      page = paginationData.page,
+      filtersInput = buildApiFilters(),
+      page = 1,
       order = sortBy
     ) => {
       setLoading(true);
@@ -77,13 +80,13 @@ export default function BusquedaTurnos() {
         estado: 'DISPONIBLE',
         [order]: 'asc',
       };
-      
         try {
             const response = await getTurnosDisponiblesFiltradoPaginado(completeFilters, pageParam);
             setTurnos(response.data);
             setNoResults(response.data.length === 0);
             setTurnGroups(createTurnGroups(response.data));
             setPaginationData(response.paginacion);
+            setHasSearched(true);
         } catch (e) {
             const fueManejado = handleApiError(e, navigate);
                 
@@ -109,8 +112,22 @@ export default function BusquedaTurnos() {
 
     useEffect(() => {
       const initialFilters = buildApiFilters();
-      fetchTurns(initialFilters);
+      if (isSpecialitySelected) {
+        fetchTurns(initialFilters);
+      } else {
+        setLoading(false);
+      }
     }, []);
+
+    useEffect(() => {
+      if (!isSpecialitySelected) {
+        setTurnos([]);
+        setTurnGroups([]);
+        setNoResults(false);
+        setPaginationData({ numeroPagina: 1, limitePorPagina: 5, totalPaginas: 1, totalTurnos: 0 });
+        setHasSearched(false);
+      }
+    }, [isSpecialitySelected]);
 
     if (user?.rol === 'MEDICO') {
       return <Navigate to="/" replace />;
@@ -121,32 +138,34 @@ export default function BusquedaTurnos() {
         <SidebarFiltros onSearch={() => fetchTurns(buildApiFilters())} />
 
         <main className="contenido-resultados">
-          <header className="header-resultados">
-            <TituloSeccion>
-              {paginationData.totalTurnos}{' '}
-              {paginationData.totalTurnos == 1 ? 'Turno disponible' : 'Turnos disponibles'}
-            </TituloSeccion>
-            <div className="ordenar-por">
-              <label>Ordenar por:</label>
-              <select
-                defaultValue="ordenPorFecha"
-                onChange={(e) => {
-                  setSortBy(e.target.value);
-                  fetchTurns(buildApiFilters(), null, e.target.value);
-                }}
-              >
-                <option value="ordenPorFecha">Fecha (más próximos)</option>
-                <option value="ordenPorCosto">Costo (más barato)</option>
-              </select>
-            </div>
-          </header>
+          {hasSearched && (
+            <header className="header-resultados">
+              <TituloSeccion>
+                {paginationData.totalTurnos}{' '}
+                {paginationData.totalTurnos == 1 ? 'Turno disponible' : 'Turnos disponibles'}
+              </TituloSeccion>
+              <div className="ordenar-por">
+                <label>Ordenar por:</label>
+                <select
+                  defaultValue="ordenPorFecha"
+                  onChange={(e) => {
+                    setSortBy(e.target.value);
+                    fetchTurns(buildApiFilters(), 1, e.target.value);
+                  }}
+                >
+                  <option value="ordenPorFecha">Fecha (más próximos)</option>
+                  <option value="ordenPorCosto">Costo (más barato)</option>
+                </select>
+              </div>
+            </header>
+          )}
 
           <section className="lista-turno">
             {loading
               ? Array.from({ length: paginationData.limitePorPagina }).map((_, i) => (
                   <TarjetaTurnoSkeleton key={i} />
                 ))
-              : turnGroups.map((turno) => (
+              : hasSearched && turnGroups.map((turno) => (
                   <TarjetaTurno
                     key={turno.id}
                     turno={turno}
@@ -156,7 +175,14 @@ export default function BusquedaTurnos() {
                   />
                 ))}
           </section>
-          {noResults ? (
+          {!hasSearched ? (
+            <TurnosEmptyState
+              titulo="Comenzá tu búsqueda"
+              descripcion="Por favor, seleccioná una especialidad en los filtros para ver los turnos disponibles."
+              textoBoton={null}
+              onClick={null}
+            />
+          ) : noResults ? (
             <TurnosEmptyState
               titulo="No se encontró ningún turno"
               descripcion="Intentá cambiar tus filtros de busqueda"
@@ -167,9 +193,9 @@ export default function BusquedaTurnos() {
             <Pagination
               color="#137333"
               count={paginationData.totalPaginas}
-              page={paginationData.page}
+              page={paginationData.numeroPagina}
               onChange={(e, page) => {
-                fetchTurns(filtrosActualesRef.current, page);
+                fetchTurns(buildApiFilters(), page, sortBy);
               }}
             />
           )}

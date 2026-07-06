@@ -102,6 +102,12 @@ disponible:
             if (filtros.fechaHoraInicio !== undefined) query.fechaHora.$gte = filtros.fechaHoraInicio;
             if (filtros.fechaHoraFin !== undefined) query.fechaHora.$lte = filtros.fechaHoraFin;
         }
+        if (filtros.estado === EstadoTurnoEnum.DISPONIBLE) {
+          query.fechaHora = {
+            ...(query.fechaHora || {}),
+            $gt: new Date()
+          };
+        }
         if (filtros.medicoId !== undefined) {
             query.medico = filtros.medicoId;
         }
@@ -151,7 +157,12 @@ disponible:
             if (filtros.fechaHoraInicio !== undefined) query.fechaHora.$gte = filtros.fechaHoraInicio;
             if (filtros.fechaHoraFin !== undefined) query.fechaHora.$lte = filtros.fechaHoraFin;
         }
-
+        if (filtros.estado === EstadoTurnoEnum.DISPONIBLE) {
+          query.fechaHora = {
+            ...(query.fechaHora || {}),
+            $gt: new Date()
+          };
+        }
         if (filtros.medicoId !== undefined) {
             query.medico = filtros.medicoId;
         }
