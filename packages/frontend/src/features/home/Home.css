@@ -22,8 +22,14 @@
         "funcionamiento funcionamiento"
         "tieneObraSocial tieneObraSocial"
     ;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr;
     grid-template-rows: repeat(12, auto);
+}
+
+@media (min-width: 768px) {
+    .home-grid {
+        grid-template-columns: 1fr 1fr;
+    }
 }
 
 .banner {
@@ -70,5 +76,54 @@
     font-weight: bold;
 }
 .titulo {
-    font-size: 3.5rem;
+    font-size: 2.5rem;
+}
+
+@media (min-width: 768px) {
+    .titulo {
+        font-size: 3.5rem;
+    }
+}
+
+.banner-titulo {
+    width: 100%;
+}
+
+.chip-cobertura {
+    width: 100%;
+}
+
+@media (min-width: 768px) {
+    .banner-titulo {
+        width: 50%;
+    }
+    .chip-cobertura {
+        width: 50%;
+    }
+}
+
+.cards-container {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    align-items: center;
+}
+
+@media (min-width: 768px) {
+    .cards-container {
+        flex-direction: row;
+        justify-content: space-around;
+    }
+}
+
+.step-card {
+    width: 100%;
+    margin-bottom: 1rem;
+}
+
+@media (min-width: 768px) {
+    .step-card {
+        width: 25%;
+        margin-bottom: 0;
+    }
 }
