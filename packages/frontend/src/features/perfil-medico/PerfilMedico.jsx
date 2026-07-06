@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import {useAlert} from '../../context/AlertContext.jsx';
 import { useNavigate, useLocation } from "react-router-dom";
 import { handleApiError } from "../../utils/handleApiError";
-import { useLocation } from "react-router-dom";
+
 
 // Hooks
 import useMedicoProfile from './hooks/useMedicoProfile.js';
@@ -74,10 +74,6 @@ export default function PerfilMedico() {
   );
 }
 
-<<<<<<< HEAD
-function PerfilMedicoContent({ medicoInicial, initialTab }) {
-  const [activeTab, setActiveTab] = useState(initialTab);
-=======
 function PerfilMedicoContent({ medicoInicial }) {
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
@@ -97,7 +93,6 @@ function PerfilMedicoContent({ medicoInicial }) {
       setActiveTab(tab);
     }
   }, [location.search]);
->>>>>>> origin/develop
   const [modalOpen, setModalOpen] = useState(null);
   const { showAlert } = useAlert();
 

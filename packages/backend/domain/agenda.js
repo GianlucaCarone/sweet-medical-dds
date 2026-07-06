@@ -98,9 +98,4 @@ export class Agenda {
             `${fechaArgentina}T${String(horas).padStart(2, "0")}:${String(minutos).padStart(2, "0")}:00-03:00`
         );
     }
-
-
-    refresacarTurnosSegunDisponibilidad({medico}) {
-        return [];
-    }
 }
