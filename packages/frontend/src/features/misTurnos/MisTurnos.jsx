@@ -19,9 +19,7 @@ import Pagination from '@mui/material/Pagination';
 // Contextos y hooks
 import { useAlert } from "../../context/AlertContext.jsx";
 import TurnoHistorialCard from '../../components/cards/TurnoHistorialCard';
-import { getTurnosProximosUsuario, getHistorialUsuario, cancelarTurno } from '../../api/apiMisTurnos.js';
-import { useAuth } from "../../context/AuthContext.jsx"
-import { getContadoresTurnos } from '../../api/turno.js';
+import { getMisTurnos, cambiarEstadoTurno, solicitarCambioFecha, getContadoresTurnos } from '../../api/turno.js';
 import styled from 'styled-components';
 
 const StyledTarjetaWrapper = styled(CardBase)`
@@ -61,7 +59,7 @@ export default function MisTurnos() {
 
   const estadisticasData = [
     {
-      numero: counts.RESERVADOS,
+      numero: counts.RESERVADOS + counts.CONFIRMADOS + counts.PROPUESTAS,
       texto: 'Turnos próximos',
       tipo: 'azul',
       icono: <CalendarMonthRoundedIcon />,
@@ -87,11 +85,40 @@ export default function MisTurnos() {
   ];
 
   const handleTurnoCancelado = async (turnoId, motivo) => {
-    console.log('Turno cancelado:', turnoId, motivo);
-    const response = cancelarTurno(turnoId, motivo);
-    setTurnosProximos(turnosProximos.filter((t) => t.id != turnoId));
+    try {
+      await cambiarEstadoTurno(turnoId, 'CANCELADO', motivo);
+      setTurnosProximos(turnosProximos.filter((t) => t.id != turnoId));
+      showAlert("Tu turno fue cancelado correctamente.", "success");
+    } catch (e) {
+      showAlert("Hubo un error al cancelar el turno.", "error");
+    }
+  };
 
-    showAlert("Tu turno fue cancelado correctamente.", "success");
+  const handleTurnoAceptado = async (turnoId) => {
+    try {
+      await cambiarEstadoTurno(turnoId, 'CONFIRMADO', 'Cambio aceptado por paciente');
+      // Actualizamos localmente el estado del turno
+      setTurnosProximos(turnosProximos.map(t => 
+        t.id === turnoId ? { ...t, estado: 'CONFIRMADO' } : t
+      ));
+      showAlert("Cambio de turno aceptado correctamente.", "success");
+    } catch (e) {
+      showAlert("Hubo un error al aceptar el cambio.", "error");
+    }
+  };
+
+  const handleTurnoReprogramado = async (turnoId, nuevaFechaHora) => {
+    try {
+      const response = await solicitarCambioFecha(turnoId, nuevaFechaHora);
+      // Actualizamos localmente el estado del turno (backend devuelve el turno actualizado en data)
+      const turnoActualizado = response.data;
+      setTurnosProximos(turnosProximos.map(t => 
+        t.id === turnoId ? { ...t, estado: 'PENDIENTECAMBIO', fechaHoraPropuesta: nuevaFechaHora, historialEstado: turnoActualizado?.historialEstado || t.historialEstado } : t
+      ));
+      showAlert("Propuesta de cambio enviada correctamente.", "success");
+    } catch (e) {
+      showAlert("Hubo un error al enviar la propuesta.", "error");
+    }
   };
 
   const cargarTodosLosContadores = async () => {
@@ -116,7 +143,12 @@ export default function MisTurnos() {
         'page': page,
         'limit': dataPaginacionProximos.limitePorPagina
       }
-      const proximosTurnos = await getTurnosProximosUsuario(paginacion);
+      const proximosTurnos = await getMisTurnos({
+        estados: ['CONFIRMADO', 'RESERVADO', 'PENDIENTECAMBIO'],
+        fechaHoraInicio: new Date(),
+        ordenPorFecha: 'asc',
+        ...paginacion
+      });
       setTurnosProximos(proximosTurnos.data);
       setDataPaginacionProximos(proximosTurnos.paginacion);
     } catch (error) {
@@ -130,7 +162,11 @@ export default function MisTurnos() {
         'page': page,
         'limit': dataPaginacionHistorial.limitePorPagina
       }
-      const historialPaginado = await getHistorialUsuario(paginacion);
+      const historialPaginado = await getMisTurnos({
+        estados: ['REALIZADO', 'CANCELADO'],
+        ordenPorFecha: 'asc',
+        ...paginacion
+      });
       setTurnosHistorial(historialPaginado.data);
       setDataPaginacionHistorial(historialPaginado.paginacion);
       setLoading(false)
@@ -205,7 +241,7 @@ export default function MisTurnos() {
         <>
           <div className="turnos-lista">
             {turnosProximos.map((turno) => (
-              <CardTurno key={turno.id} turno={turno} onCancelar={handleTurnoCancelado} />
+              <CardTurno key={turno.id} turno={turno} onCancelar={handleTurnoCancelado} onAceptar={handleTurnoAceptado} onReprogramar={handleTurnoReprogramado} />
             ))}
           </div>
 

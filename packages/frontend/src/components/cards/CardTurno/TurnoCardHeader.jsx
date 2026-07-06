@@ -2,6 +2,8 @@ import styled from 'styled-components';
 import { Avatar, Typography } from '@mui/material';
 import HealingRoundedIcon from '@mui/icons-material/HealingRounded';
 import BusinessRoundedIcon from '@mui/icons-material/BusinessRounded';
+import EventRoundedIcon from '@mui/icons-material/EventRounded';
+import AccessTimeFilledRoundedIcon from '@mui/icons-material/AccessTimeFilledRounded';
 import BadgeEstado from '../../../shared/BadgeEstado';
 
 // --- Styled Components ---
@@ -113,6 +115,23 @@ export default function TurnoCardHeader({ turno, especialidades = [], practicas 
             <BusinessRoundedIcon />
             <span>{turno.sede?.nombre}</span>
           </DetailRow>
+
+          <DetailRow $muted>
+            <EventRoundedIcon />
+            <span>{new Date(turno.fechaHora).toLocaleDateString('es-AR')}</span>
+          </DetailRow>
+
+          <DetailRow $muted>
+            <AccessTimeFilledRoundedIcon />
+            <span>{new Date(turno.fechaHora).toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' })} hs</span>
+          </DetailRow>
+
+          {turno.estado === "PENDIENTECAMBIO" && 
+            <DetailRow >
+              <EventRoundedIcon />
+              <span>Fecha propuesta: {new Date(turno.fechaHoraPropuesta).toLocaleDateString('es-AR') + " a las " + new Date(turno.fechaHoraPropuesta).toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' }) + " hs"}</span>
+            </DetailRow>
+          }
         </DatosTurno>
       </InfoMedico>
 
