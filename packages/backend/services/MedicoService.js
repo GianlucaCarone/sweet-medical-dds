@@ -370,6 +370,7 @@ export class MedicoService {
       const dispServicioId = disp.servicio && (disp.servicio._id 
         ? disp.servicio._id.toString() 
         : disp.servicio.toString());
+
       return !deletedServiceIds.has(dispServicioId);
     });
 

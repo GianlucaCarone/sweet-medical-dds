@@ -5,6 +5,7 @@ import CancelarTurnoModal from '../../mis-turnos/CancelarTurnoModal.jsx';
 import ReprogramarTurnoModal from '../../mis-turnos/ReprogramarTurnoModal.jsx';
 import TurnoCardLayout from '../../../shared/TurnoCardLayout.jsx';
 import Tooltip from "@mui/material/Tooltip";
+import { useAuth } from '../../../context/AuthContext.jsx';
 
 // --- 1. Styled Components ---
 const TurnoFooter = styled.div`
@@ -96,13 +97,15 @@ const puedeCancelarTurno = (fechaHora) => {
 };
 
 // --- 2. Componente Principal ---
-export default function CardTurno({ turno, onCancelar }) {
+export default function CardTurno({ turno, onCancelar, onAceptar, onReprogramar }) {
   const [modalCancelarAbierto, setModalCancelarAbierto] = useState(false);
   const [modalReprogramarAbierto, setModalReprogramarAbierto] = useState(false);
   const puedeCancelar = puedeCancelarTurno(turno.fechaHora);
 
   const confirmarReprogramacion = (turnoId, nuevoHorario) => {
-    console.log('Reprogramando turno:', turnoId, 'Nuevo horario:', nuevoHorario);
+    if (onReprogramar) {
+      onReprogramar(turnoId, nuevoHorario);
+    }
     setModalReprogramarAbierto(false);
   };
 
@@ -111,23 +114,41 @@ export default function CardTurno({ turno, onCancelar }) {
     setModalCancelarAbierto(false);
   };
 
+  const ultimoCambio = turno.historialEstado?.slice().reverse().find(h => h.estado === 'PENDIENTECAMBIO');
+  const medicoIdStr = turno.medico?.id?.toString() || turno.medico?._id?.toString();
+  const propuestoPorMedico = ultimoCambio?.usuario?.toString() === medicoIdStr;
+
   return (
     <>
       <TurnoCardLayout turno={turno}>
         <TurnoFooter>
           <CoberturaLabel>
-            {'Estado: '}
-            {turno.estado.toLowerCase()}
+            {'Turno '}
+            {turno.estado === "PENDIENTECAMBIO" ? "pendiente de revision" : turno.estado.toLowerCase()}
           </CoberturaLabel>
 
           <TurnoActions>
-            <BtnSecundario
-                disabled={turno.estado == "PENDIENTECAMBIO"}
-                variant="contained"
-                onClick={() => setModalReprogramarAbierto(true)}
-            >
-                Cambiar fecha
-            </BtnSecundario>
+            {turno.estado === "PENDIENTECAMBIO" ? (
+              propuestoPorMedico ? (
+                <BtnSecundario
+                  variant="contained"
+                  onClick={() => { if (onAceptar) onAceptar(turno.id); }}
+                >
+                  Aceptar cambio
+                </BtnSecundario>
+              ) : (
+                <span style={{ fontSize: '12px', color: 'var(--color-text-muted)', fontStyle: 'italic', marginRight: '8px', alignSelf: 'center' }}>
+                  Esperando confirmación...
+                </span>
+              )
+            ) : (
+              <BtnSecundario
+                  variant="contained"
+                  onClick={() => setModalReprogramarAbierto(true)}
+              >
+                  Cambiar fecha
+              </BtnSecundario>
+            )}
 
             {puedeCancelar ? (
               <BtnCancelar
