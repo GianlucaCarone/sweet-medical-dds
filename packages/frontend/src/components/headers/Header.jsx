@@ -11,6 +11,7 @@ import { useAuth } from "../../context/AuthContext.jsx";
 import { useCart } from '../../context/CartContext.jsx';
 import { useThemeContext } from '../../context/ThemeContext.jsx';
 import CampanitaNotification from "./CampanitaNotification.jsx";
+import HamburgerMenu from "./HamburgerMenu.jsx";
 import {
   Drawer,
   Badge,
@@ -78,6 +79,8 @@ const Header = () => {
             <span className="brand-name">Sweet Medical</span>
           </Link>
         </div>
+
+        <HamburgerMenu onAbrirLogin={abrirLogin} onAbrirRegistro={abrirRegistro} />
 
         <Navbar />
 
