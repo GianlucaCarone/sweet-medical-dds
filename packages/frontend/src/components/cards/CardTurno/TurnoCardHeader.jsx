@@ -91,14 +91,7 @@ export default function TurnoCardHeader({ turno, especialidades = [], practicas 
         return `${especialidad?.nombre || ''} • ${practica.nombre}`;
       }
     }
-
-    // Fallbacks si falla el match o no vino 'tipo'
-    if (servicio?.especialidadPadreId) {
-      const nombrePadre = servicio.especialidadPadreId?.nombre || 'Especialidad';
-      return `${nombrePadre} • ${servicio.nombre}`;
-    }
-
-    return `${servicio?.nombre || 'Especialidad'} • Consulta general`;
+    return `${servicio?.nombre || 'Servicio'}`;
   };
 
   // Función helper para obtener la inicial del médico (ej: "Dr. Franco" -> "F")
