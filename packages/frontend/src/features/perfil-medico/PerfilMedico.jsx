@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import {useAlert} from '../../context/AlertContext.jsx';
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { handleApiError } from "../../utils/handleApiError";
 import { useLocation } from "react-router-dom";
 
@@ -74,8 +74,30 @@ export default function PerfilMedico() {
   );
 }
 
+<<<<<<< HEAD
 function PerfilMedicoContent({ medicoInicial, initialTab }) {
   const [activeTab, setActiveTab] = useState(initialTab);
+=======
+function PerfilMedicoContent({ medicoInicial }) {
+  const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
+  const tabFromUrl = searchParams.get('tab');
+  
+  const initialTab = ['servicios', 'disponibilidades', 'sedes', 'turnos'].includes(tabFromUrl) 
+    ? tabFromUrl 
+    : 'servicios';
+
+  const [activeTab, setActiveTab] = React.useState(initialTab);
+  const navigate = useNavigate();
+
+  React.useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const tab = params.get('tab');
+    if (tab && ['servicios', 'disponibilidades', 'sedes', 'turnos'].includes(tab)) {
+      setActiveTab(tab);
+    }
+  }, [location.search]);
+>>>>>>> origin/develop
   const [modalOpen, setModalOpen] = useState(null);
   const { showAlert } = useAlert();
 
@@ -144,7 +166,10 @@ function PerfilMedicoContent({ medicoInicial, initialTab }) {
                 return (
                   <button
                     key={tab}
-                    onClick={() => setActiveTab(tab)}
+                    onClick={() => {
+                      setActiveTab(tab);
+                      navigate(`?tab=${tab}`, { replace: true });
+                    }}
                     className={`tab-nav-btn ${activeTab === tab ? 'active' : ''}`}
                   >
                     {label}

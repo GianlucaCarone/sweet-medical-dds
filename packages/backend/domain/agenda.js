@@ -73,6 +73,9 @@ export class Agenda {
 
             if (posibleFin <= fin && actual > ahora) {
                 slots.push(new Date(actual));
+            } else {
+                // Si el slot sobrepasa la hora limite, cortamos el ciclo
+                break;
             }
 
             actual = posibleFin;

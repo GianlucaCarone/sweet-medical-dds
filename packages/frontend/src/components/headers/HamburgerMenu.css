@@ -1,0 +1,29 @@
+.hamburger-btn {
+  display: none;
+}
+
+.hamburger-content {
+  width: 280px;
+  padding: 0;
+}
+
+.hamburger-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px;
+}
+
+.hamburger-user {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  background-color: var(--color-surface-variant, rgba(0,0,0,0.03));
+}
+
+@media (max-width: 768px) {
+  .hamburger-btn {
+    display: inline-flex;
+  }
+}

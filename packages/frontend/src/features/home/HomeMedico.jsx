@@ -4,8 +4,10 @@ import { Button, CardContent, Typography, Box } from "@mui/material";
 import EventNoteIcon from '@mui/icons-material/EventNote';
 import PersonIcon from '@mui/icons-material/Person';
 import LocalHospitalIcon from '@mui/icons-material/LocalHospital';
+import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import CardBase from "../../shared/CardBase/CardBase";
 import TituloSeccion from "../../shared/TituloSeccion/TituloSeccion";
+import TableChartIcon from '@mui/icons-material/TableChart';
 import "./Home.css"; 
 
 const HomeMedico = ({ user }) => {
@@ -14,6 +16,7 @@ const HomeMedico = ({ user }) => {
   const doctorActions = [
     {
       icon: <EventNoteIcon fontSize="large" />,
+<<<<<<< HEAD
       title: "Mi Agenda y Turnos",
       description: "Revisá tus turnos del día, confirmá asistencias y gestioná tu disponibilidad horaria.",
       path: "/mi-agenda",
@@ -31,6 +34,29 @@ const HomeMedico = ({ user }) => {
       title: "Mi Perfil",
       description: "Actualizá tus datos personales, honorarios y credenciales de acceso.",
       path: "/mi-perfil",
+=======
+      title: "Mis Servicios",
+      description: "Administrá los servicios que ofreces como profesional médico.",
+      path: "/mi-agenda?tab=servicios"
+    },
+    {
+      icon: <AccessTimeIcon fontSize="large" />,
+      title: "Mis horarios",
+      description: "Administrá los espacios y horarios en los que atendés a tus pacientes.",
+      path: "/mi-agenda?tab=disponibilidades"
+    },
+    {
+      icon: <LocalHospitalIcon fontSize="large" />,
+      title: "Mis sedes",
+      description: "Administrá las sedes donde atendés a tus pacientes.",
+      path: "/mi-agenda?tab=sedes"
+    },
+    {
+      icon: <TableChartIcon fontSize="large" />,
+      title: "Mis turnos",
+      description: "Administrá tus turnos y cancelá con motivo cuando quieras.",
+      path: "/mi-agenda?tab=turnos"
+>>>>>>> origin/develop
     }
   ];
 
@@ -53,8 +79,9 @@ const HomeMedico = ({ user }) => {
           <h6 className="text-muted">Accesos rápidos a tu gestión diaria</h6>
         </div>
         
-        <div className="d-flex justify-content-around w-100 mt-2 p-4 p-md-5 gap-4 flex-wrap">
+        <div className="row w-100 mt-2 px-4 px-md-5 g-4 m-0 justify-content-center">
           {doctorActions.map((action, index) => (
+<<<<<<< HEAD
             <CardBase 
               key={index}
               className="bg-surface flex-grow-1" 
@@ -65,6 +92,14 @@ const HomeMedico = ({ user }) => {
                 })
               }
             >
+=======
+            <div key={index} className="col-12 col-md-6 col-lg-3 d-flex">
+              <CardBase 
+                key={index}
+                className="bg-surface w-100 shadow-sm" 
+                style={{ cursor: 'pointer', display: 'flex', flexDirection: 'column', height: '100%' }} 
+              >
+>>>>>>> origin/develop
               <CardContent sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', p: 4, flex: 1 }}>
                 <Box
                   sx={{
@@ -87,12 +122,13 @@ const HomeMedico = ({ user }) => {
                   {action.description}
                 </Typography>
                 <Box sx={{ mt: 'auto' }}>
-                  <Button variant="outlined" color="primary" sx={{ borderRadius: '20px' }}>
+                  <Button variant="outlined" color="primary" sx={{ borderRadius: '20px' }} onClick={() => navigate(action.path)}>
                     Ingresar
                   </Button>
                 </Box>
               </CardContent>
             </CardBase>
+            </div>
           ))}
         </div>
       </div>
