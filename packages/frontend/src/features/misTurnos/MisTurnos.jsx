@@ -19,7 +19,7 @@ import Pagination from '@mui/material/Pagination';
 // Contextos y hooks
 import { useAlert } from "../../context/AlertContext.jsx";
 import TurnoHistorialCard from '../../components/cards/TurnoHistorialCard';
-import { getMisTurnos, cambiarEstadoTurno, solicitarCambioFecha, getContadoresTurnos } from '../../api/turno.js';
+import { getMisTurnos, cambiarEstadoTurno, solicitarCambioFecha, getContadoresTurnos, responderCambioFecha } from '../../api/turno.js';
 import styled from 'styled-components';
 import { handleApiError } from "../../utils/handleApiError";
 
@@ -97,10 +97,17 @@ export default function MisTurnos() {
 
   const handleTurnoAceptado = async (turnoId) => {
     try {
-      await cambiarEstadoTurno(turnoId, 'CONFIRMADO', 'Cambio aceptado por paciente');
-      // Actualizamos localmente el estado del turno
+      const response = await responderCambioFecha(turnoId, true);
+      const turnoActualizado = response.data;
+      // Actualizamos localmente el estado y datos del turno
       setTurnosProximos(turnosProximos.map(t => 
-        t.id === turnoId ? { ...t, estado: 'CONFIRMADO' } : t
+        t.id === turnoId ? { 
+          ...t, 
+          estado: turnoActualizado.estado,
+          fechaHora: turnoActualizado.fechaHora,
+          fechaHoraPropuesta: turnoActualizado.fechaHoraPropuesta,
+          historialEstado: turnoActualizado.historialEstado 
+        } : t
       ));
       showAlert("Cambio de turno aceptado correctamente.", "success");
     } catch (e) {

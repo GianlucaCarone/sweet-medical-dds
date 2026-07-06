@@ -4,6 +4,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { handleApiError } from "../../utils/handleApiError";
 import { Box, Tabs, Tab } from "@mui/material";
 
+
 // Hooks
 import useMedicoProfile from './hooks/useMedicoProfile.js';
 import useTurnos from './hooks/useTurnos';
@@ -30,6 +31,9 @@ import './PerfilMedico.css';
 export default function PerfilMedico() {
   const { medico: medicoInicial, cargando, error } = useGetMiPerfilMedico();
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const [activeTab, setActiveTab] = useState(location.state?.tab || "servicios");
 
   if (cargando) return <PerfilMedicoSkeleton />;
 
@@ -63,7 +67,12 @@ export default function PerfilMedico() {
     );
   }
 
-  return <PerfilMedicoContent medicoInicial={medicoInicial} />;
+  return (
+    <PerfilMedicoContent
+      medicoInicial={medicoInicial}
+      initialTab={location.state?.tab || "servicios"}
+    />
+  );
 }
 
 function PerfilMedicoContent({ medicoInicial }) {

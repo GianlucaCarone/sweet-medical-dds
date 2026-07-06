@@ -3,7 +3,8 @@ import {
   getMisTurnos, 
   cambiarEstadoTurno, 
   solicitarCambioFecha,
-  getContadoresTurnos
+  getContadoresTurnos,
+  responderCambioFecha
 } from '../../../api/turno';
 
 export default function useTurnos(medico, activeTab) {
@@ -109,7 +110,7 @@ export default function useTurnos(medico, activeTab) {
     try {
       if (aceptarCambio) {
           // El paciente acepta el cambio (o el médico acepta si la lógica fuera cruzada)
-          await cambiarEstadoTurno(idTurno, 'CONFIRMADO', motivo);
+          await responderCambioFecha(idTurno, true);
       } else {
           await cambiarEstadoTurno(idTurno, nuevoEstado, motivo);
       }
