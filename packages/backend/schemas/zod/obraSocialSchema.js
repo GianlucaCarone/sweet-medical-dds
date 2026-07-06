@@ -33,7 +33,7 @@ const coberturaEspecialidadSchema = z.object({
         // Valida que sea un ObjectId válido (formato)
         return /^[a-f0-9]{24}$|^[0-9a-f]{24}$/.test(id);
     }, "El ID debe ser un ObjectId válido"),
-  nivel: z.enum(NivelCobertura, { error: "Nivel de cobertura inválido" }),
+  nivel: z.nativeEnum(NivelCobertura, { error: "Nivel de cobertura inválido" }),
   porcentajeCobertura: z.number().min(0, "El porcentaje debe ser >= 0").max(1, "El porcentaje debe ser <= 1"),
 });
 
@@ -44,7 +44,7 @@ const coberturaPracticaSchema = z.object({
         // Valida que sea un ObjectId válido (formato)
         return /^[a-f0-9]{24}$|^[0-9a-f]{24}$/.test(id);
     }, "El ID debe ser un ObjectId válido"),
-  nivel: z.enum(NivelCobertura, { error: "Nivel de cobertura inválido" }),
+  nivel: z.nativeEnum(NivelCobertura, { error: "Nivel de cobertura inválido" }),
   porcentajeCobertura: z.number().min(0, "El porcentaje debe ser >= 0").max(1, "El porcentaje debe ser <= 1"),
 });
 
