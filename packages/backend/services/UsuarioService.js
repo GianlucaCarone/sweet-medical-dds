@@ -138,6 +138,9 @@ export class UsuarioService {
 
   async findAll() {
     const usuarios = await this.usuarioRepository.findAll();
+    if (usuarios.length === 0) {
+      return [];
+    }
     return usuarios.map((usuario) => this.toDto(usuario));
   }
 
