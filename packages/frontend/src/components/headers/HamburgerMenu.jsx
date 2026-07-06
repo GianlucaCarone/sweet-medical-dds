@@ -169,7 +169,7 @@ const HamburgerMenu = ({ onAbrirLogin, onAbrirRegistro }) => {
               </ListItemButton>
             </ListItem>
 
-            {user.rol !== 'MEDICO' ? <ListItem disablePadding>
+            {user?.rol !== 'MEDICO' ? <ListItem disablePadding>
               <ListItemButton onClick={handleCartClick}>
                 <ListItemIcon>
                   <Badge badgeContent={cantUnidades} color="primary">
