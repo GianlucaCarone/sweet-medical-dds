@@ -1,6 +1,7 @@
 import React from 'react';
 import { Plus, User, Activity } from 'lucide-react';
 import ServicioCard from './ServicioCard';
+import { Button } from '@mui/material';
 
 export default function ServiciosTab({ especialidades = [], practicas = [], onAdd, onEliminar }) {
 
@@ -8,13 +9,16 @@ export default function ServiciosTab({ especialidades = [], practicas = [], onAd
     <div className="fade-in">
       <div className="d-flex justify-content-between align-items-center mb-4">
         <h4 className="font-weight-bold text-default m-0">Mis Servicios Activos</h4>
-        <button 
+        <Button 
+          variant="contained"
+          color="success"
           onClick={onAdd} 
-          className="btn btn-success d-flex align-items-center gap-2 font-weight-bold px-3 py-2"
-          style={{ borderRadius: '10px' }}
+          startIcon={<Plus size={18} />}
+          sx={{ borderRadius: '10px', fontWeight: 'bold', px: 3, py: 1, textTransform: 'none', color: 'white' }}
+          aria-label="Agregar Servicio"
         >
-          <Plus size={18} /> Agregar Servicio
-        </button>
+          Agregar Servicio
+        </Button>
       </div>
 
       <div className="mb-5">

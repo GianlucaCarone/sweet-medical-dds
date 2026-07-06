@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { MapPin, Plus } from 'lucide-react';
 import { getAllSedes } from '../../api/sede';
+import { Button } from '@mui/material';
 
 export default function SedesTab({ sedesAsignadas = [], onAsociar, onDesvincular }) {
   const sedes = sedesAsignadas;
@@ -26,7 +27,7 @@ export default function SedesTab({ sedesAsignadas = [], onAsociar, onDesvincular
       <div className="row g-4">
         {/* Columna Izquierda: Mis Sedes */}
         <div className="col-12 col-md-6">
-          <div className="bg-neutral-light p-4 rounded" style={{ border: '1px solid var(--color-divider)', minHeight: '300px' }}>
+          <div className="bg-surface p-4 rounded" style={{ border: '1px solid var(--color-divider)', minHeight: '300px' }}>
             <h5 className="font-weight-bold text-default mb-4 d-flex align-items-center gap-2" style={{ fontSize: '1.1rem' }}>
               <MapPin size={20} className="text-primary"/> Sedes Vinculadas
             </h5>
@@ -40,13 +41,16 @@ export default function SedesTab({ sedesAsignadas = [], onAsociar, onDesvincular
                       <p className="font-weight-bold text-default mb-1 small">{sede.nombre}</p>
                       <p className="text-muted mb-0" style={{ fontSize: '11px' }}>{sede.direccion}</p>
                     </div>
-                    <button 
+                    <Button 
+                      variant="outlined"
+                      color="error"
+                      size="small"
                       onClick={() => onDesvincular(sede.id)} 
-                      className="btn btn-outline-danger btn-sm font-weight-bold px-2 py-1"
-                      style={{ fontSize: '11px', borderRadius: '8px' }}
+                      sx={{ fontSize: '11px', borderRadius: '8px', fontWeight: 'bold', px: 2, py: 0.5 }}
+                      aria-label={`Desvincular sede ${sede.nombre}`}
                     >
                       Desvincular
-                    </button>
+                    </Button>
                   </div>
                 ))
               )}
@@ -65,13 +69,17 @@ export default function SedesTab({ sedesAsignadas = [], onAsociar, onDesvincular
                     <p className="font-weight-bold text-default mb-1 small">{sede.nombre}</p>
                     <p className="text-muted mb-0" style={{ fontSize: '11px' }}>{sede.direccion}</p>
                   </div>
-                  <button 
+                  <Button 
+                    variant="outlined"
+                    color="primary"
+                    size="small"
                     onClick={() => onAsociar(sede)} 
-                    className="btn btn-outline-primary btn-sm font-weight-bold d-flex align-items-center gap-1 px-2 py-1"
-                    style={{ fontSize: '11px', borderRadius: '8px' }}
+                    startIcon={<Plus size={11}/>}
+                    sx={{ fontSize: '11px', borderRadius: '8px', fontWeight: 'bold', px: 2, py: 0.5 }}
+                    aria-label={`Vincular sede ${sede.nombre}`}
                   >
-                    <Plus size={11}/> Vincular Sede
-                  </button>
+                    Vincular Sede
+                  </Button>
                 </div>
               ))}
               {sedesDisponibles.length === 0 && (
