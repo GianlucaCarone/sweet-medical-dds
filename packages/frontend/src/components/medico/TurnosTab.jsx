@@ -66,10 +66,10 @@ export default function TurnosTab({
   const obtenerNombreActor = (usuarioId, turno) => {
     if (!usuarioId) return 'Sistema';
     
-    if (usuarioId === 'medico' || (turno.medico && usuarioId === turno.medico.id)) {
+    if (usuarioId === 'medico' || (turno.medico && usuarioId === (turno.medico.id || turno.medico._id)?.toString())) {
       return 'Médico';
     }
-    if (usuarioId === 'paciente' || (turno.paciente && usuarioId === turno.paciente.id)) {
+    if (usuarioId === 'paciente' || (turno.paciente && usuarioId === (turno.paciente.id || turno.paciente._id)?.toString())) {
       return 'Paciente';
     }
     return 'Sistema';
@@ -227,18 +227,32 @@ export default function TurnosTab({
         ))}
       </div>
 
-      {/* Spinner de Carga On-Demand */}
-      {loading ? (
-        <div className="text-center py-5">
-          <div className="spinner-border text-primary" role="status" style={{ width: '2rem', height: '2rem' }}>
-            <span className="visually-hidden">Cargando turnos...</span>
+      {/* Contenedor principal con altura mínima estable para evitar Cumulative Layout Shift */}
+      <div style={{ minHeight: '350px', position: 'relative' }}>
+        {loading && (
+          <div className="d-flex flex-column justify-content-center align-items-center" style={{ 
+            position: 'absolute', 
+            top: 0, 
+            left: 0, 
+            right: 0, 
+            bottom: 0, 
+            backgroundColor: 'rgba(255, 255, 255, 0.75)', 
+            zIndex: 10,
+            borderRadius: '12px'
+          }}>
+            <div className="spinner-border text-primary" role="status" style={{ width: '2rem', height: '2rem' }}>
+              <span className="visually-hidden">Cargando turnos...</span>
+            </div>
+            <p className="text-muted mt-2 small font-weight-bold">Cargando listado de turnos...</p>
           </div>
-          <p className="text-muted mt-2 small">Cargando listado de turnos...</p>
-        </div>
-      ) : (
-        <>
-          {/* Listado de turnos */}
-          <div className="row g-3" style={{ opacity: isFetching ? 0.5 : 1, transition: 'opacity 0.2s ease-in-out', pointerEvents: isFetching ? 'none' : 'auto' }}>
+        )}
+
+        {/* Listado de turnos */}
+        <div className="row g-3" style={{ 
+          opacity: (loading || isFetching) ? 0.4 : 1, 
+          transition: 'opacity 0.2s ease-in-out', 
+          pointerEvents: (loading || isFetching) ? 'none' : 'auto' 
+        }}>
           {turnos.length > 0 ? (
             turnos.map(turno => (
               <div key={turno.id} className="col-12 col-md-6">
@@ -304,8 +318,16 @@ export default function TurnosTab({
                         </span>
 
                     {['RESERVADO', 'CONFIRMADO', 'PENDIENTECAMBIO'].includes(turno.estado) && (
-                          <div className={`d-flex align-items-center gap-1 mt-2 p-2 rounded-3 ${puedesCancelar(turno.fechaHora) ? 'text-muted' : 'text-danger font-weight-bold'}`} style={{ fontSize: '11px', backgroundColor: puedesCancelar(turno.fechaHora) ? 'var(--color-bg)' : 'var(--color-error-light)', border: puedesCancelar(turno.fechaHora) ? '1px dashed var(--color-divider)' : '1px solid var(--color-error-light)' }}>
-                        <AlertTriangle size={12} className={puedesCancelar(turno.fechaHora) ? 'text-warning' : 'text-danger'} />
+                          <div 
+                            className={`d-flex align-items-center gap-1 mt-2 p-2 rounded-3 ${puedesCancelar(turno.fechaHora) ? 'text-muted' : (isDark ? '' : 'text-danger')} font-weight-bold`} 
+                            style={{ 
+                              fontSize: '11px', 
+                              backgroundColor: puedesCancelar(turno.fechaHora) ? 'var(--color-bg)' : (isDark ? 'rgba(211, 47, 47, 0.15)' : 'var(--color-error-light)'), 
+                              border: puedesCancelar(turno.fechaHora) ? '1px dashed var(--color-divider)' : `1px solid ${isDark ? 'rgba(211, 47, 47, 0.4)' : 'var(--color-error-light)'}`,
+                              color: !puedesCancelar(turno.fechaHora) && isDark ? '#ff8a80' : undefined
+                            }}
+                          >
+                        <AlertTriangle size={12} className={puedesCancelar(turno.fechaHora) ? 'text-warning' : (isDark ? '' : 'text-danger')} style={{ color: !puedesCancelar(turno.fechaHora) && isDark ? '#ff8a80' : undefined }} />
                         <span>
                           {puedesCancelar(turno.fechaHora) 
                             ? 'Los turnos solo se pueden cancelar con más de 1 hora de anticipación.' 
@@ -318,12 +340,20 @@ export default function TurnosTab({
 
                     {/* Estado PENDIENTECAMBIO Detalles */}
                     {turno.estado === 'PENDIENTECAMBIO' && turno.fechaHoraPropuesta && (
-                      <div className="alert alert-warning p-2.5 rounded-3 mb-3 d-flex flex-column gap-1" style={{ fontSize: '12px' }}>
-                        <span className="font-weight-bold text-default d-flex align-items-center gap-1">
-                          <AlertTriangle size={13} className="text-warning" /> Propuesta de Cambio
+                      <div 
+                        className="p-2.5 rounded-3 mb-3 d-flex flex-column gap-1" 
+                        style={{ 
+                          fontSize: '12px',
+                          backgroundColor: isDark ? 'rgba(237, 108, 2, 0.15)' : '#fff3cd',
+                          border: `1px solid ${isDark ? 'rgba(237, 108, 2, 0.3)' : '#ffe69c'}`,
+                          color: isDark ? '#ffb74d' : '#664d03'
+                        }}
+                      >
+                        <span className="font-weight-bold d-flex align-items-center gap-1" style={{ color: isDark ? '#ffb74d' : '#664d03' }}>
+                          <AlertTriangle size={13} /> Propuesta de Cambio
                         </span>
                         <span>Fecha Propuesta: <strong>{formatearFecha(turno.fechaHoraPropuesta)} - {formatearHora(turno.fechaHoraPropuesta)}</strong></span>
-                        <span className="text-muted small">
+                        <span style={{ opacity: 0.8, fontSize: '11px' }}>
                           Cambio solicitado por {turno.historialEstado?.slice().reverse().find(h => h.estado === 'PENDIENTECAMBIO')?.usuario === medico?.id ? 'ti (Médico)' : 'el paciente'}.
                         </span>
                       </div>
@@ -331,7 +361,15 @@ export default function TurnosTab({
 
                     {/* Estado CANCELADO Detalles */}
                     {turno.estado === 'CANCELADO' && (
-                      <div className="alert alert-danger p-2.5 rounded-3 mb-3" style={{ fontSize: '12px', backgroundColor: 'var(--color-error-light)', border: '1px solid var(--color-error-light)', color: 'var(--color-error-dark)' }}>
+                      <div 
+                        className="p-2.5 rounded-3 mb-3" 
+                        style={{ 
+                          fontSize: '12px', 
+                          backgroundColor: isDark ? 'rgba(211, 47, 47, 0.15)' : 'var(--color-error-light)', 
+                          border: `1px solid ${isDark ? 'rgba(211, 47, 47, 0.3)' : 'var(--color-error-light)'}`, 
+                          color: isDark ? '#ff8a80' : 'var(--color-error-dark)' 
+                        }}
+                      >
                         <strong>Motivo de Cancelación:</strong> {turno.historialEstado?.find(h => h.estado === 'CANCELADO')?.motivo || 'No indicado.'}
                       </div>
                     )}
@@ -403,11 +441,11 @@ export default function TurnosTab({
                           <>
                             <Button
                               onClick={() => onActualizarEstado(turno.id, 'CONFIRMADO', "Turno confirmado")}
-                              variant="contained"
+                              variant="outlined"
                               color="success"
                               size="small"
                               startIcon={<Check size={12} />}
-                              sx={{ fontSize: '11px', fontWeight: 'bold', borderRadius: '6px', color: 'white' }}
+                              sx={{ fontSize: '11px', fontWeight: 'bold', borderRadius: '6px' }}
                               aria-label={`Confirmar turno de ${turno.paciente ? turno.paciente.nombre : 'paciente'}`}
                             >
                               Confirmar
@@ -441,11 +479,11 @@ export default function TurnosTab({
                           <>
                             <Button
                               onClick={() => onActualizarEstado(turno.id, 'REALIZADO', "Turno realizado")}
-                              variant="contained"
+                              variant="outlined"
                               color="success"
                               size="small"
                               startIcon={<Check size={12} />}
-                              sx={{ fontSize: '11px', fontWeight: 'bold', borderRadius: '6px', color: 'white' }}
+                              sx={{ fontSize: '11px', fontWeight: 'bold', borderRadius: '6px'}}
                               aria-label={`Marcar turno de ${turno.paciente ? turno.paciente.nombre : 'paciente'} como realizado`}
                             >
                               Marcar Realizado
@@ -480,7 +518,7 @@ export default function TurnosTab({
                             {turno.historialEstado?.slice().reverse().find(h => h.estado === 'PENDIENTECAMBIO')?.usuario !== medico?.id ? (
                               <Button
                                 onClick={() => onResponderCambioFecha(turno.id, true)}
-                                variant="contained"
+                                variant="outlined"
                                 color="success"
                                 size="small"
                                 sx={{ fontSize: '11px', fontWeight: 'bold', borderRadius: '6px' }}
@@ -541,7 +579,10 @@ export default function TurnosTab({
 
         {/* paginacion */}
         {totalPages > 1 && (
-          <div className="d-flex flex-column flex-sm-row justify-content-between align-items-center mt-4 pt-3 border-top gap-3">
+          <div className="d-flex justify-content-between align-items-center mt-4 pt-3 border-top" style={{ 
+            opacity: loading ? 0.5 : 1, 
+            pointerEvents: loading ? 'none' : 'auto' 
+          }}>
             <span className="text-muted" style={{ fontSize: '12.5px' }}>
               Mostrando página <strong>{page}</strong> de <strong>{totalPages}</strong> ({totalItems} turnos en total)
             </span>
@@ -550,12 +591,11 @@ export default function TurnosTab({
               page={page} 
               onChange={(e, value) => onPageChange(value)} 
               color="primary" 
-              disabled={isFetching}
+              disabled={isFetching || loading}
             />
           </div>
         )}
-        </>
-    )}
+      </div>
 
       {/* Modal de Historial del Paciente */}
       <Modal

@@ -7,7 +7,7 @@ import {
   responderCambioFecha
 } from '../../../api/turno';
 
-export default function useTurnos(medico, activeTab) {
+export default function useTurnos(medico, activeTab, showAlert) {
   const [turnosFiltrados, setTurnosFiltrados] = useState([]);
   const [turnosSubTab, setTurnosSubTab] = useState('RESERVADOS');
   const [loadingTurnos, setLoadingTurnos] = useState(false);
@@ -111,14 +111,16 @@ export default function useTurnos(medico, activeTab) {
       await cambiarEstadoTurno(idTurno, nuevoEstado, motivo);
       await cargarTurnosMedico(turnosSubTab, turnosPage);
       await cargarTodosLosContadores();
+      if (showAlert) showAlert("Estado del turno actualizado correctamente", "success");
       return true;
     } catch (error) {
       console.error(`Error al actualizar estado del turno a ${nuevoEstado}:`, error);
+      if (showAlert) showAlert(error?.response?.data?.message || "Error al actualizar el estado del turno", "error");
       return false;
     } finally {
       setIsFetching(false);
     }
-  }, [cargarTurnosMedico, cargarTodosLosContadores, turnosSubTab, turnosPage, medico?.id]);
+  }, [cargarTurnosMedico, cargarTodosLosContadores, turnosSubTab, turnosPage, medico?.id, showAlert]);
 
   const handleResponderCambioFecha = useCallback(async (idTurno, aceptado) => {
     setIsFetching(true);
@@ -126,14 +128,16 @@ export default function useTurnos(medico, activeTab) {
       await responderCambioFecha(idTurno, aceptado);
       await cargarTurnosMedico(turnosSubTab, turnosPage);
       await cargarTodosLosContadores();
+      if (showAlert) showAlert(aceptado ? "Cambio de fecha aceptado" : "Cambio de fecha rechazado", "success");
       return true;
     } catch (error) {
       console.error("Error al responder cambio de fecha:", error);
+      if (showAlert) showAlert(error?.response?.data?.message || "Error al procesar el cambio de fecha", "error");
       return false;
     } finally {
       setIsFetching(false);
     }
-  }, [cargarTurnosMedico, cargarTodosLosContadores, turnosSubTab, turnosPage, medico?.id]);
+  }, [cargarTurnosMedico, cargarTodosLosContadores, turnosSubTab, turnosPage, medico?.id, showAlert]);
 
   const handleProponerCambioTurno = useCallback(async (idTurno, nuevaFechaHora) => {
     setIsFetching(true);
@@ -141,14 +145,16 @@ export default function useTurnos(medico, activeTab) {
       await solicitarCambioFecha(idTurno, nuevaFechaHora);
       await cargarTurnosMedico(turnosSubTab, turnosPage);
       await cargarTodosLosContadores();
+      if (showAlert) showAlert("Propuesta de reprogramación enviada al paciente", "success");
       return true;
     } catch (error) {
       console.error("Error al proponer cambio de fecha:", error);
+      if (showAlert) showAlert(error?.response?.data?.message || "Error al proponer el cambio de fecha", "error");
       return false;
     } finally {
       setIsFetching(false);
     }
-  }, [cargarTurnosMedico, cargarTodosLosContadores, turnosSubTab, turnosPage, medico?.id]);
+  }, [cargarTurnosMedico, cargarTodosLosContadores, turnosSubTab, turnosPage, medico?.id, showAlert]);
 
   return {
     turnosFiltrados,

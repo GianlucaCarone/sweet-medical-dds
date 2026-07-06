@@ -1,8 +1,4 @@
-import { useState } from 'react';
 import styled from 'styled-components';
-import { Button } from '@mui/material';
-import CancelarTurnoModal from '../../mis-turnos/CancelarTurnoModal.jsx';
-import ReprogramarTurnoModal from '../../mis-turnos/ReprogramarTurnoModal.jsx';
 import TurnoCardLayout from '../../../shared/TurnoCardLayout.jsx';
 import CalendarMonthRoundedIcon from "@mui/icons-material/CalendarMonthRounded";
 import AccessTimeRoundedIcon from "@mui/icons-material/AccessTimeRounded";
