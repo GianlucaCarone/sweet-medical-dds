@@ -25,6 +25,8 @@ import PersonIcon from "@mui/icons-material/Person";
 import LoginIcon from "@mui/icons-material/Login";
 import LogoutIcon from "@mui/icons-material/Logout";
 import NotificationsIcon from "@mui/icons-material/Notifications";
+import EventNoteIcon from "@mui/icons-material/EventNote";
+import FormatListBulletedRoundedIcon from "@mui/icons-material/FormatListBulletedRounded";
 import { useAuth } from "../../context/AuthContext";
 import { useCart } from "../../context/CartContext";
 import { useThemeContext } from "../../context/ThemeContext";
@@ -110,14 +112,49 @@ const HamburgerMenu = ({ onAbrirLogin, onAbrirRegistro }) => {
               </ListItemButton>
             </ListItem>
 
-            <ListItem disablePadding>
-              <ListItemButton onClick={() => irA("/busqueda-turnos")}>
-                <ListItemIcon>
-                  <CalendarMonthRoundedIcon />
-                </ListItemIcon>
-                <ListItemText primary="Buscar Turnos" />
-              </ListItemButton>
-            </ListItem>
+            {!user && (
+              <ListItem disablePadding>
+                <ListItemButton onClick={() => irA("/busqueda-turnos")}>
+                  <ListItemIcon>
+                    <CalendarMonthRoundedIcon />
+                  </ListItemIcon>
+                  <ListItemText primary="Buscar Turnos" />
+                </ListItemButton>
+              </ListItem>
+            )}
+
+            {user?.rol === "PACIENTE" && (
+              <ListItem disablePadding>
+                <ListItemButton onClick={() => irA("/busqueda-turnos")}>
+                  <ListItemIcon>
+                    <CalendarMonthRoundedIcon />
+                  </ListItemIcon>
+                  <ListItemText primary="Reservar Turno" />
+                </ListItemButton>
+              </ListItem>
+            )}
+
+            {user?.rol === "MEDICO" && (
+              <ListItem disablePadding>
+                <ListItemButton onClick={() => irA("/mi-agenda")}>
+                  <ListItemIcon>
+                    <EventNoteIcon />
+                  </ListItemIcon>
+                  <ListItemText primary="Mi Agenda" />
+                </ListItemButton>
+              </ListItem>
+            )}
+
+            {user?.rol === "PACIENTE" && (
+              <ListItem disablePadding>
+                <ListItemButton onClick={() => irA("/mis-turnos")}>
+                  <ListItemIcon>
+                    <FormatListBulletedRoundedIcon />
+                  </ListItemIcon>
+                  <ListItemText primary="Mis Turnos" />
+                </ListItemButton>
+              </ListItem>
+            )}
 
             <Divider />
 
@@ -132,7 +169,7 @@ const HamburgerMenu = ({ onAbrirLogin, onAbrirRegistro }) => {
               </ListItemButton>
             </ListItem>
 
-            <ListItem disablePadding>
+            {user.rol !== 'MEDICO' ? <ListItem disablePadding>
               <ListItemButton onClick={handleCartClick}>
                 <ListItemIcon>
                   <Badge badgeContent={cantUnidades} color="primary">
@@ -141,7 +178,7 @@ const HamburgerMenu = ({ onAbrirLogin, onAbrirRegistro }) => {
                 </ListItemIcon>
                 <ListItemText primary="Carrito" />
               </ListItemButton>
-            </ListItem>
+            </ListItem> : <></>}
 
             <Divider />
 
