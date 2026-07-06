@@ -123,7 +123,7 @@ function PerfilMedicoContent({ medicoInicial }) {
     handleDesvincularSede
   } = useMedicoProfile(medicoInicial, triggerConfirm, setAlertConfig, showAlert);
 
-  const turnosHook = useTurnos(medico, activeTab);
+  const turnosHook = useTurnos(medico, activeTab, showAlert);
 
   const [editingDispId, setEditingDispId] = useState(null);
   const [dispInitialData, setDispInitialData] = useState(null);
