@@ -77,17 +77,28 @@ const CostoTurno = styled.span`
 export default function TurnoCardHeader({ turno, especialidades = [], practicas = [] }) {
   const formatoServicio = (servicio = {}) => {
     const tipo = servicio?.tipo?.toLowerCase?.();
+    const idServicio = servicio?.id || servicio?._id;
+
     if (tipo === 'especialidad') {
       return `${servicio?.nombre} • Consulta general`;
     }
-    if (practicas.length > 0) {
-      const practica = practicas.find((p) => p.id === servicio.id);
+
+    if (practicas.length > 0 && idServicio) {
+      const practica = practicas.find((p) => p.id === idServicio || p._id === idServicio);
       if (practica) {
-        const especialidad = especialidades.find((e) => e.id === practica.especialidadPadreId);
+        const parentId = practica.especialidadPadreId?._id || practica.especialidadPadreId;
+        const especialidad = especialidades.find((e) => e.id === parentId || e._id === parentId);
         return `${especialidad?.nombre || ''} • ${practica.nombre}`;
       }
     }
-    return `${servicio?.nombre || 'Especialidad'} • ${servicio?.especialidadPadreId || 'Consulta'}`;
+
+    // Fallbacks si falla el match o no vino 'tipo'
+    if (servicio?.especialidadPadreId) {
+      const nombrePadre = servicio.especialidadPadreId?.nombre || 'Especialidad';
+      return `${nombrePadre} • ${servicio.nombre}`;
+    }
+
+    return `${servicio?.nombre || 'Especialidad'} • Consulta general`;
   };
 
   // Función helper para obtener la inicial del médico (ej: "Dr. Franco" -> "F")
@@ -115,23 +126,24 @@ export default function TurnoCardHeader({ turno, especialidades = [], practicas 
             <BusinessRoundedIcon />
             <span>{turno.sede?.nombre}</span>
           </DetailRow>
-
-          <DetailRow $muted>
-            <EventRoundedIcon />
-            <span>{new Date(turno.fechaHora).toLocaleDateString('es-AR')}</span>
-          </DetailRow>
-
-          <DetailRow $muted>
-            <AccessTimeFilledRoundedIcon />
-            <span>{new Date(turno.fechaHora).toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' })} hs</span>
-          </DetailRow>
-
-          {turno.estado === "PENDIENTECAMBIO" && 
+        {turno.fechaHora && turno.estado !== "DISPONIBLE" &&
+            <DetailRow $muted>
+              <EventRoundedIcon />
+              <span>{new Date(turno.fechaHora).toLocaleDateString('es-AR')}</span>
+            </DetailRow>
+        }
+        {turno.fechaHora && turno.estado !== "DISPONIBLE" &&
+            <DetailRow $muted>
+              <AccessTimeFilledRoundedIcon />
+              <span>{new Date(turno.fechaHora).toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' })} hs</span>
+            </DetailRow>
+        }
+        {turno.estado === "PENDIENTECAMBIO" && 
             <DetailRow >
               <EventRoundedIcon />
               <span>Fecha propuesta: {new Date(turno.fechaHoraPropuesta).toLocaleDateString('es-AR') + " a las " + new Date(turno.fechaHoraPropuesta).toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' }) + " hs"}</span>
             </DetailRow>
-          }
+        }
         </DatosTurno>
       </InfoMedico>
 
