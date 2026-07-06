@@ -135,7 +135,7 @@ export default function SidebarFiltros({ direction = 'vertical', onSearch }) {
                 </Stack>
             )}
 
-            <Stack direction={isHorizontal ? 'row' : 'column'} spacing={isHorizontal ? 1.5 : 2.5} flexWrap={isHorizontal ? 'wrap' : undefined} useFlexGap={isHorizontal}>
+            <Stack direction={!isBelow877 && isHorizontal ? 'row' : 'column'} spacing={isHorizontal ? 1.5 : 2.5} flexWrap={isHorizontal ? 'wrap' : undefined} useFlexGap={isHorizontal}>
                 {/* Especialidad (Siempre visible, obligatorio) */}
                 <FiltroSelect
                     label="Especialidad"

@@ -82,7 +82,14 @@ const Header = () => {
           </Link>
         </div>
 
-        {isMobile ? <HamburgerMenu onAbrirLogin={abrirLogin} onAbrirRegistro={abrirRegistro} /> : <></>}
+        {isMobile
+          ? <>
+              <Box sx={{display: 'flex'}}>
+                {user && <CampanitaNotification />}
+                <HamburgerMenu onAbrirLogin={abrirLogin} onAbrirRegistro={abrirRegistro} />
+              </Box>
+            </> 
+          : <></>}
 
         <Navbar />
 
