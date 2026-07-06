@@ -54,15 +54,18 @@ body {
   outline: none;
 }
 
-/* Responsivo para que en celulares se ponga uno abajo del otro */
-@media (max-width: 850px) {
+/* Responsivo: a partir de 768px se apila verticalmente */
+@media (max-width: 768px) {
   .container-busqueda {
     flex-direction: column;
   }
 
-  /* Fuerza al componente de MUI a estirarse al 100% en mobile */
   .container-busqueda aside {
     width: 100% !important;
     box-sizing: border-box;
+  }
+
+  .header-resultados {
+    flex-direction: column;
   }
 }

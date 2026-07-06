@@ -5,7 +5,8 @@ import {
     Button,
     Typography,
     TextField,
-    Stack
+    Stack,
+    useMediaQuery
 } from '@mui/material';
 import { useFilters } from '../../context/FilterContext.jsx';
 import FiltroSelect from './FiltroSelect.jsx';
@@ -22,6 +23,7 @@ export default function SidebarFiltros({ direction = 'vertical', onSearch }) {
 
     const isHorizontal = direction === 'horizontal';
     const selectWidth = isHorizontal ? { minWidth: 160 } : {};
+    const isBelow877 = useMediaQuery('(max-width:877px)');
 
     const handleDoctorChange = (e) => {
         const selected = e.target.value === 'Todos'
@@ -126,8 +128,8 @@ export default function SidebarFiltros({ direction = 'vertical', onSearch }) {
                     spacing={1}
                     sx={{ mb: 3 }}
                 >
-                    <FilterAltIcon sx={{ color: '#475569', fontSize: 20 }} />
-                    <Typography variant="h6" sx={{ fontSize: 16, fontWeight: 700, color: '#1e293b' }}>
+                    <FilterAltIcon sx={{ color: 'secondary.main', fontSize: 20 }} />
+                    <Typography variant="h6" sx={{ fontSize: 16, fontWeight: 700, color: 'secondary.light' }}>
                         Búsqueda de Turnos
                     </Typography>
                 </Stack>
