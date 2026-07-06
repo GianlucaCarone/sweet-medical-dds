@@ -62,7 +62,7 @@ export default function MisTurnos() {
 
   const estadisticasData = [
     {
-      numero: counts.RESERVADOS,
+      numero: counts.RESERVADOS + counts.CONFIRMADOS + counts.PROPUESTAS,
       texto: 'Turnos próximos',
       tipo: 'azul',
       icono: <CalendarMonthRoundedIcon />,

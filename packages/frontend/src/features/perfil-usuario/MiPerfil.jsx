@@ -12,7 +12,7 @@ import {
   CircularProgress,
   Stack,
   Chip
-} from "@mui/material";
+} from '@mui/material';
 import { Edit, Save, Cancel } from "@mui/icons-material";
 import { useAuth } from "../../context/AuthContext.jsx";
 import { useAlert } from "../../context/AlertContext.jsx";
@@ -238,9 +238,9 @@ export default function MiPerfil() {
 
   if (loading) {
     return (
-      <main className="perfil-loading-container">
+      <Box sx={{ display: 'flex', justifyContent: 'center', mt: 10 , alignItems: "center", minHeight: "50vh"}}>
         <CircularProgress />
-      </main>
+      </Box>
     );
   }
 

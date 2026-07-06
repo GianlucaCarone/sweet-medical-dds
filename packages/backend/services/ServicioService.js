@@ -23,6 +23,9 @@ export class ServicioService {
         logger.info("[SERVICIO SERVICE]: Obteniendo todos los servicios",);
         const servicios = await this.serviciosRepository.findAll();
         logger.info("[SERVICIO SERVICE]:Todos los servicios obtenidos: " + servicios);
+        if (servicios.length === 0) {
+            return [];
+        }
         return servicios.map(servicio => this.toDto(servicio));
     }
 

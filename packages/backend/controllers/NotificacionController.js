@@ -11,6 +11,43 @@ export class NotificacionController {
         this.notificacionService = notificacionService;
     }
 
+    getNotificaciones = async (req, res, next) => {
+        try {
+            const idUsuario = req.user.id;
+            const leido = req.query.leido === "true"; // filtro por leido/no leido
+            const { numeroPagina, limitePorPagina } = this.extraerPaginacion(req.query);
+            
+            logger.info(`[NOTIFICACIONES CONTROLLER]: Obteniendo notificaciones de user: ${idUsuario}, leido: ${leido}, pag: ${numeroPagina}`);
+            const resultado = await this.notificacionService.getLeidosNoLeidosPaginado(
+                idUsuario, 
+                leido, 
+                numeroPagina, 
+                limitePorPagina
+            );
+            
+            res.status(200).json({
+                status: "success",
+                ...resultado
+            });
+        } catch (error) {
+            next(error);
+        }
+    };
+
+    getContadores = async (req, res, next) => {
+        try {
+            const idUsuario = req.user.id;
+            logger.info(`[NOTIFICACIONES CONTROLLER]: Obteniendo contadores de user: ${idUsuario}`);
+            const contadores = await this.notificacionService.getContadores(idUsuario);
+            res.status(200).json({
+                status: "success",
+                data: contadores
+            });
+        } catch (error) {
+            next(error);
+        }
+    };
+
     //este endpoint en la siguiente entrega vuela (es por logica del sistema que se crean)
     //    crearNotificacion = async (req, res, next) => {
     //        try {
@@ -92,13 +129,45 @@ export class NotificacionController {
     leer = async (req, res, next) => {
         try {
             const { idNotificacion } = notificacionIdParamsSchema.parse(req.params);
+            const idUsuarioAutenticado = req.user?.id;
             logger.info("[NOTIFICACIONES CONTROLLER]: Leyendo notificacion: ", idNotificacion);
-            const notificacion = await this.notificacionService.leer(idNotificacion);
+            const notificacion = await this.notificacionService.leer(idNotificacion, idUsuarioAutenticado);
             logger.info("[NOTIFICACIONES CONTROLLER]: Notificacion leida: ", notificacion);
             res.status(200).json({
                 status: "success",
                 data: notificacion,
                 message: "Notificación leída exitosamente."
+            });
+        } catch (error) {
+            next(error);
+        }
+    };
+
+    desleer = async (req, res, next) => {
+        try {
+            const { idNotificacion } = notificacionIdParamsSchema.parse(req.params);
+            const idUsuarioAutenticado = req.user?.id;
+            logger.info("[NOTIFICACIONES CONTROLLER]: Marcando notificacion como no leida: ", idNotificacion);
+            const notificacion = await this.notificacionService.desleer(idNotificacion, idUsuarioAutenticado);
+            logger.info("[NOTIFICACIONES CONTROLLER]: Notificacion marcada como no leida: ", notificacion);
+            res.status(200).json({
+                status: "success",
+                data: notificacion,
+                message: "Notificación marcada como no leída exitosamente."
+            });
+        } catch (error) {
+            next(error);
+        }
+    };
+
+    marcarTodasComoLeidas = async (req, res, next) => {
+        try {
+            const idUsuario = req.user.id;
+            logger.info("[NOTIFICACIONES CONTROLLER]: Marcando todas las notificaciones como leídas para el usuario: ", idUsuario);
+            await this.notificacionService.marcarTodasComoLeidas(idUsuario);
+            res.status(200).json({
+                status: "success",
+                message: "Todas las notificaciones fueron marcadas como leídas exitosamente."
             });
         } catch (error) {
             next(error);

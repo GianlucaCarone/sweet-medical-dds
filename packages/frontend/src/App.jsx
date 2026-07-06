@@ -6,11 +6,13 @@ import MisTurnos from "./features/misTurnos/MisTurnos.jsx";
 import BusquedaTurnos from "./features/busqueda-turnos/busquedaTurnos.jsx";
 import PerfilMedico from "./features/perfil-medico/PerfilMedico.jsx";
 import MiPerfil from "./features/perfil-usuario/MiPerfil.jsx";
+import MisNotificaciones from "./features/notificaciones/MisNotificaciones.jsx";
 import { CartProvider } from './context/CartContext.jsx';
 import { AlertProvider } from "./context/AlertContext.jsx";
 import ProtectedRoute from "./components/auth/ProtectedRoute.jsx";
 import Home from "./features/home/Home.jsx"
 import ErrorPage from "./features/errors/ErrorPage";
+import { NotificacionProvider } from "./context/NotificacionContext.jsx";
 
 import "./App.css";
 import { FilterProvider } from "./context/FilterContext.jsx";
@@ -31,7 +33,8 @@ function App() {
     <AlertProvider>
       <CartProvider>
         <FilterProvider>
-          <Routes>
+          <NotificacionProvider>
+            <Routes>
             <Route
               path="/"
               element={
@@ -108,10 +111,21 @@ function App() {
                 }
               />
 
+              {/* Mis Notificaciones: cualquier usuario logueado */}
+              <Route
+                path="mis-notificaciones"
+                element={
+                  <ProtectedRoute>
+                    <MisNotificaciones />
+                  </ProtectedRoute>
+                }
+              />
+
               <Route index element={<Home />} />
             </Route>
             <Route path="/login" element={<Login />} />
           </Routes>
+          </NotificacionProvider>
         </FilterProvider>
       </CartProvider>
     </AlertProvider>

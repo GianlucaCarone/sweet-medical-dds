@@ -77,11 +77,11 @@ export default function CarritoTurnos({ items, onEliminar, onConfirmar, onCerrar
 
             <Stack direction="row" alignItems="center" spacing={0.75}>
               <BadgeIcon sx={{ fontSize: 16, color: 'var(--color-text-muted)' }} />
-              <Typography fontSize={14} sx={{ color: 'var(--color-text-muted)' }}>{item.medico.nombre}</Typography>
+              <Typography fontSize={14} sx={{ color: 'var(--color-text-muted)' }}>{item.medico?.nombre || "Médico no disponible"}</Typography>
             </Stack>
             <Stack direction="row" alignItems="center" spacing={0.75}>
               <HealingRoundedIcon sx={{ fontSize: 15, color: 'var(--color-text-muted)' }} />
-              <Typography fontSize={13} sx={{ color: 'var(--color-text-muted)' }}>{item.servicio.nombre}</Typography>
+              <Typography fontSize={13} sx={{ color: 'var(--color-text-muted)' }}>{item.servicio?.nombre || "Servicio no disponible"}</Typography>
             </Stack>
             <Stack direction="row" alignItems="center" spacing={0.75}>
               <EventIcon sx={{ fontSize: 15, color: 'var(--color-text-muted)' }} />
@@ -89,7 +89,7 @@ export default function CarritoTurnos({ items, onEliminar, onConfirmar, onCerrar
             </Stack>
             <Stack direction="row" alignItems="center" spacing={0.75}>
               <BusinessRoundedIcon sx={{ fontSize: 15, color: 'var(--color-text-muted)' }} />
-              <Typography fontSize={13} sx={{ color: 'var(--color-text-muted)' }}>{item.sede.nombre}</Typography>
+              <Typography fontSize={13} sx={{ color: 'var(--color-text-muted)' }}>{item.sede?.nombre || "Sede no disponible"}</Typography>
             </Stack>
 
             <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mt: 1 }}>

@@ -85,6 +85,9 @@ export class MedicoService {
   async findAll() {
     logger.info("[MEDICO SERVICE]: Obteniendo todos los medicos");
     const medicos = await this.medicoRepository.findAll();
+    if (medicos.length === 0) {
+      return [];
+    }
     return medicos.map(m => this.toDto(m));
   }
 

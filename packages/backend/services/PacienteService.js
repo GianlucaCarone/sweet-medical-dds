@@ -39,6 +39,9 @@ export class PacienteService {
         logger.info("[PACIENTE SERVICE]: Buscando todos los pacientes");
         const pacientes = await this.#pacienteRepository.findAll();
         logger.info("[PACIENTE SERVICE]: Pacientes encontrados: ", pacientes);
+        if (pacientes.length === 0) {
+            return [];
+        }
         return pacientes.map((p) => this.toDto(p));
     }
 
