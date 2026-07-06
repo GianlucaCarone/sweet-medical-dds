@@ -16,19 +16,21 @@ const HomeMedico = ({ user }) => {
       icon: <EventNoteIcon fontSize="large" />,
       title: "Mi Agenda y Turnos",
       description: "Revisá tus turnos del día, confirmá asistencias y gestioná tu disponibilidad horaria.",
-      path: "/mi-agenda"
+      path: "/mi-agenda",
+      tab: "turnos",
     },
     {
       icon: <LocalHospitalIcon fontSize="large" />,
       title: "Servicios y Sedes",
       description: "Administrá las prácticas que ofreces y las sedes donde atendés a tus pacientes.",
-      path: "/mi-agenda"
+      path: "/mi-agenda",
+      tab: "servicios",
     },
     {
       icon: <PersonIcon fontSize="large" />,
       title: "Mi Perfil",
       description: "Actualizá tus datos personales, honorarios y credenciales de acceso.",
-      path: "/mi-perfil"
+      path: "/mi-perfil",
     }
   ];
 
@@ -57,7 +59,11 @@ const HomeMedico = ({ user }) => {
               key={index}
               className="bg-surface flex-grow-1" 
               style={{ minWidth: '280px', maxWidth: '350px', cursor: 'pointer', display: 'flex', flexDirection: 'column' }} 
-              onClick={() => navigate(action.path)}
+              onClick={() =>
+                navigate(action.path, {
+                  state: action.tab ? { tab: action.tab } : undefined,
+                })
+              }
             >
               <CardContent sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', p: 4, flex: 1 }}>
                 <Box

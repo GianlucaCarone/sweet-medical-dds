@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import {useAlert} from '../../context/AlertContext.jsx';
 import { useNavigate } from "react-router-dom";
 import { handleApiError } from "../../utils/handleApiError";
+import { useLocation } from "react-router-dom";
 
 // Hooks
 import useMedicoProfile from './hooks/useMedicoProfile.js';
@@ -29,6 +30,9 @@ import './PerfilMedico.css';
 export default function PerfilMedico() {
   const { medico: medicoInicial, cargando, error } = useGetMiPerfilMedico();
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const [activeTab, setActiveTab] = useState(location.state?.tab || "servicios");
 
   if (cargando) return <PerfilMedicoSkeleton />;
 
@@ -62,11 +66,16 @@ export default function PerfilMedico() {
     );
   }
 
-  return <PerfilMedicoContent medicoInicial={medicoInicial} />;
+  return (
+    <PerfilMedicoContent
+      medicoInicial={medicoInicial}
+      initialTab={location.state?.tab || "servicios"}
+    />
+  );
 }
 
-function PerfilMedicoContent({ medicoInicial }) {
-  const [activeTab, setActiveTab] = useState('servicios');
+function PerfilMedicoContent({ medicoInicial, initialTab }) {
+  const [activeTab, setActiveTab] = useState(initialTab);
   const [modalOpen, setModalOpen] = useState(null);
   const { showAlert } = useAlert();
 

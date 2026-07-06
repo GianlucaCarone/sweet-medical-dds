@@ -14,9 +14,18 @@ export default function TarjetaTurno({ turno, especialidades, practicas, onReser
 
   const formatoHorario = (isoString) => {
     const fecha = new Date(isoString);
+    
     return {
-        fecha: fecha.toLocaleDateString("es-AR", { day: "2-digit", month: "short", timeZone: "UTC" }),
-        hora: fecha.toLocaleTimeString("es-AR", { hour: "2-digit", minute: "2-digit", timeZone: "UTC" })
+      fecha: fecha.toLocaleDateString("es-AR", {
+        day: "2-digit",
+        month: "short",
+        timeZone: "America/Argentina/Buenos_Aires",
+      }),
+      hora: fecha.toLocaleTimeString("es-AR", {
+        hour: "2-digit",
+        minute: "2-digit",
+        timeZone: "America/Argentina/Buenos_Aires",
+      }),
     };
   };
 
