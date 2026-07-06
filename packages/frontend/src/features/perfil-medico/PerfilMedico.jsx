@@ -96,6 +96,7 @@ function PerfilMedicoContent({ medicoInicial }) {
   }, [location.search]);
   const [modalOpen, setModalOpen] = useState(null);
   const { showAlert } = useAlert();
+  const navigate = useNavigate();
 
   const [alertConfig, setAlertConfig] = useState({ isOpen: false, title: '', message: '', type: 'info' });
   const [confirmModal, setConfirmModal] = useState({ isOpen: false, title: '', message: '', onConfirm: null });
