@@ -31,10 +31,12 @@ import { useAuth } from "../../context/AuthContext";
 import { useCart } from "../../context/CartContext";
 import { useThemeContext } from "../../context/ThemeContext";
 import "./HamburgerMenu.css";
+import { useAlert } from "../../context/AlertContext";
 
 const HamburgerMenu = ({ onAbrirLogin, onAbrirRegistro }) => {
   const [open, setOpen] = useState(false);
   const [cantUnidades, setCantUnidades] = useState(0);
+  const {showAlert} = useAlert();
   const { user, logout } = useAuth();
   const { mode, toggleTheme } = useThemeContext();
   const { counterCarrito, manejoCarritoDrawer } = useCart();
@@ -56,7 +58,18 @@ const HamburgerMenu = ({ onAbrirLogin, onAbrirRegistro }) => {
 
   const handleLogout = () => {
     logout();
+    showAlert("Sesión cerrada correctamente.", "success");
     handleClose();
+  };
+
+  // const handleRegistroExitoso = (usuario) => {
+  //   showAlert(`¡Cuenta creada exitosamente! Bienvenido/a, ${usuario.nombreUsuario || "usuario"}.`, "success");
+  //   // Redirigimos al paciente a su perfil para que complete su cobertura médica si lo desea
+  //   navigate("/mi-perfil");
+  // };
+
+  const handleLoginExitoso = (usuario) => {
+    showAlert(`¡Bienvenido/a de nuevo, ${usuario.nombreUsuario || "usuario"}!`, "success");
   };
 
   useEffect(() => {
@@ -187,15 +200,6 @@ const HamburgerMenu = ({ onAbrirLogin, onAbrirRegistro }) => {
             {user ? (
               <>
                 <ListItem disablePadding>
-                  <ListItemButton onClick={() => irA("/mis-notificaciones")}>
-                    <ListItemIcon>
-                      <NotificationsIcon />
-                    </ListItemIcon>
-                    <ListItemText primary="Notificaciones" />
-                  </ListItemButton>
-                </ListItem>
-
-                <ListItem disablePadding>
                   <ListItemButton onClick={() => irA("/mi-perfil")}>
                     <ListItemIcon>
                       <PersonIcon />
@@ -233,6 +237,7 @@ const HamburgerMenu = ({ onAbrirLogin, onAbrirRegistro }) => {
                   <ListItemButton
                     onClick={() => {
                       onAbrirLogin();
+                      handleLoginExitoso();
                       handleClose();
                     }}
                   >
