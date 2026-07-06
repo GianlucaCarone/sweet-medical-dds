@@ -82,6 +82,7 @@ export default function TurnoCardHeader({ turno, especialidades = [], practicas 
     if (tipo === 'especialidad') {
       return `${servicio?.nombre} • Consulta general`;
     }
+
     if (practicas.length > 0 && idServicio) {
       const practica = practicas.find((p) => p.id === idServicio || p._id === idServicio);
       if (practica) {
