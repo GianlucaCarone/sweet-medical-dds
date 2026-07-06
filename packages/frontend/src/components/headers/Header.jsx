@@ -90,7 +90,7 @@ const Header = () => {
           <IconButton onClick={toggleTheme} aria-label="Cambiar modo claro/oscuro">
             { mode == 'light' ? <LightModeIcon sx={{ color: "primary" }}></LightModeIcon> : <DarkModeIcon sx={{ color: "primary" }}></DarkModeIcon>}
           </IconButton>
-          {user.rol === "PACIENTE" && (
+          {user?.rol === "PACIENTE" && (
             <IconButton
               onClick={() => manejoCarritoDrawer.abrir()}
               aria-label="carrito de turnos"

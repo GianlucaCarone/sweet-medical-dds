@@ -169,16 +169,18 @@ const HamburgerMenu = ({ onAbrirLogin, onAbrirRegistro }) => {
               </ListItemButton>
             </ListItem>
 
-            {user?.rol !== 'MEDICO' ? <ListItem disablePadding>
-              <ListItemButton onClick={handleCartClick}>
-                <ListItemIcon>
-                  <Badge badgeContent={cantUnidades} color="primary">
-                    <ShoppingCartIcon />
-                  </Badge>
-                </ListItemIcon>
-                <ListItemText primary="Carrito" />
-              </ListItemButton>
-            </ListItem> : <></>}
+            {user?.rol === 'PACIENTE' && (
+              <ListItem disablePadding>
+                <ListItemButton onClick={handleCartClick}>
+                  <ListItemIcon>
+                    <Badge badgeContent={cantUnidades} color="primary">
+                      <ShoppingCartIcon />
+                    </Badge>
+                  </ListItemIcon>
+                  <ListItemText primary="Carrito" />
+                </ListItemButton>
+              </ListItem>
+            )}
 
             <Divider />
 
