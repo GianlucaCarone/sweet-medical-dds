@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Calendar, Clock, MapPin, User, Check, AlertTriangle, FileText, DollarSign, History } from 'lucide-react';
 import Modal from '../../features/perfil-medico/modals/Modal';
+import { Pagination, Button, useTheme } from '@mui/material';
 
 export default function TurnosTab({
   medico,
@@ -16,8 +17,11 @@ export default function TurnosTab({
   counts,
   onActualizarEstado,
   onProponerCambio,
+  onResponderCambioFecha,
   onObtenerHistorialPaciente
 }) {
+  const theme = useTheme();
+  const isDark = theme.palette.mode === 'dark';
   const [cancelingId, setCancelingId] = useState(null);
   const [motivoCancelacion, setMotivoCancelacion] = useState('');
   const [reprogrammingId, setReprogrammingId] = useState(null);
@@ -187,7 +191,6 @@ export default function TurnosTab({
         <h4 className="font-weight-bold text-default m-0">Gestión de Turnos</h4>
       </div>
 
-      {/* Sub-navegación de estados */}
       <div className="d-flex gap-2 mb-4 flex-wrap border-bottom pb-3">
         {[
           { key: 'RESERVADOS', label: 'Reservados', count: counts.RESERVADOS || 0 },
@@ -195,7 +198,7 @@ export default function TurnosTab({
           { key: 'PROPUESTAS', label: 'Propuestas de Cambio', count: counts.PROPUESTAS || 0 },
           { key: 'REALIZADOS', label: 'Realizados', count: counts.REALIZADOS || 0 },
           { key: 'CANCELADOS', label: 'Cancelados', count: counts.CANCELADOS || 0 }
-        ].map(tab => (
+        ].map((tab) => (
           <button
             key={tab.key}
             onClick={() => {
@@ -207,11 +210,16 @@ export default function TurnosTab({
             className={`btn btn-sm font-weight-bold px-3 py-2 position-relative d-flex align-items-center gap-2`}
             style={{
               borderRadius: '8px',
-              backgroundColor: subTab === tab.key ? 'var(--color-info-light)' : 'var(--color-neutral-light)',
-              color: subTab === tab.key ? 'var(--color-info-dark)' : 'var(--color-text-muted)',
-              border: 'none',
+              backgroundColor: subTab === tab.key 
+                ? (isDark ? 'var(--color-primary-dark)' : 'var(--color-info-light)') 
+                : (isDark ? 'var(--color-bg)' : 'var(--color-neutral-light)'),
+              color: subTab === tab.key 
+                ? (isDark ? '#ffffff' : 'var(--color-info-dark)') 
+                : 'var(--color-text-muted)',
+              border: isDark ? '1px solid var(--color-divider)' : 'none',
               transition: 'all 0.2s'
             }}
+            aria-label={`Filtro: ${tab.label} (${tab.count})`}
           >
             {tab.label}
             <span className="badge bg-neutral text-white" style={{ fontSize: '10px' }}>{tab.count}</span>
@@ -253,13 +261,16 @@ export default function TurnosTab({
                         )}
                       </div>
                       {turno.paciente && (
-                        <button
+                        <Button
                           onClick={() => verHistorialPaciente(turno.paciente)}
-                          className="btn btn-link btn-xs p-0 text-primary font-weight-bold d-flex align-items-center gap-1 border-0"
-                          style={{ textDecoration: 'none', fontSize: '11px' }}
+                          variant="text"
+                          size="small"
+                          startIcon={<FileText size={12} />}
+                          sx={{ textTransform: 'none', fontWeight: 'bold', fontSize: '11px', p: 0, minWidth: 'auto' }}
+                          aria-label={`Ver historial clínico del paciente ${turno.paciente.nombre}`}
                         >
-                          <FileText size={12} /> Historial
-                        </button>
+                          Historial
+                        </Button>
                       )}
                     </div>
                     
@@ -282,9 +293,15 @@ export default function TurnosTab({
                         <span>Costo: {turno.costo !== undefined && turno.costo !== null ? `$${turno.costo}` : 'No especificado'}</span>
                       </div>
                       <div className="mt-1 d-flex flex-column gap-1">
-                        <span className="badge bg-neutral-light text-default border px-2 py-1 font-weight-bold me-auto" style={{ fontSize: '11px' }}>
-                        {turno.servicio.nombre}
-                      </span>
+                        <span 
+                          className="badge border px-2 py-1 font-weight-bold me-auto text-default" 
+                          style={{ 
+                            fontSize: '11px', 
+                            backgroundColor: isDark ? 'var(--color-bg)' : 'var(--color-neutral-light)' 
+                          }}
+                        >
+                          {turno.servicio.nombre}
+                        </span>
 
                     {['RESERVADO', 'CONFIRMADO', 'PENDIENTECAMBIO'].includes(turno.estado) && (
                           <div className={`d-flex align-items-center gap-1 mt-2 p-2 rounded-3 ${puedesCancelar(turno.fechaHora) ? 'text-muted' : 'text-danger font-weight-bold'}`} style={{ fontSize: '11px', backgroundColor: puedesCancelar(turno.fechaHora) ? 'var(--color-bg)' : 'var(--color-error-light)', border: puedesCancelar(turno.fechaHora) ? '1px dashed var(--color-divider)' : '1px solid var(--color-error-light)' }}>
@@ -323,7 +340,7 @@ export default function TurnosTab({
                   {/* Acciones */}
                   <div className="border-top pt-3 mt-auto">
                     {cancelingId === turno.id ? (
-                      <div className="p-2 bg-neutral-light rounded-3 border">
+                      <div className="p-2 bg-surface rounded-3 border">
                         <label className="form-label small font-weight-bold text-default mb-1">Indica el Motivo de Cancelación</label>
                         <textarea
                           className="form-control form-control-sm mb-2"
@@ -334,8 +351,8 @@ export default function TurnosTab({
                           style={{ fontSize: '12px' }}
                         />
                         <div className="d-flex justify-content-end gap-2">
-                          <button className="btn btn-xs btn-light px-2 py-1 border" style={{ fontSize: '11px' }} onClick={() => setCancelingId(null)}>Volver</button>
-                          <button className="btn btn-xs btn-danger px-2 py-1 font-weight-bold" style={{ fontSize: '11px' }} onClick={() => handleConfirmarCancelacion(turno.id)}>Confirmar</button>
+                          <Button variant="outlined" color="inherit" size="small" sx={{ fontSize: '11px', minWidth: 'auto', px: 1, py: 0.5 }} onClick={() => setCancelingId(null)} aria-label="Cancelar operación de cancelación">Volver</Button>
+                          <Button variant="contained" color="success" size="small" sx={{ fontSize: '11px', fontWeight: 'bold', minWidth: 'auto', px: 1, py: 0.5, color: 'white' }} onClick={() => handleConfirmarCancelacion(turno.id)} aria-label={`Confirmar cancelación del turno de ${turno.paciente ? turno.paciente.nombre : 'paciente'}`}>Confirmar</Button>
                         </div>
                       </div>
                     ) : reprogrammingId === turno.id ? (
@@ -344,7 +361,7 @@ export default function TurnosTab({
                           e.preventDefault();
                           handleConfirmarReprogramacion(turno.id);
                         }}
-                        className="p-2 bg-neutral-light rounded-3 border"
+                        className="p-2 bg-surface rounded-3 border"
                       >
                         <label className="form-label small font-weight-bold text-default mb-1">Selecciona Fecha y Hora Propuesta</label>
                         <input
@@ -357,77 +374,103 @@ export default function TurnosTab({
                           style={{ fontSize: '12px' }}
                         />
                         <div className="d-flex justify-content-end gap-2">
-                          <button
+                          <Button
                             type="button"
-                            className="btn btn-xs btn-light px-2 py-1 border"
-                            style={{ fontSize: '11px' }}
+                            variant="outlined"
+                            color="inherit"
+                            size="small"
+                            sx={{ fontSize: '11px', minWidth: 'auto', px: 1, py: 0.5 }}
                             onClick={() => setReprogrammingId(null)}
+                            aria-label="Cancelar operación de reprogramación"
                           >
                             Cancelar
-                          </button>
-                          <button
+                          </Button>
+                          <Button
                             type="submit"
-                            className="btn btn-xs btn-primary px-2 py-1 font-weight-bold"
-                            style={{ fontSize: '11px' }}
+                            variant="contained"
+                            color="primary"
+                            size="small"
+                            sx={{ fontSize: '11px', fontWeight: 'bold', minWidth: 'auto', px: 1, py: 0.5 }}
+                            aria-label={`Enviar propuesta de reprogramación a ${turno.paciente ? turno.paciente.nombre : 'paciente'}`}
                           >
                             Enviar Propuesta
-                          </button>
+                          </Button>
                         </div>
                       </form>
                     ) : (
                       <div className="d-flex flex-wrap gap-2 align-items-center w-100">
                         {turno.estado === 'RESERVADO' && (
                           <>
-                            <button
+                            <Button
                               onClick={() => onActualizarEstado(turno.id, 'CONFIRMADO', "Turno confirmado")}
-                              className="btn btn-success btn-sm font-weight-bold d-flex align-items-center gap-1"
-                              style={{ fontSize: '11px', borderRadius: '6px' }}
+                              variant="contained"
+                              color="success"
+                              size="small"
+                              startIcon={<Check size={12} />}
+                              sx={{ fontSize: '11px', fontWeight: 'bold', borderRadius: '6px', color: 'white' }}
+                              aria-label={`Confirmar turno de ${turno.paciente ? turno.paciente.nombre : 'paciente'}`}
                             >
-                              <Check size={12} /> Confirmar
-                            </button>
-                            <button
+                              Confirmar
+                            </Button>
+                            <Button
                               onClick={() => handleReprogramarClick(turno)}
-                              className="btn btn-outline-primary btn-sm font-weight-bold"
-                              style={{ fontSize: '11px', borderRadius: '6px' }}
+                              variant="outlined"
+                              color="primary"
+                              size="small"
+                              sx={{ fontSize: '11px', fontWeight: 'bold', borderRadius: '6px' }}
+                              aria-label={`Proponer cambio de fecha y hora a ${turno.paciente ? turno.paciente.nombre : 'paciente'}`}
                             >
                               Proponer Cambio
-                            </button>
+                            </Button>
                             {puedesCancelar(turno.fechaHora) && (
-                              <button
+                              <Button
                                 onClick={() => handleCancelarClick(turno)}
-                                className="btn btn-outline-danger btn-sm font-weight-bold"
-                                style={{ fontSize: '11px', borderRadius: '6px' }}
+                                variant="outlined"
+                                color="error"
+                                size="small"
+                                sx={{ fontSize: '11px', fontWeight: 'bold', borderRadius: '6px' }}
+                                aria-label={`Cancelar turno de ${turno.paciente ? turno.paciente.nombre : 'paciente'}`}
                               >
                                 Cancelar
-                              </button>
+                              </Button>
                             )}
                           </>
                         )}
 
                         {turno.estado === 'CONFIRMADO' && (
                           <>
-                            <button
+                            <Button
                               onClick={() => onActualizarEstado(turno.id, 'REALIZADO', "Turno realizado")}
-                              className="btn btn-primary btn-sm font-weight-bold d-flex align-items-center gap-1"
-                              style={{ fontSize: '11px', borderRadius: '6px' }}
+                              variant="contained"
+                              color="success"
+                              size="small"
+                              startIcon={<Check size={12} />}
+                              sx={{ fontSize: '11px', fontWeight: 'bold', borderRadius: '6px', color: 'white' }}
+                              aria-label={`Marcar turno de ${turno.paciente ? turno.paciente.nombre : 'paciente'} como realizado`}
                             >
-                              <Check size={12} /> Marcar Realizado
-                            </button>
-                            <button
+                              Marcar Realizado
+                            </Button>
+                            <Button
                               onClick={() => handleReprogramarClick(turno)}
-                              className="btn btn-outline-primary btn-sm font-weight-bold"
-                              style={{ fontSize: '11px', borderRadius: '6px' }}
+                              variant="outlined"
+                              color="primary"
+                              size="small"
+                              sx={{ fontSize: '11px', fontWeight: 'bold', borderRadius: '6px' }}
+                              aria-label={`Proponer cambio de fecha y hora a ${turno.paciente ? turno.paciente.nombre : 'paciente'}`}
                             >
                               Proponer Cambio
-                            </button>
+                            </Button>
                             {puedesCancelar(turno.fechaHora) && (
-                              <button
+                              <Button
                                 onClick={() => handleCancelarClick(turno)}
-                                className="btn btn-outline-danger btn-sm font-weight-bold"
-                                style={{ fontSize: '11px', borderRadius: '6px' }}
+                                variant="outlined"
+                                color="error"
+                                size="small"
+                                sx={{ fontSize: '11px', fontWeight: 'bold', borderRadius: '6px' }}
+                                aria-label={`Cancelar turno de ${turno.paciente ? turno.paciente.nombre : 'paciente'}`}
                               >
                                 Cancelar
-                              </button>
+                              </Button>
                             )}
                           </>
                         )}
@@ -435,24 +478,30 @@ export default function TurnosTab({
                         {turno.estado === 'PENDIENTECAMBIO' && (
                           <>
                             {turno.historialEstado?.slice().reverse().find(h => h.estado === 'PENDIENTECAMBIO')?.usuario !== medico?.id ? (
-                              <button
-                                onClick={() => onActualizarEstado(turno.id, 'CONFIRMADO', 'Turno aceptado', true)}
-                                className="btn btn-success btn-sm font-weight-bold"
-                                style={{ fontSize: '11px', borderRadius: '6px' }}
+                              <Button
+                                onClick={() => onResponderCambioFecha(turno.id, true)}
+                                variant="contained"
+                                color="success"
+                                size="small"
+                                sx={{ fontSize: '11px', fontWeight: 'bold', borderRadius: '6px' }}
+                                aria-label={`Aceptar propuesta de cambio de ${turno.paciente ? turno.paciente.nombre : 'paciente'}`}
                               >
                                 Aceptar Cambio
-                              </button>
+                              </Button>
                             ) : (
                               <span className="text-muted small italic me-auto">Esperando confirmación del paciente...</span>
                             )}
                             {puedesCancelar(turno.fechaHora) && (
-                              <button
+                              <Button
                                 onClick={() => handleCancelarClick(turno)}
-                                className="btn btn-outline-danger btn-sm font-weight-bold ms-auto"
-                                style={{ fontSize: '11px', borderRadius: '6px' }}
+                                variant="outlined"
+                                color="error"
+                                size="small"
+                                sx={{ fontSize: '11px', fontWeight: 'bold', borderRadius: '6px', ml: 'auto' }}
+                                aria-label={`Cancelar turno pendiente de cambio de ${turno.paciente ? turno.paciente.nombre : 'paciente'}`}
                               >
                                 Cancelar Turno
-                              </button>
+                              </Button>
                             )}
                           </>
                         )}
@@ -462,14 +511,18 @@ export default function TurnosTab({
                         )}
 
 
-                        <button
+                        <Button
                           onClick={() => setTurnoHistorial(turno)}
-                          className="btn btn-outline-secondary btn-sm font-weight-bold d-flex align-items-center gap-1 ms-auto"
-                          style={{ fontSize: '11px', borderRadius: '6px' }}
+                          variant="outlined"
+                          color="inherit"
+                          size="small"
+                          startIcon={<History size={12} />}
+                          sx={{ fontSize: '11px', fontWeight: 'bold', borderRadius: '6px', ml: 'auto' }}
                           title="Historial de Estados del Turno"
+                          aria-label={`Ver historial de estados del turno de ${turno.paciente ? turno.paciente.nombre : 'paciente'}`}
                         >
-                          <History size={12} /> Historial
-                        </button>
+                          Historial
+                        </Button>
                       </div>
                     )}
                   </div>
@@ -479,7 +532,7 @@ export default function TurnosTab({
             ))
           ) : (
             <div className="col-12">
-              <div className="text-center py-5 border rounded-3 bg-neutral-light">
+              <div className="text-center py-5 border rounded-3 bg-surface">
                 <p className="text-muted italic m-0">No se encontraron turnos en este estado.</p>
               </div>
             </div>
@@ -488,29 +541,17 @@ export default function TurnosTab({
 
         {/* paginacion */}
         {totalPages > 1 && (
-          <div className="d-flex justify-content-between align-items-center mt-4 pt-3 border-top">
+          <div className="d-flex flex-column flex-sm-row justify-content-between align-items-center mt-4 pt-3 border-top gap-3">
             <span className="text-muted" style={{ fontSize: '12.5px' }}>
               Mostrando página <strong>{page}</strong> de <strong>{totalPages}</strong> ({totalItems} turnos en total)
             </span>
-            <div className="d-flex gap-2">
-              <button 
-                className="btn btn-outline-primary btn-sm" 
-                disabled={page === 1 || isFetching}
-                onClick={() => onPageChange(page - 1)}
-              >
-                Anterior
-              </button>
-              <span className="text-muted small align-self-center">
-                Página {page} de {totalPages}
-              </span>
-              <button 
-                className="btn btn-outline-primary btn-sm" 
-                disabled={page === totalPages || isFetching}
-                onClick={() => onPageChange(page + 1)}
-              >
-                Siguiente
-              </button>
-            </div>
+            <Pagination 
+              count={totalPages} 
+              page={page} 
+              onChange={(e, value) => onPageChange(value)} 
+              color="primary" 
+              disabled={isFetching}
+            />
           </div>
         )}
         </>
@@ -524,7 +565,7 @@ export default function TurnosTab({
       >
         {pacienteHistorial && (
           <div className="p-3" style={{ maxHeight: '450px', overflowY: 'auto' }}>
-            <div className="mb-3 p-2 bg-neutral-light rounded" style={{ fontSize: '12px' }}>
+            <div className="mb-3 p-2 bg-surface border rounded" style={{ fontSize: '12px' }}>
               <span className="d-block text-default"><strong>Paciente:</strong> {pacienteHistorial.paciente.nombre}</span>
               <span className="d-block text-default"><strong>DNI:</strong> {pacienteHistorial.paciente.dni}</span>
               <span className="d-block text-default"><strong>Obra Social / Plan:</strong> {obtenerObraSocialText(pacienteHistorial.paciente)} {obtenerPlanText(pacienteHistorial.paciente) ? `/ ${obtenerPlanText(pacienteHistorial.paciente)}` : ''}</span>
@@ -561,7 +602,7 @@ export default function TurnosTab({
       >
         {turnoHistorial && (
           <div className="p-3">
-            <div className="mb-3 p-2.5 bg-neutral-light rounded-3" style={{ fontSize: '12px' }}>
+            <div className="mb-3 p-2.5 bg-surface border rounded-3" style={{ fontSize: '12px' }}>
               <span className="d-block text-default"><strong>Paciente:</strong> {turnoHistorial.paciente ? turnoHistorial.paciente.nombre : 'Sin paciente asignado'}</span>
               <span className="d-block text-default"><strong>Servicio:</strong> {turnoHistorial.servicio.nombre}</span>
               <span className="d-block text-default"><strong>Fecha/Hora original:</strong> {formatearFecha(turnoHistorial.fechaHora)} - {formatearHora(turnoHistorial.fechaHora)}</span>
@@ -621,7 +662,7 @@ export default function TurnosTab({
         title={customAlert.title}
       >
         <div className="p-4 text-center">
-          <div className="d-inline-flex p-3 bg-neutral-light rounded-circle mb-3 text-warning">
+          <div className="d-inline-flex p-3 bg-surface border rounded-circle mb-3 text-warning">
             <AlertTriangle size={32} />
           </div>
           <h5 className="font-weight-bold text-default mb-2">{customAlert.title}</h5>

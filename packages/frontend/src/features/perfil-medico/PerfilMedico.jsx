@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import {useAlert} from '../../context/AlertContext.jsx';
 import { useNavigate, useLocation } from "react-router-dom";
 import { handleApiError } from "../../utils/handleApiError";
+import { Box, Tabs, Tab } from "@mui/material";
 
 
 // Hooks
@@ -152,26 +153,25 @@ function PerfilMedicoContent({ medicoInicial }) {
           />
 
           <section className="perfil-card p-0 overflow-hidden mb-4">
-            <nav className="tabs-header-container">
-              {['servicios', 'disponibilidades', 'sedes', 'turnos'].map(tab => {
-                const label = tab === 'servicios' ? 'Mis Servicios'
-                  : tab === 'disponibilidades' ? 'Mis Horarios'
-                    : tab === 'sedes' ? 'Mis Sedes'
-                      : 'Mis Turnos';
-                return (
-                  <button
-                    key={tab}
-                    onClick={() => {
-                      setActiveTab(tab);
-                      navigate(`?tab=${tab}`, { replace: true });
-                    }}
-                    className={`tab-nav-btn ${activeTab === tab ? 'active' : ''}`}
-                  >
-                    {label}
-                  </button>
-                );
-              })}
-            </nav>
+            <Box sx={{ borderBottom: 1, borderColor: 'divider', bgcolor: 'background.paper' }}>
+              <Tabs 
+                value={activeTab} 
+                onChange={(e, newValue) => {
+                  setActiveTab(newValue);
+                  navigate(`?tab=${newValue}`, { replace: true });
+                }} 
+                aria-label="perfil medico tabs"
+                variant="scrollable"
+                scrollButtons="auto"
+                textColor="primary"
+                indicatorColor="primary"
+              >
+                <Tab label="Mis Servicios" value="servicios" sx={{ textTransform: 'none', fontWeight: 'bold' }} />
+                <Tab label="Mis Horarios" value="disponibilidades" sx={{ textTransform: 'none', fontWeight: 'bold' }} />
+                <Tab label="Mis Sedes" value="sedes" sx={{ textTransform: 'none', fontWeight: 'bold' }} />
+                <Tab label="Mis Turnos" value="turnos" sx={{ textTransform: 'none', fontWeight: 'bold' }} />
+              </Tabs>
+            </Box>
 
             <article className="tab-content-container p-4">
               {activeTab === 'servicios' && (
@@ -215,6 +215,7 @@ function PerfilMedicoContent({ medicoInicial }) {
                   onPageChange={turnosHook.setTurnosPage}
                   onActualizarEstado={turnosHook.handleActualizarEstadoTurno}
                   onProponerCambio={turnosHook.handleProponerCambioTurno}
+                  onResponderCambioFecha={turnosHook.handleResponderCambioFecha}
                   onObtenerHistorialPaciente={turnosHook.handleObtenerHistorialPaciente}
                 />
               )}

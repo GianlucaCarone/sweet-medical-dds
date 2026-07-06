@@ -131,7 +131,7 @@ export default function ModalDisponibilidad({ isOpen, onClose, medico, handleAgr
           </select>
         </div>
 
-        <div className="bg-neutral-light p-3 rounded" style={{ border: '1px solid var(--color-divider)' }}>
+        <div className="bg-surface p-3 rounded" style={{ border: '1px solid var(--color-divider)' }}>
           <div className="row g-2">
             <div className="col-6">
               <label className="form-label font-weight-bold text-default small mb-1">Hora de Inicio</label>

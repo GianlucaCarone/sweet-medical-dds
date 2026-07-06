@@ -1,5 +1,6 @@
 import React from 'react';
 import { Trash2 } from 'lucide-react';
+import { IconButton } from '@mui/material';
 
 export default function ServicioCard({ servicio, onEliminar }) {
   return (
@@ -13,13 +14,16 @@ export default function ServicioCard({ servicio, onEliminar }) {
           >
             {servicio.nombre}
           </h5>
-          <button
-            className="btn btn-link text-danger p-1 border-0"
+          <IconButton
+            color="error"
+            size="small"
             onClick={() => onEliminar(servicio.id)}
             title="Eliminar servicio"
+            aria-label={`Eliminar servicio ${servicio.nombre}`}
+            sx={{ p: 0.5, border: 0 }}
           >
             <Trash2 size={18} />
-          </button>
+          </IconButton>
         </div>
         <div className="text-muted small mb-3">
           {servicio.codigo && (
