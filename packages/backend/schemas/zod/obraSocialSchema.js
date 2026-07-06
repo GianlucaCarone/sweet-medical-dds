@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { NivelCobertura } from "../../domain/coberturas/nivelCoberturaEnum.js";
+import { objectIdSchema } from "./objectIdSchema.js";
 
 const MIN_NOMBRE_OBRA_SOCIAL = 4;
 const MAX_NOMBRE_OBRA_SOCIAL = 50;
@@ -13,15 +14,11 @@ export const obraSocialIdParamSchema = z.object({
 });
 
 export const planIdParamSchema = z.object({
-  planId: z.union([
-    z.string().uuid({ error: "El ID del plan debe ser un ID válido" }),
-    z.string().regex(MONGO_OBJECT_ID_REGEX, "El ID del plan debe ser un ObjectId válido")
-  ])
+  planId: objectIdSchema("plan")
 });
 
 export const nombreObraSocialSchema = z.string({
-    required_error: "El nombre de la obra social es obligatorio",
-    invalid_type_error: "El nombre de la sede debe ser una cadena de texto"
+    error: (issue) => issue.input === undefined ? "El nombre de la obra social es obligatorio" : "El nombre de la sede debe ser una cadena de texto"
 }).min(MIN_NOMBRE_OBRA_SOCIAL, `El nombre debe tener al menos ${MIN_NOMBRE_OBRA_SOCIAL} caracteres`)
   .max(MAX_NOMBRE_OBRA_SOCIAL, `El nombre debe tener como máximo ${MAX_NOMBRE_OBRA_SOCIAL} caracteres`)
   .regex(/^[A-Za-zÁÉÍÓÚáéíóúÑñ0-9 ]+$/, "El nombre solo puede contener letras, números y espacios");
@@ -33,7 +30,7 @@ const coberturaEspecialidadSchema = z.object({
         // Valida que sea un ObjectId válido (formato)
         return /^[a-f0-9]{24}$|^[0-9a-f]{24}$/.test(id);
     }, "El ID debe ser un ObjectId válido"),
-  nivel: z.nativeEnum(NivelCobertura, { error: "Nivel de cobertura inválido" }),
+  nivel: z.enum(Object.values(NivelCobertura), { error: () => "Nivel de cobertura inválido" }),
   porcentajeCobertura: z.number().min(0, "El porcentaje debe ser >= 0").max(1, "El porcentaje debe ser <= 1"),
 });
 
@@ -44,7 +41,7 @@ const coberturaPracticaSchema = z.object({
         // Valida que sea un ObjectId válido (formato)
         return /^[a-f0-9]{24}$|^[0-9a-f]{24}$/.test(id);
     }, "El ID debe ser un ObjectId válido"),
-  nivel: z.nativeEnum(NivelCobertura, { error: "Nivel de cobertura inválido" }),
+  nivel: z.enum(Object.values(NivelCobertura), { error: () => "Nivel de cobertura inválido" }),
   porcentajeCobertura: z.number().min(0, "El porcentaje debe ser >= 0").max(1, "El porcentaje debe ser <= 1"),
 });
 

@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { objectIdSchema } from "./objectIdSchema.js";
 
 export const usuarioSchema = z.object({
   // Si elegimos un username alfanumérico:
@@ -8,7 +9,7 @@ export const usuarioSchema = z.object({
     .regex(/^[a-zA-Z0-9_]+$/, { message: "Solo se permiten letras, números y guiones bajos" }), */
 
   // si usamos el correo como usuario
-  nombreUsuario: z.string().email({ message: "Formato de email inválido" }),
+  nombreUsuario: z.email({ error: () => "Formato de email inválido" }),
 
   password: z
     .string()
@@ -24,5 +25,5 @@ export const usuarioSchema = z.object({
 });
 
 export const usuarioIdSchema = z.object({
-  idUsuario: z.string().min(1, "El id del usuario es requerido")
+  idUsuario: objectIdSchema("usuario")
 });

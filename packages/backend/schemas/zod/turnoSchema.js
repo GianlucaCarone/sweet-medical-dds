@@ -4,44 +4,30 @@ import { objectIdSchema } from "./objectIdSchema.js";
 
 
 export const idParamsSchema = z.object({
-    id: z.string("El id debe ser un UUID válido")
+    id: objectIdSchema("turno")
 });
 
 export const bodyCambioEstadoTurnoSchema = z.object({
-    nuevoEstado: z.nativeEnum(EstadoTurnoEnum, { error: "El estado del turno no es válido" }),
+    nuevoEstado: z.enum(Object.values(EstadoTurnoEnum), { error: () => "El estado del turno no es válido" }),
     quien: objectIdSchema("usuario").optional(),
-    motivo: z.string("El motivo debe ser una cadena de texto").optional()
+    motivo: z.string({ error: () => "El motivo debe ser una cadena de texto" }).optional()
 });
 
 export const bodyAsignarTurnoSchema = z.object({
-    idsTurnos: z.array(z.string("El id del turno debe ser un UUID válido")).min(1, "Debe indicar al menos un turno")
+    idsTurnos: z.array(objectIdSchema("turno")).min(1, "Debe indicar al menos un turno")
 });
 
 export const filtrosTurnoSchema = z.object({
     pacienteId: objectIdSchema("paciente").optional(),
-    estado: z.nativeEnum(EstadoTurnoEnum, { error: "El estado del turno no es válido" }).optional(),
-    estados: z.array(z.nativeEnum(EstadoTurnoEnum, { error: "El estado del turno no es válido" })).optional(),
+    estado: z.enum(Object.values(EstadoTurnoEnum), { error: () => "El estado del turno no es válido" }).optional(),
+    estados: z.array(z.enum(Object.values(EstadoTurnoEnum), { error: () => "El estado del turno no es válido" })).optional(),
     medicoId: objectIdSchema("medico").optional(),
     servicioId: objectIdSchema("servicio").optional(),
     sedeId: objectIdSchema("sede").optional(),
-    fechaHoraInicio: z.coerce.date({ invalid_type_error: "Fecha de inicio inválida" }).optional(),
-    fechaHoraFin: z.coerce.date({ invalid_type_error: "Fecha de fin inválida" }).optional(),
-    /*
-    fechaHora: z.object({
-        inicio: z.coerce.date({ invalid_type_error: "Fecha de inicio inválida" }),
-        fin: z.coerce.date({ invalid_type_error: "Fecha de fin inválida" })
-    }).optional(),
-    como se pasa por query params, no admite objetos */
+    fechaHoraInicio: z.coerce.date({ error: () => "Fecha de inicio inválida" }).optional(),
+    fechaHoraFin: z.coerce.date({ error: () => "Fecha de fin inválida" }).optional(),
     ordenPorCosto: z.enum(["asc", "desc"]).optional(),
     ordenPorFecha: z.enum(["asc", "desc"]).optional()
-}).superRefine((filtros, ctx) => {
-    if (filtros.fechaHora && filtros.fechaHora.inicio > filtros.fechaHora.fin) {
-        ctx.addIssue({
-            code: "custom",
-            message: "La fecha de inicio no puede ser mayor a la fecha de fin",
-            path: ["fechaHora"]
-        });
-    }
 });
 
 export const turnoBaseSchema = z.object({
@@ -49,19 +35,19 @@ export const turnoBaseSchema = z.object({
     medicoId: objectIdSchema("medico"),
     sedeId: objectIdSchema("sede"),
     servicioId: objectIdSchema("servicio"),
-    estado: z.nativeEnum(EstadoTurnoEnum, { error: "El estado del turno no es válido" }),
-    fechaHora: z.coerce.date({ invalid_type_error: "Fecha inválida" }),
-    costo: z.number("El costo del turno debe ser un número").nonnegative("El costo del turno no puede ser negativo").optional()
+    estado: z.enum(Object.values(EstadoTurnoEnum), { error: () => "El estado del turno no es válido" }),
+    fechaHora: z.coerce.date({ error: () => "Fecha inválida" }),
+    costo: z.number({ error: () => "El costo del turno debe ser un número" }).nonnegative("El costo del turno no puede ser negativo").optional()
 });
 
 export const bodySolicitarCambioFechaSchema = z.object({
-    nuevaFechaHora: z.coerce.date({ invalid_type_error: "La nueva fecha debe ser una fecha válida" }),
-    usuarioId: z.string({ required_error: "El id del usuario es requerido" }).optional()
+    nuevaFechaHora: z.coerce.date({ error: () => "La nueva fecha debe ser una fecha válida" }),
+    usuarioId: objectIdSchema("usuario").optional()
 });
 
 export const bodyResponderCambioFechaSchema = z.object({
-    aceptado: z.boolean({ required_error: "Debe indicar si el cambio es aceptado o no" }),
-    usuarioId: z.string({ required_error: "El id del usuario es requerido" }).optional()
+    aceptado: z.boolean({ error: () => "Debe indicar si el cambio es aceptado o no" }),
+    usuarioId: objectIdSchema("usuario").optional()
 });
 
 export const bodyUpdateTurnoSchema = turnoBaseSchema.partial();
