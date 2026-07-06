@@ -96,7 +96,6 @@ function PerfilMedicoContent({ medicoInicial }) {
   }, [location.search]);
   const [modalOpen, setModalOpen] = useState(null);
   const { showAlert } = useAlert();
-  const navigate = useNavigate();
 
   const [alertConfig, setAlertConfig] = useState({ isOpen: false, title: '', message: '', type: 'info' });
   const [confirmModal, setConfirmModal] = useState({ isOpen: false, title: '', message: '', onConfirm: null });
@@ -216,6 +215,7 @@ function PerfilMedicoContent({ medicoInicial }) {
                   onPageChange={turnosHook.setTurnosPage}
                   onActualizarEstado={turnosHook.handleActualizarEstadoTurno}
                   onProponerCambio={turnosHook.handleProponerCambioTurno}
+                  onResponderCambioFecha={turnosHook.handleResponderCambioFecha}
                   onObtenerHistorialPaciente={turnosHook.handleObtenerHistorialPaciente}
                 />
               )}

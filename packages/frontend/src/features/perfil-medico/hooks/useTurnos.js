@@ -105,20 +105,30 @@ export default function useTurnos(medico, activeTab) {
     }
   }, []);
 
-  const handleActualizarEstadoTurno = useCallback(async (idTurno, nuevoEstado, motivo = '', aceptarCambio = false) => {
+  const handleActualizarEstadoTurno = useCallback(async (idTurno, nuevoEstado, motivo = '') => {
     setIsFetching(true);
     try {
-      if (aceptarCambio) {
-          // El paciente acepta el cambio (o el médico acepta si la lógica fuera cruzada)
-          await responderCambioFecha(idTurno, true);
-      } else {
-          await cambiarEstadoTurno(idTurno, nuevoEstado, motivo);
-      }
+      await cambiarEstadoTurno(idTurno, nuevoEstado, motivo);
       await cargarTurnosMedico(turnosSubTab, turnosPage);
       await cargarTodosLosContadores();
       return true;
     } catch (error) {
       console.error(`Error al actualizar estado del turno a ${nuevoEstado}:`, error);
+      return false;
+    } finally {
+      setIsFetching(false);
+    }
+  }, [cargarTurnosMedico, cargarTodosLosContadores, turnosSubTab, turnosPage, medico?.id]);
+
+  const handleResponderCambioFecha = useCallback(async (idTurno, aceptado) => {
+    setIsFetching(true);
+    try {
+      await responderCambioFecha(idTurno, aceptado);
+      await cargarTurnosMedico(turnosSubTab, turnosPage);
+      await cargarTodosLosContadores();
+      return true;
+    } catch (error) {
+      console.error("Error al responder cambio de fecha:", error);
       return false;
     } finally {
       setIsFetching(false);
@@ -153,6 +163,7 @@ export default function useTurnos(medico, activeTab) {
     counts,
     handleObtenerHistorialPaciente,
     handleActualizarEstadoTurno,
-    handleProponerCambioTurno
+    handleProponerCambioTurno,
+    handleResponderCambioFecha
   };
 }
