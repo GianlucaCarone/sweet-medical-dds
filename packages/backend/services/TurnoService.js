@@ -498,7 +498,7 @@ export class TurnoService {
 
   calcularCostoTurno(obraSocial, plan, precioBase, servicio) {
     if (!obraSocial || !plan) {
-      return precioBase; // Si no hay obra social ni plan, el paciente paga el 100%
+      return { costoFinal: precioBase, estadoCobertura: "NO_CUBIERTA" }; // Si no hay obra social ni plan, paga el 100%
     }
 
     const { nivel, porcentaje } = plan.obtenerCoberturaServicio(servicio); // si el servicio no existe en las cobertura se devuelve nivel: "NO_CUBIERTA" y porcentaje: 0

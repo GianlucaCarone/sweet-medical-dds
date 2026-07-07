@@ -62,19 +62,12 @@ export class Plan {
 
     obtenerCoberturaServicio(servicio) {
     const servicioId = (servicio?._id || servicio?.id || servicio).toString();
+    const especialidadPadreId = servicio?.especialidadPadreId?.toString();
 
     const listaEspecialidades = this.coberturaEspecialidad || [];
     const listaPracticas = this.coberturaPractica || [];
 
-    //Buscamos primero en especialidades.
-    const coberturaEsp = listaEspecialidades.find((ce) => {
-      const idRef = (ce.especialidad?._id || ce.especialidad?.id || ce.especialidad).toString();
-      return idRef === servicioId;
-    });
-
-    if (coberturaEsp) return { nivel: coberturaEsp.nivel, porcentaje: coberturaEsp.porcentajeCobertura };
-
-    //no estaba en especialidades, buscamos en prácticas
+    // Buscamos primero en prácticas (es más específico)
     const coberturaPrac = listaPracticas.find((cp) => {
       const idRef = (cp.practica?._id || cp.practica?.id || cp.practica).toString();
       return idRef === servicioId;
@@ -82,7 +75,19 @@ export class Plan {
 
     if (coberturaPrac) return { nivel: coberturaPrac.nivel, porcentaje: coberturaPrac.porcentajeCobertura };
 
-    // 4. Si no se encontró
+    // Si no está en prácticas, buscamos en especialidades.
+    // La especialidad a chequear puede ser el mismo servicioId (si el servicio es una Especialidad)
+    // o el especialidadPadreId (si el servicio es una Práctica).
+    const idEspecialidadABuscar = especialidadPadreId || servicioId;
+
+    const coberturaEsp = listaEspecialidades.find((ce) => {
+      const idRef = (ce.especialidad?._id || ce.especialidad?.id || ce.especialidad).toString();
+      return idRef === idEspecialidadABuscar;
+    });
+
+    if (coberturaEsp) return { nivel: coberturaEsp.nivel, porcentaje: coberturaEsp.porcentajeCobertura };
+
+    // Si no se encontró
     return { nivel: "NO_CUBIERTA", porcentaje: 0 };
   }
 }

@@ -35,7 +35,7 @@ export class TurnoRepository {
                 ]
             })
             .populate("sede", "nombre direccion")
-            .populate("servicio", "nombre costo duracionTurnoEnMins")
+            .populate("servicio", "nombre costo duracionTurnoEnMins tipo especialidadPadreId")
             .exec();
     }
 
@@ -137,7 +137,7 @@ disponible:
             .populate("medico", "nombre matricula usuario")
             .populate("paciente", "nombre dni idUsuario obraSocial plan")
             .populate("sede", "nombre direccion")
-            .populate("servicio", "nombre costo duracionTurnoEnMins")
+            .populate("servicio", "nombre costo duracionTurnoEnMins tipo especialidadPadreId")
             .sort(ordenamiento)
             .lean()
             .exec();
@@ -212,7 +212,7 @@ disponible:
                     ]
                 })
                 .populate("sede", "nombre direccion")
-                .populate("servicio", "nombre costo duracionTurnoEnMins")
+                .populate("servicio", "nombre costo duracionTurnoEnMins tipo especialidadPadreId")
                 .sort(ordenamiento)
                 .skip(inicio)
                 .limit(limitePorPagina)
