@@ -105,7 +105,7 @@ export default function turnoRoutes(getController) {
          *       400:
          *         $ref: '#/components/responses/E400'
          */
-        .get((req, res, next) => turnoController.findAllPaginated(req, res, next))
+        .get(authMiddleware,(req, res, next) => turnoController.findAllPaginated(req, res, next))
         /**
          * @swagger
          * /turno:
