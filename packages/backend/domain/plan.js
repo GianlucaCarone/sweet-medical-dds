@@ -5,8 +5,8 @@ import { ErrorDatosObligatorios } from "../domain/errores.js";
 export class Plan {
   id;
   nombre;
-  coberturasEspecialidad = [];
-  coberturasPractica = [];
+  coberturaEspecialidad = [];
+  coberturaPractica = [];
 
   constructor({ nombre }) {
     if (!nombre) {
@@ -19,23 +19,23 @@ export class Plan {
     if (!(coberturaEspecialidad instanceof CoberturaEspecialidad)) {
       throw new Error("Cobertura de especialidad inválida");
     }
-    this.coberturasEspecialidad.push(coberturaEspecialidad);
+    this.coberturaEspecialidad.push(coberturaEspecialidad);
   }
 
   agregarCoberturaPractica(coberturaPractica) {
     if (!(coberturaPractica instanceof CoberturaPractica)) {
       throw new Error("Cobertura de práctica inválida");
     }
-    this.coberturasPractica.push(coberturaPractica);
+    this.coberturaPractica.push(coberturaPractica);
   }
 
   eliminarCoberturaEspecialidad(coberturaEspecialidadAEliminar) {
     if (!coberturaEspecialidadAEliminar) { throw new Error("Cobertura de especialidad invalida"); }
-    this.coberturasEspecialidad = this.coberturasEspecialidad.filter(cobertura => cobertura.id !== coberturaEspecialidadAEliminar.id);
+    this.coberturaEspecialidad = this.coberturaEspecialidad.filter(cobertura => cobertura.id !== coberturaEspecialidadAEliminar.id);
   }
   eliminarCoberturaPractica(coberturaPracticaAEliminar) {
     if (!coberturaPracticaAEliminar) { throw new Error("Cobertura de practica invalida"); }
-    this.coberturasPractica = this.coberturasPractica.filter(cobertura => cobertura.id !== coberturaPracticaAEliminar.id);
+    this.coberturaPractica = this.coberturaPractica.filter(cobertura => cobertura.id !== coberturaPracticaAEliminar.id);
   }
 
   /*obtenerCoberturaServicio(servicio) {
@@ -48,13 +48,13 @@ export class Plan {
     throw new Error("Servicio inválido");
   }
   obtenerCoberturaEspecialidad(especialidadId) {
-    const cobertura = this.coberturasEspecialidad.find(
+    const cobertura = this.coberturaEspecialidad.find(
       (ce) => (ce.especialidad.id ?? ce.especialidad) === especialidadId,
     );
     return cobertura ? { nivel: cobertura.nivel, porcentaje: cobertura.porcentajeCobertura } : null;
   }
   obtenerCoberturaPractica(practica) {
-    const cobertura = this.coberturasPractica.find(
+    const cobertura = this.coberturaPractica.find(
       (cp) => cp.practica === practica,
     );
     return cobertura ? { nivel: cobertura.nivel, porcentaje: cobertura.porcentajeCobertura } : null;
@@ -63,8 +63,8 @@ export class Plan {
     obtenerCoberturaServicio(servicio) {
     const servicioId = (servicio?._id || servicio?.id || servicio).toString();
 
-    const listaEspecialidades = this.coberturaEspecialidad || this.coberturasEspecialidad || [];
-    const listaPracticas = this.coberturaPractica || this.coberturasPractica || [];
+    const listaEspecialidades = this.coberturaEspecialidad || [];
+    const listaPracticas = this.coberturaPractica || [];
 
     //Buscamos primero en especialidades.
     const coberturaEsp = listaEspecialidades.find((ce) => {

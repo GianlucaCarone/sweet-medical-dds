@@ -19,7 +19,7 @@ export class ObraSocial {
     if (!planId) {
       throw new Error("Id invalido");
     }
-    const plan = this.planes.find((plan) => plan._id.toString() === planId);
+    const plan = this.planes.find((plan) => plan._id.toString() === planId.toString());
 
     return plan ?? null;
   }

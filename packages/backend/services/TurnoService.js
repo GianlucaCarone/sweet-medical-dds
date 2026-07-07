@@ -527,7 +527,7 @@ export class TurnoService {
 
     const obraSocial = await this.obraSocialRepository.findById(paciente.obraSocial);
     if (!obraSocial) {
-      throw new NotFoundError("No se encontro la obra social con el id " + paciente.obraSocialId);
+      throw new NotFoundError("No se encontro la obra social con el id " + paciente.obraSocial);
     }
     const plan = obraSocial.obtenerPlanPorId(paciente.plan);
 
