@@ -68,8 +68,8 @@ const HamburgerMenu = ({ onAbrirLogin, onAbrirRegistro }) => {
   //   navigate("/mi-perfil");
   // };
 
-  const handleLoginExitoso = (usuario) => {
-    showAlert(`¡Bienvenido/a de nuevo, ${usuario.nombreUsuario || "usuario"}!`, "success");
+  const handleLoginExitoso = () => {
+    showAlert(`¡Bienvenido/a de nuevo, ${user.nombreUsuario || "usuario"}!`, "success");
   };
 
   useEffect(() => {
