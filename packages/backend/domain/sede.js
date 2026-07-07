@@ -10,6 +10,6 @@ export class Sede {
             throw new ErrorDatosObligatorios("Datos obligatorios de la sede incompletos");
         }
         this.nombre = nombre;
-        this.direccion = direccion;
+        this.direccion = direccion ;
     }
 }   
