@@ -81,8 +81,8 @@ export class TurnoController {
 
       if (req.user && req.user.rol === "PACIENTE") {
         try {
-          const paciente = await this.pacienteService.findByUserId(req.user.id);
-          filtros.pacienteId = paciente.id || paciente._id;
+          filtros.pacienteId = req.user.idEspecifico;
+          logger.info("[TURNOS CONTROLLER]: Paciente encontrado correctamente" + req.user.idEspecifico);
         } catch (error) {
           logger.warn(
             "[TURNOS CONTROLLER]: No se pudo inyectar el pacienteId para cobertura",
