@@ -27,11 +27,11 @@ axiosInstance.interceptors.response.use(
             error.message = mensajeBackend;
         }
 
-        if (status === 403) {
+        if (error.response?.status === 403) {
             window.location.href = "/403";
         }
 
-        if (status >= 500) {
+        if (error.response?.status >= 500) {
             window.location.href = "/500";
         }
 

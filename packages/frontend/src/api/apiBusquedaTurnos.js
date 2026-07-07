@@ -64,7 +64,7 @@ export const reservarTurnos = async (idTurnosArray) => {
         return response.data;
     } catch (e) {
         //TODO: Ver bien que llega y como mostrarlo
-        console.error("Error reservando los turnos del paciente: " + pacienteId);
+        console.error(e.message);
         throw e;
     }
 }
