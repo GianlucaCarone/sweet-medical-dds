@@ -1,100 +1,152 @@
-Este repositorio es la base para el Trabajo Práctico de la materia **Desarrollo de Software (DDS)** de la carrera **Ingeniería en Sistemas de Información** de la **UTN FRBA**. Se trata de un **monorepo** que integra una aplicación frontend con Create React App y un backend con Express, facilitando el desarrollo y la gestión de ambos proyectos en un único entorno.
+# 🏥 Sweet Medical
 
-## 📦 Estructura del Proyecto
+A **full-stack medical appointment management system** developed as the final project for the **Software Development (DDS)** course of the **Information Systems Engineering** degree at **UTN FRBA**.
 
-El monorepo está organizado de la siguiente manera:
+This project was built using a **monorepo architecture**, integrating a React frontend and an Express.js backend. It includes authentication, appointment management, user roles, and a complete REST API.
 
-```
+---
+
+## 🚀 Features
+
+- 🔐 JWT-based authentication and authorization
+- 👨‍⚕️ Medical appointment management
+- 👥 User and role management
+- 📅 Scheduling system
+- 💾 MongoDB persistence
+- 🌐 RESTful API
+- 📱 Responsive React frontend
+- 🎨 Modern and intuitive user interface
+
+---
+
+## 🛠️ Tech Stack
+
+### Frontend
+- React
+- JavaScript
+- HTML5
+- CSS3
+- Axios
+
+### Backend
+- Node.js
+- Express.js
+- MongoDB
+- Mongoose
+- JWT Authentication
+- CORS
+- Dotenv
+
+### Development
+- Git
+- GitHub
+- npm Workspaces
+
+---
+
+## 📁 Project Structure
+
+```text
 .
 ├── packages/
-│   ├── backend/        # Servidor Express.js
-│   └── frontend/       # Aplicación React (Create React App)
-├── package.json        # Configuración del monorepo (root)
-├── README.md           # Este archivo
-└── .env.example        # Ejemplo de configuración de variables de entorno
+│   ├── backend/        # Express.js API
+│   └── frontend/       # React Application
+├── package.json
+├── README.md
+└── .env.example
 ```
 
-## ⚙️ Paquetes
+---
 
-Este monorepo utiliza **`npm workspaces`** para gestionar los diferentes paquetes.
+## ⚙️ Installation
 
-### Backend (`packages/backend`)
+Clone the repository:
 
-El backend está construido con Express.js y utiliza las siguientes dependencias:
+```bash
+git clone https://github.com/YOUR_USERNAME/Sweet-Medical.git
+```
 
-- **`express`**: El framework web para Node.js, utilizado para construir la API.
-- **`cors`**: Middleware para Express que habilita Cross-Origin Resource Sharing (CORS), necesario para permitir que el frontend acceda al backend desde un origen diferente.
-- **`dotenv`**: Carga variables de entorno desde un archivo `.env` en `process.env`. Es crucial para configurar el puerto del servidor y los orígenes permitidos.
-
-La idea es dar lo mínimo para levantar el servidor, y que durante el desarrollo del TP se vayan agregando las dependencias necesarias.
-
-### Frontend (`packages/frontend`)
-
-El frontend es una aplicación de React generada con Create React App.
-
-## 🚀 Inicio Rápido
-
-Seguí estos pasos para poner en marcha el proyecto:
-
-### 1\. Instalación de Dependencias
-
-Desde la raíz del monorepo, ejecutá:
+Install all dependencies:
 
 ```bash
 npm install
 ```
 
-Esto instalará todas las dependencias para la raíz y para los paquetes `frontend` y `backend`.
+---
 
-### 2\. Configuración de Variables de Entorno
+## 🔑 Environment Variables
 
-Crea un archivo `.env` en el directorio `packages/backend`. Para ello, debes copiar el archivo `.env.example` que se encuentra en `packages/backend/` y renombrarlo a `.env`.
+Create a `.env` file inside:
 
+```text
+packages/backend/
 ```
-# packages/backend/.env.example
+
+using the provided `.env.example` as reference.
+
+Example:
+
+```env
 ALLOWED_ORIGINS=http://localhost:3000,http://127.0.0.1:3000,http://localhost:3001
 SERVER_PORT=3001
-JWT_SECRET=escriba_aqui_su_secreto_local
+JWT_SECRET=your_secret_key
 JWT_EXPIRATION=1h
 MONGODB_URI=mongodb://localhost:27017
 MONGODB_DB_NAME=Sweet-Medical-Local
 ITEMS_PER_PAGE=10
 ```
 
-Este archivo `.env.example` **sí** debe subirse al repositorio para que todos los miembros del equipo sepan qué variables configurar. El archivo `.env` real será ignorado por Git.
+---
 
-- **`ALLOWED_ORIGINS`**: Define los orígenes permitidos para las solicitudes CORS. Asegurate de incluir la URL donde se ejecuta tu frontend.
-- **`SERVER_PORT`**: El puerto en el que se ejecutará el servidor backend (ej. `3001`).
-- **`JWT_SECRET`** y **`JWT_EXPIRATION`**: Configuración para la generación de tokens de sesión.
-- **`MONGODB_URI`** y **`MONGODB_DB_NAME`**: Credenciales y configuración de la base de datos local.
-- **`ITEMS_PER_PAGE`**: Paginación global para las listas.
+## ▶️ Running the Project
 
-### 3\. Ejecución de la Aplicación
-
-Podés iniciar el frontend y el backend por separado o ambos a la vez:
-
-#### Ejecutar el Backend
+### Backend
 
 ```bash
 npm run start:backend
 ```
 
-Para el desarrollo con reinicio automático:
+Development mode:
 
 ```bash
 npm run dev:backend
 ```
 
-#### Ejecutar el Frontend
+### Frontend
 
 ```bash
 npm run start:frontend
 ```
 
-#### Ejecutar Ambos (Desarrollo)
-
-Para iniciar el backend en modo `dev` y el frontend simultáneamente, usá:
+### Run both simultaneously
 
 ```bash
 npm run start:dev
 ```
+
+---
+
+## 💼 My Contributions
+
+Throughout this project, I contributed to both the **frontend** and **backend**, including:
+
+- Designing and implementing REST API endpoints
+- JWT authentication and authorization
+- MongoDB data persistence
+- Backend business logic
+- React frontend development
+- User interface implementation
+- Application workflows and use cases
+- Bug fixing and feature development
+
+---
+
+## 📚 Academic Project
+
+This project was developed as part of the **Software Development (DDS)** course at **Universidad Tecnológica Nacional – Facultad Regional Buenos Aires (UTN FRBA)**.
+
+---
+
+## 📄 License
+
+This repository is intended for educational purposes.
