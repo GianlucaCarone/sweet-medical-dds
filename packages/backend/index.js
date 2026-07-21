@@ -3,8 +3,11 @@ import dotenv from "dotenv";
 import { ClienteMongoDb } from "./config/database.js";
 import server from "./app.js";
 
+console.log("MONGODB_URI:", process.env.MONGODB_URI);
+console.log("MONGODB_DB_NAME:", process.env.MONGODB_DB_NAME);
+
 dotenv.config();
-const port = process.env.SERVER_PORT;
+const port = process.env.PORT || process.env.SERVER_PORT || 3001;
 
 async function start() {
   try {
