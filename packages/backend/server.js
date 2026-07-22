@@ -59,8 +59,10 @@ export class Server {
     }
 
     start() {
-        this.#app.listen(process.env.SERVER_PORT, () => {
-            console.warn(`Backend escuchando en puerto ${process.env.SERVER_PORT}`);
+        const port = process.env.PORT || process.env.SERVER_PORT || 3001;
+        
+        this.#app.listen(port, () => {
+            console.warn(`Backend escuchando en puerto ${port}`);
         });
     }
 }
